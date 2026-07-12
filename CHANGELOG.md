@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.0.4 — Shared Exploration Sandbox
+
+- Added an authored collision-aware exploration room and one to eight seat-owned pawns.
+- Added semantic per-device movement, two deterministic interactables, and reconnect-stable pawn ownership.
+- Added reusable shared-camera framing with visible soft/hard separation policy.
+- Added toggleable exploration diagnostics and comprehensive deterministic tests.
+- Added pinned Godot 4.7 headless validation to pull-request CI.
+
 ## v0.0.3 — Visual Language & Asset Pipeline
 
 - Replaced the engineering presentation with reusable storybook-horror theme resources and UI primitives.

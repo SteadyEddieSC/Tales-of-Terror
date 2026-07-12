@@ -1,0 +1,37 @@
+name: Godot 4.7 tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  headless:
+    name: Godot 4.7 headless validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download pinned Godot 4.7 stable
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7-stable
+          curl -fsSL -o godot.zip "$base/Godot_v4.7-stable_linux.x86_64.zip"
+          echo 'b639ca9c1ddea39bb3df89bd5283a51ca6047467abe6b25e9436566f2b2082ede633025073989ecf39c7d5d3c2493d80ea13e3af6dd5e261bbf89e462d6d2214  godot.zip' | sha512sum --check -
+          unzip -q godot.zip -d .godot-bin
+          chmod +x .godot-bin/Godot_v4.7-stable_linux.x86_64
+          echo "$PWD/.godot-bin" >> "$GITHUB_PATH"
+      - name: Typed script and import validation
+        run: Godot_v4.7-stable_linux.x86_64 --headless --editor --path game --quit
+      - name: Main scene smoke test
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --quit-after 3
+      - name: Seat lifecycle tests
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/seat_manager_test.gd
+      - name: Visual language tests
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/visual_language_test.gd
+      - name: Shared exploration tests
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/exploration_test.gd
