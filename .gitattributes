@@ -1,5 +1,19 @@
 * text=auto eol=lf
 
-# Git LFS is intentionally deferred for the foundation commit.
-# Add tested LFS patterns before large editable source art/audio is committed
-# (target: v0.0.3 Visual Language Lab).
+# Editable visual source formats.
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.kra filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.aseprite filter=lfs diff=lfs merge=lfs -text
+*.xcf filter=lfs diff=lfs merge=lfs -text
+
+# Lossless audio masters and production video sources.
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.flac filter=lfs diff=lfs merge=lfs -text
+*.aiff filter=lfs diff=lfs merge=lfs -text
+*.aif filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+
+# Godot source, scenes, resources, docs, metadata, and modest runtime images
+# intentionally remain in normal Git.

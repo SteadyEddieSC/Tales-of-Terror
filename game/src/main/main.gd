@@ -1,6 +1,6 @@
 extends Control
 
-const LAB_VERSION: String = "v0.0.2"
+const LAB_VERSION: String = "v0.0.3"
 const RESET_HOLD_SECONDS: float = 1.5
 const SEMANTIC_ACTIONS: PackedStringArray = ["ui_navigate_up", "ui_navigate_down", "ui_navigate_left", "ui_navigate_right", "ui_confirm", "ui_cancel_action", "player_join", "pause_options", "diagnostic_test"]
 var _devices: DeviceRegistry
@@ -13,6 +13,7 @@ func _ready() -> void:
 	add_child(_devices)
 	_ui = InputDisplayLab.new()
 	add_child(_ui)
+	_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_devices.devices_changed.connect(_on_devices_changed)
 	_devices.device_connected.connect(_on_device_connected)
 	_devices.device_disconnected.connect(_on_device_disconnected)
