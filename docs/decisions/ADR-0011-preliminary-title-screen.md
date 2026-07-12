@@ -11,11 +11,13 @@ No obvious exact commercial title conflict, exact storefront collision, stable n
 
 The main risks are not a discovered blocking exact match. They are the title’s moderate distinctiveness, the crowded use of `Terror`, possible spoken confusion with **Terror Train**, natural reordering as **Turn of Terror**, and unresolved domain/handle availability.
 
+The working title is already visible in this public repository, so it is not confidential. The remaining boundary is commercial commitment rather than secrecy.
+
 ## Decision
 
-Retain **Terror Turn** as the preferred confidential working title with a **Moderate** overall preliminary risk assessment.
+Retain **Terror Turn** as the preferred provisional working title with a **Moderate** overall preliminary risk assessment.
 
-Continue using the temporary repository name `SteadyEddieSC/Tales-of-Terror`. Do not publicly announce the title, rename the repository, buy domains, claim handles, open storefront/crowdfunding pages, file a trademark application, or commission expensive final branding until a live attorney-led knockout and comprehensive search supports proceeding.
+Continue using the temporary repository name `SteadyEddieSC/Tales-of-Terror`. Do not make a formal commercial title announcement, rename the repository, buy domains, claim handles, open storefront/crowdfunding pages, file a trademark application, or commission expensive final branding until a live attorney-led knockout and comprehensive search supports proceeding.
 
 Separately clear **The Underteller** because it may function as a character name, secondary brand, or series mark.
 
@@ -28,7 +30,7 @@ Separately clear **The Underteller** because it may function as a character name
 
 ## Consequences
 
-- Internal development may continue under Terror Turn without restarting naming work.
+- Public repository development may continue under Terror Turn without restarting naming work.
 - Repository, domain, social, and storefront identity remain unchanged.
 - Placeholder branding must remain inexpensive and replaceable.
 - Counsel should review Classes 9, 28, 41, 42, 16, and 25 plus any classes driven by actual merchandise plans.
