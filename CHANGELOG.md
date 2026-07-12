@@ -3,7 +3,8 @@
 ## v0.0.3 — Visual Language & Asset Pipeline
 
 - Replaced the engineering presentation with reusable storybook-horror theme resources and UI primitives.
-- Added player color/symbol identity, status badges, focus and reconnect-warning treatments, and a subtle diorama backdrop.
+- Added player identity through a color-vision-conscious palette, Roman numerals, and segmented stripe counts.
+- Added status badges, focus and reconnect-warning treatments, a subtle diorama backdrop, and a fully visible input-transparent safe-area frame.
 - Activated reviewed Git LFS patterns and documented normal Git, LFS, and GitHub Release boundaries.
 - Added asset organization, naming, provenance, and automated policy validation.
 
