@@ -31,7 +31,7 @@ A Tale may remain cooperative, reveal a betrayer, elevate one player into the Ho
 
 An original modern storybook/cel-shaded horror style between the approved colorful shared-screen concept and the dramatic weight of hand-inked gothic games: thick expressive outlines, angular readable silhouettes, painterly textures, dramatic lighting, smooth animation, strong player color/symbol identification, and 2D/2.5D board dioramas. Do not copy Darkest Dungeon assets, UI, characters, compositions, or exact rendering techniques.
 
-**Logical viewport:** 960×540, 16:9. UI renders cleanly at output resolution for 1080p and 4K. Compatibility renderer is the baseline for future WebGL 2 support.
+**Logical viewport:** 960×540, 16:9. UI renders cleanly at output resolution for 720p, 1080p, and 4K. Compatibility renderer is the baseline for future WebGL 2 support. The input/display foundation keeps controller discovery, reusable seat ownership, and presentation separate; disconnected device identities reserve their seat for reconnection.
 
 ## Presentation profiles
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.0.2 — Input & Display Lab
+
+- Added controller discovery and eight-seat assignment with stable reconnect reservations.
+- Added semantic input actions and a keyboard development fallback.
+- Added device, seat-state, and last-action diagnostics with protected reset.
+- Added adjustable safe-area testing and documented 720p, 1080p, and 4K targets.
+- Separated discovery, seat state, and presentation for later reuse.
+
 ## [Unreleased]
 
 ### Added
