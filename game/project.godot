@@ -13,6 +13,22 @@ size/viewport_height=540
 size/window_width_override=1920
 size/window_height_override=1080
 stretch/mode="canvas_items"
+stretch/aspect="keep"
+
+[input]
+
+ui_navigate_up={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":87), Object(InputEventKey,"physical_keycode":4194320), Object(InputEventJoypadButton,"button_index":11)]}
+ui_navigate_down={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":83), Object(InputEventKey,"physical_keycode":4194322), Object(InputEventJoypadButton,"button_index":12)]}
+ui_navigate_left={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":65), Object(InputEventKey,"physical_keycode":4194319), Object(InputEventJoypadButton,"button_index":13)]}
+ui_navigate_right={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":68), Object(InputEventKey,"physical_keycode":4194321), Object(InputEventJoypadButton,"button_index":14)]}
+ui_confirm={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":32), Object(InputEventKey,"physical_keycode":4194309), Object(InputEventJoypadButton,"button_index":0)]}
+ui_cancel_action={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":4194305), Object(InputEventJoypadButton,"button_index":1)]}
+player_join={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":74), Object(InputEventJoypadButton,"button_index":0)]}
+pause_options={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":80), Object(InputEventJoypadButton,"button_index":6)]}
+diagnostic_test={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":84), Object(InputEventJoypadButton,"button_index":2)]}
+safe_area_decrease={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":45), Object(InputEventJoypadButton,"button_index":4)]}
+safe_area_increase={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":61), Object(InputEventJoypadButton,"button_index":5)]}
+reset_seats={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":82), Object(InputEventJoypadButton,"button_index":3)]}
 
 [rendering]
 renderer/rendering_method="gl_compatibility"
