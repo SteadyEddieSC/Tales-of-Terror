@@ -44,9 +44,9 @@ func _on_joy_connection_changed(device_id: int, connected: bool) -> void:
 
 func _register_device(device_id: int) -> void:
 	var guid: String = Input.get_joy_guid(device_id)
-	var name: String = Input.get_joy_name(device_id)
-	var identity: String = guid if not guid.is_empty() else "name:%s" % name
-	_devices[device_id] = {"device_id": device_id, "name": name if not name.is_empty() else "Unknown controller", "guid": guid, "identity": identity}
+	var controller_name: String = Input.get_joy_name(device_id)
+	var identity: String = guid if not guid.is_empty() else "name:%s" % controller_name
+	_devices[device_id] = {"device_id": device_id, "name": controller_name if not controller_name.is_empty() else "Unknown controller", "guid": guid, "identity": identity}
 
 func _emit_snapshot() -> void:
 	devices_changed.emit(get_devices())
