@@ -3,6 +3,10 @@ extends Node2D
 
 const TOKENS: VisualTokens = preload("res://assets/theme/visual_tokens.tres")
 const LAB_THEME: Theme = preload("res://assets/theme/terror_lab_theme.tres")
+const HUD_EDGE_INSET: float = 10.0
+const HUD_REGION_HEIGHT: float = 52.0
+const HUD_REGION_GAP: float = 16.0
+const RESET_REGION_WIDTH: float = 324.0
 
 var pawn_registry := PawnRegistry.new()
 var _pawn_nodes: Dictionary = {}
@@ -14,8 +18,11 @@ var _diagnostics: ExplorationDiagnostics
 var _message_label: Label
 var _separation_label: Label
 var _reset_label: Label
+var _status_panel: Panel
+var _reset_panel: Panel
 var _safe_overlay: SafeAreaOverlay
 var _showcase_mode: bool = false
+var _safe_margin: int = 24
 
 func setup(input_router: PlayerInputRouter) -> void:
 	_input_router = input_router
@@ -55,7 +62,9 @@ func toggle_diagnostics() -> void:
 	_diagnostics.toggle()
 
 func set_safe_margin(value: int) -> void:
-	_safe_overlay.set_frame_margin(value)
+	_safe_margin = clampi(value, 0, 48)
+	_safe_overlay.set_frame_margin(_safe_margin)
+	_layout_bottom_hud()
 
 func present_reset_progress(progress: float) -> void:
 	_reset_label.text = "HOLD Y / R 1.5s TO RETURN TO LAB" if progress <= 0.0 else "RETURNING TO LAB… %d%%" % roundi(progress * 100.0)
@@ -119,17 +128,29 @@ func _build_hud() -> void:
 	_separation_label.position = Vector2(650, 28)
 	_separation_label.size = Vector2(276, 30)
 	root.add_child(_separation_label)
+	_status_panel = Panel.new()
+	_status_panel.theme_type_variation = "StatusBadge"
+	_status_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(_status_panel)
 	_message_label = Label.new()
 	_message_label.text = "MOVE: LEFT STICK / WASD  •  INTERACT: A / E  •  DIAGNOSTICS: X / T"
-	_message_label.position = Vector2(34, 500)
-	_message_label.size = Vector2(892, 30)
-	_message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	root.add_child(_message_label)
+	_message_label.position = Vector2(12, 4)
+	_message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_message_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_message_label.max_lines_visible = 2
+	_message_label.clip_text = true
+	_message_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_status_panel.add_child(_message_label)
+	_reset_panel = Panel.new()
+	_reset_panel.theme_type_variation = "StatusBadge"
+	_reset_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(_reset_panel)
 	_reset_label = Label.new()
-	_reset_label.position = Vector2(610, 468)
-	_reset_label.size = Vector2(316, 26)
+	_reset_label.position = Vector2(10, 4)
 	_reset_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	root.add_child(_reset_label)
+	_reset_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_reset_label.clip_text = true
+	_reset_panel.add_child(_reset_label)
 	present_reset_progress(0.0)
 	_diagnostics = ExplorationDiagnostics.new()
 	root.add_child(_diagnostics)
@@ -137,6 +158,31 @@ func _build_hud() -> void:
 	_safe_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_safe_overlay.frame_color = TOKENS.warning
 	root.add_child(_safe_overlay)
+	_layout_bottom_hud()
+
+func _layout_bottom_hud() -> void:
+	if not is_instance_valid(_status_panel) or not is_instance_valid(_reset_panel):
+		return
+	var layout: Dictionary = calculate_bottom_hud_layout(Vector2(960, 540), _safe_margin)
+	var status_rect: Rect2 = layout.status
+	var reset_rect: Rect2 = layout.reset
+	_status_panel.position = status_rect.position
+	_status_panel.size = status_rect.size
+	_message_label.size = status_rect.size - Vector2(24, 8)
+	_reset_panel.position = reset_rect.position
+	_reset_panel.size = reset_rect.size
+	_reset_label.size = reset_rect.size - Vector2(20, 8)
+
+static func calculate_bottom_hud_layout(viewport_size: Vector2, safe_margin: int) -> Dictionary:
+	var inset: float = float(safe_margin) + HUD_EDGE_INSET
+	var available_width: float = viewport_size.x - inset * 2.0
+	var status_width: float = available_width - RESET_REGION_WIDTH - HUD_REGION_GAP
+	var region_y: float = viewport_size.y - float(safe_margin) - HUD_EDGE_INSET - HUD_REGION_HEIGHT
+	return {
+		"safe": Rect2(Vector2(safe_margin, safe_margin), viewport_size - Vector2(safe_margin, safe_margin) * 2.0),
+		"status": Rect2(Vector2(inset, region_y), Vector2(status_width, HUD_REGION_HEIGHT)),
+		"reset": Rect2(Vector2(inset + status_width + HUD_REGION_GAP, region_y), Vector2(RESET_REGION_WIDTH, HUD_REGION_HEIGHT)),
+	}
 
 func _on_interaction_resolved(message: String) -> void:
 	_message_label.text = message

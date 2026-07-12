@@ -34,6 +34,10 @@ This milestone never splits the screen or silently teleports a pawn.
 
 The iron gate and clue pedestal expose the same focus and interaction contract. The closest enabled prop within 86 units receives focus. If several seats request the same prop in one physics tick, the lowest seat number wins. Different props resolve independently. Results are authored state toggles only—no cards, inventory, events, or turn economy.
 
+## Bottom HUD safe-area policy
+
+Interaction and status messages occupy a dedicated panel to the left of the protected-reset panel. Both regions are recalculated from the active 0–48 px safe margin, remain inset by another 10 logical pixels, and never overlap. Status text has a constrained width, wraps to at most two lines, clips to its panel, and uses an ellipsis when additional content cannot fit. Automated layout assertions cover the minimum, default, and maximum safe-frame settings; display scaling continues from the 960×540 logical viewport.
+
 ## Controls
 
 - Move: left stick, D-pad, WASD, or arrow keys.

@@ -13,6 +13,7 @@ func _initialize() -> void:
 	_test_movement_and_bounds()
 	_test_camera_policy()
 	_test_interactions()
+	_test_bottom_hud_layout()
 	if _failures == 0:
 		print("Exploration tests passed")
 	quit(_failures)
@@ -76,6 +77,17 @@ func _test_interactions() -> void:
 	var winners: Array[Dictionary] = InteractionResolver.resolve_requests(requests)
 	_expect(winners.size() == 2, "resolves at most one action per interactable per physics tick")
 	_expect(winners.any(func(request: Dictionary) -> bool: return request.interactable_id == "door" and request.seat_number == 2), "resolves simultaneous conflicts to the lowest seat number")
+
+func _test_bottom_hud_layout() -> void:
+	for safe_margin: int in [0, 24, 48]:
+		var layout: Dictionary = ExplorationSandbox.calculate_bottom_hud_layout(Vector2(960, 540), safe_margin)
+		var safe_rect: Rect2 = layout.safe
+		var status_rect: Rect2 = layout.status
+		var reset_rect: Rect2 = layout.reset
+		_expect(safe_rect.encloses(status_rect), "keeps the status region inside the %d px safe frame" % safe_margin)
+		_expect(safe_rect.encloses(reset_rect), "keeps the reset region inside the %d px safe frame" % safe_margin)
+		_expect(not status_rect.intersects(reset_rect), "keeps status and reset regions separate at a %d px safe margin" % safe_margin)
+		_expect(status_rect.size.x >= 500.0 and status_rect.size.y >= 48.0, "reserves a readable wrapped status region at a %d px safe margin" % safe_margin)
 
 func _seat(number: int, state: int, device_id: int, identity: String) -> Dictionary:
 	return {"seat_number": number, "state": state, "device_id": device_id, "identity": identity, "device_name": "Test", "last_action": "—"}
