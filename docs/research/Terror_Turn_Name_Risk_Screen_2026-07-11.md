@@ -9,9 +9,9 @@
 
 ## Executive conclusion
 
-**Terror Turn may remain the preferred confidential working title.** The research found no obvious exact-name video game, board game, major entertainment property, stable numbered trademark record, or dominant common-law use for **Terror Turn** or its closest grammatical variants.
+**Terror Turn may remain the preferred provisional working title.** The name is already visible in this public development repository, but it has not received a formal commercial launch, storefront commitment, or legal clearance. The research found no obvious exact-name video game, board game, major entertainment property, stable numbered trademark record, or dominant common-law use for **Terror Turn** or its closest grammatical variants.
 
-The title should **not** yet be treated as cleared for public announcement, storefront submission, domain purchase, merchandise, repository renaming, or expensive final branding.
+The title should **not** yet be treated as cleared for formal commercial announcement, storefront submission, domain purchase, merchandise, repository renaming, or expensive final branding.
 
 ### Main reasons
 
@@ -82,7 +82,7 @@ Additional classes should follow actual merchandise plans rather than speculativ
 
 No indexed exact listing was found in the reviewed searches for Steam, Epic Games Store, GOG, itch.io, Xbox/Microsoft, PlayStation, Nintendo, Apple App Store, Google Play, IGDB, MobyGames, GameFAQs-style databases, BoardGameGeek, or the Tabletop Simulator Workshop.
 
-These findings must be rechecked directly before public announcement and again immediately before storefront page creation because unpublished, regional, delisted, newly filed, or unindexed products may not appear.
+These findings must be rechecked directly before a formal commercial announcement and again immediately before storefront page creation because unpublished, regional, delisted, newly filed, or unindexed products may not appear.
 
 ## Discoverability and branding observations
 
@@ -130,16 +130,16 @@ Do not purchase or reserve them until the live legal search supports proceeding.
 
 Until professional clearance is complete:
 
-- Keep **Terror Turn** as the preferred internal working title.
+- Keep **Terror Turn** as the preferred provisional working title.
 - Keep the repository named `SteadyEddieSC/Tales-of-Terror`.
 - Do not buy domains or claim social handles.
 - Do not create public storefront, crowdfunding, or publisher pages.
 - Do not commission expensive final logo, packaging, or merchandise around the name.
-- Continue ordinary internal development and low-cost placeholder branding.
+- Continue ordinary public repository development and low-cost, replaceable working-title branding.
 
 ## Required professional follow-up
 
-Before public title commitment, qualified trademark counsel should perform:
+Before formal commercial title commitment, qualified trademark counsel should perform:
 
 - Live USPTO knockout and comprehensive searching
 - state trademark and business-name searches
