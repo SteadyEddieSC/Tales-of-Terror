@@ -17,6 +17,8 @@ These instructions apply to the entire repository.
 - Put editable masters under art/source or audio/source, derived runtime assets under game/assets, and provenance in art/provenance.json.
 - Use lowercase snake_case names with an asset role suffix such as _panel, _icon, _texture, _loop, or _voice.
 - Never commit an asset whose source, license, generator, or derivation is unknown.
+- Keep exploration ownership and deterministic rules in testable models; device IDs belong in input/ownership adapters, not pawn presentation.
+- Resolve simultaneous shared-world interactions deterministically and document the arbitration rule.
 
 ## Validation
 

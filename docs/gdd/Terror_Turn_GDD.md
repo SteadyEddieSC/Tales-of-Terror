@@ -76,6 +76,14 @@ The Underteller is fiction and interface. The Director begins as an authored, ru
 - Cloudflare later handles room membership, join codes, private state, reconnect metadata, and companion communication.
 - Companion-first online roadmap; full browser/remote parity only after the local vertical slice.
 
+## Shared exploration foundation
+
+The v0.0.4 sandbox establishes seat-owned local pawns in one authored room. Each pawn combines color, Roman numeral, and seat-count pattern, moves through CharacterBody2D collision, and remains attached to its reserved seat through reconnects. Device discovery and presentation remain separate from ownership.
+
+The default camera frames the full active group and adjusts zoom inside authored bounds. Extreme separation first produces a visible warning and outward resistance, then blocks only further outward motion while always permitting regrouping. It does not split the screen or silently relocate players.
+
+Nearby interactions use a reusable focus/request contract. Until a later turn or initiative system exists, simultaneous requests for the same prop resolve to the lowest seat number; distinct props may resolve together.
+
 ## First ten releases
 
 1. v0.0.1 Foundation
