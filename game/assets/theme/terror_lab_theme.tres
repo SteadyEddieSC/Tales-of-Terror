@@ -1,0 +1,141 @@
+[gd_resource type="Theme" load_steps=9 format=3]
+
+[sub_resource type="StyleBoxFlat" id="Panel"]
+bg_color = Color(0.071, 0.051, 0.09, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.27, 0.22, 0.31, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 2
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 2
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 5
+
+[sub_resource type="StyleBoxFlat" id="Seat"]
+bg_color = Color(0.105, 0.075, 0.13, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.31, 0.25, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 2
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 2
+content_margin_left = 10.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="SeatActive"]
+bg_color = Color(0.11, 0.12, 0.15, 0.98)
+border_width_left = 4
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.41, 0.71, 0.54, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 2
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 2
+content_margin_left = 8.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+shadow_color = Color(0.12, 0.32, 0.22, 0.45)
+shadow_size = 5
+
+[sub_resource type="StyleBoxFlat" id="SeatWarning"]
+bg_color = Color(0.17, 0.09, 0.09, 0.98)
+border_width_left = 4
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.86, 0.35, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 2
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 2
+content_margin_left = 8.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+shadow_color = Color(0.45, 0.08, 0.08, 0.45)
+shadow_size = 5
+
+[sub_resource type="StyleBoxFlat" id="SeatFocus"]
+bg_color = Color(0.16, 0.11, 0.19, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9, 0.66, 0.31, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 2
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 2
+content_margin_left = 9.0
+content_margin_top = 6.0
+content_margin_right = 9.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="Badge"]
+bg_color = Color(0.19, 0.16, 0.22, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 2
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 2
+content_margin_left = 7.0
+content_margin_right = 7.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="BadgeActive"]
+bg_color = Color(0.15, 0.34, 0.24, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 2
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 2
+content_margin_left = 7.0
+content_margin_right = 7.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="BadgeWarning"]
+bg_color = Color(0.48, 0.16, 0.15, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 2
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 2
+content_margin_left = 7.0
+content_margin_right = 7.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+
+[resource]
+default_font_size = 15
+default_base_scale = 1.0
+Label/colors/font_color = Color(0.918, 0.851, 0.718, 1)
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.8)
+Label/constants/shadow_offset_x = 1
+Label/constants/shadow_offset_y = 2
+PanelContainer/styles/panel = SubResource("Panel")
+SeatCard/styles/panel = SubResource("Seat")
+SeatCardActive/styles/panel = SubResource("SeatActive")
+SeatCardWarning/styles/panel = SubResource("SeatWarning")
+SeatCardFocus/styles/panel = SubResource("SeatFocus")
+StatusBadge/styles/panel = SubResource("Badge")
+StatusBadgeActive/styles/panel = SubResource("BadgeActive")
+StatusBadgeWarning/styles/panel = SubResource("BadgeWarning")
+LabTitle/font_sizes/font_size = 27
+LabTitle/colors/font_color = Color(0.96, 0.82, 0.52, 1)
+SectionTitle/font_sizes/font_size = 16
+SectionTitle/colors/font_color = Color(0.9, 0.66, 0.31, 1)
+SeatTitle/font_sizes/font_size = 16
+SeatDetail/font_sizes/font_size = 14
+SeatDetail/colors/font_color = Color(0.67, 0.62, 0.69, 1)

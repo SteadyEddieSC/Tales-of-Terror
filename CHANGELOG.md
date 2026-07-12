@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.0.3 — Visual Language & Asset Pipeline
+
+- Replaced the engineering presentation with reusable storybook-horror theme resources and UI primitives.
+- Added player color/symbol identity, status badges, focus and reconnect-warning treatments, and a subtle diorama backdrop.
+- Activated reviewed Git LFS patterns and documented normal Git, LFS, and GitHub Release boundaries.
+- Added asset organization, naming, provenance, and automated policy validation.
+
 ## v0.0.2 — Input & Display Lab
 
 - Added controller discovery and eight-seat assignment with stable reconnect reservations.

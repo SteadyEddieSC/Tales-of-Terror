@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="VisualTokens" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/theme/visual_tokens.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+backdrop_top = Color(0.101961, 0.0627451, 0.152941, 1)
+backdrop_bottom = Color(0.0313726, 0.027451, 0.0509804, 1)
+moon_glow = Color(0.423529, 0.356863, 0.568627, 1)
+ink = Color(0.0352941, 0.027451, 0.0509804, 1)
+parchment = Color(0.917647, 0.85098, 0.717647, 1)
+muted_text = Color(0.666667, 0.619608, 0.690196, 1)
+danger = Color(0.862745, 0.352941, 0.352941, 1)
+warning = Color(0.898039, 0.662745, 0.309804, 1)
+success = Color(0.407843, 0.709804, 0.541176, 1)
+player_colors = Array[Color]([Color(0.909804, 0.364706, 0.364706, 1), Color(0.309804, 0.615686, 0.909804, 1), Color(0.909804, 0.772549, 0.278431, 1), Color(0.396078, 0.741176, 0.490196, 1), Color(0.666667, 0.447059, 0.87451, 1), Color(0.898039, 0.541176, 0.270588, 1), Color(0.294118, 0.768627, 0.741176, 1), Color(0.85098, 0.427451, 0.658824, 1)])
+player_symbols = PackedStringArray("I", "II", "III", "IV", "V", "VI", "VII", "VIII")

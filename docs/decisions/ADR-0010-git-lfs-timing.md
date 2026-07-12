@@ -1,6 +1,6 @@
 # ADR-0010-git-lfs-timing — Defer Git LFS until large source assets begin
 
-- **Status:** Accepted for foundation
+- **Status:** Superseded by ADR-0013
 - **Date:** July 11, 2026
 
 ## Context

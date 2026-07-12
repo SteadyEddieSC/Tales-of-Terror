@@ -22,6 +22,8 @@ jobs:
           test -f docs/gdd/Terror_Turn_GDD.md
           test -f docs/technical/Project_Launch_Guide.md
           test -f docs/decisions/ADR-0008-working-title.md
+          test -f docs/art/Visual_Language_Guide.md
+          test -f docs/technical/Asset_Pipeline.md
       - name: Reject common secret files and oversized files
         shell: bash
         run: |
@@ -57,3 +59,5 @@ jobs:
             echo 'Obsolete working-title reference found in canonical text.'
             exit 1
           fi
+      - name: Validate asset policy and provenance
+        run: python tools/validate_assets.py
