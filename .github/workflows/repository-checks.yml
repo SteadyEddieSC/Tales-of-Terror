@@ -1,0 +1,59 @@
+name: Repository checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  foundation:
+    name: Foundation validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify required files
+        run: |
+          test -f README.md
+          test -f SECURITY.md
+          test -f game/project.godot
+          test -f docs/gdd/Terror_Turn_GDD.md
+          test -f docs/technical/Project_Launch_Guide.md
+          test -f docs/decisions/ADR-0008-working-title.md
+      - name: Reject common secret files and oversized files
+        shell: bash
+        run: |
+          if find . -path ./.git -prune -o \( -name '.env' -o -name '*.keystore' -o -name '*.jks' -o -name '*.pem' -o -name '*.key' \) -print | grep -q .; then
+            echo 'Forbidden secret/signing file detected.'
+            exit 1
+          fi
+          large=$(find . -path ./.git -prune -o -type f -size +95M -print)
+          if [ -n "$large" ]; then
+            echo "Files exceed 95 MB; move them to Git LFS or release storage:"
+            echo "$large"
+            exit 1
+          fi
+      - name: Validate JSON files
+        run: |
+          python - <<'PY2'
+          import json, pathlib, sys
+          failures=[]
+          for p in pathlib.Path('.').rglob('*.json'):
+              if '.git' in p.parts:
+                  continue
+              try:
+                  json.loads(p.read_text(encoding='utf-8'))
+              except Exception as e:
+                  failures.append(f'{p}: {e}')
+          if failures:
+              print('\n'.join(failures))
+              sys.exit(1)
+          PY2
+      - name: Reject obsolete working-title references in canonical text
+        run: |
+          if grep -RIn --exclude='*.docx' --exclude='*.png' --exclude-dir='.git' 'Terror[[:space:]]+Tome' README.md docs game services web .github; then
+            echo 'Obsolete working-title reference found in canonical text.'
+            exit 1
+          fi

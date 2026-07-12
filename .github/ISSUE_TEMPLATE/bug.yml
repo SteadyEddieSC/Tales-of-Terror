@@ -1,0 +1,33 @@
+name: Bug report
+description: Record a reproducible defect
+title: "[Bug] "
+labels: ["kind:bug"]
+body:
+  - type: input
+    id: build
+    attributes:
+      label: Build or commit
+  - type: textarea
+    id: environment
+    attributes:
+      label: Platform, display, and controllers
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs, screenshots, video, or save seed

@@ -1,0 +1,32 @@
+# Godot
+/game/.godot/
+/game/.import/
+*.tmp
+*.log
+
+# Builds
+/builds/
+/dist/
+/export/
+
+# Web / Node
+node_modules/
+.wrangler/
+.dev.vars
+.env
+.env.*
+!.env.example
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea/
+
+# Secrets / signing
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+secrets.*

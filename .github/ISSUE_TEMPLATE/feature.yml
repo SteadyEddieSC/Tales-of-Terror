@@ -1,0 +1,28 @@
+name: Feature or system
+description: Propose a complete capability
+title: "[Feature] "
+labels: ["kind:feature"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Player or project value
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance criteria
+      placeholder: "- [ ] ..."
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test plan

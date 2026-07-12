@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# Git LFS is intentionally deferred for the foundation commit.
+# Add tested LFS patterns before large editable source art/audio is committed
+# (target: v0.0.3 Visual Language Lab).

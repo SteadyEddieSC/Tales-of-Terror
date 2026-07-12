@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "project-slug-dev",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-01",
+  "durable_objects": {
+    "bindings": [{ "name": "GAME_ROOMS", "class_name": "GameRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GameRoom"] }],
+  "d1_databases": [{ "binding": "DB", "database_name": "project-slug-dev-db", "database_id": "REPLACE_ME" }],
+  "r2_buckets": [{ "binding": "ASSETS", "bucket_name": "project-slug-dev-assets" }],
+  "kv_namespaces": [{ "binding": "CONFIG", "id": "REPLACE_ME" }]
+}
