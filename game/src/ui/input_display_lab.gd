@@ -10,7 +10,7 @@ const SAFE_STEP: int = 8
 var _seat_cards: Array[SeatCard] = []
 var _devices_label: Label
 var _safe_label: Label
-var _safe_overlay: ReferenceRect
+var _safe_overlay: SafeAreaOverlay
 var _reset_label: Label
 var _safe_margin: int = 24
 
@@ -44,10 +44,7 @@ func adjust_safe_margin(delta: int) -> void:
 
 func set_safe_margin(value: int) -> void:
 	_safe_margin = clampi(value, MIN_SAFE_MARGIN, MAX_SAFE_MARGIN)
-	_safe_overlay.offset_left = _safe_margin
-	_safe_overlay.offset_top = _safe_margin
-	_safe_overlay.offset_right = -_safe_margin
-	_safe_overlay.offset_bottom = -_safe_margin
+	_safe_overlay.set_frame_margin(_safe_margin)
 	_safe_label.text = "SAFE FRAME %d px   LB/RB or -/+" % _safe_margin
 
 func present_reset_progress(progress: float) -> void:
@@ -58,16 +55,10 @@ func _build_ui() -> void:
 	backdrop.tokens = TOKENS
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(backdrop)
-	_safe_overlay = ReferenceRect.new()
-	_safe_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_safe_overlay.border_color = TOKENS.warning
-	_safe_overlay.border_width = 2.0
-	_safe_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_safe_overlay)
 	var margin := MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side: String in ["margin_left", "margin_top", "margin_right", "margin_bottom"]:
-		margin.add_theme_constant_override(side, 24)
+		margin.add_theme_constant_override(side, 32)
 	add_child(margin)
 	var root := VBoxContainer.new()
 	root.add_theme_constant_override("separation", 8)
@@ -119,6 +110,11 @@ func _build_ui() -> void:
 	key_hint.theme_type_variation = "SeatDetail"
 	device_stack.add_child(key_hint)
 	_build_footer(root)
+	_safe_overlay = SafeAreaOverlay.new()
+	_safe_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_safe_overlay.frame_color = TOKENS.warning
+	_safe_overlay.frame_width = 2.0
+	add_child(_safe_overlay)
 
 func _build_header(root: VBoxContainer) -> void:
 	var header := HBoxContainer.new()

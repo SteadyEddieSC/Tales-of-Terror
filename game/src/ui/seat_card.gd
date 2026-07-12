@@ -3,7 +3,7 @@ extends PanelContainer
 
 var _seat_number: int
 var _tokens: VisualTokens
-var _indicator: ColorRect
+var _indicator: SeatAccent
 var _symbol: Label
 var _title: Label
 var _badge_panel: PanelContainer
@@ -20,7 +20,7 @@ func setup(seat_number: int, tokens: VisualTokens) -> void:
 
 func present(seat: Dictionary) -> void:
 	var state: int = seat.state
-	_indicator.color = _tokens.player_colors[_seat_number - 1]
+	_indicator.configure(_tokens.player_colors[_seat_number - 1], _seat_number)
 	_symbol.text = _tokens.player_symbols[_seat_number - 1]
 	_title.text = "SEAT %d" % _seat_number
 	_badge.text = SeatManager.state_label(state)
@@ -45,8 +45,8 @@ func _build() -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	add_child(row)
-	_indicator = ColorRect.new()
-	_indicator.custom_minimum_size = Vector2(7.0, 0.0)
+	_indicator = SeatAccent.new()
+	_indicator.custom_minimum_size = Vector2(8.0, 0.0)
 	row.add_child(_indicator)
 	var symbol_panel := PanelContainer.new()
 	symbol_panel.custom_minimum_size = Vector2(35.0, 35.0)

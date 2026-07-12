@@ -29,7 +29,7 @@ Panels resemble imperfect inked placards: dark violet-black fills, asymmetric 2â
 
 ## Icons and player identity
 
-Icons are bold single-color silhouettes with rounded joins and a heavy outline. Every player has both a stable color and a Roman-numeral symbol. Color is supplemental, never the only identifier. Final controller glyphs remain replaceable resources.
+Icons are bold single-color silhouettes with rounded joins and a heavy outline. Every player has a stable color, a Roman-numeral symbol, and a stripe divided into the same number of segments as the seat number. Color is supplemental, never the only identifier. Final controller glyphs remain replaceable resources.
 
 ## State palette
 
@@ -37,7 +37,7 @@ Icons are bold single-color silhouettes with rounded joins and a heavy outline. 
 - Green: connected and ready.
 - Amber: focus, caution, and adjustable test boundaries.
 - Red: disconnected, reserved, danger, or destructive action.
-- Eight player hues: identity only; they do not redefine success or danger.
+- Eight player accents use a grid-arranged, color-vision-conscious palette derived from the Okabeâ€“Ito family. Bright and dark values alternate across horizontal and vertical neighbors. Identity colors never redefine success or danger.
 
 ## Motion
 
