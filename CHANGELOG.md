@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.7 - Dread Director
+
+- Added a local deterministic authored pacing Director with read-only telemetry, isolated RNG, explainable scoring, fairness/mercy/cooldown/pressure guardrails, proposal authority boundaries, snapshots, and bounded audit history.
+- Added Lantern House struggling, cruising, and stalled demonstrations; friendly safe-frame presentation; paged raw diagnostics; multi-seed simulation; ADR-0017; and Director schema, telemetry, technical, simulation, and release documentation.
+
 ## v0.0.6 - Turn, Event & Card Engine
 
 - Added deterministic authoritative round, prompt, event, check, vote, card, inventory, consequence, history, and snapshot systems.

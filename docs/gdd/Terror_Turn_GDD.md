@@ -1,7 +1,7 @@
 # Terror Turn — Living Game Design Document
 
-**Version:** 0.2  
-**Date:** July 11, 2026  
+**Version:** 0.3
+**Date:** July 12, 2026
 **Status:** Pre-production; preferred working title not legally cleared
 
 ## Vision
@@ -112,3 +112,9 @@ The detailed scope, exit gates, risks, accessibility baseline, and technical ref
 The v0.0.6 rules foundation advances a configurable round-start, player-decision, resolution, event, and cleanup loop. Stable seats make explicit choices, pass, resolve public votes and seeded checks, play authored cards, and retain separate inventory. Every accepted action and consequence is ordered and reproducible.
 
 Authored events and cards are declarative validated inputs. The native `RulesSession` owns rules state, while Living Board changes remain requests to `BoardState`. The provisional host consumes replaceable presentation payloads and never decides rules. Dread Director selection, factions/afterlife, companion-private state, networking, and campaign persistence remain later layers.
+
+## Dread Director pacing loop
+
+The v0.0.7 Dread Director is a local deterministic authored system, separate from the replaceable fictional host. It reads a normalized copy of authoritative rules/board telemetry, estimates current tension against an authored pacing curve, records an explainable component score for every legal candidate, and proposes one bounded action or an intentional hold.
+
+Pressure, relief, clue, event, board, and ambient proposals obey authored budgets, cooldowns, repetition penalties, seat-target caps, disconnect exclusion, mercy, recovery windows, and rolling pressure limits. The Director owns a separately salted RNG that cannot affect checks or decks and never directly mutates `RulesSession` or `BoardState`. Struggling groups receive recovery space, cruising groups may receive bounded escalation, and stalled groups receive clues or nudges rather than repeated punishment. This protects pacing and recoverability without guaranteeing victory or completing final balance.

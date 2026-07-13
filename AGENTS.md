@@ -24,6 +24,9 @@ These instructions apply to the entire repository.
 - Keep authored rules content declarative and validated; generic rules and presentation paths must never branch on stable event or card IDs.
 - Treat `RulesSession` as the scene-independent authority for phases, prompts, seeded randomness, events, card zones, inventory, votes, consequences, and ordered rules history.
 - Validate complete consequence bundles before committing them; board effects must request mutations from `BoardState`.
+- Keep Director profiles and candidates declarative and validated; generic Director runtime and presentation paths must never branch on stable candidate IDs.
+- Derive Director telemetry read-only from authoritative local state, and keep the salted Director RNG isolated from rules/deck/check RNG.
+- Treat Director output as proposals only; rules and board work must cross public `RulesSession` and `BoardState` validation boundaries before Director state records acceptance.
 
 ## Validation
 

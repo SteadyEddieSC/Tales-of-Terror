@@ -39,3 +39,7 @@ jobs:
         run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/living_board_test.gd
       - name: Turn, Event and Card Engine tests
         run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/turn_event_card_test.gd
+      - name: Dread Director tests
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/dread_director_test.gd
+      - name: Dread Director multi-seed simulation
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/director_simulation_test.gd
