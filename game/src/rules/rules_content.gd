@@ -54,6 +54,12 @@ func card_by_id(card_id: String) -> Dictionary:
 			return card.duplicate(true)
 	return {}
 
+func item_by_id(item_id: String) -> Dictionary:
+	for item: Dictionary in items:
+		if item.get("id", "") == item_id:
+			return item.duplicate(true)
+	return {}
+
 func has_item(item_id: String) -> bool:
 	return items.any(func(item: Dictionary) -> bool: return item.get("id", "") == item_id)
 

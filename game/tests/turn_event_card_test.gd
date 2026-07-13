@@ -6,6 +6,7 @@ func _initialize() -> void:
 	_test_content_validation()
 	_test_phase_and_seat_policy()
 	_test_prompts_and_votes()
+	_test_hud_view_model()
 	_test_checks_and_rng()
 	_test_events_and_atomic_effects()
 	_test_cards_inventory_and_reconnect()
@@ -81,6 +82,45 @@ func _test_prompts_and_votes() -> void:
 	session.submit_response(3, [], revision)
 	var vote_result: Dictionary = session.resolve_vote()
 	_expect(vote_result.accepted and vote_result.quorum_met and vote_result.winner == "gallery", "audits abstention, quorum, plurality, and deterministic tie policy")
+
+func _test_hud_view_model() -> void:
+	var session: RulesSession = _session([1, 2, 3, 4, 5, 6, 7, 8])
+	var hud := RulesHud.new()
+	hud.setup(session)
+	var vote: Dictionary = LanternHouseRulesContent.new().vote_definition()
+	_expect(session.open_vote(vote, [1, 2, 3]).accepted, "opens the HUD vote fixture")
+	var initial: Dictionary = hud.get_view_model()
+	var seat_one: Dictionary = _seat_view(initial.prompt.seat_states, 1)
+	var seat_four: Dictionary = _seat_view(initial.prompt.seat_states, 4)
+	_expect(seat_one.response_state == "unresolved" and seat_one.current_option_id == "gallery" and seat_one.focus_symbol == "▶", "renders an unresolved seat's current highlighted option")
+	_expect(seat_one.numeral == "I" and not seat_one.symbol.is_empty() and seat_one.pattern == "▰", "combines seat numeral, symbol, and count pattern")
+	_expect(seat_four.response_state == "ineligible" and seat_four.status_symbol == "×", "renders ineligible seats distinctly")
+	_expect(hud.handle_navigation(1, 1, false, false), "moves a seat's prompt selection")
+	var moved: Dictionary = _seat_view(hud.get_view_model().prompt.seat_states, 1)
+	_expect(moved.current_option_id == "vault" and moved.response_state == "unresolved", "selection movement changes deterministic HUD view-model state")
+	_expect(hud.handle_navigation(2, 0, true, false), "confirms a seat's current option")
+	var locked: Dictionary = _seat_view(hud.get_view_model().prompt.seat_states, 2)
+	_expect(locked.response_state == "locked" and locked.status_symbol == "✓" and locked.focus_symbol.is_empty(), "renders submitted choices as locked and no longer focused")
+	_expect(not hud.handle_navigation(2, 1, false, false), "prevents navigation after a response locks")
+	_expect(hud.handle_navigation(3, 0, false, true), "accepts explicit abstention")
+	var passed: Dictionary = _seat_view(hud.get_view_model().prompt.seat_states, 3)
+	_expect(passed.response_state == "pass" and passed.current_option_label == "Pass / Abstain", "renders pass or abstain distinctly")
+	var view: Dictionary = hud.get_view_model()
+	var player_text: String = hud.rendered_player_text()
+	_expect(view.essential_content_fits and view.essential_lines <= RulesHud.MAX_PLAYER_LINES and view.continuation_visible, "keeps eight-seat actionable state within the explicit essential-content budget")
+	_expect("More details: Diagnostics" in player_text and "RECENT HISTORY" not in player_text, "uses an explicit continuation policy instead of silently clipping history")
+	_expect(RulesHud.friendly_label("round_start") == "Round Start" and RulesHud.friendly_label("brass_key") == "Brass Key", "maps authored stable IDs to friendly labels")
+	_expect("SEED" not in player_text and "RNG" not in player_text and " r1" not in player_text and "archive_route_vote" not in player_text, "keeps diagnostics and raw IDs out of player-facing text")
+	_expect(session.diagnostics_snapshot().has("seed") and session.diagnostics_snapshot().has("rng_counter") and session.diagnostics_snapshot().has("phase_revision"), "retains technical state in toggleable diagnostics")
+	var terminal_session: RulesSession = _session([1])
+	terminal_session.inventory[1].append("brass_key")
+	terminal_session.complete("lantern_house_secured")
+	var terminal_hud := RulesHud.new()
+	terminal_hud.setup(terminal_session)
+	var terminal_text: String = terminal_hud.rendered_player_text()
+	_expect("Lantern House Secured" in terminal_text and "Brass Key" in terminal_text and terminal_hud.get_view_model().essential_content_fits, "always renders a friendly terminal result and authored item names within budget")
+	hud.free()
+	terminal_hud.free()
 
 func _test_checks_and_rng() -> void:
 	var first: RulesSession = _session([1], 991)
@@ -181,6 +221,12 @@ func _test_no_event_id_branching() -> void:
 
 func _session(seats: Array[int], seed: int = 42) -> RulesSession:
 	return RulesSession.new(LanternHouseRulesContent.new(), BoardState.new(LanternHouseBoardDefinition.new()), seed, seats)
+
+func _seat_view(seat_states: Array[Dictionary], seat_number: int) -> Dictionary:
+	for seat: Dictionary in seat_states:
+		if seat.seat == seat_number:
+			return seat
+	return {}
 
 func _contains(failures: PackedStringArray, fragment: String) -> bool:
 	for failure: String in failures:

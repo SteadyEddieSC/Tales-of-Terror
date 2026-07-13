@@ -115,8 +115,8 @@ func enable_showcase(stage: String = "terminal") -> void:
 	_run_rules_showcase(stage)
 	_message_label.text = "EVIDENCE: %s  •  PROMPT ◉  •  CHECK ⚄  •  CARD ◫  •  VOTE ◈  •  BOARD r%d" % [stage.to_upper(), _board_state.revision]
 	_diagnostics.visible = false
-	_board_overlay.visible = true
-	_room.set_show_authored_headings(false)
+	_board_overlay.visible = false
+	_room.set_show_authored_headings(true)
 
 func _physics_process(delta: float) -> void:
 	var pawns: Array[PawnState] = pawn_registry.get_pawns()
@@ -238,6 +238,15 @@ func _run_rules_showcase(stage: String = "terminal") -> void:
 	_rules_session.queue_event("threshold_whisper")
 	_rules_session.resolve_next_event()
 	if stage == "prompt":
+		var prompt: Dictionary = _rules_session.pending_prompt.duplicate(true)
+		_rules_session.submit_response(1, ["listen"], _rules_session.pending_prompt.revision)
+		_rules_session.resolve_prompt()
+		prompt["scope"] = "all"
+		prompt["allow_pass"] = true
+		_rules_session.open_prompt(prompt, _rules_session.participating_seats, "showcase_prompt")
+		_rules_hud.handle_navigation(1, 1, false, false)
+		_rules_hud.handle_navigation(2, 0, true, false)
+		_rules_hud.handle_navigation(3, 0, false, true)
 		return
 	if not _rules_session.pending_prompt.is_empty():
 		_rules_session.submit_response(1, ["listen"], _rules_session.pending_prompt.revision)
@@ -245,6 +254,9 @@ func _run_rules_showcase(stage: String = "terminal") -> void:
 	_rules_session.resolve_next_event()
 	_rules_session.open_vote(_rules_content.vote_definition(), _rules_session.participating_seats)
 	if stage == "vote":
+		_rules_hud.handle_navigation(1, 1, false, false)
+		_rules_hud.handle_navigation(2, 0, true, false)
+		_rules_hud.handle_navigation(3, 0, false, true)
 		return
 	for seat_number: int in _rules_session.participating_seats:
 		var option: Array[String] = []

@@ -39,3 +39,11 @@ Supported effects are board mutation, counter/flag/result changes, draw/grant/di
 Version-1 snapshots include content/session identity, RNG, round/phase, seats, prompt responses, events, counters/flags, all card zones, inventory, vote, checks/effects, history, and the BoardState snapshot. Restore validates into temporary state and fails atomically on version/content/reference errors.
 
 Diagnostics expose all these fields. Normal HUD content remains within the 0–48 px safe frame and combines words with symbols and shapes.
+
+## Player HUD priority and focus policy
+
+`RulesHud` builds a deterministic player-facing view model rather than rendering the raw diagnostics snapshot. Stable IDs are resolved through authored names or title-cased fallback labels. Seed, RNG counter, phase revision, raw IDs, effect history, and queue details remain exclusive to toggleable diagnostics.
+
+While a prompt or public vote is open, the HUD prioritizes the friendly round/phase, presenter title, choice options, and every participating seat. Each seat combines Roman numeral, a distinct shape, a seat-count pattern, and a textual/status symbol for unresolved current focus (`○`/`▶`), submitted lock (`✓`), pass/abstain (`—`), or ineligible (`×`). Accepted responses cannot be moved.
+
+At terminal state, the result is always shown before host, check, and compact card/inventory summaries. Recent history and additional detail never compete with essential content; the fixed panel displays an explicit `More details: Diagnostics` continuation. The tested player-content budget is 18 lines inside the 420×344 panel at 0, 24, and 48 px safe margins.
