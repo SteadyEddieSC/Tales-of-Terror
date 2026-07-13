@@ -37,3 +37,5 @@ jobs:
         run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/exploration_test.gd
       - name: Living Board Engine tests
         run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/living_board_test.gd
+      - name: Turn, Event and Card Engine tests
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/turn_event_card_test.gd

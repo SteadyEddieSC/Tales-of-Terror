@@ -15,6 +15,9 @@ var _room: ExplorationRoom
 var _board_definition: BoardDefinition
 var _board_state: BoardState
 var _board_overlay: BoardDebugOverlay
+var _rules_content: LanternHouseRulesContent
+var _rules_session: RulesSession
+var _rules_hud: RulesHud
 var _camera: SharedCameraCoordinator
 var _interactions: InteractionCoordinator
 var _diagnostics: ExplorationDiagnostics
@@ -25,6 +28,7 @@ var _reset_label: Label
 var _status_panel: Panel
 var _reset_panel: Panel
 var _safe_overlay: SafeAreaOverlay
+var _hud_root: Control
 var _showcase_mode: bool = false
 var _safe_margin: int = 24
 
@@ -69,6 +73,15 @@ func sync_seats(seats: Array[Dictionary]) -> void:
 			(_pawn_nodes[seat_number] as ExplorationPawn).queue_free()
 			_pawn_nodes.erase(seat_number)
 	_board_state.sync_occupancy(pawn_registry.get_pawns())
+	_sync_rules_seats()
+
+func request_rules_navigation(device_id: int, direction: int, confirm: bool, cancel: bool) -> bool:
+	if _rules_session == null or not is_instance_valid(_rules_hud):
+		return false
+	var pawn: PawnState = pawn_registry.get_by_device(device_id)
+	if pawn == null:
+		return false
+	return _rules_hud.handle_navigation(pawn.seat_number, direction, confirm, cancel)
 
 func request_interaction(device_id: int) -> bool:
 	return _interactions.request(pawn_registry.get_by_device(device_id))
@@ -83,29 +96,27 @@ func set_safe_margin(value: int) -> void:
 	_safe_overlay.set_frame_margin(_safe_margin)
 	_board_overlay.set_safe_margin(_safe_margin)
 	_diagnostics.set_safe_margin(_safe_margin)
+	if is_instance_valid(_rules_hud):
+		_rules_hud.set_safe_margin(_safe_margin)
 	_layout_top_hud()
 	_layout_bottom_hud()
 
 func present_reset_progress(progress: float) -> void:
 	_reset_label.text = "HOLD Y / R 1.5s TO RETURN TO LAB" if progress <= 0.0 else "RETURNING TO LAB… %d%%" % roundi(progress * 100.0)
 
-func enable_showcase() -> void:
+func enable_showcase(stage: String = "terminal") -> void:
 	_showcase_mode = true
 	var showcase_positions: Array[Vector2] = [Vector2(250, 540), Vector2(1030, 500), Vector2(1300, 350), Vector2(1600, 630)]
 	for index: int in mini(showcase_positions.size(), pawn_registry.get_pawns().size()):
 		var pawn: PawnState = pawn_registry.get_pawns()[index]
 		pawn.position = showcase_positions[index]
 		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).global_position = pawn.position
-	_board_state.apply_mutation(BoardMutation.reveal_space("sealed_archive"))
-	_board_state.apply_mutation(BoardMutation.connector("hall_gate", "open"))
-	_board_state.apply_mutation(BoardMutation.connector("archive_route", "collapsed"))
-	_board_state.apply_mutation(BoardMutation.hazard("narrow_gallery", "echo_mist", true))
-	_board_state.apply_mutation(BoardMutation.feature("sealed_archive", "blood_key", true))
 	_board_state.sync_occupancy(pawn_registry.get_pawns())
-	_message_label.text = "BOARD r%d  •  REVEAL  •  GATE OPEN  •  ROUTE ✕  •  HAZARD !  •  KEY ◆" % _board_state.revision
+	_run_rules_showcase(stage)
+	_message_label.text = "EVIDENCE: %s  •  PROMPT ◉  •  CHECK ⚄  •  CARD ◫  •  VOTE ◈  •  BOARD r%d" % [stage.to_upper(), _board_state.revision]
 	_diagnostics.visible = false
-	_board_overlay.visible = true
-	_room.set_show_authored_headings(false)
+	_board_overlay.visible = false
+	_room.set_show_authored_headings(true)
 
 func _physics_process(delta: float) -> void:
 	var pawns: Array[PawnState] = pawn_registry.get_pawns()
@@ -129,7 +140,7 @@ func _physics_process(delta: float) -> void:
 	_camera.update_group(pawns, delta)
 	_separation_label.text = SharedCameraPolicy.state_label(_camera.separation_state)
 	_separation_label.modulate = TOKENS.danger if _camera.separation_state == SharedCameraPolicy.SeparationState.REGROUP else TOKENS.warning
-	_diagnostics.update_snapshot(pawns, _camera, _board_state)
+	_diagnostics.update_snapshot(pawns, _camera, _board_state, _rules_session)
 
 func _add_interactable(id: String, kind: SandboxInteractable.Kind, world_position: Vector2) -> void:
 	var interactable := SandboxInteractable.new()
@@ -144,8 +155,9 @@ func _build_hud() -> void:
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.theme = LAB_THEME
 	layer.add_child(root)
+	_hud_root = root
 	_title_label = Label.new()
-	_title_label.text = "LIVING BOARD ENGINE  •  v0.0.5"
+	_title_label.text = "LANTERN HOUSE RULES SANDBOX  •  v0.0.6"
 	_title_label.theme_type_variation = "SectionTitle"
 	_title_label.size = Vector2(540, 30)
 	root.add_child(_title_label)
@@ -188,6 +200,76 @@ func _build_hud() -> void:
 	root.add_child(_safe_overlay)
 	_layout_top_hud()
 	_layout_bottom_hud()
+	_ensure_rules_hud()
+
+func _sync_rules_seats() -> void:
+	var current: Array[int] = []
+	for pawn: PawnState in pawn_registry.get_pawns():
+		current.append(pawn.seat_number)
+	current.sort()
+	if current.is_empty():
+		return
+	if _rules_session == null:
+		_rules_content = LanternHouseRulesContent.new()
+		_rules_session = RulesSession.new(_rules_content, _board_state, 4706, current)
+		_ensure_rules_hud()
+	else:
+		for seat_number: int in _rules_session.participating_seats:
+			var pawn: PawnState = pawn_registry.get_by_seat(seat_number)
+			if pawn != null:
+				_rules_session.seat_connection[seat_number] = pawn.connected
+		for seat_number: int in current:
+			if not _rules_session.participating_seats.has(seat_number) and not _rules_session.pending_late_seats.has(seat_number):
+				_rules_session.request_late_join(seat_number)
+	if is_instance_valid(_rules_hud):
+		_rules_hud.refresh()
+
+func _ensure_rules_hud() -> void:
+	if _rules_session == null or not is_instance_valid(_hud_root) or is_instance_valid(_rules_hud):
+		return
+	_rules_hud = RulesHud.new()
+	_rules_hud.setup(_rules_session)
+	_hud_root.add_child(_rules_hud)
+	_rules_hud.set_safe_margin(_safe_margin)
+
+func _run_rules_showcase(stage: String = "terminal") -> void:
+	if _rules_session == null:
+		return
+	_rules_session.queue_event("threshold_whisper")
+	_rules_session.resolve_next_event()
+	if stage == "prompt":
+		var prompt: Dictionary = _rules_session.pending_prompt.duplicate(true)
+		_rules_session.submit_response(1, ["listen"], _rules_session.pending_prompt.revision)
+		_rules_session.resolve_prompt()
+		prompt["scope"] = "all"
+		prompt["allow_pass"] = true
+		_rules_session.open_prompt(prompt, _rules_session.participating_seats, "showcase_prompt")
+		_rules_hud.handle_navigation(1, 1, false, false)
+		_rules_hud.handle_navigation(2, 0, true, false)
+		_rules_hud.handle_navigation(3, 0, false, true)
+		return
+	if not _rules_session.pending_prompt.is_empty():
+		_rules_session.submit_response(1, ["listen"], _rules_session.pending_prompt.revision)
+		_rules_session.resolve_prompt()
+	_rules_session.resolve_next_event()
+	_rules_session.open_vote(_rules_content.vote_definition(), _rules_session.participating_seats)
+	if stage == "vote":
+		_rules_hud.handle_navigation(1, 1, false, false)
+		_rules_hud.handle_navigation(2, 0, true, false)
+		_rules_hud.handle_navigation(3, 0, false, true)
+		return
+	for seat_number: int in _rules_session.participating_seats:
+		var option: Array[String] = []
+		option.append("gallery" if seat_number % 2 == 1 else "vault")
+		_rules_session.submit_response(seat_number, option, _rules_session.pending_prompt.revision)
+	_rules_session.resolve_vote()
+	_rules_session.resolve_check(_rules_content.courage_check(), 1, "vault_reckoning")
+	_rules_session.apply_effect_bundle([{"type": "board_mutation", "mutation": BoardMutation.hazard("narrow_gallery", "echo_mist", true)}, {"type": "grant_card", "seat": 1, "card_id": "steady_flame"}], 1, "showcase_setup")
+	var steady_flame: Dictionary = _rules_session.hands[1][-1]
+	_rules_session.play_card(1, steady_flame.instance_id)
+	_rules_session.queue_event("vault_reckoning")
+	_rules_session.resolve_next_event()
+	_rules_session.complete("lantern_house_secured")
 
 func _layout_top_hud() -> void:
 	if not is_instance_valid(_title_label) or not is_instance_valid(_separation_label):

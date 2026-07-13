@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.6 - Turn, Event & Card Engine
+
+- Added deterministic authoritative round, prompt, event, check, vote, card, inventory, consequence, history, and snapshot systems.
+- Added declarative Lantern House rules content, replaceable host hooks, shared-screen rules HUD/diagnostics, comprehensive tests, ADR-0016, and schema/technical/release documentation.
+
 ## v0.0.5 — Living Board Engine
 
 - Added a validated authored board definition mapping the exploration room into five named spaces and five connectors.
