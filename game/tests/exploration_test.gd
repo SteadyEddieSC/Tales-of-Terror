@@ -91,6 +91,9 @@ func _test_bottom_hud_layout() -> void:
 		_expect(safe_rect.encloses(reset_rect), "keeps the reset region inside the %d px safe frame" % safe_margin)
 		_expect(not status_rect.intersects(reset_rect), "keeps status and reset regions separate at a %d px safe margin" % safe_margin)
 		_expect(status_rect.size.x >= 500.0 and status_rect.size.y >= 48.0, "reserves a readable wrapped status region at a %d px safe margin" % safe_margin)
+		var diagnostics_rect: Rect2 = ExplorationDiagnostics.calculate_panel_rect(Vector2(960, 540), safe_margin)
+		_expect(safe_rect.encloses(diagnostics_rect), "keeps expanded diagnostics inside the %d px safe frame" % safe_margin)
+		_expect(not diagnostics_rect.intersects(status_rect) and not diagnostics_rect.intersects(reset_rect), "keeps diagnostics separate from bottom HUD at a %d px safe margin" % safe_margin)
 
 func _seat(number: int, state: int, device_id: int, identity: String) -> Dictionary:
 	return {"seat_number": number, "state": state, "device_id": device_id, "identity": identity, "device_name": "Test", "last_action": "—"}

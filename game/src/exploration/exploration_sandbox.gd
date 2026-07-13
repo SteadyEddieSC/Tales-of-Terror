@@ -40,6 +40,7 @@ func _ready() -> void:
 	_board_state.mutation_rejected.connect(_on_board_mutation_rejected)
 	_board_overlay = BoardDebugOverlay.new()
 	_board_overlay.setup(_board_definition, _board_state, TOKENS)
+	_board_overlay.set_safe_margin(_safe_margin)
 	_board_overlay.visible = false
 	add_child(_board_overlay)
 	_interactions = InteractionCoordinator.new()
@@ -75,10 +76,12 @@ func request_interaction(device_id: int) -> bool:
 func toggle_diagnostics() -> void:
 	_diagnostics.toggle()
 	_board_overlay.visible = _diagnostics.visible
+	_room.set_show_authored_headings(not _board_overlay.visible)
 
 func set_safe_margin(value: int) -> void:
 	_safe_margin = clampi(value, 0, 48)
 	_safe_overlay.set_frame_margin(_safe_margin)
+	_board_overlay.set_safe_margin(_safe_margin)
 	_diagnostics.set_safe_margin(_safe_margin)
 	_layout_top_hud()
 	_layout_bottom_hud()
@@ -102,6 +105,7 @@ func enable_showcase() -> void:
 	_message_label.text = "BOARD r%d  •  REVEAL  •  GATE OPEN  •  ROUTE ✕  •  HAZARD !  •  KEY ◆" % _board_state.revision
 	_diagnostics.visible = false
 	_board_overlay.visible = true
+	_room.set_show_authored_headings(false)
 
 func _physics_process(delta: float) -> void:
 	var pawns: Array[PawnState] = pawn_registry.get_pawns()

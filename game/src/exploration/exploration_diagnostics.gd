@@ -2,20 +2,26 @@ class_name ExplorationDiagnostics
 extends PanelContainer
 
 const LAB_THEME: Theme = preload("res://assets/theme/terror_lab_theme.tres")
+const PANEL_SIZE: Vector2 = Vector2(610, 324)
+const INNER_TEXT_WIDTH: float = 590.0
+const DIAGNOSTIC_FONT_SIZE: int = 11
 var _label: Label
 
 func _ready() -> void:
 	theme = LAB_THEME
 	theme_type_variation = "PanelContainer"
 	position = Vector2(34, 72)
-	custom_minimum_size = Vector2(610, 0)
+	custom_minimum_size = PANEL_SIZE
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var margin := MarginContainer.new()
-	for side: String in ["margin_left", "margin_top", "margin_right", "margin_bottom"]:
-		margin.add_theme_constant_override(side, 10)
+	margin.add_theme_constant_override("margin_left", 10)
+	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_right", 10)
+	margin.add_theme_constant_override("margin_bottom", 8)
 	add_child(margin)
 	_label = Label.new()
-	_label.add_theme_font_size_override("font_size", 12)
+	_label.add_theme_font_size_override("font_size", DIAGNOSTIC_FONT_SIZE)
+	_label.custom_minimum_size.x = INNER_TEXT_WIDTH
 	_label.clip_text = true
 	margin.add_child(_label)
 	visible = false
@@ -47,7 +53,7 @@ func toggle() -> void:
 	visible = not visible
 
 func set_safe_margin(value: int) -> void:
-	position = Vector2(value + 10, value + 42)
+	position = calculate_panel_rect(Vector2(960, 540), value).position
 
 func _roman(seat_number: int) -> String:
 	return ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"][seat_number - 1]
@@ -89,7 +95,24 @@ func _history_summary(board_state: BoardState) -> PackedStringArray:
 	var lines := PackedStringArray()
 	for entry: Dictionary in board_state.recent_history(3):
 		var summary: String = entry.summary
-		lines.append("HISTORY r%d  %s" % [entry.revision, summary.left(68)])
+		var line: String = "HISTORY r%d  %s" % [entry.revision, summary]
+		lines.append(ellipsize_to_width(line, INNER_TEXT_WIDTH, ThemeDB.fallback_font, DIAGNOSTIC_FONT_SIZE))
 	if lines.is_empty():
 		lines.append("HISTORY  none")
 	return lines
+
+static func calculate_panel_rect(viewport_size: Vector2, safe_margin: int) -> Rect2:
+	var position := Vector2(safe_margin + 10, safe_margin + 42)
+	return Rect2(position, Vector2(minf(PANEL_SIZE.x, viewport_size.x - position.x - safe_margin - 10), PANEL_SIZE.y))
+
+static func ellipsize_to_width(text: String, max_width: float, font: Font, font_size: int) -> String:
+	if font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x <= max_width:
+		return text
+	const ELLIPSIS: String = "…"
+	var candidate: String = text
+	while not candidate.is_empty():
+		candidate = candidate.left(candidate.length() - 1).rstrip(" ")
+		var result: String = candidate + ELLIPSIS
+		if font.get_string_size(result, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x <= max_width:
+			return result
+	return ELLIPSIS

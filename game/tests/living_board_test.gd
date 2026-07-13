@@ -141,6 +141,16 @@ func _test_visual_contract() -> void:
 	_expect(BoardDebugOverlay.connector_symbol("open") != BoardDebugOverlay.connector_symbol("locked"), "uses distinct connector symbols beyond color")
 	_expect(BoardDebugOverlay.connector_symbol("collapsed") != BoardDebugOverlay.connector_symbol("closed"), "represents collapsed and closed connectors with distinct text cues")
 	_expect(BoardDebugOverlay.space_pattern("hidden") == "diagonal_hatch" and BoardDebugOverlay.space_pattern("hazard") == "warning_chevrons", "declares non-color space patterns for hidden and hazardous state")
+	for safe_margin: int in [0, 24, 48]:
+		var region: Rect2 = BoardDebugOverlay.label_region(Vector2(960, 540), safe_margin)
+		for anchor: Vector2 in [Vector2(-100, -100), Vector2(480, 12), Vector2(1100, 700)]:
+			var center: Vector2 = BoardDebugOverlay.clamp_label_center(anchor, BoardDebugOverlay.SPACE_LABEL_SIZE, Vector2(960, 540), safe_margin)
+			var label_rect := Rect2(center - BoardDebugOverlay.SPACE_LABEL_SIZE * 0.5, BoardDebugOverlay.SPACE_LABEL_SIZE)
+			_expect(region.encloses(label_rect), "clamps named-space labels into the %d px reserved board region" % safe_margin)
+	var long_history := "HISTORY r999  occupancy seat_2:lantern_hall>gate_passage,seat_3:lantern_hall>sealed_archive"
+	var fitted: String = ExplorationDiagnostics.ellipsize_to_width(long_history, 260.0, ThemeDB.fallback_font, ExplorationDiagnostics.DIAGNOSTIC_FONT_SIZE)
+	_expect(fitted.ends_with("…"), "marks width-limited history with an intentional ellipsis")
+	_expect(ThemeDB.fallback_font.get_string_size(fitted, HORIZONTAL_ALIGNMENT_LEFT, -1, ExplorationDiagnostics.DIAGNOSTIC_FONT_SIZE).x <= 260.0, "keeps ellipsized history within its deterministic width")
 
 func _contains_failure(failures: PackedStringArray, fragment: String) -> bool:
 	for failure: String in failures:

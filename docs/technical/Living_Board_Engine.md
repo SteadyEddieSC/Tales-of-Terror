@@ -61,3 +61,5 @@ Snapshots are in-memory test/debug support only. They do not write files and are
 ## Diagnostics and safe frame
 
 The existing diagnostics toggle also controls board-debug visibility. Diagnostics report board ID/version, revision, each pawn's named space, occupancy, connector states, hazards/features, recent history, and the last rejection. The overlay labels spaces and connector states and uses non-color patterns and symbols. Essential status/reset panels continue to recalculate against the active 0–48 px safe margin within the 960×540 logical viewport.
+
+When board debug is visible, redundant legacy room headings are suppressed. Authored space and connector label anchors are transformed into logical screen coordinates and clamped into a reserved region below the fixed top HUD, above the bottom status/reset panels, and inside the active safe frame. Expanded diagnostics use a deterministic 610×324 logical panel; history rows are measured with the active font and receive an explicit ellipsis when they exceed the 590 px inner text width.

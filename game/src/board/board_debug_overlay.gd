@@ -1,9 +1,16 @@
 class_name BoardDebugOverlay
 extends Node2D
 
+const SPACE_LABEL_SIZE: Vector2 = Vector2(340, 46)
+const CONNECTOR_LABEL_SIZE: Vector2 = Vector2(190, 24)
+const LABEL_EDGE_INSET: float = 10.0
+const TOP_HUD_RESERVE: float = 58.0
+const BOTTOM_HUD_RESERVE: float = 72.0
+
 var _definition: BoardDefinition
 var _state: BoardState
 var _tokens: VisualTokens
+var _safe_margin: int = 24
 
 func setup(definition: BoardDefinition, state: BoardState, tokens: VisualTokens) -> void:
 	_definition = definition
@@ -11,6 +18,14 @@ func setup(definition: BoardDefinition, state: BoardState, tokens: VisualTokens)
 	_tokens = tokens
 	_state.state_changed.connect(_on_state_changed)
 	queue_redraw()
+
+func set_safe_margin(value: int) -> void:
+	_safe_margin = clampi(value, 0, 48)
+	queue_redraw()
+
+func _process(_delta: float) -> void:
+	if visible:
+		queue_redraw()
 
 func _draw() -> void:
 	if _definition == null or _state == null or _tokens == null:
@@ -37,7 +52,8 @@ func _draw_space(space: Dictionary, state: Dictionary) -> void:
 		if not blockers.is_empty():
 			draw_line(area.position + Vector2(8, 8), area.end - Vector2(8, 8), _tokens.danger, 6.0)
 			draw_line(Vector2(area.end.x - 8, area.position.y + 8), Vector2(area.position.x + 8, area.end.y - 8), _tokens.danger, 6.0)
-	var center: Vector2 = space.get("label_position", _definition.space_center(space.id))
+	var authored_center: Vector2 = space.get("label_position", _definition.space_center(space.id))
+	var center: Vector2 = _clamped_world_anchor(authored_center, SPACE_LABEL_SIZE)
 	var label: String = "%s  [%s]" % [space.name if revealed else "HIDDEN: %s" % space.name, space.id]
 	draw_string(ThemeDB.fallback_font, center + Vector2(-150, -28), label, HORIZONTAL_ALIGNMENT_CENTER, 300, 15, _tokens.parchment)
 	var state_parts := PackedStringArray()
@@ -71,7 +87,8 @@ func _draw_connector(connector: Dictionary, state: String) -> void:
 		var midpoint: Vector2 = from_center.lerp(to_center, 0.5)
 		draw_line(midpoint - direction.rotated(0.7) * 18.0, midpoint, color, 5.0)
 		draw_line(midpoint - direction.rotated(-0.7) * 18.0, midpoint, color, 5.0)
-	var text_position: Vector2 = from_center.lerp(to_center, 0.5) + Vector2(-95, -12)
+	var label_center: Vector2 = _clamped_world_anchor(from_center.lerp(to_center, 0.5), CONNECTOR_LABEL_SIZE)
+	var text_position: Vector2 = label_center + Vector2(-95, -8)
 	draw_string(ThemeDB.fallback_font, text_position, "%s %s  %s" % [connector_symbol(state), connector.id, state.to_upper()], HORIZONTAL_ALIGNMENT_CENTER, 190, 12, _tokens.parchment)
 
 func _draw_diagonal_hatch(area: Rect2, color: Color) -> void:
@@ -98,6 +115,27 @@ func _draw_dashed(from: Vector2, to: Vector2, color: Color, width: float) -> voi
 
 func _on_state_changed(_change: Dictionary) -> void:
 	queue_redraw()
+
+func _clamped_world_anchor(world_anchor: Vector2, label_size: Vector2) -> Vector2:
+	var canvas_transform: Transform2D = get_viewport().get_canvas_transform()
+	var screen_anchor: Vector2 = canvas_transform * world_anchor
+	var clamped_screen: Vector2 = clamp_label_center(screen_anchor, label_size, Vector2(960, 540), _safe_margin)
+	return canvas_transform.affine_inverse() * clamped_screen
+
+static func label_region(viewport_size: Vector2, safe_margin: int) -> Rect2:
+	var left: float = float(safe_margin) + LABEL_EDGE_INSET
+	var top: float = float(safe_margin) + TOP_HUD_RESERVE
+	var right: float = viewport_size.x - float(safe_margin) - LABEL_EDGE_INSET
+	var bottom: float = viewport_size.y - float(safe_margin) - BOTTOM_HUD_RESERVE
+	return Rect2(Vector2(left, top), Vector2(maxf(0.0, right - left), maxf(0.0, bottom - top)))
+
+static func clamp_label_center(screen_anchor: Vector2, label_size: Vector2, viewport_size: Vector2, safe_margin: int) -> Vector2:
+	var region: Rect2 = label_region(viewport_size, safe_margin)
+	var half_size: Vector2 = label_size * 0.5
+	return Vector2(
+		clampf(screen_anchor.x, region.position.x + half_size.x, region.end.x - half_size.x),
+		clampf(screen_anchor.y, region.position.y + half_size.y, region.end.y - half_size.y)
+	)
 
 static func connector_symbol(state: String) -> String:
 	return {"open": "↔", "closed": "║", "locked": "▣", "collapsed": "✕"}.get(state, "?")
