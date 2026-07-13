@@ -13,6 +13,8 @@ const WALLS: Array[Rect2] = [
 	Rect2(1160, 700, 42, 190), Rect2(1450, 520, 210, 42),
 ]
 
+var _show_authored_headings: bool = true
+
 func _ready() -> void:
 	for wall: Rect2 in WALLS:
 		_add_static_rect(wall)
@@ -27,8 +29,9 @@ func _draw() -> void:
 	for y: int in range(80, 960, 80):
 		draw_line(Vector2(32, y), Vector2(1768, y), Color(0.25, 0.19, 0.29, 0.18), 2.0)
 	draw_rect(Rect2(928, 397, 260, 206), Color("24162a"))
-	draw_string(ThemeDB.fallback_font, Vector2(112, 100), "THE LANTERN HALL", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("d7bd86"))
-	draw_string(ThemeDB.fallback_font, Vector2(1040, 100), "THE NARROW", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("a997ad"))
+	if _show_authored_headings:
+		draw_string(ThemeDB.fallback_font, Vector2(112, 100), "THE LANTERN HALL", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("d7bd86"))
+		draw_string(ThemeDB.fallback_font, Vector2(1040, 100), "THE NARROW", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("a997ad"))
 	for wall: Rect2 in WALLS:
 		draw_rect(wall, Color("33273b"))
 		draw_line(wall.position, Vector2(wall.end.x, wall.position.y), Color("6c5877"), 3.0)
@@ -42,3 +45,7 @@ func _add_static_rect(rect: Rect2) -> void:
 	collision.shape = shape
 	body.add_child(collision)
 	add_child(body)
+
+func set_show_authored_headings(value: bool) -> void:
+	_show_authored_headings = value
+	queue_redraw()

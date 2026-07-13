@@ -19,6 +19,8 @@ These instructions apply to the entire repository.
 - Never commit an asset whose source, license, generator, or derivation is unknown.
 - Keep exploration ownership and deterministic rules in testable models; device IDs belong in input/ownership adapters, not pawn presentation.
 - Resolve simultaneous shared-world interactions deterministically and document the arbitration rule.
+- Treat authored board definitions as immutable inputs; authoritative BoardState mutations and queries must remain scene-independent and testable.
+- Keep board presentation signal-driven. Future turns, cards, Director logic, networking, and companion clients may request or replicate changes but must not mutate board state directly.
 
 ## Validation
 

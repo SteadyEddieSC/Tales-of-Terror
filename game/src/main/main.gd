@@ -1,6 +1,6 @@
 extends Control
 
-const LAB_VERSION: String = "v0.0.4"
+const LAB_VERSION: String = "v0.0.5"
 const RESET_HOLD_SECONDS: float = 1.5
 const SEMANTIC_ACTIONS: PackedStringArray = [
 	"ui_navigate_up", "ui_navigate_down", "ui_navigate_left", "ui_navigate_right",
