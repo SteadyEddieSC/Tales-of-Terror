@@ -106,3 +106,9 @@ Lowest-seat arbitration remains a temporary deterministic conflict rule, not a t
 10. v0.1.0 First Vertical Slice
 
 The detailed scope, exit gates, risks, accessibility baseline, and technical references are retained in the versioned DOCX export.
+
+## Turn, event, and card rules loop
+
+The v0.0.6 rules foundation advances a configurable round-start, player-decision, resolution, event, and cleanup loop. Stable seats make explicit choices, pass, resolve public votes and seeded checks, play authored cards, and retain separate inventory. Every accepted action and consequence is ordered and reproducible.
+
+Authored events and cards are declarative validated inputs. The native `RulesSession` owns rules state, while Living Board changes remain requests to `BoardState`. The provisional host consumes replaceable presentation payloads and never decides rules. Dread Director selection, factions/afterlife, companion-private state, networking, and campaign persistence remain later layers.

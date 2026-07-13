@@ -3,6 +3,7 @@ extends Node
 
 signal interact_requested(device_id: int)
 signal diagnostics_requested(device_id: int)
+signal rules_navigation_requested(device_id: int, direction: int, confirm: bool, cancel: bool)
 
 const MOVEMENT_ACTIONS: PackedStringArray = ["move_left", "move_right", "move_up", "move_down"]
 var _strengths: Dictionary = {}
@@ -17,6 +18,14 @@ func _input(event: InputEvent) -> void:
 		interact_requested.emit(device_id)
 	if event.is_action_pressed("diagnostic_test"):
 		diagnostics_requested.emit(device_id)
+	if event.is_action_pressed("ui_navigate_left"):
+		rules_navigation_requested.emit(device_id, -1, false, false)
+	elif event.is_action_pressed("ui_navigate_right"):
+		rules_navigation_requested.emit(device_id, 1, false, false)
+	elif event.is_action_pressed("ui_confirm"):
+		rules_navigation_requested.emit(device_id, 0, true, false)
+	elif event.is_action_pressed("ui_cancel_action"):
+		rules_navigation_requested.emit(device_id, 0, false, true)
 
 func get_movement_vector(device_id: int) -> Vector2:
 	if not _strengths.has(device_id):

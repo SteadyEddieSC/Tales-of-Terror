@@ -1,6 +1,6 @@
 extends Control
 
-const LAB_VERSION: String = "v0.0.5"
+const LAB_VERSION: String = "v0.0.6"
 const RESET_HOLD_SECONDS: float = 1.5
 const SEMANTIC_ACTIONS: PackedStringArray = [
 	"ui_navigate_up", "ui_navigate_down", "ui_navigate_left", "ui_navigate_right",
@@ -22,6 +22,7 @@ func _ready() -> void:
 	add_child(_input_router)
 	_input_router.interact_requested.connect(_on_interact_requested)
 	_input_router.diagnostics_requested.connect(_on_diagnostics_requested)
+	_input_router.rules_navigation_requested.connect(_on_rules_navigation_requested)
 	_ui = InputDisplayLab.new()
 	add_child(_ui)
 	_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -97,6 +98,10 @@ func _on_interact_requested(device_id: int) -> void:
 func _on_diagnostics_requested(_device_id: int) -> void:
 	if is_instance_valid(_sandbox):
 		_sandbox.toggle_diagnostics()
+
+func _on_rules_navigation_requested(device_id: int, direction: int, confirm: bool, cancel: bool) -> void:
+	if is_instance_valid(_sandbox):
+		_sandbox.request_rules_navigation(device_id, direction, confirm, cancel)
 
 func _on_device_connected(device_id: int, identity: String) -> void:
 	_seats.reconnect_device(device_id, identity, _devices.get_display_name(device_id))

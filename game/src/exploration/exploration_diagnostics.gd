@@ -26,7 +26,7 @@ func _ready() -> void:
 	margin.add_child(_label)
 	visible = false
 
-func update_snapshot(pawns: Array[PawnState], camera: SharedCameraCoordinator, board_state: BoardState = null) -> void:
+func update_snapshot(pawns: Array[PawnState], camera: SharedCameraCoordinator, board_state: BoardState = null, rules_session: RulesSession = null) -> void:
 	var lines: PackedStringArray = [
 		"EXPLORATION DIAGNOSTICS",
 		"Camera target %s  zoom %.2f  %s" % [camera.target_position.round(), camera.target_zoom, SharedCameraPolicy.state_label(camera.separation_state)],
@@ -47,6 +47,12 @@ func update_snapshot(pawns: Array[PawnState], camera: SharedCameraCoordinator, b
 		for history_line: String in _history_summary(board_state):
 			lines.append(history_line)
 		lines.append("LAST REJECTION  %s" % board_state.last_rejection)
+	if rules_session != null:
+		var rules: Dictionary = rules_session.diagnostics_snapshot()
+		lines.append("RULES %s  SEED %d/#%d  ROUND %d %s r%d" % [rules.session, rules.seed, rules.rng_counter, rules.round, rules.phase, rules.phase_revision])
+		lines.append("READY %s PASS %s  EVENT %s  QUEUE %s" % [rules.ready, rules.passed, rules.current_event, rules.event_queue])
+		lines.append("CARDS deck=%d discard=%d exhaust=%d  INVENTORY %s" % [rules.deck, rules.discard, rules.exhausted, rules.inventory])
+		lines.append("PROMPT %s  VOTE %s  CHECK %s" % [rules.prompt.get("id", "—"), rules.vote.get("id", "—"), rules.check.get("outcome", "—")])
 	_label.text = "\n".join(lines)
 
 func toggle() -> void:

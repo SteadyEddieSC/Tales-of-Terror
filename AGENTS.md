@@ -21,6 +21,9 @@ These instructions apply to the entire repository.
 - Resolve simultaneous shared-world interactions deterministically and document the arbitration rule.
 - Treat authored board definitions as immutable inputs; authoritative BoardState mutations and queries must remain scene-independent and testable.
 - Keep board presentation signal-driven. Future turns, cards, Director logic, networking, and companion clients may request or replicate changes but must not mutate board state directly.
+- Keep authored rules content declarative and validated; generic rules and presentation paths must never branch on stable event or card IDs.
+- Treat `RulesSession` as the scene-independent authority for phases, prompts, seeded randomness, events, card zones, inventory, votes, consequences, and ordered rules history.
+- Validate complete consequence bundles before committing them; board effects must request mutations from `BoardState`.
 
 ## Validation
 
