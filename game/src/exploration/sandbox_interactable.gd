@@ -35,14 +35,17 @@ func set_focused(seat_number: int) -> void:
 	queue_redraw()
 
 func interact(seat_number: int) -> String:
-	active = not active
+	set_active(not active)
 	last_actor = seat_number
-	if _door_collision != null:
-		_door_collision.set_deferred("disabled", active)
-	queue_redraw()
 	if kind == Kind.DOOR:
 		return "IRON GATE %s BY SEAT %s" % ["OPENED" if active else "CLOSED", _roman(seat_number)]
 	return "CLUE %s BY SEAT %s" % ["REVEALED" if active else "VEILED", _roman(seat_number)]
+
+func set_active(value: bool) -> void:
+	active = value
+	if _door_collision != null:
+		_door_collision.set_deferred("disabled", active)
+	queue_redraw()
 
 func _draw() -> void:
 	if _tokens == null:

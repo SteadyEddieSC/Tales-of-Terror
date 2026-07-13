@@ -5,6 +5,10 @@ signal interaction_resolved(message: String)
 
 var _interactables: Dictionary = {}
 var _pending: Array[Dictionary] = []
+var _resolution_handler: Callable
+
+func set_resolution_handler(handler: Callable) -> void:
+	_resolution_handler = handler
 
 func register(interactable: SandboxInteractable) -> void:
 	_interactables[interactable.interaction_id] = interactable
@@ -38,7 +42,12 @@ func resolve_pending() -> void:
 	for winner: Dictionary in InteractionResolver.resolve_requests(_pending):
 		var interactable: SandboxInteractable = _interactables.get(winner.interactable_id) as SandboxInteractable
 		if interactable != null:
-			interaction_resolved.emit(interactable.interact(winner.seat_number))
+			var message: String = ""
+			if _resolution_handler.is_valid():
+				message = _resolution_handler.call(winner.interactable_id, winner.seat_number)
+			if message.is_empty():
+				message = interactable.interact(winner.seat_number)
+			interaction_resolved.emit(message)
 	_pending.clear()
 
 func get_interactable(interactable_id: String) -> SandboxInteractable:

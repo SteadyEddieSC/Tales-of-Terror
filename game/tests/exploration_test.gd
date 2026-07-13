@@ -80,6 +80,9 @@ func _test_interactions() -> void:
 
 func _test_bottom_hud_layout() -> void:
 	for safe_margin: int in [0, 24, 48]:
+		var top_layout: Dictionary = ExplorationSandbox.calculate_top_hud_layout(Vector2(960, 540), safe_margin)
+		_expect((top_layout.safe as Rect2).encloses(top_layout.title), "keeps the title inside the %d px safe frame" % safe_margin)
+		_expect((top_layout.safe as Rect2).encloses(top_layout.separation), "keeps the separation status inside the %d px safe frame" % safe_margin)
 		var layout: Dictionary = ExplorationSandbox.calculate_bottom_hud_layout(Vector2(960, 540), safe_margin)
 		var safe_rect: Rect2 = layout.safe
 		var status_rect: Rect2 = layout.status

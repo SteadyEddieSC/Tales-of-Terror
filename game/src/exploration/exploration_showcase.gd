@@ -16,3 +16,5 @@ func _ready() -> void:
 		})
 	sandbox.sync_seats(seats)
 	sandbox.enable_showcase()
+	if OS.get_cmdline_user_args().has("--diagnostics"):
+		sandbox.toggle_diagnostics()

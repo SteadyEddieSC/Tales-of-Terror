@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.0.5 — Living Board Engine
+
+- Added a validated authored board definition mapping the exploration room into five named spaces and five connectors.
+- Added authoritative occupancy, reveal, hazard, feature, blocker, connector, revision, and mutation-history state.
+- Added deterministic traversability, reachability, shortest-path, crossing, connectivity-impact, and simultaneous-arbitration queries.
+- Added atomic living-board mutations and versioned JSON-compatible in-memory snapshot restoration.
+- Added signal-driven board-debug presentation, expanded diagnostics, comprehensive regression tests, and pinned CI coverage.
+
 ## v0.0.4 — Shared Exploration Sandbox
 
 - Added an authored collision-aware exploration room and one to eight seat-owned pawns.

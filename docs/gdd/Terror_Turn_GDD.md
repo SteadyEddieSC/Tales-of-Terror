@@ -84,6 +84,14 @@ The default camera frames the full active group and adjusts zoom inside authored
 
 Nearby interactions use a reusable focus/request contract. Until a later turn or initiative system exists, simultaneous requests for the same prop resolve to the lowest seat number; distinct props may resolve together.
 
+## Living Board foundation
+
+The v0.0.5 Living Board Engine maps continuous exploration into authored named spaces and typed connectors. Rules reason about stable board IDs, regions, occupancy, reveal state, hazards, features, blockers, and traversability while pawns continue moving smoothly inside those regions. Shared boundaries resolve deterministically and positions outside every authored region remain explicit.
+
+Board definitions are immutable scenario inputs. The native Godot host owns mutable `BoardState`, validates every mutation before application, increments an auditable revision/history only for accepted changes, and can round-trip a versioned in-memory debug snapshot. Presentation follows emitted changes and supplements color with names, symbols, patterns, outlines, and Roman numeral occupancy.
+
+Lowest-seat arbitration remains a temporary deterministic conflict rule, not a turn or initiative system. Future turns, cards, events, Director requests, companions, and networking must request or replicate authoritative mutations rather than directly editing board data.
+
 ## First ten releases
 
 1. v0.0.1 Foundation

@@ -12,9 +12,13 @@ var pawn_registry := PawnRegistry.new()
 var _pawn_nodes: Dictionary = {}
 var _input_router: PlayerInputRouter
 var _room: ExplorationRoom
+var _board_definition: BoardDefinition
+var _board_state: BoardState
+var _board_overlay: BoardDebugOverlay
 var _camera: SharedCameraCoordinator
 var _interactions: InteractionCoordinator
 var _diagnostics: ExplorationDiagnostics
+var _title_label: Label
 var _message_label: Label
 var _separation_label: Label
 var _reset_label: Label
@@ -30,8 +34,17 @@ func setup(input_router: PlayerInputRouter) -> void:
 func _ready() -> void:
 	_room = ExplorationRoom.new()
 	add_child(_room)
+	_board_definition = LanternHouseBoardDefinition.new()
+	_board_state = BoardState.new(_board_definition)
+	_board_state.state_changed.connect(_on_board_state_changed)
+	_board_state.mutation_rejected.connect(_on_board_mutation_rejected)
+	_board_overlay = BoardDebugOverlay.new()
+	_board_overlay.setup(_board_definition, _board_state, TOKENS)
+	_board_overlay.visible = false
+	add_child(_board_overlay)
 	_interactions = InteractionCoordinator.new()
 	add_child(_interactions)
+	_interactions.set_resolution_handler(_resolve_board_interaction)
 	_interactions.interaction_resolved.connect(_on_interaction_resolved)
 	_add_interactable("iron_gate", SandboxInteractable.Kind.DOOR, Vector2(910, 500))
 	_add_interactable("clue_pedestal", SandboxInteractable.Kind.CLUE, Vector2(650, 585))
@@ -54,16 +67,20 @@ func sync_seats(seats: Array[Dictionary]) -> void:
 		if not active_seats.has(seat_number):
 			(_pawn_nodes[seat_number] as ExplorationPawn).queue_free()
 			_pawn_nodes.erase(seat_number)
+	_board_state.sync_occupancy(pawn_registry.get_pawns())
 
 func request_interaction(device_id: int) -> bool:
 	return _interactions.request(pawn_registry.get_by_device(device_id))
 
 func toggle_diagnostics() -> void:
 	_diagnostics.toggle()
+	_board_overlay.visible = _diagnostics.visible
 
 func set_safe_margin(value: int) -> void:
 	_safe_margin = clampi(value, 0, 48)
 	_safe_overlay.set_frame_margin(_safe_margin)
+	_diagnostics.set_safe_margin(_safe_margin)
+	_layout_top_hud()
 	_layout_bottom_hud()
 
 func present_reset_progress(progress: float) -> void:
@@ -71,15 +88,20 @@ func present_reset_progress(progress: float) -> void:
 
 func enable_showcase() -> void:
 	_showcase_mode = true
-	var showcase_positions: Array[Vector2] = [Vector2(600, 540), Vector2(680, 520), Vector2(850, 490), Vector2(1200, 500)]
+	var showcase_positions: Array[Vector2] = [Vector2(250, 540), Vector2(1030, 500), Vector2(1300, 350), Vector2(1600, 630)]
 	for index: int in mini(showcase_positions.size(), pawn_registry.get_pawns().size()):
 		var pawn: PawnState = pawn_registry.get_pawns()[index]
 		pawn.position = showcase_positions[index]
 		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).global_position = pawn.position
-	_interactions.get_interactable("iron_gate").interact(2)
-	_interactions.get_interactable("clue_pedestal").interact(1)
-	_message_label.text = "CLUE REVEALED • IRON GATE OPEN • LOWEST SEAT WINS CONFLICTS"
-	_diagnostics.visible = true
+	_board_state.apply_mutation(BoardMutation.reveal_space("sealed_archive"))
+	_board_state.apply_mutation(BoardMutation.connector("hall_gate", "open"))
+	_board_state.apply_mutation(BoardMutation.connector("archive_route", "collapsed"))
+	_board_state.apply_mutation(BoardMutation.hazard("narrow_gallery", "echo_mist", true))
+	_board_state.apply_mutation(BoardMutation.feature("sealed_archive", "blood_key", true))
+	_board_state.sync_occupancy(pawn_registry.get_pawns())
+	_message_label.text = "BOARD r%d  •  REVEAL  •  GATE OPEN  •  ROUTE ✕  •  HAZARD !  •  KEY ◆" % _board_state.revision
+	_diagnostics.visible = false
+	_board_overlay.visible = true
 
 func _physics_process(delta: float) -> void:
 	var pawns: Array[PawnState] = pawn_registry.get_pawns()
@@ -95,6 +117,7 @@ func _physics_process(delta: float) -> void:
 			raw_input = _input_router.get_movement_vector(pawn.device_id)
 		var resistance: float = SharedCameraPolicy.movement_resistance(pawn.position, raw_input, group_center)
 		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).apply_movement(raw_input, resistance, delta, ExplorationRoom.BOUNDS)
+	_board_state.sync_occupancy(pawns)
 	_interactions.update_focus(pawns)
 	for pawn: PawnState in pawns:
 		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).set_interaction_focus(pawn.nearby_interactable != "—")
@@ -102,7 +125,7 @@ func _physics_process(delta: float) -> void:
 	_camera.update_group(pawns, delta)
 	_separation_label.text = SharedCameraPolicy.state_label(_camera.separation_state)
 	_separation_label.modulate = TOKENS.danger if _camera.separation_state == SharedCameraPolicy.SeparationState.REGROUP else TOKENS.warning
-	_diagnostics.update_snapshot(pawns, _camera)
+	_diagnostics.update_snapshot(pawns, _camera, _board_state)
 
 func _add_interactable(id: String, kind: SandboxInteractable.Kind, world_position: Vector2) -> void:
 	var interactable := SandboxInteractable.new()
@@ -117,11 +140,11 @@ func _build_hud() -> void:
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.theme = LAB_THEME
 	layer.add_child(root)
-	var title := Label.new()
-	title.text = "SHARED EXPLORATION SANDBOX  •  v0.0.4"
-	title.theme_type_variation = "SectionTitle"
-	title.position = Vector2(34, 28)
-	root.add_child(title)
+	_title_label = Label.new()
+	_title_label.text = "LIVING BOARD ENGINE  •  v0.0.5"
+	_title_label.theme_type_variation = "SectionTitle"
+	_title_label.size = Vector2(540, 30)
+	root.add_child(_title_label)
 	_separation_label = Label.new()
 	_separation_label.text = "TOGETHER"
 	_separation_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -154,11 +177,29 @@ func _build_hud() -> void:
 	present_reset_progress(0.0)
 	_diagnostics = ExplorationDiagnostics.new()
 	root.add_child(_diagnostics)
+	_diagnostics.set_safe_margin(_safe_margin)
 	_safe_overlay = SafeAreaOverlay.new()
 	_safe_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_safe_overlay.frame_color = TOKENS.warning
 	root.add_child(_safe_overlay)
+	_layout_top_hud()
 	_layout_bottom_hud()
+
+func _layout_top_hud() -> void:
+	if not is_instance_valid(_title_label) or not is_instance_valid(_separation_label):
+		return
+	var layout: Dictionary = calculate_top_hud_layout(Vector2(960, 540), _safe_margin)
+	_title_label.position = (layout.title as Rect2).position
+	_separation_label.position = (layout.separation as Rect2).position
+
+static func calculate_top_hud_layout(viewport_size: Vector2, safe_margin: int) -> Dictionary:
+	var left: float = float(safe_margin) + HUD_EDGE_INSET
+	var top: float = float(safe_margin) + 4.0
+	return {
+		"safe": Rect2(Vector2(safe_margin, safe_margin), viewport_size - Vector2(safe_margin, safe_margin) * 2.0),
+		"title": Rect2(Vector2(left, top), Vector2(540, 30)),
+		"separation": Rect2(Vector2(viewport_size.x - left - 276.0, top), Vector2(276, 30)),
+	}
 
 func _layout_bottom_hud() -> void:
 	if not is_instance_valid(_status_panel) or not is_instance_valid(_reset_panel):
@@ -186,3 +227,31 @@ static func calculate_bottom_hud_layout(viewport_size: Vector2, safe_margin: int
 
 func _on_interaction_resolved(message: String) -> void:
 	_message_label.text = message
+
+func _resolve_board_interaction(interactable_id: String, seat_number: int) -> String:
+	var mutation: Dictionary
+	if interactable_id == "iron_gate":
+		var next_state: String = "closed" if _board_state.get_connector_state("hall_gate") == "open" else "open"
+		mutation = BoardMutation.connector("hall_gate", next_state)
+	elif interactable_id == "clue_pedestal":
+		var clue_active: bool = _board_state.get_space_state("lantern_hall").features.has("clue_revealed")
+		mutation = BoardMutation.feature("lantern_hall", "clue_revealed", not clue_active)
+	else:
+		return ""
+	var result: Dictionary = _board_state.apply_mutation(mutation, seat_number)
+	if not result.accepted:
+		return "BOARD MUTATION REJECTED: %s" % result.reason
+	return "BOARD r%d  •  %s" % [_board_state.revision, _board_state.get_history()[-1].summary.to_upper()]
+
+func _on_board_state_changed(_change: Dictionary) -> void:
+	if not is_instance_valid(_interactions):
+		return
+	var gate: SandboxInteractable = _interactions.get_interactable("iron_gate")
+	if gate != null:
+		gate.set_active(_board_state.get_connector_state("hall_gate") == "open")
+	var clue: SandboxInteractable = _interactions.get_interactable("clue_pedestal")
+	if clue != null:
+		clue.set_active(_board_state.get_space_state("lantern_hall").features.has("clue_revealed"))
+
+func _on_board_mutation_rejected(reason: String) -> void:
+	_message_label.text = "BOARD MUTATION REJECTED  •  %s" % reason.to_upper()
