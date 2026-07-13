@@ -4,6 +4,8 @@
 
 `LanternHouseDirectorContent` supplies reviewed profiles and candidates to the generic `DirectorContent` validator. `DirectorTelemetry` builds a read-only JSON-compatible copy from authoritative local rules and board state. `DirectorRuntime` evaluates that copy, records complete score/rejection detail, and returns a proposal. It cannot call rules or board mutation APIs.
 
+When a `RoleSession` is supplied, telemetry may additionally copy only the social mode's allowlisted public/revealed counts and aggregates. It never receives hidden role/form/faction identities, private objectives, secret targets/messages, or future transitions. Different unrevealed assignments therefore produce identical social telemetry and Director decisions.
+
 `DirectorProposalApplier` is the only integration boundary:
 
 - `queue_event` and `rules_effects` call public `RulesSession` validation/transaction methods.

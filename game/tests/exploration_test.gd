@@ -79,6 +79,7 @@ func _test_interactions() -> void:
 	_expect(winners.any(func(request: Dictionary) -> bool: return request.interactable_id == "door" and request.seat_number == 2), "resolves simultaneous conflicts to the lowest seat number")
 
 func _test_bottom_hud_layout() -> void:
+	_expect(ExplorationSandbox.HUD_CANVAS_LAYER >= 10, "keeps the HUD above pawn and board presentation")
 	for safe_margin: int in [0, 24, 48]:
 		var top_layout: Dictionary = ExplorationSandbox.calculate_top_hud_layout(Vector2(960, 540), safe_margin)
 		_expect((top_layout.safe as Rect2).encloses(top_layout.title), "keeps the title inside the %d px safe frame" % safe_margin)

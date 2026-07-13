@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.8 - Roles, Factions & Afterlife
+
+- Added scene-independent deterministic social-role authority, stable-seat secrets, isolated role RNG, validated declarative factions/forms/modes/objectives/actions/transitions, atomic cross-authority proposals, snapshots, and mixed outcomes.
+- Added public/seat/faction/diagnostics privacy contracts, recursive leak evaluation, authorized Director aggregates, controlled private reveal, meaningful Restless/guardian/replacement paths, Social Horror Lab evidence stages, comprehensive tests, and 157 deterministic 1–8 player simulations.
+- Added ADR-0018 plus social architecture, schema, privacy, outcome, simulation, GDD, and release documentation.
+
 ## v0.0.7 - Dread Director
 
 - Added a local deterministic authored pacing Director with read-only telemetry, isolated RNG, explainable scoring, fairness/mercy/cooldown/pressure guardrails, proposal authority boundaries, snapshots, and bounded audit history.

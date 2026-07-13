@@ -43,3 +43,7 @@ jobs:
         run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/dread_director_test.gd
       - name: Dread Director multi-seed simulation
         run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/director_simulation_test.gd
+      - name: Roles, Factions and Afterlife tests
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/role_session_test.gd
+      - name: Social privacy and 1-8 player simulation
+        run: Godot_v4.7-stable_linux.x86_64 --headless --path game --script res://tests/social_simulation_test.gd

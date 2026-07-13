@@ -7,6 +7,7 @@ const HUD_EDGE_INSET: float = 10.0
 const HUD_REGION_HEIGHT: float = 52.0
 const HUD_REGION_GAP: float = 16.0
 const RESET_REGION_WIDTH: float = 324.0
+const HUD_CANVAS_LAYER: int = 10
 
 var pawn_registry := PawnRegistry.new()
 var _pawn_nodes: Dictionary = {}
@@ -23,6 +24,11 @@ var _director_runtime: DirectorRuntime
 var _director_hud: DirectorHud
 var _director_diagnostics: DirectorDiagnostics
 var _director_decision: Dictionary = {}
+var _social_content: LanternHouseSocialContent
+var _role_session: RoleSession
+var _role_hud: RoleHud
+var _role_diagnostics: RoleDiagnostics
+var _social_showcase_active: bool = false
 var _camera: SharedCameraCoordinator
 var _interactions: InteractionCoordinator
 var _diagnostics: ExplorationDiagnostics
@@ -81,6 +87,10 @@ func sync_seats(seats: Array[Dictionary]) -> void:
 	_sync_rules_seats()
 
 func request_rules_navigation(device_id: int, direction: int, confirm: bool, cancel: bool) -> bool:
+	if _social_showcase_active and _role_session != null and is_instance_valid(_role_hud):
+		var social_pawn: PawnState = pawn_registry.get_by_device(device_id)
+		if social_pawn != null and _role_hud.handle_private_input(_role_session, social_pawn.seat_number, confirm, cancel):
+			return true
 	if _rules_session == null or not is_instance_valid(_rules_hud):
 		return false
 	var pawn: PawnState = pawn_registry.get_by_device(device_id)
@@ -92,6 +102,11 @@ func request_interaction(device_id: int) -> bool:
 	return _interactions.request(pawn_registry.get_by_device(device_id))
 
 func toggle_diagnostics() -> void:
+	if _social_showcase_active and is_instance_valid(_role_diagnostics):
+		_role_diagnostics.visible = not _role_diagnostics.visible
+		if is_instance_valid(_role_hud):
+			_role_hud.visible = not _role_diagnostics.visible
+		return
 	if is_instance_valid(_director_diagnostics) and not _director_decision.is_empty():
 		_director_diagnostics.toggle()
 		if is_instance_valid(_director_hud):
@@ -115,6 +130,10 @@ func set_safe_margin(value: int) -> void:
 		_director_hud.set_safe_margin(_safe_margin)
 	if is_instance_valid(_director_diagnostics):
 		_director_diagnostics.set_safe_margin(_safe_margin)
+	if is_instance_valid(_role_hud):
+		_role_hud.set_safe_margin(_safe_margin)
+	if is_instance_valid(_role_diagnostics):
+		_role_diagnostics.set_safe_margin(_safe_margin)
 	_layout_top_hud()
 	_layout_bottom_hud()
 
@@ -130,7 +149,7 @@ func enable_showcase(stage: String = "terminal") -> void:
 		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).global_position = pawn.position
 	_board_state.sync_occupancy(pawn_registry.get_pawns())
 	_run_rules_showcase(stage)
-	if not stage.begins_with("director_"):
+	if not stage.begins_with("director_") and not stage.begins_with("social_"):
 		_message_label.text = "EVIDENCE: %s  •  PROMPT ◉  •  CHECK ⚄  •  CARD ◫  •  VOTE ◈  •  BOARD r%d" % [stage.to_upper(), _board_state.revision]
 	_diagnostics.visible = false
 	_board_overlay.visible = false
@@ -168,6 +187,7 @@ func _add_interactable(id: String, kind: SandboxInteractable.Kind, world_positio
 
 func _build_hud() -> void:
 	var layer := CanvasLayer.new()
+	layer.layer = HUD_CANVAS_LAYER
 	add_child(layer)
 	var root := Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -175,7 +195,7 @@ func _build_hud() -> void:
 	layer.add_child(root)
 	_hud_root = root
 	_title_label = Label.new()
-	_title_label.text = "LANTERN HOUSE DIRECTOR LAB  •  v0.0.7"
+	_title_label.text = "LANTERN HOUSE SOCIAL HORROR LAB  •  v0.0.8"
 	_title_label.theme_type_variation = "SectionTitle"
 	_title_label.size = Vector2(540, 30)
 	root.add_child(_title_label)
@@ -218,6 +238,12 @@ func _build_hud() -> void:
 	_director_diagnostics = DirectorDiagnostics.new()
 	root.add_child(_director_diagnostics)
 	_director_diagnostics.set_safe_margin(_safe_margin)
+	_role_hud = RoleHud.new()
+	root.add_child(_role_hud)
+	_role_hud.set_safe_margin(_safe_margin)
+	_role_diagnostics = RoleDiagnostics.new()
+	root.add_child(_role_diagnostics)
+	_role_diagnostics.set_safe_margin(_safe_margin)
 	_safe_overlay = SafeAreaOverlay.new()
 	_safe_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_safe_overlay.frame_color = TOKENS.warning
@@ -238,6 +264,8 @@ func _sync_rules_seats() -> void:
 		_rules_session = RulesSession.new(_rules_content, _board_state, 4706, current)
 		_director_content = LanternHouseDirectorContent.new()
 		_director_runtime = DirectorRuntime.new(_director_content, "standard", _rules_session.seed, _rules_content, _board_definition)
+		_social_content = LanternHouseSocialContent.new()
+		_role_session = RoleSession.new(_social_content, "cooperative", _rules_session.seed, current)
 		_ensure_rules_hud()
 	else:
 		for seat_number: int in _rules_session.participating_seats:
@@ -247,6 +275,10 @@ func _sync_rules_seats() -> void:
 		for seat_number: int in current:
 			if not _rules_session.participating_seats.has(seat_number) and not _rules_session.pending_late_seats.has(seat_number):
 				_rules_session.request_late_join(seat_number)
+			if _role_session != null and _role_session.seat_states.has(seat_number):
+				var current_pawn: PawnState = pawn_registry.get_by_seat(seat_number)
+				if current_pawn != null and _role_session.seat_states[seat_number].connected != current_pawn.connected:
+					_role_session.set_seat_connected(seat_number, current_pawn.connected)
 	if is_instance_valid(_rules_hud):
 		_rules_hud.refresh()
 
@@ -260,6 +292,9 @@ func _ensure_rules_hud() -> void:
 
 func _run_rules_showcase(stage: String = "terminal") -> void:
 	if _rules_session == null:
+		return
+	if stage.begins_with("social_"):
+		_run_social_showcase(stage)
 		return
 	if stage.begins_with("director_"):
 		_run_director_showcase(stage.trim_prefix("director_"))
@@ -341,6 +376,66 @@ func _run_director_showcase(trajectory: String) -> void:
 	_director_diagnostics.visible = trajectory == "diagnostics"
 	_director_hud.visible = trajectory != "diagnostics"
 	_message_label.text = "EVIDENCE: %s GROUP  •  LOCAL + DETERMINISTIC  •  CORE RNG #%d UNCHANGED" % [trajectory.to_upper(), core_rng_before]
+
+func _run_social_showcase(stage: String) -> void:
+	if _social_content == null:
+		_social_content = LanternHouseSocialContent.new()
+	var fixture: Dictionary = _social_content.fixture_by_stage(stage)
+	if fixture.is_empty():
+		fixture = _social_content.fixtures[0].duplicate(true)
+	var fixture_seats: Array[int] = []
+	for seat_number: int in range(1, fixture.seat_count + 1):
+		fixture_seats.append(seat_number)
+	_role_session = RoleSession.new(_social_content, fixture.mode_id, _rules_session.seed, fixture_seats)
+	for operation: Dictionary in fixture.get("operations", []):
+		_apply_social_fixture_operation(operation)
+	for child: Node in get_children():
+		if child is ExplorationRoom or child is ExplorationPawn or child is SandboxInteractable:
+			(child as CanvasItem).visible = false
+	var view_spec: Dictionary = fixture.view.duplicate(true)
+	if view_spec.get("kind", "") == "seat_private":
+		view_spec["seat"] = _fixture_select_seat(view_spec.get("selector_tag", ""), 0, [])
+	_social_showcase_active = true
+	if is_instance_valid(_rules_hud): _rules_hud.visible = false
+	if is_instance_valid(_director_hud): _director_hud.visible = false
+	if is_instance_valid(_director_diagnostics): _director_diagnostics.visible = false
+	if view_spec.get("kind", "") == "diagnostics":
+		_role_hud.visible = false
+		_role_diagnostics.present(_role_session)
+	else:
+		_role_diagnostics.visible = false
+		_role_hud.present(_role_session, view_spec)
+	_message_label.text = "EVIDENCE: %s  •  DATA-DRIVEN SOCIAL AUTHORITY  •  ROLE RNG #%d  •  PUBLIC/PRIVATE CONTRACT" % [view_spec.get("title", "SOCIAL STATE"), _role_session.rng.counter]
+
+func _apply_social_fixture_operation(operation: Dictionary) -> void:
+	match operation.get("type", ""):
+		"transition":
+			var seat: int = _fixture_select_seat(operation.get("selector_tag", ""), operation.get("seat", 0), [])
+			if seat > 0:
+				_role_session.request_transition_by_trigger(seat, operation.get("trigger", ""), _rules_session, _board_state)
+		"action":
+			var actor: int = _fixture_select_seat(operation.get("selector_tag", ""), operation.get("seat", 0), [])
+			var targets: Array[int] = []
+			var target_tag: String = operation.get("target_selector_tag", "")
+			if not target_tag.is_empty():
+				var target: int = _fixture_select_seat(target_tag, operation.get("target_seat", 0), [actor])
+				if target > 0: targets.append(target)
+			if actor > 0:
+				_role_session.perform_action_by_tag(actor, operation.get("action_tag", ""), targets, _rules_session, _board_state)
+		"connection_cycle":
+			var seat: int = _fixture_select_seat(operation.get("selector_tag", ""), operation.get("seat", 0), [])
+			if seat > 0:
+				_role_session.set_seat_connected(seat, false)
+				_role_session.set_seat_connected(seat, true)
+		"rules_effects":
+			_rules_session.apply_effect_bundle(operation.get("effects", []), 0, "social_fixture")
+		"resolve_outcomes":
+			_role_session.resolve_outcomes(_rules_session, _board_state)
+
+func _fixture_select_seat(selector_tag: String, explicit_seat: int, excluded: Array[int]) -> int:
+	if explicit_seat > 0 and _role_session.seat_states.has(explicit_seat) and not excluded.has(explicit_seat):
+		return explicit_seat
+	return _role_session.seat_with_tag(selector_tag, excluded)
 
 func _layout_top_hud() -> void:
 	if not is_instance_valid(_title_label) or not is_instance_valid(_separation_label):

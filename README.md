@@ -6,10 +6,10 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 
 ## Current priorities
 
-1. Establish the Godot 4.7 project and controller/display foundation.
-2. Lock the visual language between the approved haunted-board concept and an original inked storybook-horror style.
-3. Build reusable board, scenario, event, faction, afterlife, and Director systems before content volume.
-4. Add Cloudflare companion rooms only after the local game foundation is stable.
+1. Preserve the Godot 4.7 controller/display, visual, exploration, Living Board, rules, Director, and social-role foundations.
+2. Prove cooperative, betrayal, Horror, Changed, Restless, reconnect, and mixed-outcome play before production content volume.
+3. Keep private views transport-neutral and authority-safe for the later companion prototype.
+4. Add Cloudflare companion rooms only after the local gameplay and privacy contracts remain stable.
 
 ## Foundation decisions
 

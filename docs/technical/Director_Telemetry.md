@@ -22,6 +22,9 @@ Telemetry is a short-lived read-only snapshot derived from local `RulesSession` 
 | `active_seats` | seat-number list | Connected participating seats |
 | `disconnected_seats` | seat-number list | Reserved participating seats; never negative targets |
 | `reserved_seat_count` | 0–8 | Size of disconnected list |
-| `future_balance_signal` | 0–100 | Neutral `50` hook only; factions are not implemented |
+| `future_balance_signal` | 0–100 | Neutral 50 plus bounded revealed-only social imbalance; unrevealed assignments cannot change it |
+| `social_signals` | allowlisted integer map | Public/revealed or aggregate values copied from `RoleSession`; empty before social authority is supplied |
 
 The snapshot is diagnostic state, so stable internal IDs may appear there. Player presentation resolves authored friendly names and hides these metrics.
+
+Social signal keys are limited to revealed faction count, public hostility, defeated count, Restless count, public conversion pressure, revealed imbalance, social-choice pressure, and afterlife-support availability. Role/form/faction/objective IDs, private targets/messages, and planned transitions are never present.

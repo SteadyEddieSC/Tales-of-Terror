@@ -27,6 +27,10 @@ These instructions apply to the entire repository.
 - Keep Director profiles and candidates declarative and validated; generic Director runtime and presentation paths must never branch on stable candidate IDs.
 - Derive Director telemetry read-only from authoritative local state, and keep the salted Director RNG isolated from rules/deck/check RNG.
 - Treat Director output as proposals only; rules and board work must cross public `RulesSession` and `BoardState` validation boundaries before Director state records acceptance.
+- Treat `RoleSession` as the scene-independent authority for stable-seat roles/forms, factions, reveal/lifecycle state, private objectives/actions, bounded social resources, transitions, outcomes, role RNG, and social audit history.
+- Keep role assignment RNG isolated from RulesSession and Director streams; invalid social content, plans, transitions, and actions must consume no role RNG.
+- Generate public, seat-private, faction-private, and spoiler-diagnostics social views independently; public histories, errors, host payloads, and Director signals must never expose unrevealed social data.
+- Keep generic social runtime and presentation free of literal role, faction, form, objective, and fixture ID branches; authored social work must cross public RulesSession and BoardState proposal boundaries.
 
 ## Validation
 
