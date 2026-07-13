@@ -17,6 +17,10 @@ node_modules/
 .env
 .env.*
 !.env.example
+/services/room-service/dist/
+/web/companion/dist/
+/output/
+/.playwright-cli/
 
 # OS / editors
 .DS_Store

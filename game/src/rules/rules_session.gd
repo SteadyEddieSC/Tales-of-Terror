@@ -81,6 +81,63 @@ func initialize(p_content: RulesContent, p_board_state: BoardState, p_seed: int,
 func current_phase() -> String:
 	return content.phases[phase_index] if content != null and phase_index < content.phases.size() else ""
 
+func authority_revision() -> int:
+	return _history_sequence
+
+func companion_public_view() -> Dictionary:
+	var prompt_view: Dictionary = {}
+	if not pending_prompt.is_empty():
+		var response_status: Array[Dictionary] = []
+		for seat_number: int in pending_prompt.get("eligible_seats", []):
+			response_status.append({"seat": seat_number, "submitted": pending_prompt.get("responses", {}).has(seat_number)})
+		if pending_prompt.get("scope", "all") == "single":
+			prompt_view = {"active": true, "private": true, "response_status": response_status}
+		else:
+			var options: Array[Dictionary] = []
+			for option: Dictionary in pending_prompt.get("options", []):
+				options.append({"id": option.get("id", ""), "label": option.get("text", ""), "symbol": option.get("symbol", "")})
+			prompt_view = {
+				"id": pending_prompt.get("id", ""), "revision": pending_prompt.get("revision", 0),
+				"options": options, "eligible_seats": pending_prompt.get("eligible_seats", []).duplicate(),
+				"response_status": response_status, "allow_pass": pending_prompt.get("allow_pass", false),
+			}
+	return _normalize_json_numbers({
+		"view_version": 1, "round": round_number, "phase": current_phase(), "phase_revision": phase_revision,
+		"authority_revision": authority_revision(), "terminal": terminal_state != TerminalState.RUNNING,
+		"terminal_reason": terminal_reason, "participating_seats": participating_seats.duplicate(),
+		"connected_seats": participating_seats.filter(func(seat_number: int) -> bool: return seat_connection.get(seat_number, false)),
+		"prompt": prompt_view,
+	})
+
+func companion_seat_view(seat_number: int) -> Dictionary:
+	if not participating_seats.has(seat_number):
+		return {"accepted": false, "reason": "seat_not_authorized"}
+	var prompt_view: Dictionary = {}
+	if not pending_prompt.is_empty() and pending_prompt.get("eligible_seats", []).has(seat_number):
+		var options: Array[Dictionary] = []
+		for option: Dictionary in pending_prompt.get("options", []):
+			options.append({"id": option.get("id", ""), "label": option.get("text", ""), "symbol": option.get("symbol", "")})
+		prompt_view = {
+			"id": pending_prompt.get("id", ""), "revision": pending_prompt.get("revision", 0),
+			"options": options, "allow_pass": pending_prompt.get("allow_pass", false),
+			"submitted": pending_prompt.get("responses", {}).has(seat_number),
+		}
+	var hand_view: Array[Dictionary] = []
+	for instance: Dictionary in hands.get(seat_number, []):
+		var definition: Dictionary = content.card_by_id(instance.get("definition_id", ""))
+		hand_view.append({
+			"instance_id": instance.get("instance_id", ""), "label": definition.get("label", definition.get("name", "Card")),
+			"description": definition.get("description", ""), "symbol": definition.get("symbol", ""),
+		})
+	var inventory_view: Array[Dictionary] = []
+	for item_id: String in inventory.get(seat_number, []):
+		var item: Dictionary = content.item_by_id(item_id)
+		inventory_view.append({"id": item_id, "label": item.get("label", item.get("name", item_id.capitalize())), "symbol": item.get("symbol", "")})
+	return _normalize_json_numbers({
+		"accepted": true, "view_version": 1, "authorized_seat": seat_number, "prompt": prompt_view,
+		"hand": hand_view, "inventory": inventory_view,
+	})
+
 func transition_phase(expected_revision: int = -1) -> Dictionary:
 	if terminal_state != TerminalState.RUNNING:
 		return _reject("session_terminal")

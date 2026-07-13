@@ -265,7 +265,7 @@ func seat_private_view(seat_number: int) -> Dictionary:
 		private_actions.append({"action_id": action.id, "label": action.label, "description": action.description, "symbol": action.symbol, "uses": state.uses.get(action.id, 0)})
 	return _json_copy({
 		"accepted": true, "view_version": VIEW_VERSION, "view_kind": "seat_private", "authorized_seat": seat_number,
-		"shared_screen_warning": "OBSCURE THE SHARED SCREEN. Pass control only to Seat %s. Companion privacy is future work." % _roman(seat_number),
+		"shared_screen_warning": "OBSCURE THE SHARED SCREEN. Authorize only Seat %s. Companion views use the same stable-seat privacy boundary." % _roman(seat_number),
 		"public": public_view(), "private": {
 			"role_id": role.id, "role_label": role.label, "role_description": role.description, "form_id": state.form_id,
 			"faction_id": faction.id, "faction_label": faction.label, "objectives": private_objectives, "actions": private_actions,
