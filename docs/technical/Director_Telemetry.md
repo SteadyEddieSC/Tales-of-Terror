@@ -22,6 +22,11 @@ Telemetry is a short-lived read-only snapshot derived from local `RulesSession` 
 | `active_seats` | seat-number list | Connected participating seats |
 | `disconnected_seats` | seat-number list | Reserved participating seats; never negative targets |
 | `reserved_seat_count` | 0–8 | Size of disconnected list |
-| `future_balance_signal` | 0–100 | Neutral `50` hook only; factions are not implemented |
+| `future_balance_signal` | 0–100 | Neutral 50 plus bounded revealed-only social imbalance; unrevealed assignments cannot change it |
+| `social_signals` | allowlisted integer map | Public/revealed or aggregate values copied from `RoleSession`; empty before social authority is supplied |
 
 The snapshot is diagnostic state, so stable internal IDs may appear there. Player presentation resolves authored friendly names and hides these metrics.
+
+Social signal keys are limited to revealed faction count, public hostility, defeated count, Restless count, public conversion pressure, revealed imbalance, social-choice pressure, and afterlife-support availability. Count signals remain bounded 0–8 values inside the validator's 0–100 envelope. Percentage-like signals are normalized at the social authority: public conversion pressure is the revealed transformed-seat share of all participating seats, revealed imbalance is the largest-minus-smallest revealed faction count divided by all revealed seats, and public hostility is clamped to 0–100. Every allowlisted value is clamped to the documented 0–100 domain before it crosses the Director boundary; `DirectorTelemetry.validate()` remains strict.
+
+Only revealed/public state contributes to those percentages. Changing a hidden assignment cannot change Director telemetry until an authored public reveal or another authorized public signal changes. Connection status may remove unavailable afterlife support because disconnect is already public, but never exposes the affected form or faction identity.

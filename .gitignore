@@ -8,6 +8,7 @@
 /builds/
 /dist/
 /export/
+/.evidence/
 
 # Web / Node
 node_modules/

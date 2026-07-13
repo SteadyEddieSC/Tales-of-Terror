@@ -1,7 +1,7 @@
 # Terror Turn — Living Game Design Document
 
-**Version:** 0.3
-**Date:** July 12, 2026
+**Version:** 0.4
+**Date:** July 13, 2026
 **Status:** Pre-production; preferred working title not legally cleared
 
 ## Vision
@@ -60,13 +60,19 @@ Gameplay rules remain equivalent across profiles.
 
 The Living, Betrayer, Horror, Changed, and Restless have scenario-specific objectives. Defeated players transition into zombies/infected, wraiths, monster minions, guardian spirits, witnesses, or replacement investigators instead of becoming passive spectators.
 
+The v0.0.8 foundation represents those categories through validated authored factions and roles/forms rather than hardcoded paths. A Tale selects an explicit social mode: cooperative, hidden/revealed betrayal, Hunted transformation, Outbreak conversion, faction teams, mixed objectives, or a clearly warned no-afterlife variant. Unsupported player counts select an authored no-secret fallback instead of creating a nonsensical hostile layout.
+
+Role, faction, objective, and capability ownership follows the stable seat through disconnect and reconnect. The public television shows only deliberately public identity, cover, lifecycle, objectives, actions, and results. A controlled pass-and-play reveal obscures the whole display and authorizes one stable seat; future companion devices consume the same filtered views but do not own rules.
+
+Defeat normally opens a meaningful Restless path within one bounded transition: a wraith may place an omen, a guardian may warn, a witness may testify, or an authored replacement may return. Death, faction defeat, individual defeat, and victory are separate authored outcomes. Endings can name several winning factions or individuals and retain partial, escaped, Changed, or Restless results.
+
 ## Initial campaign/location targets
 
 Greymoor, Blackpine, Last Laugh, Red Moon, Starfall, Castle Vesper, Drowned Harbor, and Winterbound. Exact names remain editable. Monsters and threats are original, including public-domain-inspired vampires, werewolves, ghosts, zombies, aliens, clowns, slashers, witches, sea creatures, and cosmic threats. Recognizable commercial horror characters require licenses and are not base-game content.
 
 ## Underteller and Director
 
-The Underteller is fiction and interface. The Director begins as an authored, rule-based and deterministic pacing system—not a cloud language model. It watches health, resources, distance, conflict, skill, time, faction balance, recent events, and inactivity, then adjusts authored event weights, spawn timing, clues, scarcity, music, lighting, and hints within scenario limits.
+The Underteller is fiction and interface. The Director begins as an authored, rule-based and deterministic pacing system—not a cloud language model. It watches approved rules/board telemetry plus only allowlisted public or aggregate social signals, then adjusts authored event weights, spawn timing, clues, scarcity, music, lighting, and hints within scenario limits. It cannot inspect unrevealed roles, private objectives, targets, messages, or transition plans.
 
 ## Technology
 
@@ -118,3 +124,9 @@ Authored events and cards are declarative validated inputs. The native `RulesSes
 The v0.0.7 Dread Director is a local deterministic authored system, separate from the replaceable fictional host. It reads a normalized copy of authoritative rules/board telemetry, estimates current tension against an authored pacing curve, records an explainable component score for every legal candidate, and proposes one bounded action or an intentional hold.
 
 Pressure, relief, clue, event, board, and ambient proposals obey authored budgets, cooldowns, repetition penalties, seat-target caps, disconnect exclusion, mercy, recovery windows, and rolling pressure limits. The Director owns a separately salted RNG that cannot affect checks or decks and never directly mutates `RulesSession` or `BoardState`. Struggling groups receive recovery space, cruising groups may receive bounded escalation, and stalled groups receive clues or nudges rather than repeated punishment. This protects pacing and recoverability without guaranteeing victory or completing final balance.
+
+## Roles, factions, and afterlife loop
+
+The v0.0.8 `RoleSession` separately owns social assignment, current faction/form, reveal/lifecycle state, private objectives/actions, bounded uses, transitions, outcome references, and a dedicated salted RNG. Authored social content is validated before assignment; fixed plans consume no randomness, invalid plans consume none, and one-seat betrayal selects the declared cooperative fallback.
+
+Social actions validate stable-seat authority, form/lifecycle, targets, phase, use bounds, and cooldowns. General and board consequences cross the existing `RulesSession` and `BoardState` transaction boundary before role state commits. Rejected multi-system work leaves every authority unchanged. Public, seat-private, faction-private, and diagnostics views are built independently, with recursive privacy regression checks and full spoiler separation.

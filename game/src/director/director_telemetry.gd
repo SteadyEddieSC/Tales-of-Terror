@@ -3,7 +3,7 @@ extends RefCounted
 
 const SNAPSHOT_VERSION: int = 1
 
-static func build(rules: RulesSession, board: BoardState) -> Dictionary:
+static func build(rules: RulesSession, board: BoardState, social: RoleSession = null) -> Dictionary:
 	var seats: Array[int] = rules.participating_seats.duplicate()
 	var active_seats: Array[int] = []
 	var disconnected_seats: Array[int] = []
@@ -50,6 +50,8 @@ static func build(rules: RulesSession, board: BoardState) -> Dictionary:
 		for tag: String in event.get("tags", []):
 			if not recent_tags.has(tag):
 				recent_tags.append(tag)
+	var social_signals: Dictionary = social.director_safe_signals() if social != null else {}
+	var balance_signal: int = clampi(50 + int(social_signals.get("revealed_imbalance", 0)), 0, 100)
 	var snapshot: Dictionary = {
 		"snapshot_version": SNAPSHOT_VERSION,
 		"round": rules.round_number,
@@ -70,7 +72,8 @@ static func build(rules: RulesSession, board: BoardState) -> Dictionary:
 		"active_seats": active_seats,
 		"disconnected_seats": disconnected_seats,
 		"reserved_seat_count": disconnected_seats.size(),
-		"future_balance_signal": 50,
+		"future_balance_signal": balance_signal,
+		"social_signals": social_signals,
 		"rules_flags": rules.flags.duplicate(true),
 	}
 	return snapshot
@@ -87,6 +90,12 @@ static func validate(snapshot: Dictionary) -> PackedStringArray:
 			failures.append("invalid telemetry field %s" % field)
 	if not snapshot.get("phase") is String or not snapshot.get("active_seats") is Array or not snapshot.get("disconnected_seats") is Array:
 		failures.append("malformed telemetry identity fields")
+	if not snapshot.get("social_signals", {}) is Dictionary:
+		failures.append("malformed authorized social signals")
+	else:
+		for signal_name: Variant in snapshot.get("social_signals", {}).keys():
+			if not signal_name is String or not SocialContent.VALID_DIRECTOR_SIGNALS.has(signal_name) or not snapshot.social_signals[signal_name] is int or snapshot.social_signals[signal_name] < 0 or snapshot.social_signals[signal_name] > 100:
+				failures.append("invalid authorized social signal")
 	for seat_list: String in ["active_seats", "disconnected_seats"]:
 		for seat: Variant in snapshot.get(seat_list, []):
 			if not seat is int or seat < 1 or seat > SeatManager.MAX_SEATS:
