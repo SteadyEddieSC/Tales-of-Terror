@@ -30,6 +30,9 @@ func _run_cooperative(seed: int, seat_count: int) -> void:
 	for seat: int in seats:
 		_expect(not a.seat_states[seat].objective_refs.is_empty() and not a.legal_actions(seat).is_empty(), "gives every cooperative seat an objective and action")
 	_expect(a.privacy_report().passed, "keeps cooperative views recursively safe")
+	var board := BoardState.new(LanternHouseBoardDefinition.new())
+	var rules := RulesSession.new(LanternHouseRulesContent.new(), board, seed, seats)
+	_expect(DirectorTelemetry.validate(DirectorTelemetry.build(rules, board, a)).is_empty(), "keeps 1–8 cooperative Director telemetry valid")
 	_sequence_count += 1
 
 func _run_hidden(seed: int, seat_count: int) -> void:
@@ -52,9 +55,11 @@ func _run_hidden(seed: int, seat_count: int) -> void:
 	var public_before: String = JSON.stringify(a.public_view())
 	var telemetry_a: Dictionary = DirectorTelemetry.build(rules, board, a)
 	var telemetry_b: Dictionary = DirectorTelemetry.build(rules, board, b)
+	_expect(DirectorTelemetry.validate(telemetry_a).is_empty() and DirectorTelemetry.validate(telemetry_b).is_empty(), "keeps hidden social telemetry in the strict Director domain")
 	_expect(telemetry_a.social_signals == telemetry_b.social_signals, "keeps Director blind to hidden seat selection")
 	a.request_transition_by_trigger(secret_seat, "reveal", rules, board)
 	_expect(public_before != JSON.stringify(a.public_view()) and a.seat_states[secret_seat].revealed, "replays an audited generic public reveal")
+	_expect(DirectorTelemetry.validate(DirectorTelemetry.build(rules, board, a)).is_empty(), "keeps revealed Betrayer telemetry valid")
 	_sequence_count += 1
 
 func _run_hunted(seed: int, seat_count: int) -> void:
@@ -67,6 +72,7 @@ func _run_hunted(seed: int, seat_count: int) -> void:
 	_expect(transition.accepted and session.role_tags_for_seat(seats[-1]).has("horror"), "transforms one selected seat into the Horror")
 	_expect(session.perform_action_by_tag(seats[-1], "pressure", [], rules, board).accepted, "gives transformed Horror a legal bounded action")
 	_expect(session.rng.to_snapshot() == role_rng, "keeps deterministic transitions and actions from consuming assignment RNG")
+	_expect(DirectorTelemetry.validate(DirectorTelemetry.build(rules, board, session)).is_empty(), "keeps transformed Horror telemetry valid")
 	_sequence_count += 1
 
 func _run_outbreak(seed: int, seat_count: int) -> void:
@@ -85,6 +91,7 @@ func _run_outbreak(seed: int, seat_count: int) -> void:
 	var next_target: int = a.seat_with_tag("living")
 	_expect(next_target == 0 or not a.perform_action_by_tag(actor, "spread", [next_target], rules, board).accepted, "prevents unbounded Changed spread")
 	_expect(a.to_snapshot() == stable and a.rng.to_snapshot() == role_rng, "rejects repeated spread atomically without RNG drift")
+	_expect(DirectorTelemetry.validate(DirectorTelemetry.build(rules, board, a)).is_empty(), "keeps Changed spread telemetry valid")
 	_sequence_count += 1
 
 func _run_afterlife(seed: int, seat_count: int) -> void:
@@ -98,6 +105,7 @@ func _run_afterlife(seed: int, seat_count: int) -> void:
 	var action: Dictionary = session.perform_action_by_tag(1, "afterlife_support", [], rules, board)
 	_expect(action.accepted and board.get_space_state("lantern_hall").features.has("restless_omen"), "applies meaningful Restless board proposal")
 	_expect(session.audit_history.any(func(entry: Dictionary) -> bool: return entry.type == "transition") and session.audit_history.any(func(entry: Dictionary) -> bool: return entry.type == "action"), "audits every accepted afterlife transition and action")
+	_expect(DirectorTelemetry.validate(DirectorTelemetry.build(rules, board, session)).is_empty(), "keeps Restless telemetry valid")
 	_sequence_count += 1
 
 func _run_mixed_outcome() -> void:
@@ -112,11 +120,15 @@ func _run_mixed_outcome() -> void:
 	for row: Dictionary in evaluation.public.seats: results.append(row.result)
 	_expect(results.has("victory") and results.has("changed") and results.has("restless"), "resolves compatible faction and individual mixed outcomes")
 	_expect(session.resolve_outcomes(rules, board).accepted and session.resolve_outcomes(rules, board).idempotent, "commits terminal outcome once and remains idempotent")
+	_expect(DirectorTelemetry.validate(DirectorTelemetry.build(rules, board, session)).is_empty(), "keeps mixed-outcome telemetry valid")
 	_sequence_count += 1
 
 func _run_invalid_and_fallbacks() -> void:
 	var fallback := RoleSession.new(LanternHouseSocialContent.new(), "hidden_betrayer", 44, [1])
 	_expect(fallback.fallback_applied and fallback.mode_id == "cooperative" and fallback.privacy_report().passed, "uses explicit safe one-seat fallback")
+	var fallback_board := BoardState.new(LanternHouseBoardDefinition.new())
+	var fallback_rules := RulesSession.new(LanternHouseRulesContent.new(), fallback_board, 44, [1])
+	_expect(DirectorTelemetry.validate(DirectorTelemetry.build(fallback_rules, fallback_board, fallback)).is_empty(), "keeps one-seat fallback telemetry valid")
 	var session := RoleSession.new(LanternHouseSocialContent.new(), "outbreak", 44, [1, 2, 3, 4])
 	var snapshot: Dictionary = session.to_snapshot()
 	var rng_before: Dictionary = session.rng.to_snapshot()

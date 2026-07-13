@@ -171,6 +171,10 @@ func _validate_action(definition: Dictionary, transition_index: Dictionary, rule
 	var cooldown: Variant = definition.get("cooldown")
 	if not minimum is int or not maximum is int or minimum < 0 or maximum < minimum or maximum > SeatManager.MAX_SEATS:
 		failures.append("invalid action target bounds")
+	elif definition.get("target_scope", "") == "none" and (minimum != 0 or maximum != 0):
+		failures.append("targetless action has target bounds")
+	elif definition.get("target_scope", "") == "self" and maximum > 1:
+		failures.append("self action has impossible target bounds")
 	if not use_limit is int or not per_round is int or not cooldown is int or use_limit < 0 or per_round < 0 or cooldown < 0:
 		failures.append("invalid action use limit or cooldown")
 	for lifecycle: Variant in definition.get("allowed_lifecycles", []):

@@ -6,8 +6,11 @@ func _initialize() -> void:
 	_test_content_validation()
 	_test_assignment_rng_and_fallback()
 	_test_privacy_views_and_director_blindness()
+	_test_director_signal_normalization()
+	_test_legal_action_target_discovery()
 	_test_transitions_and_actions()
 	_test_reconnect_and_afterlife()
+	_test_disconnected_action_boundaries()
 	_test_outcomes_and_snapshots()
 	_test_hud_and_diagnostics_contract()
 	_test_generic_id_branch_guard()
@@ -95,6 +98,7 @@ func _test_privacy_views_and_director_blindness() -> void:
 	var telemetry_before: Dictionary = DirectorTelemetry.build(rules, board, session)
 	var alternate := RoleSession.new(LanternHouseSocialContent.new(), "hidden_betrayer", 99, [1, 2, 3, 4])
 	var telemetry_alternate: Dictionary = DirectorTelemetry.build(rules, board, alternate)
+	_expect(DirectorTelemetry.validate(telemetry_before).is_empty() and DirectorTelemetry.validate(telemetry_alternate).is_empty(), "keeps hidden-assignment Director telemetry within the strict validated domain")
 	_expect(telemetry_before.social_signals == telemetry_alternate.social_signals and telemetry_before.future_balance_signal == telemetry_alternate.future_balance_signal, "keeps Director signals unchanged across unrevealed secret assignments")
 	_expect(not JSON.stringify(telemetry_before).contains(role.id) and not JSON.stringify(telemetry_before).contains(secret_objective.id), "keeps role IDs and private objectives out of Director telemetry")
 	var runtime_a := DirectorRuntime.new(LanternHouseDirectorContent.new(), "standard", 8080, rules.content, board.definition)
@@ -106,6 +110,68 @@ func _test_privacy_views_and_director_blindness() -> void:
 	session.request_transition_by_trigger(secret_seat, "reveal", rules, board)
 	var revealed_telemetry: Dictionary = DirectorTelemetry.build(rules, board, session)
 	_expect(revealed_telemetry.social_signals.revealed_faction_count > telemetry_before.social_signals.revealed_faction_count, "allows an authored public reveal to change aggregate Director-safe signals")
+	_expect(DirectorTelemetry.validate(revealed_telemetry).is_empty(), "keeps authorized revealed telemetry valid without weakening Director validation")
+
+func _test_director_signal_normalization() -> void:
+	for seat_count: int in [6, 7, 8]:
+		var seats: Array[int] = []
+		for seat: int in range(1, seat_count + 1): seats.append(seat)
+		var board := BoardState.new(LanternHouseBoardDefinition.new())
+		var rules := RulesSession.new(LanternHouseRulesContent.new(), board, 6000 + seat_count, seats)
+		var session := RoleSession.new(LanternHouseSocialContent.new(), "hunted", 6000 + seat_count, seats)
+		var mirror := RoleSession.new(LanternHouseSocialContent.new(), "hunted", 6000 + seat_count, seats)
+		for seat: int in seats:
+			_expect(session.request_transition_by_trigger(seat, "transform", rules, board).accepted, "reveals and transforms seat %d in the %d-seat telemetry boundary fixture" % [seat, seat_count])
+			_expect(mirror.request_transition_by_trigger(seat, "transform", rules, board).accepted, "replays transformed seat %d in the %d-seat telemetry boundary fixture" % [seat, seat_count])
+		var telemetry: Dictionary = DirectorTelemetry.build(rules, board, session)
+		var repeated: Dictionary = DirectorTelemetry.build(rules, board, session)
+		var mirrored: Dictionary = DirectorTelemetry.build(rules, board, mirror)
+		_expect(DirectorTelemetry.validate(telemetry).is_empty(), "validates Director telemetry with %d revealed/transformed seats" % seat_count)
+		_expect(telemetry.social_signals.public_conversion_pressure == 100, "normalizes %d revealed transformations to the 0–100 domain" % seat_count)
+		_expect(telemetry == repeated and telemetry == mirrored, "reproduces identical %d-seat social telemetry deterministically" % seat_count)
+	var imbalance_seats: Array[int] = [1, 2, 3, 4, 5, 6, 7, 8]
+	var imbalance_board := BoardState.new(LanternHouseBoardDefinition.new())
+	var imbalance_rules := RulesSession.new(LanternHouseRulesContent.new(), imbalance_board, 7108, imbalance_seats)
+	var imbalanced := RoleSession.new(LanternHouseSocialContent.new(), "hunted", 7108, imbalance_seats)
+	for seat: int in range(1, 8):
+		imbalanced.request_transition_by_trigger(seat, "transform", imbalance_rules, imbalance_board)
+	var imbalance_telemetry: Dictionary = DirectorTelemetry.build(imbalance_rules, imbalance_board, imbalanced)
+	_expect(imbalance_telemetry.social_signals.revealed_imbalance == 75 and imbalance_telemetry.social_signals.public_conversion_pressure == 88, "normalizes a revealed 7:1 faction distribution deterministically")
+	_expect(DirectorTelemetry.validate(imbalance_telemetry).is_empty(), "keeps highly imbalanced revealed telemetry inside the strict 0–100 contract")
+	for value: Variant in imbalance_telemetry.social_signals.values():
+		_expect(value is int and value >= 0 and value <= 100, "bounds every authorized social signal without exposing identity data")
+
+func _test_legal_action_target_discovery() -> void:
+	var content := LanternHouseSocialContent.new()
+	var faction_action: Dictionary = _test_action(content.actions[0], "faction_target_probe", "Faction Signal", "faction_private", "faction_other", 1, 1)
+	var self_action: Dictionary = _test_action(content.actions[0], "self_target_probe", "Steady Self", "seat_private", "self", 1, 1)
+	var multi_action: Dictionary = _test_action(content.actions[0], "multi_target_probe", "Bounded Group", "seat_private", "other", 2, 3)
+	content.actions.append(faction_action)
+	content.actions.append(self_action)
+	content.actions.append(multi_action)
+	var living_role: Dictionary = content.roles[0]
+	living_role.action_refs.append(faction_action.id)
+	living_role.action_refs.append(self_action.id)
+	living_role.action_refs.append(multi_action.id)
+	content.roles[0] = living_role
+	var secret_role: Dictionary = content.roles[1]
+	secret_role.action_refs.append(faction_action.id)
+	content.roles[1] = secret_role
+	content.modes[6].fixed_assignments[2].role_id = living_role.id
+	_expect(content.validate().is_empty(), "accepts deterministic target-discovery regression content")
+	var session := RoleSession.new(content, "mixed_fixture", 321, [1, 2, 3, 4])
+	var snapshot_before: Dictionary = session.to_snapshot()
+	var rng_before: Dictionary = session.rng.to_snapshot()
+	var rejection_before: String = session.last_rejection
+	var first_actions: Array[Dictionary] = session.legal_actions(1)
+	var second_actions: Array[Dictionary] = session.legal_actions(1)
+	var first_ids: Array[String] = _action_ids(first_actions)
+	_expect(first_ids.has(faction_action.id), "lists faction_other when seat II is ineligible but later sorted seat III is an eligible ally")
+	_expect(first_ids.has(self_action.id), "lists a required self-target action using the actor as its deterministic target")
+	_expect(first_ids.has(multi_action.id), "finds a bounded deterministic combination for a multiple-target action")
+	_expect(not _action_ids(session.legal_actions(2)).has(faction_action.id), "omits a faction_other action when no connected allied target exists")
+	_expect(first_actions == second_actions and session.to_snapshot() == snapshot_before and session.rng.to_snapshot() == rng_before and session.last_rejection == rejection_before, "keeps repeated legal-action discovery deterministic and side-effect free")
+	_expect(not faction_action.label in JSON.stringify(session.public_view()), "does not expose a private faction action or hidden faction membership through the public view")
 
 func _test_transitions_and_actions() -> void:
 	var board := BoardState.new(LanternHouseBoardDefinition.new())
@@ -163,6 +229,52 @@ func _test_reconnect_and_afterlife() -> void:
 	_expect(replacement.request_transition_by_trigger(1, "replacement", rules, board).accepted and replacement.seat_states[1].lifecycle == "replacement", "supports a replacement investigator path")
 	_expect(replacement.perform_action_by_tag(1, "replacement", [], rules, board).accepted, "gives the replacement investigator a legal action")
 	_expect(replacement.request_transition_by_trigger(1, "escape", rules, board).accepted and replacement.seat_states[1].escaped, "supports a generic escape transition")
+
+func _test_disconnected_action_boundaries() -> void:
+	var board := BoardState.new(LanternHouseBoardDefinition.new())
+	var rules := RulesSession.new(LanternHouseRulesContent.new(), board, 8501, [1, 2, 3, 4])
+	var hidden := RoleSession.new(LanternHouseSocialContent.new(), "hidden_betrayer", 8501, [1, 2, 3, 4])
+	var actor: int = hidden.seat_with_tag("secret")
+	var actor_state_before: Dictionary = hidden.seat_states[actor].duplicate(true)
+	var actor_private_before: Dictionary = hidden.seat_private_view(actor).private
+	var actor_rng_before: Dictionary = hidden.rng.to_snapshot()
+	var actor_revision_before: int = hidden.revision
+	var actor_audit_before: int = hidden.audit_history.size()
+	var actor_public_history_before: int = hidden.public_history.size()
+	_expect(hidden.set_seat_connected(actor, false).accepted, "reserves the disconnected actor without changing social ownership")
+	var reserved_snapshot: Dictionary = hidden.to_snapshot()
+	var history_after_disconnect: Array[Dictionary] = hidden.public_history.duplicate(true)
+	_expect(hidden.legal_actions(actor, rules).is_empty(), "returns no ordinary legal actions for a disconnected actor")
+	var actor_rejection: Dictionary = hidden.perform_action_by_tag(actor, "secret", [], rules, board)
+	_expect(not actor_rejection.accepted and actor_rejection.reason == "action_actor_disconnected", "rejects an ordinary role action from a disconnected actor")
+	_expect(hidden.to_snapshot() == reserved_snapshot and hidden.public_history == history_after_disconnect, "keeps disconnected actor rejection free of role/action revision or audit mutation")
+	_expect(hidden.set_seat_connected(actor, true).accepted, "reconnects the same stable-seat owner")
+	_expect(hidden.seat_states[actor] == actor_state_before and hidden.seat_private_view(actor).private == actor_private_before, "restores the same role, faction, objectives, resources, cooldowns, uses, prompts, and private view")
+	_expect(not hidden.legal_actions(actor, rules).is_empty(), "restores the actor's legal actions after reconnect")
+	_expect(hidden.rng.to_snapshot() == actor_rng_before and hidden.revision == actor_revision_before + 2, "consumes no RNG and records only the two documented connection revisions")
+	_expect(hidden.audit_history.size() == actor_audit_before + 2 and hidden.public_history.size() == actor_public_history_before + 2, "records only sanitized disconnect and reconnect events")
+	var actor_role: Dictionary = hidden.content.role_by_id(actor_state_before.form_id)
+	var actor_objective: Dictionary = hidden.content.objective_by_id(actor_state_before.objective_refs[0])
+	var actor_public_json: String = JSON.stringify(hidden.public_view())
+	_expect(not actor_role.id in JSON.stringify(actor_rejection) and not actor_objective.description in JSON.stringify(actor_rejection) and not actor_role.id in actor_public_json and not actor_objective.description in actor_public_json and hidden.privacy_report().passed, "keeps disconnected rejection messages and public history free of secret values")
+
+	var target_board := BoardState.new(LanternHouseBoardDefinition.new())
+	var target_rules := RulesSession.new(LanternHouseRulesContent.new(), target_board, 8502, [1, 2, 3, 4])
+	var outbreak := RoleSession.new(LanternHouseSocialContent.new(), "outbreak", 8502, [1, 2, 3, 4])
+	var changed_actor: int = outbreak.seat_with_tag("changed")
+	var disconnected_target: int = outbreak.seat_with_tag("living")
+	var target_state_before: Dictionary = outbreak.seat_states[disconnected_target].duplicate(true)
+	var target_private_before: Dictionary = outbreak.seat_private_view(disconnected_target).private
+	var target_rng_before: Dictionary = outbreak.rng.to_snapshot()
+	outbreak.set_seat_connected(disconnected_target, false)
+	var target_reserved_snapshot: Dictionary = outbreak.to_snapshot()
+	var target_history_after_disconnect: Array[Dictionary] = outbreak.public_history.duplicate(true)
+	var target_rejection: Dictionary = outbreak.perform_action_by_tag(changed_actor, "spread", [disconnected_target], target_rules, target_board)
+	_expect(not target_rejection.accepted and target_rejection.reason == "action_target_disconnected", "rejects a disconnected seat as an ordinary role-action target")
+	_expect(outbreak.to_snapshot() == target_reserved_snapshot and outbreak.public_history == target_history_after_disconnect and outbreak.rng.to_snapshot() == target_rng_before, "keeps disconnected target rejection atomic and RNG-free")
+	outbreak.set_seat_connected(disconnected_target, true)
+	_expect(outbreak.seat_states[disconnected_target] == target_state_before and outbreak.seat_private_view(disconnected_target).private == target_private_before, "restores the targeted seat's exact private state on reconnect")
+	_expect(outbreak.privacy_report().passed and not outbreak.content.role_by_id(target_state_before.form_id).id in JSON.stringify(target_rejection), "keeps disconnected target rejection and reconnect history privacy-safe")
 
 func _test_outcomes_and_snapshots() -> void:
 	var board := BoardState.new(LanternHouseBoardDefinition.new())
@@ -253,6 +365,27 @@ func _contains(failures: PackedStringArray, fragment: String) -> bool:
 	for failure: String in failures:
 		if fragment in failure: return true
 	return false
+
+func _test_action(base_action: Dictionary, stable_id: String, friendly_label: String, visibility: String, target_scope: String, minimum_targets: int, maximum_targets: int) -> Dictionary:
+	var action: Dictionary = base_action.duplicate(true)
+	action.id = stable_id
+	action.label = friendly_label
+	action.description = "Deterministic target-discovery regression action."
+	action.visibility = visibility
+	action.target_scope = target_scope
+	action.minimum_targets = minimum_targets
+	action.maximum_targets = maximum_targets
+	action.use_limit = 0
+	action.per_round_limit = 0
+	action.cooldown = 0
+	action.tags = ["target_discovery_probe"]
+	action.proposals = []
+	return action
+
+func _action_ids(actions: Array[Dictionary]) -> Array[String]:
+	var ids: Array[String] = []
+	for action: Dictionary in actions: ids.append(action.action_id)
+	return ids
 
 func _expect(condition: bool, description: String) -> void:
 	if not condition:

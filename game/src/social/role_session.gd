@@ -323,6 +323,7 @@ func director_safe_signals() -> Dictionary:
 	var allowlist: Array = mode.get("director_signal_allowlist", [])
 	var revealed_factions: Dictionary = {}
 	var revealed_counts: Dictionary = {}
+	var revealed_total: int = 0
 	var defeated_count: int = 0
 	var restless_count: int = 0
 	var conversion_count: int = 0
@@ -333,27 +334,35 @@ func director_safe_signals() -> Dictionary:
 		if state.revealed:
 			revealed_factions[state.faction_id] = true
 			revealed_counts[state.faction_id] = revealed_counts.get(state.faction_id, 0) + 1
+			revealed_total += 1
 		if state.defeated: defeated_count += 1
 		if role.get("tags", []).has("afterlife"):
 			restless_count += 1
-			for action_id: String in role.get("action_refs", []):
-				if content.action_by_id(action_id).get("tags", []).has("afterlife_support"):
-					afterlife_support += 1
+			if state.connected:
+				for action_id: String in role.get("action_refs", []):
+					if content.action_by_id(action_id).get("tags", []).has("afterlife_support"):
+						afterlife_support += 1
 		if state.revealed and state.transformed: conversion_count += 1
 	var imbalance: int = 0
 	if not revealed_counts.is_empty():
 		var counts: Array = revealed_counts.values()
 		imbalance = counts.max() - counts.min()
 	var candidates: Dictionary = {
-		"revealed_faction_count": revealed_factions.size(), "public_hostility": maxi(0, revealed_factions.size() - 1) * 20,
+		"revealed_faction_count": revealed_factions.size(), "public_hostility": clampi(maxi(0, revealed_factions.size() - 1) * 20, 0, 100),
 		"defeated_count": defeated_count, "restless_count": restless_count,
-		"public_conversion_pressure": conversion_count * 20, "revealed_imbalance": imbalance * 20,
+		"public_conversion_pressure": _normalized_percentage(conversion_count, seat_states.size()),
+		"revealed_imbalance": _normalized_percentage(imbalance, revealed_total),
 		"social_choice_pressure": 0, "afterlife_support_available": afterlife_support,
 	}
 	var result: Dictionary = {}
 	for signal_name: String in allowlist:
-		if candidates.has(signal_name): result[signal_name] = candidates[signal_name]
+		if candidates.has(signal_name): result[signal_name] = clampi(int(candidates[signal_name]), 0, 100)
 	return _json_copy(result)
+
+func _normalized_percentage(numerator: int, denominator: int) -> int:
+	if denominator <= 0:
+		return 0
+	return clampi(roundi(float(numerator) / float(denominator) * 100.0), 0, 100)
 
 func evaluate_outcomes(rules: RulesSession = null, board: BoardState = null) -> Dictionary:
 	var seat_results: Array[Dictionary] = []
@@ -457,20 +466,68 @@ func legal_actions(seat_number: int, rules: RulesSession = null) -> Array[Dictio
 	var result: Array[Dictionary] = []
 	if not seat_states.has(seat_number): return result
 	var state: Dictionary = seat_states[seat_number]
+	if not state.get("connected", false): return result
 	var role: Dictionary = content.role_by_id(state.form_id)
 	for action_id: String in role.get("action_refs", []):
 		var action: Dictionary = content.action_by_id(action_id)
-		var target_count: int = action.get("minimum_targets", 0)
-		var placeholder_targets: Array[int] = []
-		if target_count > 0:
-			for candidate: int in _sorted_seats():
-				if candidate != seat_number:
-					placeholder_targets.append(candidate)
-					if placeholder_targets.size() == target_count: break
-		var validation: Dictionary = _validate_action_request(seat_number, action_id, placeholder_targets, rules)
-		if validation.accepted:
+		var target_search: Dictionary = _find_legal_action_targets(seat_number, action_id, rules)
+		if target_search.found:
 			result.append({"action_id": action.id, "label": action.label, "description": action.description, "symbol": action.symbol, "pattern": action.pattern, "visibility": action.visibility})
 	return result
+
+func _find_legal_action_targets(actor_seat: int, action_id: String, rules: RulesSession) -> Dictionary:
+	var action: Dictionary = content.action_by_id(action_id)
+	var candidates: Array[int] = _action_target_candidates(actor_seat, action)
+	var minimum_targets: int = action.get("minimum_targets", 0)
+	var maximum_targets: int = mini(action.get("maximum_targets", 0), candidates.size())
+	if minimum_targets == 0:
+		var zero_target_validation: Dictionary = _validate_action_request(actor_seat, action_id, [], rules)
+		if zero_target_validation.accepted:
+			return {"found": true, "targets": []}
+	if maximum_targets < maxi(1, minimum_targets):
+		return {"found": false, "targets": []}
+	for target_count: int in range(maxi(1, minimum_targets), maximum_targets + 1):
+		var search: Dictionary = _search_action_target_combinations(actor_seat, action_id, rules, candidates, 0, target_count, [])
+		if search.found:
+			return search
+	return {"found": false, "targets": []}
+
+func _action_target_candidates(actor_seat: int, action: Dictionary) -> Array[int]:
+	var candidates: Array[int] = []
+	if not seat_states.has(actor_seat) or not seat_states[actor_seat].get("connected", false):
+		return candidates
+	var actor_state: Dictionary = seat_states[actor_seat]
+	var target_scope: String = action.get("target_scope", "none")
+	if target_scope == "none":
+		return candidates
+	for candidate_seat: int in _sorted_seats():
+		var candidate_state: Dictionary = seat_states[candidate_seat]
+		if not candidate_state.get("connected", false):
+			continue
+		match target_scope:
+			"self":
+				if candidate_seat == actor_seat: candidates.append(candidate_seat)
+			"other":
+				if candidate_seat != actor_seat: candidates.append(candidate_seat)
+			"faction_other":
+				if candidate_seat != actor_seat and candidate_state.faction_id == actor_state.faction_id: candidates.append(candidate_seat)
+			"any":
+				candidates.append(candidate_seat)
+	return candidates
+
+func _search_action_target_combinations(actor_seat: int, action_id: String, rules: RulesSession, candidates: Array[int], start_index: int, target_count: int, selected_targets: Array[int]) -> Dictionary:
+	if selected_targets.size() == target_count:
+		var validation: Dictionary = _validate_action_request(actor_seat, action_id, selected_targets, rules)
+		return {"found": validation.accepted, "targets": selected_targets.duplicate() if validation.accepted else []}
+	var remaining: int = target_count - selected_targets.size()
+	var final_start: int = candidates.size() - remaining
+	for candidate_index: int in range(start_index, final_start + 1):
+		var next_targets: Array[int] = selected_targets.duplicate()
+		next_targets.append(candidates[candidate_index])
+		var search: Dictionary = _search_action_target_combinations(actor_seat, action_id, rules, candidates, candidate_index + 1, target_count, next_targets)
+		if search.found:
+			return search
+	return {"found": false, "targets": []}
 
 func to_snapshot() -> Dictionary:
 	return _json_copy({
@@ -577,6 +634,7 @@ func _apply_transition_state(seat_number: int, definition: Dictionary) -> void:
 func _validate_action_request(actor_seat: int, action_id: String, targets: Array[int], rules: RulesSession) -> Dictionary:
 	if not seat_states.has(actor_seat): return {"accepted": false, "reason": "seat_not_participating"}
 	var state: Dictionary = seat_states[actor_seat]
+	if not state.get("connected", false): return {"accepted": false, "reason": "action_actor_disconnected"}
 	var role: Dictionary = content.role_by_id(state.form_id)
 	if not role.get("action_refs", []).has(action_id): return {"accepted": false, "reason": "action_not_available"}
 	var action: Dictionary = content.action_by_id(action_id)
@@ -587,7 +645,10 @@ func _validate_action_request(actor_seat: int, action_id: String, targets: Array
 	for target: int in targets:
 		if not seat_states.has(target) or unique_targets.has(target): return {"accepted": false, "reason": "invalid_action_targets"}
 		unique_targets[target] = true
+		if not seat_states[target].get("connected", false): return {"accepted": false, "reason": "action_target_disconnected"}
 		match action.target_scope:
+			"none":
+				return {"accepted": false, "reason": "invalid_action_targets"}
 			"self":
 				if target != actor_seat: return {"accepted": false, "reason": "invalid_action_targets"}
 			"other":
