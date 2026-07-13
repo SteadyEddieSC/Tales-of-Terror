@@ -18,6 +18,11 @@ var _board_overlay: BoardDebugOverlay
 var _rules_content: LanternHouseRulesContent
 var _rules_session: RulesSession
 var _rules_hud: RulesHud
+var _director_content: LanternHouseDirectorContent
+var _director_runtime: DirectorRuntime
+var _director_hud: DirectorHud
+var _director_diagnostics: DirectorDiagnostics
+var _director_decision: Dictionary = {}
 var _camera: SharedCameraCoordinator
 var _interactions: InteractionCoordinator
 var _diagnostics: ExplorationDiagnostics
@@ -87,6 +92,14 @@ func request_interaction(device_id: int) -> bool:
 	return _interactions.request(pawn_registry.get_by_device(device_id))
 
 func toggle_diagnostics() -> void:
+	if is_instance_valid(_director_diagnostics) and not _director_decision.is_empty():
+		_director_diagnostics.toggle()
+		if is_instance_valid(_director_hud):
+			_director_hud.visible = not _director_diagnostics.visible
+		_diagnostics.visible = false
+		_board_overlay.visible = false
+		_room.set_show_authored_headings(true)
+		return
 	_diagnostics.toggle()
 	_board_overlay.visible = _diagnostics.visible
 	_room.set_show_authored_headings(not _board_overlay.visible)
@@ -98,6 +111,10 @@ func set_safe_margin(value: int) -> void:
 	_diagnostics.set_safe_margin(_safe_margin)
 	if is_instance_valid(_rules_hud):
 		_rules_hud.set_safe_margin(_safe_margin)
+	if is_instance_valid(_director_hud):
+		_director_hud.set_safe_margin(_safe_margin)
+	if is_instance_valid(_director_diagnostics):
+		_director_diagnostics.set_safe_margin(_safe_margin)
 	_layout_top_hud()
 	_layout_bottom_hud()
 
@@ -113,7 +130,8 @@ func enable_showcase(stage: String = "terminal") -> void:
 		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).global_position = pawn.position
 	_board_state.sync_occupancy(pawn_registry.get_pawns())
 	_run_rules_showcase(stage)
-	_message_label.text = "EVIDENCE: %s  •  PROMPT ◉  •  CHECK ⚄  •  CARD ◫  •  VOTE ◈  •  BOARD r%d" % [stage.to_upper(), _board_state.revision]
+	if not stage.begins_with("director_"):
+		_message_label.text = "EVIDENCE: %s  •  PROMPT ◉  •  CHECK ⚄  •  CARD ◫  •  VOTE ◈  •  BOARD r%d" % [stage.to_upper(), _board_state.revision]
 	_diagnostics.visible = false
 	_board_overlay.visible = false
 	_room.set_show_authored_headings(true)
@@ -157,7 +175,7 @@ func _build_hud() -> void:
 	layer.add_child(root)
 	_hud_root = root
 	_title_label = Label.new()
-	_title_label.text = "LANTERN HOUSE RULES SANDBOX  •  v0.0.6"
+	_title_label.text = "LANTERN HOUSE DIRECTOR LAB  •  v0.0.7"
 	_title_label.theme_type_variation = "SectionTitle"
 	_title_label.size = Vector2(540, 30)
 	root.add_child(_title_label)
@@ -194,6 +212,12 @@ func _build_hud() -> void:
 	_diagnostics = ExplorationDiagnostics.new()
 	root.add_child(_diagnostics)
 	_diagnostics.set_safe_margin(_safe_margin)
+	_director_hud = DirectorHud.new()
+	root.add_child(_director_hud)
+	_director_hud.set_safe_margin(_safe_margin)
+	_director_diagnostics = DirectorDiagnostics.new()
+	root.add_child(_director_diagnostics)
+	_director_diagnostics.set_safe_margin(_safe_margin)
 	_safe_overlay = SafeAreaOverlay.new()
 	_safe_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_safe_overlay.frame_color = TOKENS.warning
@@ -212,6 +236,8 @@ func _sync_rules_seats() -> void:
 	if _rules_session == null:
 		_rules_content = LanternHouseRulesContent.new()
 		_rules_session = RulesSession.new(_rules_content, _board_state, 4706, current)
+		_director_content = LanternHouseDirectorContent.new()
+		_director_runtime = DirectorRuntime.new(_director_content, "standard", _rules_session.seed, _rules_content, _board_definition)
 		_ensure_rules_hud()
 	else:
 		for seat_number: int in _rules_session.participating_seats:
@@ -234,6 +260,9 @@ func _ensure_rules_hud() -> void:
 
 func _run_rules_showcase(stage: String = "terminal") -> void:
 	if _rules_session == null:
+		return
+	if stage.begins_with("director_"):
+		_run_director_showcase(stage.trim_prefix("director_"))
 		return
 	_rules_session.queue_event("threshold_whisper")
 	_rules_session.resolve_next_event()
@@ -270,6 +299,48 @@ func _run_rules_showcase(stage: String = "terminal") -> void:
 	_rules_session.queue_event("vault_reckoning")
 	_rules_session.resolve_next_event()
 	_rules_session.complete("lantern_house_secured")
+
+func _run_director_showcase(trajectory: String) -> void:
+	if _director_runtime == null:
+		return
+	var fixture_effects: Array = []
+	match trajectory:
+		"struggling", "diagnostics":
+			for _index: int in 3:
+				_rules_session.resolve_check({"dice": 1, "sides": 6, "target": 99}, 1, "director_fixture")
+		"cruising":
+			fixture_effects = [
+				{"type": "set_counter", "counter_id": "objective_progress", "value": 10},
+				{"type": "set_counter", "counter_id": "hope", "value": 6},
+				{"type": "set_counter", "counter_id": "resolve", "value": 4},
+			]
+			for _index: int in _rules_content.phases.size():
+				_rules_session.transition_phase()
+		"stalled":
+			fixture_effects = [
+				{"type": "set_counter", "counter_id": "objective_stall_steps", "value": 8},
+				{"type": "set_counter", "counter_id": "prompt_latency_steps", "value": 8},
+			]
+			for seat: int in _rules_session.participating_seats.slice(0, 2):
+				_rules_session.mark_ready(seat, true)
+		_:
+			trajectory = "struggling"
+	if not fixture_effects.is_empty():
+		_rules_session.apply_effect_bundle(fixture_effects, 0, "director_lab_fixture")
+	var telemetry: Dictionary = DirectorTelemetry.build(_rules_session, _board_state)
+	var core_rng_before: int = _rules_session.rng.counter
+	_director_decision = _director_runtime.evaluate(telemetry)
+	var application: Dictionary = DirectorProposalApplier.apply(_director_decision, _rules_session, _board_state)
+	_director_runtime.record_application(_director_decision, application)
+	application["core_rng_before"] = core_rng_before
+	application["core_rng_after"] = _rules_session.rng.counter
+	_director_hud.present(_director_decision, application)
+	_director_diagnostics.present(_director_runtime, telemetry, _director_decision, application)
+	if is_instance_valid(_rules_hud):
+		_rules_hud.visible = false
+	_director_diagnostics.visible = trajectory == "diagnostics"
+	_director_hud.visible = trajectory != "diagnostics"
+	_message_label.text = "EVIDENCE: %s GROUP  •  LOCAL + DETERMINISTIC  •  CORE RNG #%d UNCHANGED" % [trajectory.to_upper(), core_rng_before]
 
 func _layout_top_hud() -> void:
 	if not is_instance_valid(_title_label) or not is_instance_valid(_separation_label):
