@@ -76,7 +76,7 @@ The Underteller is fiction and interface. The Director begins as an authored, ru
 
 ## Technology
 
-- Godot 4.7 stable; typed GDScript; Compatibility renderer.
+- Official Godot 4.7.1-stable; typed GDScript; Compatibility renderer.
 - Windows/Linux first; Batocera through Linux validation; Android/Android TV later.
 - Native Godot host owns gameplay initially.
 - The v0.0.9 Cloudflare-compatible prototype handles only ephemeral room membership, join codes, filtered relays, reconnect capabilities, and companion communication.

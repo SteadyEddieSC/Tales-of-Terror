@@ -22,8 +22,12 @@ jobs:
           test -f docs/gdd/Terror_Turn_GDD.md
           test -f docs/technical/Project_Launch_Guide.md
           test -f docs/decisions/ADR-0008-working-title.md
+          test -f docs/decisions/ADR-0020-toolchain-and-test-strategy.md
           test -f docs/art/Visual_Language_Guide.md
           test -f docs/technical/Asset_Pipeline.md
+          test -f docs/technical/Toolchain_and_Testing.md
+          test -f game/addons/gut/LICENSE.md
+          test -f requirements-dev.txt
       - name: Reject common secret files and oversized files
         shell: bash
         run: |
@@ -63,5 +67,7 @@ jobs:
         run: python tools/validate_assets.py
       - name: Validate companion privacy and repository policy
         run: python tools/validate_companion.py
+      - name: Validate pinned toolchain and test policy
+        run: python tools/validate_toolchain.py
       - name: Reject whitespace errors
         run: git diff --check HEAD

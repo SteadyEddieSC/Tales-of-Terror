@@ -7,7 +7,7 @@ const output = [];
 const waiters = [];
 
 async function main() {
-  const godot = process.env.GODOT_BIN || "Godot_v4.7-stable_linux.x86_64";
+  const godot = process.env.GODOT_BIN || "Godot_v4.7.1-stable_linux.x86_64";
   const worker = await unstable_dev("services/room-service/src/worker.ts", {
     config: "services/room-service/wrangler.jsonc",
     local: true,
