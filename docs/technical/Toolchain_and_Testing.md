@@ -7,7 +7,8 @@
 | Godot Windows | `4.7.1.stable.official.a13da4feb` | Official standard Win64 archive, verified with the published SHA-512 before external extraction |
 | Godot Linux CI | `4.7.1-stable` standard Linux x86_64 | Direct official release download and SHA-512 verification in `.github/workflows/godot-tests.yml` |
 | GUT | tag `v9.7.1`, commit `aeb5d4f3f7f0a6c9b5e178876d6c99b791fda605` | Unmodified tagged `addons/gut` vendored at `game/addons/gut` |
-| GDScript Toolkit | `gdtoolkit==4.5.0` | `python -m pip install --requirement requirements-dev.txt` |
+| GDScript Toolkit | direct selection `gdtoolkit==4.5.0`; fully resolved lock in `requirements-dev.txt` | `python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt` |
+| Python lock generator | `pip-tools==7.6.0` | Local maintenance only; exact generation command below, not a CI runtime dependency |
 | CI Python | `3.11.9` | Immutable `actions/setup-python` commit recorded in the workflow |
 | Companion Node | `24.18.0` in CI | Existing immutable `actions/setup-node` step and locked `npm ci` |
 
@@ -23,6 +24,41 @@ The release page is `godotengine/godot-builds` tag `4.7.1-stable`, published Jul
 | Linux x86_64 | `Godot_v4.7.1-stable_linux.x86_64.zip` | `4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9` |
 
 Never place either archive, executable, `.godot` cache, or generated report in Git.
+
+## Fully locked Python development environment
+
+`requirements-dev.in` contains the only reviewed direct dependency, `gdtoolkit==4.5.0`. `requirements-dev.txt` is the Python 3.11.9 resolution and contains only exact `==` requirements with SHA-256 hashes. Its reviewed package set is:
+
+| Package | Locked version | Dependency path |
+| --- | --- | --- |
+| `gdtoolkit` | `4.5.0` | Direct selection |
+| `docopt-ng` | `0.9.0` | GDScript Toolkit |
+| `lark` | `1.2.2` | GDScript Toolkit |
+| `pyyaml` | `6.0.3` | GDScript Toolkit |
+| `radon` | `6.0.1` | GDScript Toolkit |
+| `setuptools` | `83.0.0` | GDScript Toolkit; included explicitly with `--allow-unsafe` |
+| `regex` | `2026.7.19` | `lark[regex]` |
+| `mando` | `0.7.1` | `radon` |
+| `colorama` | `0.4.6` | `radon` |
+| `six` | `1.17.0` | `mando` |
+
+Regenerate only after reviewing dependency changes, using Python 3.11.9 and this exact maintenance tool and command:
+
+```powershell
+py -3.11 -m venv .lock-venv
+& .\.lock-venv\Scripts\python.exe -m pip install --index-url https://pypi.org/simple pip-tools==7.6.0
+$env:CUSTOM_COMPILE_COMMAND = 'python -m piptools compile --generate-hashes --allow-unsafe --resolver=backtracking --strip-extras --no-emit-index-url --output-file=requirements-dev.txt requirements-dev.in'
+& .\.lock-venv\Scripts\python.exe -m piptools compile --generate-hashes --allow-unsafe --resolver=backtracking --strip-extras --no-emit-index-url --output-file=requirements-dev.txt requirements-dev.in
+Remove-Item Env:CUSTOM_COMPILE_COMMAND
+```
+
+The committed lock must install unchanged on both Windows PC-Office and Linux GitHub Actions under Python 3.11.9. Installation and verification are:
+
+```powershell
+python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+python -m pip check
+python -m pip freeze --all
+```
 
 ## Windows commands
 
@@ -77,7 +113,9 @@ Install the exact tool pin:
 
 ```powershell
 python -m venv .venv
-& .\.venv\Scripts\python.exe -m pip install --requirement requirements-dev.txt
+& .\.venv\Scripts\python.exe -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+& .\.venv\Scripts\python.exe -m pip check
+& .\.venv\Scripts\python.exe -m pip freeze --all
 $files = Get-ChildItem game -Recurse -File -Filter *.gd |
   Where-Object { $_.FullName -notlike '*\game\addons\gut\*' -and $_.FullName -notlike '*\game\.godot\*' } |
   Sort-Object FullName | ForEach-Object FullName
@@ -99,6 +137,8 @@ Because the baseline is large, both steps are informational in this release. The
 
 ## GitHub Actions orchestration
 
-The existing Godot workflow/job names remain unchanged for branch-policy compatibility. The Godot job performs checksum verification, pinned Python/tool installation, informational lint/format capture, import, main smoke, every legacy test and simulation, locked companion dependency installation, the genuine local native-authority E2E, GUT, and JUnit upload. Companion and repository workflows retain their existing TypeScript, browser, service, audit, build, privacy, secret, JSON, LFS, provenance, oversized-file, title, and whitespace checks.
+The existing Godot workflow/job names remain unchanged for branch-policy compatibility. The Godot job performs checksum verification, hash-enforced Python/tool installation plus `pip check` and `pip freeze --all`, informational lint/format capture, import, main smoke, every legacy test and simulation, locked companion dependency installation, the genuine local native-authority E2E, GUT, and JUnit upload. Companion and repository workflows retain their existing TypeScript, browser, service, audit, build, privacy, secret, JSON, LFS, provenance, oversized-file, title, and whitespace checks.
+
+Repository checkout uses `fetch-depth: 0` so whitespace validation inspects committed work. Pull requests run `git diff --check` on `pull_request.base.sha...pull_request.head.sha`; pushes to `main` compare `github.event.before` with `github.sha`. An all-zero initial-push `before` value checks only the pushed commit against its first parent, or the empty tree for a root commit. Missing or unavailable event SHAs fail closed. The pathspec excludes only `game/addons/gut/**`; first-party files are never exempt.
 
 This workflow validates source. It does not export, deploy, package Android, publish a storefront build, install `godot-ci`, or change production Cloudflare resources.

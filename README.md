@@ -31,7 +31,8 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 - `web/companion/` — accessible browser companion prototype
 - `services/room-service/` — ephemeral Cloudflare-compatible room coordinator
 - `game/addons/gut/` — vendored GUT 9.7.1 framework, excluded from first-party style checks
-- `requirements-dev.txt` — exact local/CI GDScript Toolkit development pin
+- `requirements-dev.in` — reviewed direct GDScript Toolkit selection
+- `requirements-dev.txt` — fully resolved, exact, hash-locked Python development environment
 
 ## Validation layers
 
