@@ -169,6 +169,10 @@ export class CompanionAppModel {
         ? this.privateView.prompt
         : null;
     const promptRevision = typeof prompt?.revision === "number" ? prompt.revision : -1;
+    if (!Number.isInteger(promptRevision) || promptRevision < 0) {
+      this.setStatus("The prompt view was incomplete. Refresh before submitting an action.");
+      return;
+    }
     this.submit("prompt_choice_submit", { optionIds, promptRevision });
   }
 
@@ -307,10 +311,16 @@ export class CompanionAppModel {
       return;
     }
     this.requestOrdinal += 1;
-    const envelope = createEnvelope(this.roomId, messageType, `client_${this.requestOrdinal}`, payload, {
-      seatClaim: this.seatClaim,
-      authoritativeRevision: this.authoritativeRevision,
-    });
+    let envelope: ProtocolEnvelope;
+    try {
+      envelope = createEnvelope(this.roomId, messageType, `client_${this.requestOrdinal}`, payload, {
+        seatClaim: this.seatClaim,
+        authoritativeRevision: this.authoritativeRevision,
+      });
+    } catch {
+      this.setStatus("The bounded action was malformed and was not sent to gameplay.");
+      return;
+    }
     this.phase = "submitting";
     this.setStatus("Submitting a bounded intent to the authoritative host…");
     this.transport.send(envelope);

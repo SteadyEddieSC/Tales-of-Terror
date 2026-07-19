@@ -116,7 +116,7 @@ func request_join(client_id: String) -> Dictionary:
 	return {"accepted": true, "pending": payload}
 
 func approve_claim(client_id: String, seat_number: int) -> Dictionary:
-	if not _pending_clients.has(client_id) or not _rules_session.participating_seats.has(seat_number):
+	if not can_approve_claim(client_id, seat_number):
 		return _reject("unauthorized", "seat_claim_approved", client_id)
 	for claimed_client: String in _claims:
 		if claimed_client != client_id and _claims[claimed_client] == seat_number:
@@ -134,6 +134,14 @@ func approve_claim(client_id: String, seat_number: int) -> Dictionary:
 	pending_claim_changed.emit({"pending_count": _pending_clients.size()})
 	_record("seat_claim_approved", envelope.request_id, "accepted", seat_number)
 	return {"accepted": true, "seat": seat_number, "envelope": envelope}
+
+func can_approve_claim(client_id: String, seat_number: int) -> bool:
+	if not _pending_clients.has(client_id) or not _rules_session.participating_seats.has(seat_number):
+		return false
+	for claimed_client: String in _claims:
+		if claimed_client != client_id and _claims[claimed_client] == seat_number:
+			return false
+	return true
 
 func deny_claim(client_id: String) -> Dictionary:
 	if not _pending_clients.has(client_id):
@@ -266,7 +274,9 @@ func diagnostics() -> Dictionary:
 func _apply_intent(seat_number: int, envelope: Dictionary) -> Dictionary:
 	match envelope.message_type:
 		"prompt_choice_submit":
-			var option_values: Variant = envelope.payload.get("optionIds", envelope.payload.get("option_ids"))
+			if not _payload_has_exact_keys(envelope.payload, PackedStringArray(["option_ids", "prompt_revision"])):
+				return {"accepted": false, "reason": "malformed_intent"}
+			var option_values: Variant = envelope.payload.get("option_ids")
 			if not option_values is Array or option_values.size() > 8:
 				return {"accepted": false, "reason": "malformed_intent"}
 			var option_ids: Array[String] = []
@@ -274,12 +284,14 @@ func _apply_intent(seat_number: int, envelope: Dictionary) -> Dictionary:
 				if not value is String:
 					return {"accepted": false, "reason": "malformed_intent"}
 				option_ids.append(value)
-			var prompt_revision: Variant = envelope.payload.get("promptRevision", envelope.payload.get("prompt_revision"))
+			var prompt_revision: Variant = envelope.payload.get("prompt_revision")
 			if not prompt_revision is int:
 				return {"accepted": false, "reason": "malformed_intent"}
 			return _rules_session.submit_response(seat_number, option_ids, prompt_revision)
 		"role_action_submit":
-			var action_id: Variant = envelope.payload.get("actionId", envelope.payload.get("action_id"))
+			if not _payload_has_exact_keys(envelope.payload, PackedStringArray(["action_id", "targets"])):
+				return {"accepted": false, "reason": "malformed_intent"}
+			var action_id: Variant = envelope.payload.get("action_id")
 			var target_values: Variant = envelope.payload.get("targets", [])
 			if not action_id is String or not target_values is Array or target_values.size() > SeatManager.MAX_SEATS:
 				return {"accepted": false, "reason": "malformed_intent"}
@@ -290,6 +302,8 @@ func _apply_intent(seat_number: int, envelope: Dictionary) -> Dictionary:
 				targets.append(value)
 			return _role_session.perform_action(seat_number, action_id, targets, _rules_session, _board_state)
 		"private_reveal_ack":
+			if not envelope.payload.is_empty():
+				return {"accepted": false, "reason": "malformed_intent"}
 			return _role_session.acknowledge_private_role(seat_number)
 	return {"accepted": false, "reason": "unsupported_intent"}
 
@@ -302,8 +316,8 @@ func _emit_views(client_id: String) -> void:
 	var private_envelope: Dictionary = _envelope("seat_private_view_update", "private_%d" % _sequence, private_payload, seat_number, "", authoritative_revision())
 	outbound_envelope.emit(client_id, public_envelope)
 	outbound_envelope.emit(client_id, private_envelope)
-	if not private_payload.get("factionPrivate", {}).is_empty():
-		outbound_envelope.emit(client_id, _envelope("faction_private_view_update", "faction_%d" % _sequence, private_payload.factionPrivate, seat_number, "", authoritative_revision()))
+	if not private_payload.get("faction_private", {}).is_empty():
+		outbound_envelope.emit(client_id, _envelope("faction_private_view_update", "faction_%d" % _sequence, private_payload.faction_private, seat_number, "", authoritative_revision()))
 
 func _cache_rejection(cache_key: String, client_id: String, request: Dictionary, code: String) -> Dictionary:
 	var envelope: Dictionary = _envelope(
@@ -384,3 +398,11 @@ func _safe_request_id(value: String) -> String:
 		if safe.length() >= CompanionProtocol.MAX_REQUEST_ID_LENGTH:
 			break
 	return safe if not safe.is_empty() else "request"
+
+func _payload_has_exact_keys(payload: Dictionary, expected: PackedStringArray) -> bool:
+	if payload.size() != expected.size():
+		return false
+	for key: Variant in payload:
+		if not key is String or not expected.has(key):
+			return false
+	return true

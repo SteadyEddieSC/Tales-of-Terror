@@ -54,7 +54,9 @@ func send_raw(client_id: String, raw: String) -> Dictionary:
 func drain(client_id: String) -> Array[Dictionary]:
 	if not _inboxes.has(client_id):
 		return []
-	var messages: Array[Dictionary] = (_inboxes[client_id] as Array[Dictionary]).duplicate(true)
+	var messages: Array[Dictionary] = []
+	for message: Dictionary in _inboxes[client_id]:
+		messages.append(message.duplicate(true))
 	_inboxes[client_id].clear()
 	return messages
 

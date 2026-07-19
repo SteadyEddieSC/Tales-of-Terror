@@ -6,6 +6,8 @@ The responsive prototype in `web/companion` follows `idle → joining → pendin
 
 The public room summary may be visible at any time. Seat-private role, faction, objectives, prompts, cards/inventory references, and legal actions are retained in memory but omitted from the rendered model and DOM until the player activates the privacy gate. `Obscure now`, disconnect, expiry, revocation, and leave replace private DOM nodes rather than only hiding them with CSS. The resume capability is never rendered.
 
+The native board projection omits every unrevealed authored space before serialization. The Sealed Archive regression fixture recursively asserts that its ID, authored/derived label, feature, and identifying connector IDs occur in none of the public or unauthorized companion views, errors, histories, diagnostics, acknowledgements, reconnect payloads, or sanitized native/service logs. Browser tests separately prove that wrong-seat updates, rejections, acknowledgements, and reconnect state do not retain injected hidden-room terms.
+
 Browser storage contains only room code, room ID, transient client ID, stable seat number, and opaque resume capability under one versioned local-storage key. It contains no role, objective, card, action, account, name, email, analytics ID, or long-term profile. `Leave and clear room data` removes the entire key.
 
 ## Accessibility

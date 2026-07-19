@@ -8,6 +8,7 @@
     "test": "npm run test:service && npm run test:browser",
     "test:service": "vitest run --config services/room-service/vitest.config.ts",
     "test:browser": "vitest run --config web/companion/vitest.config.ts",
+    "test:e2e:local": "node tools/run_companion_live_e2e.mjs",
     "build": "npm run build:service && npm run build:browser",
     "build:service": "wrangler deploy --dry-run --config services/room-service/wrangler.jsonc --outdir dist",
     "build:browser": "vite build --config web/companion/vite.config.ts",

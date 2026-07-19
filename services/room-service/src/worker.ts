@@ -1,17 +1,20 @@
-import { EphemeralRoom, type EphemeralRoomSnapshot } from "./room-coordinator";
+import { DEFAULT_LIMITS, EphemeralRoom, type EphemeralRoomSnapshot, type RoomLimits } from "./room-coordinator";
 import { MAX_MESSAGE_BYTES, parseEnvelope, SERVICE_VERSION } from "./protocol";
 
 interface Env {
   readonly GAME_ROOMS: DurableObjectNamespace;
   readonly ALLOWED_ORIGINS: string;
+  readonly ROOM_IDLE_EXPIRY_MS?: string;
+  readonly ROOM_HOST_LOSS_GRACE_MS?: string;
+  readonly ROOM_RATE_WINDOW_MS?: string;
+  readonly ROOM_ACKNOWLEDGEMENT_EXPIRY_MS?: string;
+  readonly ROOM_MAX_MESSAGES_PER_WINDOW?: string;
 }
 
 interface SocketAttachment {
   clientId: string;
   authenticated: boolean;
 }
-
-const WORKER_IDLE_EXPIRY_MS = 10 * 60 * 1_000;
 
 const jsonHeaders = {
   "content-type": "application/json; charset=utf-8",
@@ -59,13 +62,27 @@ export class GameRoom implements DurableObject {
   constructor(private readonly state: DurableObjectState) {
     this.ready = state.blockConcurrencyWhile(async () => {
       const snapshot = await state.storage.get<EphemeralRoomSnapshot>("room");
-      if (snapshot) this.room = EphemeralRoom.restore(snapshot);
+      if (!snapshot) return;
+      try {
+        const restored = EphemeralRoom.restore(snapshot);
+        if (restored.nextExpiryAtMs() === undefined) {
+          await state.storage.deleteAlarm();
+          await state.storage.deleteAll();
+        } else {
+          this.room = restored;
+        }
+      } catch {
+        this.room = undefined;
+        await state.storage.deleteAlarm();
+        await state.storage.deleteAll();
+      }
     });
   }
 
   async fetch(request: Request): Promise<Response> {
     await this.ready;
     const url = new URL(request.url);
+    await this.expireIfDue();
     if (url.pathname === "/create" && request.method === "POST") return this.create(request);
     if (url.pathname === "/join" && request.method === "POST") return this.join(request);
     if (url.pathname === "/host" && request.method === "POST") return this.host(request);
@@ -75,7 +92,15 @@ export class GameRoom implements DurableObject {
 
   async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
     const raw = typeof message === "string" ? message : new TextDecoder().decode(message);
-    if (!this.room || new TextEncoder().encode(raw).byteLength > MAX_MESSAGE_BYTES) {
+    if (await this.expireIfDue()) {
+      socket.close(4000, "room_expired");
+      return;
+    }
+    if (!this.room) {
+      socket.send(JSON.stringify({ accepted: false, code: "expired" }));
+      return;
+    }
+    if (new TextEncoder().encode(raw).byteLength > MAX_MESSAGE_BYTES) {
       socket.send(JSON.stringify({ accepted: false, code: "malformed" }));
       return;
     }
@@ -102,19 +127,14 @@ export class GameRoom implements DurableObject {
   }
 
   async alarm(): Promise<void> {
-    if (this.room) {
-      this.room.advanceTo(this.room.diagnostics().step + this.room.limits.idleExpirySteps);
-      for (const socket of this.sockets.keys()) socket.close(4000, "room_expired");
-    }
-    this.room = undefined;
-    await this.state.storage.deleteAll();
+    if (!await this.expireIfDue()) this.scheduleExpiry();
   }
 
   private async create(request: Request): Promise<Response> {
     const code = request.headers.get("x-room-code") ?? "";
     if (this.room?.diagnostics().roomState === "open") return responseJson({ accepted: false, code: "collision" }, 409);
     try {
-      this.room = new EphemeralRoom(`room_${code.toLowerCase()}`, code);
+      this.room = new EphemeralRoom(`room_${code.toLowerCase()}`, code, undefined, limitsFromHeaders(request.headers));
       await this.persistRoom();
       this.scheduleExpiry();
       const payload = {
@@ -172,7 +192,7 @@ export class GameRoom implements DurableObject {
         result = this.room.close(capability);
         if (result.accepted) {
           for (const [socket, attachment] of this.sockets) {
-            if (attachment.authenticated) this.flushSocketClient(socket, attachment.clientId);
+            if (attachment.authenticated && result.envelope) socket.send(JSON.stringify(result.envelope));
             socket.close(4001, "room_closed");
           }
           this.room = undefined;
@@ -272,11 +292,26 @@ export class GameRoom implements DurableObject {
   }
 
   private scheduleExpiry(): void {
-    void this.state.storage.setAlarm(Date.now() + WORKER_IDLE_EXPIRY_MS);
+    const deadline = this.room?.nextExpiryAtMs();
+    if (deadline !== undefined) void this.state.storage.setAlarm(Math.max(Date.now() + 1, deadline));
   }
 
   private async persistRoom(): Promise<void> {
     if (this.room) await this.state.storage.put("room", this.room.snapshot());
+  }
+
+  private async expireIfDue(): Promise<boolean> {
+    const envelope = this.room?.updateTime();
+    if (!envelope) return false;
+    for (const socket of this.sockets.keys()) {
+      socket.send(JSON.stringify(envelope));
+      socket.close(4000, "room_expired");
+    }
+    this.sockets.clear();
+    this.room = undefined;
+    await this.state.storage.deleteAlarm();
+    await this.state.storage.deleteAll();
+    return true;
   }
 }
 
@@ -284,7 +319,14 @@ async function createRoom(env: Env): Promise<Response> {
   for (let attempt = 0; attempt < 8; attempt += 1) {
     const code = randomJoinCode();
     const stub = env.GAME_ROOMS.get(env.GAME_ROOMS.idFromName(code));
-    const response = await stub.fetch("https://room.internal/create", { method: "POST", headers: { "x-room-code": code } });
+    const limits = limitsFromEnv(env);
+    const headers = new Headers({ "x-room-code": code });
+    headers.set("x-room-idle-expiry-ms", String(limits.idleExpiryMs));
+    headers.set("x-room-host-loss-grace-ms", String(limits.hostLossGraceMs));
+    headers.set("x-room-rate-window-ms", String(limits.rateWindowMs));
+    headers.set("x-room-acknowledgement-expiry-ms", String(limits.acknowledgementExpiryMs));
+    headers.set("x-room-max-messages-per-window", String(limits.maxMessagesPerWindow));
+    const response = await stub.fetch("https://room.internal/create", { method: "POST", headers });
     if (response.status !== 409) return response;
   }
   return responseJson({ accepted: false, code: "collision_limit" }, 503);
@@ -369,4 +411,32 @@ function corsResponse(request: Request, allowed: string, response: Response): Re
   headers.set("access-control-allow-headers", "authorization,content-type");
   headers.set("vary", "Origin");
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
+function limitsFromEnv(env: Env): RoomLimits {
+  return {
+    ...DEFAULT_LIMITS,
+    idleExpiryMs: boundedInteger(env.ROOM_IDLE_EXPIRY_MS, DEFAULT_LIMITS.idleExpiryMs),
+    hostLossGraceMs: boundedInteger(env.ROOM_HOST_LOSS_GRACE_MS, DEFAULT_LIMITS.hostLossGraceMs),
+    rateWindowMs: boundedInteger(env.ROOM_RATE_WINDOW_MS, DEFAULT_LIMITS.rateWindowMs),
+    acknowledgementExpiryMs: boundedInteger(env.ROOM_ACKNOWLEDGEMENT_EXPIRY_MS, DEFAULT_LIMITS.acknowledgementExpiryMs),
+    maxMessagesPerWindow: boundedInteger(env.ROOM_MAX_MESSAGES_PER_WINDOW, DEFAULT_LIMITS.maxMessagesPerWindow, 1, 128),
+  };
+}
+
+function limitsFromHeaders(headers: Headers): RoomLimits {
+  return {
+    ...DEFAULT_LIMITS,
+    idleExpiryMs: boundedInteger(headers.get("x-room-idle-expiry-ms"), DEFAULT_LIMITS.idleExpiryMs),
+    hostLossGraceMs: boundedInteger(headers.get("x-room-host-loss-grace-ms"), DEFAULT_LIMITS.hostLossGraceMs),
+    rateWindowMs: boundedInteger(headers.get("x-room-rate-window-ms"), DEFAULT_LIMITS.rateWindowMs),
+    acknowledgementExpiryMs: boundedInteger(headers.get("x-room-acknowledgement-expiry-ms"), DEFAULT_LIMITS.acknowledgementExpiryMs),
+    maxMessagesPerWindow: boundedInteger(headers.get("x-room-max-messages-per-window"), DEFAULT_LIMITS.maxMessagesPerWindow, 1, 128),
+  };
+}
+
+function boundedInteger(value: string | null | undefined, fallback: number, minimum = 10, maximum = 24 * 60 * 60_000): number {
+  if (!value || !/^\d+$/.test(value)) return fallback;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed >= minimum && parsed <= maximum ? parsed : fallback;
 }

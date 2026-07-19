@@ -30,10 +30,10 @@ func _run_sequence(seed: int, seat_count: int) -> void:
 		var client_id: String = "client_%d" % (index + 1)
 		var private_first: Dictionary = first.bridge.seat_view_for_client(client_id)
 		var private_second: Dictionary = second.bridge.seat_view_for_client(client_id)
-		_expect(private_first == private_second and private_first.authorizedSeat == index + 1, "replays stable-seat filtered view")
+		_expect(private_first == private_second and private_first.authorized_seat == index + 1, "replays stable-seat filtered view")
 		first.transport.disconnect_client(client_id)
 		_expect(first.transport.resume_client(client_id, index + 1).accepted, "reconnects only the same stable seat")
-		_expect(first.bridge.seat_view_for_client(client_id).socialPrivate == private_first.socialPrivate, "preserves private state on reconnect")
+		_expect(first.bridge.seat_view_for_client(client_id).social_private == private_first.social_private, "preserves private state on reconnect")
 	_expect(first.roles.privacy_report().passed, "passes recursive social privacy evaluation")
 	_expect(not "capability" in JSON.stringify(first.bridge.diagnostics()).to_lower(), "keeps resume capabilities out of diagnostics")
 	_sequence_count += 1

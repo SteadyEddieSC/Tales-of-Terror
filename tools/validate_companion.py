@@ -20,6 +20,10 @@ REQUIRED = [
     "services/room-service/src/worker.ts",
     "web/companion/src/model.ts",
     "game/src/companion/companion_bridge.gd",
+    "game/src/companion/companion_wire_codec.gd",
+    "game/src/companion/companion_room_service_host.gd",
+    "game/tests/fixtures/companion_protocol_v1.json",
+    "tools/run_companion_live_e2e.mjs",
     "docs/decisions/ADR-0019-companion-room-authority-and-privacy.md",
 ]
 FORBIDDEN_CONTENT = {
@@ -69,11 +73,19 @@ def main() -> int:
     worker_source = (ROOT / "services/room-service/src/worker.ts").read_text(encoding="utf-8")
     coordinator_source = (ROOT / "services/room-service/src/room-coordinator.ts").read_text(encoding="utf-8")
     browser_source = (ROOT / "web/companion/src/app.ts").read_text(encoding="utf-8")
+    host_source = (ROOT / "game/src/companion/companion_room_service_host.gd").read_text(encoding="utf-8")
+    websocket_source = (ROOT / "game/src/companion/companion_websocket_transport.gd").read_text(encoding="utf-8")
     if "console.log" in worker_source or "console.log" in coordinator_source:
         failures.append("room service must not log payloads or capabilities")
     for forbidden in ("serviceWorker", "Notification.requestPermission", "getUserMedia"):
         if forbidden in browser_source:
             failures.append(f"browser companion includes out-of-scope API: {forbidden}")
+    if "advanceTo" in coordinator_source or "ExpirySteps" in coordinator_source:
+        failures.append("room service production model must use persisted elapsed time, not manually advanced test steps")
+    if "CompanionWireCodec.parse_wire_envelope" not in websocket_source or "CompanionWireCodec.stringify_wire_envelope" not in websocket_source:
+        failures.append("Godot WebSocket transport must convert both directions at the wire boundary")
+    if "print(" in host_source or "_host_capability" not in host_source:
+        failures.append("native room-service host must retain authorization privately without logging it")
 
     if failures:
         print("\n".join(failures))

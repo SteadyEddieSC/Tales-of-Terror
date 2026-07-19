@@ -1,0 +1,100 @@
+{
+  "fixtureVersion": 1,
+  "typescriptProducedWire": {
+    "protocolVersion": 1,
+    "roomId": "room_fixture",
+    "messageType": "prompt_choice_submit",
+    "serverSequence": 4,
+    "authoritativeRevision": 11,
+    "requestId": "typescript_choice_1",
+    "seatClaim": 3,
+    "payload": {
+      "optionIds": [
+        "listen",
+        "wait"
+      ],
+      "promptRevision": 7
+    },
+    "acknowledgement": ""
+  },
+  "typescriptExpectedInternal": {
+    "protocol_version": 1,
+    "room_id": "room_fixture",
+    "message_type": "prompt_choice_submit",
+    "server_sequence": 4,
+    "authoritative_revision": 11,
+    "request_id": "typescript_choice_1",
+    "seat_claim": 3,
+    "payload": {
+      "option_ids": [
+        "listen",
+        "wait"
+      ],
+      "prompt_revision": 7
+    },
+    "acknowledgement": ""
+  },
+  "godotProducedInternal": {
+    "protocol_version": 1,
+    "room_id": "room_fixture",
+    "message_type": "acknowledgement",
+    "server_sequence": 9,
+    "authoritative_revision": 12,
+    "request_id": "typescript_choice_1",
+    "seat_claim": 3,
+    "payload": {
+      "resulting_revision": 12,
+      "applied_once": true,
+      "authority_result": "accepted"
+    },
+    "acknowledgement": "accepted"
+  },
+  "godotProducedWire": {
+    "protocolVersion": 1,
+    "roomId": "room_fixture",
+    "messageType": "acknowledgement",
+    "serverSequence": 9,
+    "authoritativeRevision": 12,
+    "requestId": "typescript_choice_1",
+    "seatClaim": 3,
+    "payload": {
+      "resultingRevision": 12,
+      "appliedOnce": true,
+      "authorityResult": "accepted"
+    },
+    "acknowledgement": "accepted"
+  },
+  "malformedMixedEnvelopes": [
+    {
+      "protocolVersion": 1,
+      "roomId": "room_fixture",
+      "room_id": "room_fixture",
+      "messageType": "host_heartbeat",
+      "serverSequence": 1,
+      "authoritativeRevision": 0,
+      "requestId": "mixed_envelope",
+      "seatClaim": 0,
+      "payload": {},
+      "acknowledgement": ""
+    },
+    {
+      "protocolVersion": 1,
+      "roomId": "room_fixture",
+      "messageType": "prompt_choice_submit",
+      "serverSequence": 1,
+      "authoritativeRevision": 0,
+      "requestId": "mixed_payload",
+      "seatClaim": 3,
+      "payload": {
+        "optionIds": [
+          "listen"
+        ],
+        "option_ids": [
+          "listen"
+        ],
+        "promptRevision": 7
+      },
+      "acknowledgement": ""
+    }
+  ]
+}

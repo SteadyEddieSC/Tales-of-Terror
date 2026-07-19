@@ -19,6 +19,10 @@ const REJECTION_CODES: PackedStringArray = [
 	"unsupported_version", "unsupported_type", "expired", "room_full",
 	"wrong_seat", "revoked", "host_missing", "body_too_large",
 ]
+const ENVELOPE_FIELDS: PackedStringArray = [
+	"protocol_version", "room_id", "message_type", "server_sequence",
+	"authoritative_revision", "request_id", "seat_claim", "payload", "acknowledgement",
+]
 
 static func parse_envelope(raw: String) -> Dictionary:
 	if raw.to_utf8_buffer().size() > MAX_MESSAGE_BYTES:
@@ -32,6 +36,11 @@ static func validate_envelope(value: Variant) -> Dictionary:
 	if not value is Dictionary:
 		return {"accepted": false, "code": "malformed"}
 	var envelope: Dictionary = value
+	if envelope.size() != ENVELOPE_FIELDS.size():
+		return {"accepted": false, "code": "malformed"}
+	for key: Variant in envelope:
+		if not key is String or not ENVELOPE_FIELDS.has(key):
+			return {"accepted": false, "code": "malformed"}
 	if not envelope.has("protocol_version") or not envelope.protocol_version is int or envelope.protocol_version != PROTOCOL_VERSION:
 		return {"accepted": false, "code": "unsupported_version"}
 	if not envelope.get("message_type") is String or not MESSAGE_TYPES.has(envelope.message_type):

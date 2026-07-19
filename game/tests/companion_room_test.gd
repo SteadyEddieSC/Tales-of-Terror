@@ -4,7 +4,9 @@ var _failures: int = 0
 
 func _initialize() -> void:
 	_test_protocol_validation()
+	_test_cross_runtime_wire_fixtures()
 	_test_room_claim_and_private_views()
+	_test_hidden_board_privacy_is_recursive()
 	_test_intent_authority_and_idempotency()
 	_test_invalid_requests_are_atomic_and_rng_free()
 	_test_reconnect_and_local_input_policy()
@@ -29,6 +31,35 @@ func _test_protocol_validation() -> void:
 	_expect(CompanionProtocol.validate_envelope(too_large).code == "malformed", "bounds string and payload sizes")
 	_expect(CompanionProtocol.parse_envelope("{").code == "malformed", "keeps malformed JSON away from gameplay")
 	_expect(CompanionProtocol.parse_envelope("x".repeat(CompanionProtocol.MAX_MESSAGE_BYTES + 1)).code == "body_too_large", "rejects oversized messages before JSON parsing")
+	var unknown_field: Dictionary = valid.duplicate(true)
+	unknown_field["roomId"] = "room_1"
+	_expect(CompanionProtocol.validate_envelope(unknown_field).code == "malformed", "rejects mixed or unknown internal envelope fields")
+
+func _test_cross_runtime_wire_fixtures() -> void:
+	var fixture_value: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/companion_protocol_v1.json"))
+	_expect(fixture_value is Dictionary, "loads the shared cross-runtime protocol fixture")
+	if not fixture_value is Dictionary:
+		return
+	var fixture: Dictionary = fixture_value
+	var parsed_typescript: Dictionary = CompanionWireCodec.from_wire_envelope(fixture.typescriptProducedWire)
+	var normalized_typescript: Variant = JSON.parse_string(JSON.stringify(parsed_typescript.get("envelope", {})))
+	_expect(parsed_typescript.accepted and normalized_typescript == fixture.typescriptExpectedInternal, "parses a TypeScript-produced camel-case envelope in Godot: %s" % JSON.stringify(parsed_typescript))
+	var godot_internal: Dictionary = CompanionProtocol.create_envelope(
+		"room_fixture", "acknowledgement", "typescript_choice_1",
+		{"resulting_revision": 12, "applied_once": true, "authority_result": "accepted"},
+		9, 12, 3, "accepted",
+	)
+	var produced_by_godot: Dictionary = CompanionWireCodec.to_wire_envelope(godot_internal)
+	var normalized_godot_wire: Variant = JSON.parse_string(JSON.stringify(produced_by_godot.get("envelope", {})))
+	_expect(produced_by_godot.accepted and normalized_godot_wire == fixture.godotProducedWire, "produces the TypeScript-valid camel-case fixture from Godot: %s" % JSON.stringify(produced_by_godot))
+	var round_trip: Dictionary = CompanionWireCodec.from_wire_envelope(produced_by_godot.get("envelope", {}))
+	_expect(round_trip.accepted and round_trip.envelope == godot_internal, "preserves intended values through the bidirectional wire conversion")
+	for malformed: Variant in fixture.malformedMixedEnvelopes:
+		_expect(CompanionWireCodec.from_wire_envelope(malformed).code == "malformed", "fails closed on a malformed or mixed wire schema")
+	var mixed_nested: Dictionary = fixture.godotProducedWire.duplicate(true)
+	mixed_nested.messageType = "public_view_update"
+	mixed_nested.payload = {"board": {"viewVersion": 1, "view_version": 1, "revision": 0, "spaces": []}}
+	_expect(CompanionWireCodec.from_wire_envelope(mixed_nested).code == "malformed", "fails closed on mixed nested protocol-owned view fields")
 
 func _test_room_claim_and_private_views() -> void:
 	var fixture: Dictionary = _fixture(4, "hidden_betrayer", 8080)
@@ -40,7 +71,7 @@ func _test_room_claim_and_private_views() -> void:
 	_expect(transport.approve_client("client_one", secret_seat).accepted, "host explicitly approves a stable seat")
 	var private_view: Dictionary = bridge.seat_view_for_client("client_one")
 	var secret_role: Dictionary = fixture.roles.content.role_by_id(fixture.roles.seat_states[secret_seat].form_id)
-	_expect(private_view.accepted and private_view.authorizedSeat == secret_seat, "builds the approved seat-private companion view")
+	_expect(private_view.accepted and private_view.authorized_seat == secret_seat, "builds the approved seat-private companion view")
 	_expect(secret_role.label in JSON.stringify(private_view), "delivers hidden role information only to its owning companion")
 	var public_json: String = JSON.stringify(bridge.public_view())
 	_expect(not secret_role.id in public_json and fixture.roles.privacy_report().passed, "keeps public companion data recursively free of unrevealed secrets")
@@ -54,8 +85,37 @@ func _test_room_claim_and_private_views() -> void:
 	var private_eligible: Array[int] = [secret_seat]
 	fixture.rules.open_prompt(private_prompt, private_eligible, "private_companion_test")
 	_expect(not private_prompt.options[0].id in JSON.stringify(bridge.public_view()), "withholds single-seat prompt choices from the public companion view")
-	_expect(private_prompt.options[0].id in JSON.stringify(bridge.seat_view_for_client("client_one").rulesPrivate), "delivers a private prompt only to its eligible authorized seat")
-	_expect(not private_prompt.options[0].id in JSON.stringify(bridge.seat_view_for_client("client_two").rulesPrivate), "withholds a private prompt from another approved seat")
+	_expect(private_prompt.options[0].id in JSON.stringify(bridge.seat_view_for_client("client_one").rules_private), "delivers a private prompt only to its eligible authorized seat")
+	_expect(not private_prompt.options[0].id in JSON.stringify(bridge.seat_view_for_client("client_two").rules_private), "withholds a private prompt from another approved seat")
+
+func _test_hidden_board_privacy_is_recursive() -> void:
+	var fixture: Dictionary = _fixture(4, "hidden_betrayer", 2309)
+	var bridge: CompanionBridge = fixture.bridge
+	var transport: CompanionFakeTransport = fixture.transport
+	bridge.create_room("room_hidden_board", "SEAL27")
+	transport.connect_client("client_owner")
+	transport.approve_client("client_owner", 1)
+	transport.drain("client_owner")
+	var forbidden: PackedStringArray = [
+		"sealed_archive", "The Sealed Archive", "Sealed Archive", "sealed_shelves",
+		"archive_route", "archive_stairs",
+	]
+	var payloads: Array[Variant] = [
+		bridge.public_view(), bridge.seat_view_for_client("unknown_client"),
+		bridge.seat_view_for_client("client_owner"), bridge.diagnostics(),
+	]
+	var wrong_seat: Dictionary = transport.send_intent(
+		"client_owner", "private_reveal_ack", "hidden_wrong_seat", {}, 2,
+	)
+	payloads.append(wrong_seat)
+	payloads.append(transport.drain("client_owner"))
+	transport.disconnect_client("client_owner")
+	payloads.append(transport.resume_client("client_owner", 1))
+	payloads.append(transport.drain("client_owner"))
+	var serialized: String = JSON.stringify(payloads)
+	for secret: String in forbidden:
+		_expect(not secret.to_lower() in serialized.to_lower(), "omits hidden board identifier or derived text %s from all companion paths" % secret)
+	_expect(fixture.board.companion_public_view().spaces.size() == 4, "omits the unrevealed authored space instead of publishing a placeholder")
 
 func _test_intent_authority_and_idempotency() -> void:
 	var fixture: Dictionary = _fixture(4, "cooperative", 4706)
@@ -122,7 +182,7 @@ func _test_reconnect_and_local_input_policy() -> void:
 	_expect(not transport.resume_client("client_secret", 1 if secret_seat != 1 else 2).accepted, "denies reconnect to a different stable seat")
 	var resume_result: Dictionary = transport.resume_client("client_secret", secret_seat)
 	_expect(resume_result.accepted, "resumes the host-authorized stable seat")
-	_expect(bridge.seat_view_for_client("client_secret").socialPrivate == private_before.socialPrivate, "restores the same private role, objective, action, and prompt state")
+	_expect(bridge.seat_view_for_client("client_secret").social_private == private_before.social_private, "restores the same private role, objective, action, and prompt state")
 	var prompt: Dictionary = fixture.rules_content.events[0].prompts[0].duplicate(true)
 	prompt.scope = "all"
 	var eligible: Array[int] = [1, 2, 3, 4]
@@ -163,7 +223,9 @@ func _test_room_close_and_expiry() -> void:
 
 func _test_generic_authority_guard() -> void:
 	var bridge_source: String = FileAccess.get_file_as_string("res://src/companion/companion_bridge.gd")
+	var host_source: String = FileAccess.get_file_as_string("res://src/companion/companion_room_service_host.gd")
 	_expect(not "board_state.apply_mutation" in bridge_source and not "rules_session.apply_effect_bundle" in bridge_source and not "seat_manager.join_device" in bridge_source, "keeps direct board/rules/seat mutations out of the bridge")
+	_expect(not "RulesSession" in host_source and not "RoleSession" in host_source and not "BoardState" in host_source and not "print(" in host_source, "keeps gameplay authorities and sensitive logging out of the native room-service adapter")
 	for forbidden: String in ["betrayer", "living", "restless", "changed", "threshold_whisper"]:
 		_expect(not ("if action_id == \"%s\"" % forbidden) in bridge_source and not ("match \"%s\"" % forbidden) in bridge_source, "keeps literal authored ID %s out of generic companion routing" % forbidden)
 

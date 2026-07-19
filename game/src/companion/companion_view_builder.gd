@@ -49,17 +49,17 @@ func seat_payload(room_id: String, seat_number: int) -> Dictionary:
 	var legal_actions: Array[Dictionary] = []
 	for action: Dictionary in _role_session.legal_actions(seat_number, _rules_session):
 		legal_actions.append({
-			"actionId": action.get("action_id", ""), "label": action.get("label", ""),
+			"action_id": action.get("action_id", ""), "label": action.get("label", ""),
 			"description": action.get("description", ""), "symbol": action.get("symbol", ""),
 		})
 	var faction_view: Dictionary = _role_session.faction_private_view(seat_number)
 	return _json_copy({
 		"accepted": true, "view_version": VIEW_VERSION, "view_kind": "seat_private_companion",
-		"roomId": room_id, "authorizedSeat": seat_number, "seatIdentity": seat_identity(seat_number),
-		"public": public_payload(room_id, "open", 0), "rulesPrivate": rules_view,
-		"socialPrivate": social_view.get("private", {}).duplicate(true), "legalActions": legal_actions,
-		"factionPrivate": faction_view if faction_view.get("accepted", false) else {},
-		"privacyNotice": "Private to the host-authorized stable seat. Obscure before sharing this browser.",
+		"room_id": room_id, "authorized_seat": seat_number, "seat_identity": seat_identity(seat_number),
+		"public": public_payload(room_id, "open", 0), "rules_private": rules_view,
+		"social_private": social_view.get("private", {}).duplicate(true), "legal_actions": legal_actions,
+		"faction_private": faction_view if faction_view.get("accepted", false) else {},
+		"privacy_notice": "Private to the host-authorized stable seat. Obscure before sharing this browser.",
 	})
 
 func seat_identity(seat_number: int) -> Dictionary:

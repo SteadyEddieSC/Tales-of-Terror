@@ -48,10 +48,8 @@ function approve(transport: FakeTransport): void {
 
 function privateUpdate(transport: FakeTransport, seat = 2): void {
   transport.receive(createEnvelope("room_1", "seat_private_view_update", "private_1", {
-    role: "Betrayer",
-    faction: "Veiled",
-    objectives: ["Synthetic secret objective"],
-    prompt: { options: [{ id: "listen", label: "Listen at the threshold" }] },
+    socialPrivate: { role: "Betrayer", faction: "Veiled", objectives: ["Synthetic secret objective"] },
+    rulesPrivate: { prompt: { revision: 7, options: [{ id: "listen", label: "Listen at the threshold" }] } },
     legalActions: [{ actionId: "synthetic_action", label: "Place a quiet omen" }],
   }, { seatClaim: seat, authoritativeRevision: 7, serverSequence: 2 }));
 }
@@ -197,5 +195,35 @@ describe("browser companion privacy and accessibility DOM", () => {
     const appSource = readFileSync("web/companion/src/app.ts", "utf8");
     expect(appSource).not.toContain("serviceWorker");
     expect(appSource).not.toContain("Notification");
+  });
+
+  it("does not retain hidden-board text from unauthorized, error, acknowledgement, or reconnect paths", async () => {
+    const hidden = ["sealed_archive", "The Sealed Archive", "Sealed Archive", "sealed_shelves", "archive_route", "archive_stairs"];
+    const { model, transport, storage } = fixture();
+    await model.join("GHST27");
+    approve(transport);
+    transport.receive(createEnvelope("room_1", "public_view_update", "public_safe", {
+      board: {
+        spaces: ["lantern_hall", "gate_passage", "narrow_gallery", "flooded_vault"].map((id) => ({ id })),
+      },
+    }, { authoritativeRevision: 7 }));
+    transport.receive(createEnvelope("room_1", "seat_private_view_update", "wrong_hidden", {
+      socialPrivate: { note: hidden.join("|") },
+    }, { seatClaim: 3, authoritativeRevision: 7 }));
+    transport.receive(createEnvelope("room_1", "rejection", "rejected_hidden", {
+      currentRevision: 7,
+      refreshRequired: false,
+    }, { seatClaim: 2, acknowledgement: "unauthorized", authoritativeRevision: 7 }));
+    transport.receive(createEnvelope("room_1", "acknowledgement", "ack_hidden", {
+      resultingRevision: 7,
+      appliedOnce: true,
+      authorityResult: "accepted",
+    }, { seatClaim: 2, acknowledgement: "accepted", authoritativeRevision: 7 }));
+    model.disconnectForReconnect();
+    await model.resume();
+    transport.receive(createEnvelope("room_1", "reconnect_resume", "resume_safe", { restored: true }, { seatClaim: 2 }));
+    const retained = JSON.stringify({ snapshot: model.snapshot(), stored: storage.value });
+    for (const term of hidden) expect(retained.toLowerCase()).not.toContain(term.toLowerCase());
+    expect(readFileSync("web/companion/src/transport.ts", "utf8")).not.toContain("console.log");
   });
 });

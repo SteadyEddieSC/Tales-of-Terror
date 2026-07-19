@@ -31,7 +31,7 @@ func poll() -> void:
 		connected.emit()
 	while state == WebSocketPeer.STATE_OPEN and _peer.get_available_packet_count() > 0:
 		var raw: String = _peer.get_packet().get_string_from_utf8()
-		var parsed: Dictionary = CompanionProtocol.parse_envelope(raw)
+		var parsed: Dictionary = CompanionWireCodec.parse_wire_envelope(raw)
 		if not parsed.accepted:
 			transport_error.emit(parsed.code)
 			continue
@@ -46,12 +46,12 @@ func poll() -> void:
 		disconnected.emit(code, reason)
 
 func send_envelope(envelope: Dictionary) -> Dictionary:
-	var validation: Dictionary = CompanionProtocol.validate_envelope(envelope)
-	if not validation.accepted:
-		return validation
+	var serialized: Dictionary = CompanionWireCodec.stringify_wire_envelope(envelope)
+	if not serialized.accepted:
+		return serialized
 	if _peer.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		return {"accepted": false, "code": "transport_unavailable"}
-	var error: Error = _peer.send_text(JSON.stringify(envelope))
+	var error: Error = _peer.send_text(serialized.raw)
 	return {"accepted": error == OK, "code": "accepted" if error == OK else "transport_unavailable"}
 
 func close() -> void:

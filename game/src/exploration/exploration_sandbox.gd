@@ -392,10 +392,10 @@ func _run_companion_showcase(stage: String) -> void:
 		transport.connect_client("browser_private")
 		transport.approve_client("browser_private", secret_seat)
 		if stage == "companion_reconnect":
-			var private_before: Dictionary = _companion_bridge.seat_view_for_client("browser_private").socialPrivate
+			var private_before: Dictionary = _companion_bridge.seat_view_for_client("browser_private").social_private
 			transport.disconnect_client("browser_private")
 			var resumed: Dictionary = transport.resume_client("browser_private", secret_seat)
-			var preserved: bool = private_before == _companion_bridge.seat_view_for_client("browser_private").socialPrivate
+			var preserved: bool = private_before == _companion_bridge.seat_view_for_client("browser_private").social_private
 			outcome = {"headline": "RECONNECT ACCEPTED  •  SAME STABLE SEAT %s" % _companion_bridge.seat_identity(secret_seat).numeral, "detail": "Private role/objective/action state preserved: %s. Wrong-seat resume fails closed." % ("YES" if resumed.accepted and preserved else "NO")}
 		else:
 			outcome = {"headline": "AUTHORIZED PRIVATE VIEW DELIVERED ONLY TO ITS OWNING SEAT.", "detail": "The public host withholds the secret payload. Recursive privacy evaluation: %s." % ("PASS" if _role_session.privacy_report().passed else "FAIL")}

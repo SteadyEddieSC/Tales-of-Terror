@@ -6,7 +6,13 @@
 
 The service owns join-code collision retry, host and per-client resume capabilities, pending/connected membership, approved seat claims, relay ordering, bounded inbox/ack caches, rate limits, heartbeat, close, and expiry. It has no room-list endpoint and no gameplay imports. A service outage fails companions disconnected; a valid unexpired Durable Object snapshot may restore relay state without acquiring gameplay authority.
 
-Defaults are eight clients/pending joins, 32 messages per queue, 32 cached acknowledgements, 8,192-byte bodies, 16 messages per ten deterministic test steps, a short Worker inactivity alarm, and bounded sanitized diagnostics. Close or expiry clears capability strings and acknowledgement state.
+Defaults are eight clients/pending joins, 32 messages per queue, 32 cached acknowledgements, 8,192-byte bodies, 16 messages per 1,000 ms, a ten-minute inactivity deadline, a 30-second host-loss deadline, two-minute acknowledgement-cache retention, and bounded sanitized diagnostics. Tests inject a monotonic clock; production-like code reads elapsed service time, advances it monotonically, persists every relevant timestamp, and schedules the next alarm at the earlier host-loss or inactivity deadline. Client traffic updates ordinary activity but never the host timestamp. Close or expiry clears membership, capability strings, relay queues, and acknowledgement state.
+
+The relay initially returns `relayAccepted: true` without implying gameplay success. When native Godot relays its acknowledgement or rejection, the Durable Object replaces the provisional cached receipt for that client/request ID. A duplicate then returns the authoritative cached result and is not drained into Godot again. Expired acknowledgement entries may leave the relay cache, but `CompanionBridge` and the native authorities retain their independent idempotency/immutable-response checks.
+
+## Native host adapter
+
+`game/src/companion/companion_room_service_host.gd` is a typed Godot node over the host HTTPS interface. It stores the opaque host capability only in a private field and Authorization headers. It polls pending membership/intents, maps approved seats to transient clients, calls `CompanionBridge` with snake-case internal envelopes, and publishes only codec-produced wire envelopes from bridge output. Membership messages are handled separately from gameplay intents. If HTTP is unavailable or malformed, the adapter reports a sanitized transport state and performs no gameplay mutation; local controller/shared-screen play continues.
 
 ## Capability flow
 
@@ -27,12 +33,16 @@ npm ci
 npm run typecheck
 npm run test:service
 npm run dev:service
+# With GODOT_BIN set to the pinned Godot 4.7 console executable:
+npm run test:e2e:local
 ```
 
 Wrangler listens on `http://127.0.0.1:8787` by default and uses local Durable Object emulation without Cloudflare credentials. Create with `POST /v1/rooms`, join with `POST /v1/rooms/join`, and perform host operations through `POST /v1/rooms/host` with `Authorization: Bearer …`. The browser socket is `/v1/rooms/{JOIN_CODE}/socket`; capability material is sent only in its first message.
 
 `ALLOWED_ORIGINS` defaults to the local companion development origins. Browser requests from all other origins fail. Non-browser CLI calls may omit `Origin`; production configuration must set an explicit HTTPS origin and should be reviewed before deployment. There is no production deployment in v0.0.9.
 
+`test:e2e:local` starts credential-free local Durable Object emulation, launches the native Godot host adapter, joins/resumes an exact synthetic client/seat over WebSocket, submits one prompt intent, and waits for the native authoritative acknowledgement to return to the client. It asserts one RulesSession history mutation and scans sanitized native output for hidden board/capability values.
+
 ## Logging and operations
 
-Application code does not call `console.log` and diagnostics include only versions, room state/code, expiry, counts, claimed seat numerals, sequence/queue depth, truncated request display, result, and counters. Do not enable request-body logging at an edge proxy. Wrangler telemetry is development tooling, not part of the product; CI sets no product analytics and no application analytics SDK exists.
+Application code does not call `console.log` and diagnostics include only versions, room state/code, separate inactivity/host-loss ages, counts, claimed seat numerals, sequence/queue depth, truncated request display, result, and counters. The Godot host adapter likewise emits no request, capability, or payload logs. Do not enable request-body logging at an edge proxy. Wrangler telemetry is development tooling, not part of the product; CI disables it and no application analytics SDK exists.

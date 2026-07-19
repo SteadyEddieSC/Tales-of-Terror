@@ -3,6 +3,7 @@ import {
   parseEnvelope,
   PROTOCOL_VERSION,
   SERVICE_VERSION,
+  validateEnvelope,
   type JsonValue,
   type ProtocolEnvelope,
   type RejectionCode,
@@ -13,9 +14,10 @@ export interface RoomLimits {
   readonly maxPendingClients: number;
   readonly maxQueueDepth: number;
   readonly maxAckCache: number;
-  readonly idleExpirySteps: number;
-  readonly hostLossGraceSteps: number;
-  readonly rateWindowSteps: number;
+  readonly idleExpiryMs: number;
+  readonly hostLossGraceMs: number;
+  readonly rateWindowMs: number;
+  readonly acknowledgementExpiryMs: number;
   readonly maxMessagesPerWindow: number;
 }
 
@@ -24,9 +26,10 @@ export const DEFAULT_LIMITS: RoomLimits = {
   maxPendingClients: 8,
   maxQueueDepth: 32,
   maxAckCache: 32,
-  idleExpirySteps: 120,
-  hostLossGraceSteps: 20,
-  rateWindowSteps: 10,
+  idleExpiryMs: 10 * 60_000,
+  hostLossGraceMs: 30_000,
+  rateWindowMs: 1_000,
+  acknowledgementExpiryMs: 2 * 60_000,
   maxMessagesPerWindow: 16,
 };
 
@@ -36,6 +39,11 @@ export interface RoomResult {
   readonly envelope?: ProtocolEnvelope;
 }
 
+interface CachedAcknowledgement {
+  readonly envelope: ProtocolEnvelope;
+  readonly cachedAtMs: number;
+}
+
 interface ClientRecord {
   readonly clientId: string;
   pending: boolean;
@@ -43,28 +51,30 @@ interface ClientRecord {
   revoked: boolean;
   seatClaim: number;
   resumeCapability: string;
-  lastSeenStep: number;
-  rateWindowStart: number;
+  lastSeenAtMs: number;
+  rateWindowStartedAtMs: number;
   rateCount: number;
   readonly inbox: ProtocolEnvelope[];
-  readonly acknowledgementCache: Map<string, ProtocolEnvelope>;
+  readonly acknowledgementCache: Map<string, CachedAcknowledgement>;
   readonly acknowledgementOrder: string[];
 }
 
+interface SnapshotClient extends Omit<ClientRecord, "acknowledgementCache"> {
+  readonly acknowledgementCache: ReadonlyArray<readonly [string, CachedAcknowledgement]>;
+}
+
 export interface EphemeralRoomSnapshot {
-  readonly snapshotVersion: 1;
+  readonly snapshotVersion: 2;
   readonly roomId: string;
   readonly joinCode: string;
   readonly limits: RoomLimits;
   readonly hostCapability: string;
-  readonly clients: ReadonlyArray<Readonly<Omit<ClientRecord, "acknowledgementCache">> & {
-    readonly acknowledgementCache: ReadonlyArray<readonly [string, ProtocolEnvelope]>;
-  }>;
+  readonly clients: readonly SnapshotClient[];
   readonly hostInbox: readonly ProtocolEnvelope[];
   readonly sequence: number;
-  readonly currentStep: number;
-  readonly lastActivityStep: number;
-  readonly lastHostStep: number;
+  readonly currentTimeMs: number;
+  readonly lastActivityAtMs: number;
+  readonly lastHostAtMs: number;
   readonly state: "open" | "closed" | "expired";
   readonly capabilityOrdinal: number;
   readonly lastMessageType: string;
@@ -78,8 +88,9 @@ export interface SanitizedRoomDiagnostics {
   readonly serviceVersion: string;
   readonly roomState: "open" | "closed" | "expired";
   readonly roomCode: string;
-  readonly step: number;
-  readonly expiryInSteps: number;
+  readonly elapsedMs: number;
+  readonly inactivityExpiryInMs: number;
+  readonly hostLossExpiryInMs: number;
   readonly hostPresent: boolean;
   readonly connectedClients: number;
   readonly pendingClients: number;
@@ -94,6 +105,7 @@ export interface SanitizedRoomDiagnostics {
 }
 
 export type CapabilityFactory = (scope: "host" | "resume", ordinal: number) => string;
+export type MonotonicClock = () => number;
 
 const clientIdPattern = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const intentTypes = new Set(["prompt_choice_submit", "role_action_submit", "private_reveal_ack"]);
@@ -103,14 +115,15 @@ export class EphemeralRoom {
   readonly roomId: string;
   readonly joinCode: string;
   readonly limits: RoomLimits;
-  readonly hostCapability: string;
+  private hostCapabilityValue: string;
   private readonly capabilityFactory: CapabilityFactory;
+  private readonly clock: MonotonicClock;
   private readonly clients = new Map<string, ClientRecord>();
   private readonly hostInbox: ProtocolEnvelope[] = [];
   private sequence = 0;
-  private currentStep = 0;
-  private lastActivityStep = 0;
-  private lastHostStep = 0;
+  private currentTimeMs: number;
+  private lastActivityAtMs: number;
+  private lastHostAtMs: number;
   private state: "open" | "closed" | "expired" = "open";
   private capabilityOrdinal = 1;
   private lastMessageType = "room_created";
@@ -130,35 +143,47 @@ export class EphemeralRoom {
     joinCode: string,
     capabilityFactory: CapabilityFactory = defaultCapabilityFactory,
     limits: RoomLimits = DEFAULT_LIMITS,
+    clock: MonotonicClock = Date.now,
   ) {
-    if (!clientIdPattern.test(roomId) || !/^[A-Z2-9]{4,8}$/.test(joinCode)) {
-      throw new Error("Invalid synthetic room identity");
+    if (!clientIdPattern.test(roomId) || !/^[A-Z2-9]{4,8}$/.test(joinCode) || !validLimits(limits)) {
+      throw new Error("Invalid ephemeral room configuration");
     }
     this.roomId = roomId;
     this.joinCode = joinCode;
     this.capabilityFactory = capabilityFactory;
-    this.limits = limits;
-    this.hostCapability = capabilityFactory("host", 0);
+    this.limits = { ...limits };
+    this.clock = clock;
+    this.currentTimeMs = sanitizeTime(clock());
+    this.lastActivityAtMs = this.currentTimeMs;
+    this.lastHostAtMs = this.currentTimeMs;
+    this.hostCapabilityValue = capabilityFactory("host", 0);
+  }
+
+  get hostCapability(): string {
+    return this.hostCapabilityValue;
   }
 
   snapshot(): EphemeralRoomSnapshot {
     return {
-      snapshotVersion: 1,
+      snapshotVersion: 2,
       roomId: this.roomId,
       joinCode: this.joinCode,
       limits: { ...this.limits },
-      hostCapability: this.hostCapability,
+      hostCapability: this.hostCapabilityValue,
       clients: [...this.clients.values()].map((client) => ({
         ...client,
         inbox: [...client.inbox],
-        acknowledgementCache: [...client.acknowledgementCache.entries()],
+        acknowledgementCache: [...client.acknowledgementCache.entries()].map(([key, cached]) => [key, {
+          envelope: cached.envelope,
+          cachedAtMs: cached.cachedAtMs,
+        }] as const),
         acknowledgementOrder: [...client.acknowledgementOrder],
       })),
       hostInbox: [...this.hostInbox],
       sequence: this.sequence,
-      currentStep: this.currentStep,
-      lastActivityStep: this.lastActivityStep,
-      lastHostStep: this.lastHostStep,
+      currentTimeMs: this.currentTimeMs,
+      lastActivityAtMs: this.lastActivityAtMs,
+      lastHostAtMs: this.lastHostAtMs,
       state: this.state,
       capabilityOrdinal: this.capabilityOrdinal,
       lastMessageType: this.lastMessageType,
@@ -168,25 +193,30 @@ export class EphemeralRoom {
     };
   }
 
-  static restore(snapshot: EphemeralRoomSnapshot): EphemeralRoom {
-    if (snapshot.snapshotVersion !== 1) throw new Error("Unsupported room snapshot");
-    const capabilityFactory: CapabilityFactory = (scope, ordinal) => scope === "host"
-      ? snapshot.hostCapability
-      : defaultCapabilityFactory(scope, ordinal);
-    const room = new EphemeralRoom(snapshot.roomId, snapshot.joinCode, capabilityFactory, snapshot.limits);
+  static restore(
+    snapshot: EphemeralRoomSnapshot,
+    capabilityFactory: CapabilityFactory = defaultCapabilityFactory,
+    clock: MonotonicClock = Date.now,
+  ): EphemeralRoom {
+    if (!validSnapshot(snapshot)) throw new Error("Invalid or unsupported room snapshot");
+    const room = new EphemeralRoom(snapshot.roomId, snapshot.joinCode, capabilityFactory, snapshot.limits, clock);
+    room.hostCapabilityValue = snapshot.hostCapability;
     for (const client of snapshot.clients) {
       room.clients.set(client.clientId, {
         ...client,
         inbox: [...client.inbox],
-        acknowledgementCache: new Map(client.acknowledgementCache),
+        acknowledgementCache: new Map(client.acknowledgementCache.map(([key, cached]) => [key, {
+          envelope: cached.envelope,
+          cachedAtMs: cached.cachedAtMs,
+        }])),
         acknowledgementOrder: [...client.acknowledgementOrder],
       });
     }
     room.hostInbox.push(...snapshot.hostInbox);
     room.sequence = snapshot.sequence;
-    room.currentStep = snapshot.currentStep;
-    room.lastActivityStep = snapshot.lastActivityStep;
-    room.lastHostStep = snapshot.lastHostStep;
+    room.currentTimeMs = snapshot.currentTimeMs;
+    room.lastActivityAtMs = snapshot.lastActivityAtMs;
+    room.lastHostAtMs = snapshot.lastHostAtMs;
     room.state = snapshot.state;
     room.capabilityOrdinal = snapshot.capabilityOrdinal;
     room.lastMessageType = snapshot.lastMessageType;
@@ -194,10 +224,33 @@ export class EphemeralRoom {
     room.lastResult = snapshot.lastResult;
     for (const key of Object.keys(room.counters)) delete room.counters[key];
     Object.assign(room.counters, snapshot.counters);
+    room.updateTime();
     return room;
   }
 
+  updateTime(observedTimeMs = this.clock()): ProtocolEnvelope | undefined {
+    this.currentTimeMs = Math.max(this.currentTimeMs, sanitizeTime(observedTimeMs));
+    this.pruneAcknowledgements();
+    if (this.state !== "open") return undefined;
+    if (this.currentTimeMs - this.lastHostAtMs >= this.limits.hostLossGraceMs) {
+      return this.expire("host_lost");
+    }
+    if (this.currentTimeMs - this.lastActivityAtMs >= this.limits.idleExpiryMs) {
+      return this.expire("inactive");
+    }
+    return undefined;
+  }
+
+  nextExpiryAtMs(): number | undefined {
+    if (this.state !== "open") return undefined;
+    return Math.min(
+      this.lastHostAtMs + this.limits.hostLossGraceMs,
+      this.lastActivityAtMs + this.limits.idleExpiryMs,
+    );
+  }
+
   join(clientId: string): RoomResult {
+    this.updateTime();
     if (!this.isOpen()) return this.reject("expired", "client_joined", clientId);
     if (!clientIdPattern.test(clientId)) return this.reject("malformed", "client_joined", clientId);
     const existing = this.clients.get(clientId);
@@ -214,21 +267,22 @@ export class EphemeralRoom {
       revoked: false,
       seatClaim: 0,
       resumeCapability: "",
-      lastSeenStep: this.currentStep,
-      rateWindowStart: this.currentStep,
+      lastSeenAtMs: this.currentTimeMs,
+      rateWindowStartedAtMs: this.currentTimeMs,
       rateCount: 0,
       inbox: [],
       acknowledgementCache: new Map(),
       acknowledgementOrder: [],
     };
     this.clients.set(clientId, client);
-    this.touch();
+    this.touchClient(client);
     const envelope = this.nextEnvelope("seat_claim_requested", `join_${clientId}`, { clientId, clientDisplay: displayId(clientId) });
     this.enqueue(this.hostInbox, envelope);
     return this.accept(envelope);
   }
 
   approveClaim(hostCapability: string, clientId: string, seatClaim: number): RoomResult {
+    this.updateTime();
     if (!this.authorizeHost(hostCapability)) return this.reject("unauthorized", "seat_claim_approved", clientId);
     const client = this.clients.get(clientId);
     if (!client || !client.pending || client.revoked || !Number.isInteger(seatClaim) || seatClaim < 1 || seatClaim > 8) {
@@ -241,8 +295,7 @@ export class EphemeralRoom {
     client.pending = false;
     client.seatClaim = seatClaim;
     client.resumeCapability = this.capabilityFactory("resume", this.capabilityOrdinal++);
-    client.lastSeenStep = this.currentStep;
-    this.touch(true);
+    this.touchHost();
     const envelope = this.nextEnvelope(
       "seat_claim_approved",
       `claim_${clientId}`,
@@ -254,30 +307,33 @@ export class EphemeralRoom {
   }
 
   denyClaim(hostCapability: string, clientId: string): RoomResult {
+    this.updateTime();
     if (!this.authorizeHost(hostCapability)) return this.reject("unauthorized", "seat_claim_rejected", clientId);
     const client = this.clients.get(clientId);
     if (!client || !client.pending) return this.reject("unauthorized", "seat_claim_rejected", clientId);
     client.pending = false;
     client.connected = false;
     client.revoked = true;
+    client.resumeCapability = "";
     const envelope = this.nextEnvelope("seat_claim_rejected", `deny_${clientId}`, {}, 0, "unauthorized");
     this.enqueue(client.inbox, envelope);
-    this.touch(true);
+    this.touchHost();
     return this.accept(envelope);
   }
 
   disconnect(clientId: string): RoomResult {
+    this.updateTime();
     const client = this.clients.get(clientId);
-    if (!client || !client.connected) return this.reject("unauthorized", "client_left", clientId);
+    if (!this.isOpen() || !client || !client.connected) return this.reject("unauthorized", "client_left", clientId);
     client.connected = false;
-    client.lastSeenStep = this.currentStep;
-    const envelope = this.nextEnvelope("client_left", `leave_${clientId}`, { clientDisplay: displayId(clientId) }, client.seatClaim);
+    const envelope = this.nextEnvelope("client_left", `leave_${clientId}`, { clientId, clientDisplay: displayId(clientId) }, client.seatClaim);
     this.enqueue(this.hostInbox, envelope);
-    this.touch();
+    this.touchClient(client);
     return this.accept(envelope);
   }
 
   resume(clientId: string, seatClaim: number, resumeCapability: string): RoomResult {
+    this.updateTime();
     if (!this.isOpen()) return this.reject("expired", "reconnect_resume", clientId);
     const client = this.clients.get(clientId);
     if (!client || client.pending || client.revoked || client.connected || !resumeCapability || client.resumeCapability !== resumeCapability) {
@@ -285,35 +341,39 @@ export class EphemeralRoom {
     }
     if (client.seatClaim !== seatClaim) return this.reject("wrong_seat", "reconnect_resume", clientId);
     client.connected = true;
-    client.lastSeenStep = this.currentStep;
     this.counters.reconnect = (this.counters.reconnect ?? 0) + 1;
     const envelope = this.nextEnvelope("reconnect_resume", `resume_${clientId}`, { restored: true }, seatClaim, "accepted");
     this.enqueue(client.inbox, envelope);
     this.enqueue(this.hostInbox, envelope);
-    this.touch();
+    this.touchClient(client);
     return this.accept(envelope);
   }
 
   revokeClaim(hostCapability: string, clientId: string): RoomResult {
+    this.updateTime();
     if (!this.authorizeHost(hostCapability)) return this.reject("unauthorized", "seat_claim_rejected", clientId);
     const client = this.clients.get(clientId);
     if (!client) return this.reject("unauthorized", "seat_claim_rejected", clientId);
     client.connected = false;
     client.revoked = true;
     client.resumeCapability = "";
+    client.acknowledgementCache.clear();
+    client.acknowledgementOrder.length = 0;
     const envelope = this.nextEnvelope("seat_claim_rejected", `revoke_${clientId}`, { revoked: true }, 0, "revoked");
     this.enqueue(client.inbox, envelope);
-    this.touch(true);
+    this.touchHost();
     return this.accept(envelope);
   }
 
   relayClientRaw(clientId: string, raw: string): RoomResult {
+    this.updateTime();
     const parsed = parseEnvelope(raw);
     if (!parsed.accepted || !parsed.envelope) return this.reject(parsed.code === "accepted" ? "malformed" : parsed.code, "rejection", clientId);
     return this.relayClientEnvelope(clientId, parsed.envelope);
   }
 
   relayClientEnvelope(clientId: string, envelope: ProtocolEnvelope): RoomResult {
+    this.updateTime();
     const client = this.clients.get(clientId);
     if (!this.isOpen()) return this.reject("expired", envelope.messageType, envelope.requestId);
     if (!client || !client.connected || client.pending || client.revoked) return this.reject("unauthorized", envelope.messageType, envelope.requestId);
@@ -326,7 +386,8 @@ export class EphemeralRoom {
     if (cached) {
       this.counters.duplicate = (this.counters.duplicate ?? 0) + 1;
       this.record(envelope.messageType, envelope.requestId, "duplicate");
-      return { accepted: true, code: "accepted", envelope: cached };
+      this.touchClient(client);
+      return { accepted: true, code: "accepted", envelope: cached.envelope };
     }
     const relayed = this.nextEnvelope(
       envelope.messageType,
@@ -340,11 +401,12 @@ export class EphemeralRoom {
     const ack = this.nextEnvelope("acknowledgement", envelope.requestId, { relayAccepted: true }, client.seatClaim, "accepted", envelope.authoritativeRevision);
     this.cacheAcknowledgement(client, envelope.requestId, ack);
     this.enqueue(client.inbox, ack);
-    this.touch();
+    this.touchClient(client);
     return this.accept(ack);
   }
 
   relayHostEnvelope(hostCapability: string, clientId: string, envelope: ProtocolEnvelope): RoomResult {
+    this.updateTime();
     if (!this.authorizeHost(hostCapability)) return this.reject("unauthorized", envelope.messageType, envelope.requestId);
     if (!hostRelayTypes.has(envelope.messageType) || envelope.roomId !== this.roomId) {
       return this.reject("unsupported_type", envelope.messageType, envelope.requestId);
@@ -362,48 +424,46 @@ export class EphemeralRoom {
       envelope.acknowledgement,
       envelope.authoritativeRevision,
     );
+    if (envelope.messageType === "acknowledgement" || envelope.messageType === "rejection") {
+      this.cacheAcknowledgement(client, envelope.requestId, relayed);
+    }
     this.enqueue(client.inbox, relayed);
-    this.touch(true);
+    this.touchHost();
     return this.accept(relayed);
   }
 
   heartbeat(hostCapability: string): RoomResult {
+    this.updateTime();
     if (!this.authorizeHost(hostCapability)) return this.reject("unauthorized", "host_heartbeat", "heartbeat");
-    this.lastHostStep = this.currentStep;
-    this.touch(true);
-    return this.accept(this.nextEnvelope("host_heartbeat", `heartbeat_${this.currentStep}`, { alive: true }));
-  }
-
-  advanceTo(step: number): void {
-    if (!Number.isInteger(step) || step < this.currentStep) throw new Error("Room steps must be monotonic");
-    this.currentStep = step;
-    if (this.state !== "open") return;
-    if (step - this.lastActivityStep >= this.limits.idleExpirySteps || step - this.lastHostStep >= this.limits.hostLossGraceSteps) {
-      this.expire();
-    }
+    this.touchHost();
+    return this.accept(this.nextEnvelope("host_heartbeat", `heartbeat_${this.currentTimeMs}`, { alive: true }));
   }
 
   close(hostCapability: string): RoomResult {
+    this.updateTime();
     if (!this.authorizeHost(hostCapability)) return this.reject("unauthorized", "room_closed", "close");
-    if (!this.isOpen()) return this.reject("expired", "room_closed", "close");
-    const envelope = this.nextEnvelope("room_closed", `close_${this.currentStep}`, { reason: "host_closed" });
-    for (const client of this.clients.values()) this.enqueue(client.inbox, envelope);
+    const envelope = this.nextEnvelope("room_closed", `close_${this.currentTimeMs}`, { reason: "host_closed" });
     this.destroy("closed");
     return this.accept(envelope);
   }
 
   drainHostInbox(hostCapability: string): ProtocolEnvelope[] {
+    this.updateTime();
     if (!this.authorizeHost(hostCapability)) return [];
+    this.touchHost();
     return this.hostInbox.splice(0, this.hostInbox.length);
   }
 
   drainClientInbox(clientId: string): ProtocolEnvelope[] {
+    this.updateTime();
     const client = this.clients.get(clientId);
     if (!client) return [];
+    this.touchClient(client);
     return client.inbox.splice(0, client.inbox.length);
   }
 
   diagnostics(): SanitizedRoomDiagnostics {
+    this.updateTime();
     const connected = [...this.clients.values()].filter((client) => client.connected && !client.pending && !client.revoked);
     const pending = [...this.clients.values()].filter((client) => client.pending && !client.revoked);
     return {
@@ -411,9 +471,10 @@ export class EphemeralRoom {
       serviceVersion: SERVICE_VERSION,
       roomState: this.state,
       roomCode: this.joinCode,
-      step: this.currentStep,
-      expiryInSteps: Math.max(0, this.limits.idleExpirySteps - (this.currentStep - this.lastActivityStep)),
-      hostPresent: this.state === "open" && this.currentStep - this.lastHostStep < this.limits.hostLossGraceSteps,
+      elapsedMs: this.currentTimeMs,
+      inactivityExpiryInMs: Math.max(0, this.limits.idleExpiryMs - (this.currentTimeMs - this.lastActivityAtMs)),
+      hostLossExpiryInMs: Math.max(0, this.limits.hostLossGraceMs - (this.currentTimeMs - this.lastHostAtMs)),
+      hostPresent: this.state === "open" && this.currentTimeMs - this.lastHostAtMs < this.limits.hostLossGraceMs,
       connectedClients: connected.length,
       pendingClients: pending.length,
       claimedSeats: connected.map((client) => client.seatClaim).sort((a, b) => a - b),
@@ -427,39 +488,46 @@ export class EphemeralRoom {
     };
   }
 
-  private expire(): void {
-    const envelope = this.nextEnvelope("room_expired", `expiry_${this.currentStep}`, { reason: "inactive_or_host_lost" }, 0, "expired");
-    for (const client of this.clients.values()) this.enqueue(client.inbox, envelope);
+  private expire(reason: "host_lost" | "inactive"): ProtocolEnvelope {
+    const envelope = this.nextEnvelope("room_expired", `expiry_${this.currentTimeMs}`, { reason }, 0, "expired");
     this.destroy("expired");
+    return envelope;
   }
 
   private destroy(finalState: "closed" | "expired"): void {
     this.state = finalState;
     this.hostInbox.length = 0;
     for (const client of this.clients.values()) {
-      client.connected = false;
       client.resumeCapability = "";
       client.acknowledgementCache.clear();
       client.acknowledgementOrder.length = 0;
+      client.inbox.length = 0;
     }
+    this.clients.clear();
+    this.hostCapabilityValue = "";
   }
 
   private authorizeHost(capability: string): boolean {
-    return this.state === "open" && capability.length > 0 && this.hostCapability === capability;
+    return this.state === "open" && capability.length > 0 && this.hostCapabilityValue === capability;
   }
 
   private isOpen(): boolean {
     return this.state === "open";
   }
 
-  private touch(host = false): void {
-    this.lastActivityStep = this.currentStep;
-    if (host) this.lastHostStep = this.currentStep;
+  private touchClient(client: ClientRecord): void {
+    client.lastSeenAtMs = this.currentTimeMs;
+    this.lastActivityAtMs = this.currentTimeMs;
+  }
+
+  private touchHost(): void {
+    this.lastHostAtMs = this.currentTimeMs;
+    this.lastActivityAtMs = this.currentTimeMs;
   }
 
   private consumeRate(client: ClientRecord): boolean {
-    if (this.currentStep - client.rateWindowStart >= this.limits.rateWindowSteps) {
-      client.rateWindowStart = this.currentStep;
+    if (this.currentTimeMs - client.rateWindowStartedAtMs >= this.limits.rateWindowMs) {
+      client.rateWindowStartedAtMs = this.currentTimeMs;
       client.rateCount = 0;
     }
     client.rateCount += 1;
@@ -493,11 +561,25 @@ export class EphemeralRoom {
   }
 
   private cacheAcknowledgement(client: ClientRecord, requestId: string, envelope: ProtocolEnvelope): void {
-    client.acknowledgementCache.set(requestId, envelope);
-    client.acknowledgementOrder.push(requestId);
+    const existing = client.acknowledgementCache.has(requestId);
+    client.acknowledgementCache.set(requestId, { envelope, cachedAtMs: this.currentTimeMs });
+    if (!existing) client.acknowledgementOrder.push(requestId);
     while (client.acknowledgementOrder.length > this.limits.maxAckCache) {
       const oldest = client.acknowledgementOrder.shift();
       if (oldest !== undefined) client.acknowledgementCache.delete(oldest);
+    }
+  }
+
+  private pruneAcknowledgements(): void {
+    for (const client of this.clients.values()) {
+      for (const requestId of [...client.acknowledgementOrder]) {
+        const cached = client.acknowledgementCache.get(requestId);
+        if (!cached || this.currentTimeMs - cached.cachedAtMs >= this.limits.acknowledgementExpiryMs) {
+          client.acknowledgementCache.delete(requestId);
+          const index = client.acknowledgementOrder.indexOf(requestId);
+          if (index >= 0) client.acknowledgementOrder.splice(index, 1);
+        }
+      }
     }
   }
 
@@ -527,13 +609,14 @@ export class DeterministicRoomRegistry {
     private readonly codeFactory: (attempt: number) => string,
     private readonly capabilityFactory: CapabilityFactory,
     private readonly limits: RoomLimits = DEFAULT_LIMITS,
+    private readonly clock: MonotonicClock = Date.now,
   ) {}
 
   create(maxAttempts = 8): EphemeralRoom {
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       const code = this.codeFactory(attempt);
       if (!this.roomsByCode.has(code)) {
-        const room = new EphemeralRoom(`room_${this.roomOrdinal++}`, code, this.capabilityFactory, this.limits);
+        const room = new EphemeralRoom(`room_${this.roomOrdinal++}`, code, this.capabilityFactory, this.limits, this.clock);
         this.roomsByCode.set(code, room);
         return room;
       }
@@ -566,4 +649,54 @@ function displayId(value: string): string {
 function sanitizeRequestId(value: string): string {
   const sanitized = value.toLowerCase().replace(/[^a-z0-9_-]/g, "_").slice(0, 64);
   return sanitized || "request";
+}
+
+function sanitizeTime(value: number): number {
+  if (!Number.isFinite(value) || value < 0) throw new Error("Room clock must return a nonnegative finite timestamp");
+  return Math.floor(value);
+}
+
+function validLimits(limits: RoomLimits): boolean {
+  return Object.values(limits).every((value) => Number.isInteger(value) && value > 0)
+    && limits.maxClients <= 8
+    && limits.maxPendingClients <= 8;
+}
+
+function validSnapshot(value: EphemeralRoomSnapshot): boolean {
+  if (!value || value.snapshotVersion !== 2 || !clientIdPattern.test(value.roomId) || !/^[A-Z2-9]{4,8}$/.test(value.joinCode)) return false;
+  if (!validLimits(value.limits) || !["open", "closed", "expired"].includes(value.state)) return false;
+  if (![value.sequence, value.currentTimeMs, value.lastActivityAtMs, value.lastHostAtMs, value.capabilityOrdinal].every((item) => Number.isInteger(item) && item >= 0)) return false;
+  if (value.lastActivityAtMs > value.currentTimeMs || value.lastHostAtMs > value.currentTimeMs || !Array.isArray(value.clients) || !Array.isArray(value.hostInbox)) return false;
+  if (value.clients.length > value.limits.maxClients || value.hostInbox.length > value.limits.maxQueueDepth) return false;
+  if (!value.hostInbox.every((envelope) => validStoredEnvelope(envelope, value.roomId))) return false;
+  if (value.state === "open" && (!value.hostCapability || value.hostCapability.length > 256)) return false;
+  if (value.state !== "open" && (value.hostCapability || value.clients.length > 0 || value.hostInbox.length > 0)) return false;
+  const ids = new Set<string>();
+  for (const client of value.clients) {
+    if (!clientIdPattern.test(client.clientId) || ids.has(client.clientId) || client.inbox.length > value.limits.maxQueueDepth) return false;
+    if (![client.lastSeenAtMs, client.rateWindowStartedAtMs, client.rateCount, client.seatClaim].every((item) => Number.isInteger(item) && item >= 0)) return false;
+    if (client.lastSeenAtMs > value.currentTimeMs || client.rateWindowStartedAtMs > value.currentTimeMs) return false;
+    if (typeof client.pending !== "boolean" || typeof client.connected !== "boolean" || typeof client.revoked !== "boolean") return false;
+    if (typeof client.resumeCapability !== "string" || client.resumeCapability.length > 256) return false;
+    if (client.seatClaim > 8 || client.acknowledgementCache.length > value.limits.maxAckCache || client.acknowledgementOrder.length > value.limits.maxAckCache) return false;
+    if (!client.inbox.every((envelope: unknown) => validStoredEnvelope(envelope, value.roomId))) return false;
+    const acknowledgementKeys = new Set<string>();
+    for (const entry of client.acknowledgementCache) {
+      if (!Array.isArray(entry) || entry.length !== 2) return false;
+      const [requestId, cached] = entry;
+      if (typeof requestId !== "string" || acknowledgementKeys.has(requestId)) return false;
+      if (!cached || !Number.isInteger(cached.cachedAtMs) || cached.cachedAtMs < 0 || cached.cachedAtMs > value.currentTimeMs) return false;
+      if (!validStoredEnvelope(cached.envelope, value.roomId) || cached.envelope.requestId !== requestId) return false;
+      acknowledgementKeys.add(requestId);
+    }
+    if (new Set(client.acknowledgementOrder).size !== client.acknowledgementOrder.length) return false;
+    if (client.acknowledgementOrder.some((requestId: unknown) => typeof requestId !== "string" || !acknowledgementKeys.has(requestId))) return false;
+    ids.add(client.clientId);
+  }
+  return true;
+}
+
+function validStoredEnvelope(value: unknown, roomId: string): value is ProtocolEnvelope {
+  const validation = validateEnvelope(value);
+  return validation.accepted && validation.envelope?.roomId === roomId;
 }
