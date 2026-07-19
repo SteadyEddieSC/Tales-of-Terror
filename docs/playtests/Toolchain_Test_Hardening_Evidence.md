@@ -2,7 +2,7 @@
 
 **Issue:** #26
 
-**Implementation commit:** `IMPLEMENTATION_COMMIT_PENDING`
+**Implementation/evidence source commit:** `f99127f169d6582bb421503fd28ebbf4b6459647` (the later evidence-only documentation commit does not change toolchain or runtime behavior)
 
 **Environment:** PC-Office, Windows, official Godot 4.7.1-stable, Compatibility renderer
 
@@ -52,7 +52,17 @@ The clean inventory was recorded on protected `main` at `217b570374e68043128e126
 | `gdlint` baseline | 67 first-party files, vendored/cache excluded | INFORMATIONAL: exit 1, 1,235 findings; complete local/CI artifact; no parser blocker; new GUT files clean |
 | `gdformat --check` baseline | Same explicit first-party list; no rewrite | INFORMATIONAL: exit 1, 64 existing files after two new GUT files were locally formatted; initial pre-correction baseline was 66/67 |
 | TypeScript/service/browser | locked install, audit, typecheck, 26 service tests, 10 browser tests, production builds | PASS; `npm ci`, zero-vulnerability audit, strict typecheck, 26/26 service, 10/10 browser, Worker/browser builds |
-| Repository policy | asset/provenance, companion privacy, toolchain pins, JSON, secrets, oversized files, title, LFS, workflow YAML, whitespace | PASS locally; GitHub Actions pending |
+| Repository policy | asset/provenance, companion privacy, toolchain pins, JSON, secrets, oversized files, title, LFS, workflow YAML, whitespace | PASS locally and in GitHub Actions at `f99127f169d6582bb421503fd28ebbf4b6459647` |
+
+## GitHub Actions evidence
+
+All preserved status-check identities passed at the implementation/evidence source commit:
+
+- `Godot 4.7 headless validation`: PASS, run `29704275784`, job `88238504754`; every listed legacy test/simulation, native E2E, and the GUT suite completed successfully.
+- `Foundation validation`: PASS, run `29704275774`.
+- `Protocol, room service, and browser validation`: PASS, run `29704275812`.
+- `gdscript-quality-baselines`: artifact `8447404956`, digest `sha256:b6af2e9fa36585ab1457aabb135ceece51d5d0afc17b399f1b170ff175a179e5`, expires August 2, 2026.
+- `gut-junit-results`: artifact `8447408428`, digest `sha256:6eb64706d1a977c8ef1b4e21cf46f6b7e461a555888505d94939b6d0077a4805`, expires August 2, 2026; CI reported five tests and five passing tests.
 
 ## Finding categorization
 
@@ -70,15 +80,18 @@ v0.1.0 remains blocked until required lint/format cleanup is merged. No follow-u
 
 | Requested output | Capture path | Classification | Inspection result |
 | --- | --- | --- | --- |
-| 1280×720 | Pending | Pending | Pending |
-| 1920×1080 | Pending | Pending | Pending |
-| 3840×2160 | Pending | Pending; never treated as native 4K TV evidence | Pending |
+| 1280×720 | `.evidence/v0.0.9.1/captures/main_scene_1280x720_virtual.png`; SHA-256 `039DAEB3B679148AD4A089C59627811447213EB9DC61580480CCE33BB46DB139` | Virtual/off-screen exact-resolution capture produced by the official Windows engine | No new clipping, scaling, focus, rendering, or safe-margin defect observed |
+| 1920×1080 | `.evidence/v0.0.9.1/captures/main_scene_1920x1080_virtual.png`; SHA-256 `E065F9619468FF1235CF2D7A2A2EEDC5EB5FD85559372F81A833EFB9D7FD4A66` | Virtual/off-screen exact-resolution capture produced by the official Windows engine | No new clipping, scaling, focus, rendering, or safe-margin defect observed |
+| 3840×2160 | `.evidence/v0.0.9.1/captures/main_scene_3840x2160_virtual.png`; SHA-256 `2BA7E328945924F3D507C03139A214040CCF949954450234CA918124C7CE41C3` | Virtual/off-screen exact-resolution capture; never treated as native-4K-display or TV evidence | No new clipping, scaling, rendering, or safe-margin defect observed |
 
-Output/Debugger inspection, focus, clipping, scaling, rendering, and safe-margin observations will be recorded after the final implementation commit. Pre-existing visual defects, if any, remain separate and do not expand this tooling PR.
+The project was also opened in the official 4.7.1 editor and the main scene was launched in a real visible window on PC-Office. The project render was 1920×1080 and scaled into the editor's embedded game area. On the clean single-editor run, Output showed the debug adapter and language server starting, OpenGL 3.3 Compatibility on the Radeon RX 6650 XT, and `Terror Turn exploration loaded: v0.0.9`; the Debugger was empty with zero errors and warnings. A first attempt while the legacy 4.7 editor still held both server ports was discarded and repeated cleanly.
+
+Pre-existing presentation note kept outside this tooling release: the prototype screen still displays `VISUAL LANGUAGE LAB / v0.0.3 / PROVISIONAL MARK` even though the runtime identifies v0.0.9. No player-facing redesign or label change was made.
 
 ## Warnings and deferred checks
 
 - The large lint/format baseline is an explicit warning and v0.1.0 gate, not a passing required check.
+- The initial GitHub Godot run at `99ac64be3d84a0ff3d8e69b8081e474780f0a32c` stopped before tests because `setup-python`'s pip cache did not know about `requirements-dev.txt`. Commit `f99127f169d6582bb421503fd28ebbf4b6459647` adds the explicit cache dependency path; this was CI wiring only and did not change runtime or gameplay behavior.
 - npm 11.16.0 completed the locked install but warned that three dependency install scripts are not allowlisted by npm's local `allowScripts` feature. No install failed, the lockfile was unchanged, the audit found zero vulnerabilities, and no policy was weakened in this PR.
 - Physical controllers, physical phones, household Wi-Fi, television-distance review, native-4K-display inspection, router/firewall variation, live Cloudflare deployment, penetration/security testing, balance/fun testing, and long-session observation were not performed and are not claimed.
 - Generated JUnit, lint/format logs, engine archives/executables, caches, and local captures remain ignored local or GitHub Actions artifacts rather than repository files.
