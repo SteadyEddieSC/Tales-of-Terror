@@ -29,6 +29,7 @@ jobs:
         with:
           python-version: 3.11.9
           cache: pip
+          cache-dependency-path: requirements-dev.txt
       - name: Install pinned GDScript Toolkit
         run: python -m pip install --disable-pip-version-check --requirement requirements-dev.txt
       - name: Inventory first-party GDScript
