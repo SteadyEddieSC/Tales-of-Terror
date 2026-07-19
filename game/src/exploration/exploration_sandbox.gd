@@ -28,6 +28,8 @@ var _social_content: LanternHouseSocialContent
 var _role_session: RoleSession
 var _role_hud: RoleHud
 var _role_diagnostics: RoleDiagnostics
+var _companion_bridge: CompanionBridge
+var _companion_lab: CompanionRoomLab
 var _social_showcase_active: bool = false
 var _camera: SharedCameraCoordinator
 var _interactions: InteractionCoordinator
@@ -134,6 +136,8 @@ func set_safe_margin(value: int) -> void:
 		_role_hud.set_safe_margin(_safe_margin)
 	if is_instance_valid(_role_diagnostics):
 		_role_diagnostics.set_safe_margin(_safe_margin)
+	if is_instance_valid(_companion_lab):
+		_companion_lab.set_safe_margin(_safe_margin)
 	_layout_top_hud()
 	_layout_bottom_hud()
 
@@ -149,7 +153,7 @@ func enable_showcase(stage: String = "terminal") -> void:
 		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).global_position = pawn.position
 	_board_state.sync_occupancy(pawn_registry.get_pawns())
 	_run_rules_showcase(stage)
-	if not stage.begins_with("director_") and not stage.begins_with("social_"):
+	if not stage.begins_with("director_") and not stage.begins_with("social_") and not stage.begins_with("companion_"):
 		_message_label.text = "EVIDENCE: %s  •  PROMPT ◉  •  CHECK ⚄  •  CARD ◫  •  VOTE ◈  •  BOARD r%d" % [stage.to_upper(), _board_state.revision]
 	_diagnostics.visible = false
 	_board_overlay.visible = false
@@ -195,7 +199,7 @@ func _build_hud() -> void:
 	layer.add_child(root)
 	_hud_root = root
 	_title_label = Label.new()
-	_title_label.text = "LANTERN HOUSE SOCIAL HORROR LAB  •  v0.0.8"
+	_title_label.text = "LANTERN HOUSE COMPANION ROOM LAB  •  v0.0.9"
 	_title_label.theme_type_variation = "SectionTitle"
 	_title_label.size = Vector2(540, 30)
 	root.add_child(_title_label)
@@ -244,6 +248,9 @@ func _build_hud() -> void:
 	_role_diagnostics = RoleDiagnostics.new()
 	root.add_child(_role_diagnostics)
 	_role_diagnostics.set_safe_margin(_safe_margin)
+	_companion_lab = CompanionRoomLab.new()
+	root.add_child(_companion_lab)
+	_companion_lab.set_safe_margin(_safe_margin)
 	_safe_overlay = SafeAreaOverlay.new()
 	_safe_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_safe_overlay.frame_color = TOKENS.warning
@@ -293,6 +300,9 @@ func _ensure_rules_hud() -> void:
 func _run_rules_showcase(stage: String = "terminal") -> void:
 	if _rules_session == null:
 		return
+	if stage.begins_with("companion_"):
+		_run_companion_showcase(stage)
+		return
 	if stage.begins_with("social_"):
 		_run_social_showcase(stage)
 		return
@@ -334,6 +344,90 @@ func _run_rules_showcase(stage: String = "terminal") -> void:
 	_rules_session.queue_event("vault_reckoning")
 	_rules_session.resolve_next_event()
 	_rules_session.complete("lantern_house_secured")
+
+func _run_companion_showcase(stage: String) -> void:
+	_separation_label.visible = false
+	_companion_lab.z_index = 50
+	_title_label.z_index = 51
+	_status_panel.z_index = 51
+	_reset_panel.z_index = 51
+	_safe_overlay.z_index = 52
+	var client_count: int = 4
+	if stage in ["companion_diagnostics", "companion_scale_8"]:
+		client_count = 8
+	elif stage == "companion_scale_2":
+		client_count = 2
+	elif stage == "companion_scale_1":
+		client_count = 1
+	var seat_numbers: Array[int] = []
+	var companion_seats := SeatManager.new()
+	for index: int in client_count:
+		companion_seats.join_device(index, "companion-showcase-%d" % index, "Local Controller")
+		seat_numbers.append(index + 1)
+	if _rules_session.participating_seats.size() != client_count:
+		_rules_session = RulesSession.new(_rules_content, _board_state, 4706, seat_numbers)
+		_director_runtime = DirectorRuntime.new(_director_content, "standard", 4706, _rules_content, _board_definition)
+	_role_session = RoleSession.new(_social_content, "hidden_betrayer" if client_count >= 3 else "cooperative", 4706, seat_numbers)
+	_companion_bridge = CompanionBridge.new(companion_seats, _board_state, _rules_session, _director_runtime, _role_session)
+	var transport := CompanionFakeTransport.new(_companion_bridge)
+	_companion_bridge.create_room("room_lantern", "GHST27")
+	var outcome: Dictionary = {"headline": "HOST ROOM OPEN  •  shared-screen play remains active without companions."}
+	if stage == "companion_join":
+		transport.connect_client("browser_guest")
+		outcome = {"headline": "BROWSER JOIN RECEIVED  •  awaiting explicit host approval.", "detail": "No stable seat or private view was inferred from the browser identity."}
+	elif stage.begins_with("companion_scale_"):
+		for index: int in client_count:
+			var scale_client: String = "browser_scale_%d" % (index + 1)
+			transport.connect_client(scale_client)
+			transport.approve_client(scale_client, index + 1)
+		outcome = {"headline": "%d SIMULATED COMPANIONS CONNECTED  •  deterministic stable-seat claims." % client_count, "detail": "The lab covers the required 1, 2, 4, and 8 client scales without changing gameplay ownership."}
+	elif stage in ["companion_close", "companion_expiry"]:
+		transport.connect_client("browser_lifecycle")
+		transport.approve_client("browser_lifecycle", 1)
+		var lifecycle_result: Dictionary = _companion_bridge.expire_room() if stage == "companion_expiry" else _companion_bridge.close_room()
+		var resume_denied: Dictionary = transport.resume_client("browser_lifecycle", 1)
+		outcome = {"headline": "%s  •  COMPANIONS DISCONNECTED SAFELY" % ("ROOM EXPIRED" if stage == "companion_expiry" else "HOST CLOSED ROOM"), "detail": "Lifecycle accepted: %s. Resume denied: %s. Local shared-screen play remains active." % [lifecycle_result.accepted, not resume_denied.accepted]}
+	elif stage in ["companion_private", "companion_reconnect"]:
+		var secret_seat: int = _role_session.seat_with_tag("secret")
+		transport.connect_client("browser_private")
+		transport.approve_client("browser_private", secret_seat)
+		if stage == "companion_reconnect":
+			var private_before: Dictionary = _companion_bridge.seat_view_for_client("browser_private").social_private
+			transport.disconnect_client("browser_private")
+			var resumed: Dictionary = transport.resume_client("browser_private", secret_seat)
+			var preserved: bool = private_before == _companion_bridge.seat_view_for_client("browser_private").social_private
+			outcome = {"headline": "RECONNECT ACCEPTED  •  SAME STABLE SEAT %s" % _companion_bridge.seat_identity(secret_seat).numeral, "detail": "Private role/objective/action state preserved: %s. Wrong-seat resume fails closed." % ("YES" if resumed.accepted and preserved else "NO")}
+		else:
+			outcome = {"headline": "AUTHORIZED PRIVATE VIEW DELIVERED ONLY TO ITS OWNING SEAT.", "detail": "The public host withholds the secret payload. Recursive privacy evaluation: %s." % ("PASS" if _role_session.privacy_report().passed else "FAIL")}
+	elif stage == "companion_denial":
+		transport.connect_client("browser_wrong")
+		transport.approve_client("browser_wrong", 1)
+		var denied: Dictionary = transport.send_intent("browser_wrong", "private_reveal_ack", "wrong_seat", {}, 2)
+		outcome = {"headline": "WRONG-SEAT REQUEST DENIED  •  %s" % denied.code.to_upper(), "detail": "No role, rules, board, Director, RNG, controller, pawn, or seat ownership mutation was applied."}
+	elif stage == "companion_action":
+		transport.connect_client("browser_action")
+		transport.approve_client("browser_action", 1)
+		var prompt: Dictionary = _rules_content.events[0].prompts[0].duplicate(true)
+		prompt.scope = "all"
+		_rules_session.open_prompt(prompt, seat_numbers, "companion_showcase")
+		var accepted: Dictionary = transport.send_intent("browser_action", "prompt_choice_submit", "accepted_action", {"option_ids": ["listen"], "prompt_revision": _rules_session.pending_prompt.revision}, 1)
+		outcome = {"headline": "COMPANION ACTION ACCEPTED EXACTLY ONCE  •  AUTHORITY r%d" % accepted.after_revision, "detail": "Bounded prompt intent crossed RulesSession validation; replay cache prevents duplicate mutation."}
+	elif stage == "companion_diagnostics":
+		for index: int in client_count:
+			var client_id: String = "browser_%d" % (index + 1)
+			transport.connect_client(client_id)
+			transport.approve_client(client_id, index + 1)
+		outcome = {"headline": "EIGHT SIMULATED COMPANIONS  •  SANITIZED + BOUNDED", "detail": "Capabilities, private payloads, storage contents, raw audits, and spoiler diagnostics are absent."}
+	for child: Node in get_children():
+		if child is ExplorationRoom or child is ExplorationPawn or child is SandboxInteractable:
+			(child as CanvasItem).visible = false
+	if is_instance_valid(_rules_hud): _rules_hud.visible = false
+	if is_instance_valid(_director_hud): _director_hud.visible = false
+	if is_instance_valid(_director_diagnostics): _director_diagnostics.visible = false
+	if is_instance_valid(_role_hud): _role_hud.visible = false
+	if is_instance_valid(_role_diagnostics): _role_diagnostics.visible = false
+	_companion_lab.present(_companion_bridge, stage, outcome)
+	_message_label.text = "EVIDENCE: COMPANION ROOM  •  OPTIONAL INPUT/PRESENTATION  •  NATIVE GODOT AUTHORITY"
 
 func _run_director_showcase(trajectory: String) -> void:
 	if _director_runtime == null:

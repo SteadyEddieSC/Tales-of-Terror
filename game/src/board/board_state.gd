@@ -84,6 +84,19 @@ func occupants_in(space_id: String) -> Array[int]:
 	result.sort()
 	return result
 
+func companion_public_view() -> Dictionary:
+	var spaces: Array[Dictionary] = []
+	for space: Dictionary in definition.spaces:
+		var state: Dictionary = get_space_state(space.get("id", ""))
+		if not state.get("revealed", false):
+			continue
+		spaces.append({
+			"id": space.get("id", ""), "label": space.get("name", space.get("id", "").capitalize()),
+			"revealed": true, "occupants": occupants_in(space.get("id", "")),
+			"hazard_count": state.get("hazards", []).size(), "feature_count": state.get("features", []).size(),
+		})
+	return {"view_version": 1, "revision": revision, "spaces": spaces}
+
 func space_for_seat(seat_number: int) -> String:
 	return _occupancy.get(seat_number, OUTSIDE_SPACE)
 

@@ -31,6 +31,9 @@ These instructions apply to the entire repository.
 - Keep role assignment RNG isolated from RulesSession and Director streams; invalid social content, plans, transitions, and actions must consume no role RNG.
 - Generate public, seat-private, faction-private, and spoiler-diagnostics social views independently; public histories, errors, host payloads, and Director signals must never expose unrevealed social data.
 - Keep generic social runtime and presentation free of literal role, faction, form, objective, and fixture ID branches; authored social work must cross public RulesSession and BoardState proposal boundaries.
+- Keep native Godot as the only gameplay authority; companion services relay ephemeral communication and browsers submit bounded intents through public authority methods.
+- Keep companion public, stable-seat private, authored faction-private, and sanitized diagnostics projections explicit and independently generated; never forward authoritative snapshots, RNG, raw audits, capabilities, or another seat's secrets.
+- Keep transient browser/client identity separate from stable-seat ownership. Companion claims require host approval, reconnect is scoped to the same room/client/seat, and invalid network work must consume no gameplay RNG or partially mutate gameplay.
 
 ## Validation
 

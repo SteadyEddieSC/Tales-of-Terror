@@ -6,10 +6,10 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 
 ## Current priorities
 
-1. Preserve the Godot 4.7 controller/display, visual, exploration, Living Board, rules, Director, and social-role foundations.
-2. Prove cooperative, betrayal, Horror, Changed, Restless, reconnect, and mixed-outcome play before production content volume.
-3. Keep private views transport-neutral and authority-safe for the later companion prototype.
-4. Add Cloudflare companion rooms only after the local gameplay and privacy contracts remain stable.
+1. Preserve the Godot 4.7 controller/display, visual, exploration, Living Board, rules, Director, social-role, and companion authority foundations.
+2. Use the v0.0.9 fake transport, local Worker emulation, and browser lab to keep stable-seat privacy and exactly-once intent boundaries regression-tested.
+3. Build the v0.1.0 first vertical slice without moving gameplay authority into the relay or browser.
+4. Defer production Cloudflare deployment, accounts, matchmaking, persistence, full remote play, and security certification until their own reviewed gates.
 
 ## Foundation decisions
 
@@ -27,8 +27,8 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 - `docs/technical/` — project setup and architecture
 - `docs/decisions/` — design/architecture decision records
 - `art/` and `audio/` — source and exports
-- `web/companion/` — future browser companion UI
-- `services/room-service/` — future Cloudflare room coordinator
+- `web/companion/` — accessible browser companion prototype
+- `services/room-service/` — ephemeral Cloudflare-compatible room coordinator
 
 ## Documentation rule
 

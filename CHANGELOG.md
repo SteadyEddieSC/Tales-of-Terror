@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.9 - Companion Room Prototype
+
+- Added a typed transport-neutral Godot companion bridge, filtered public/seat/faction views, bounded versioned protocol, fake and WebSocket transports, stable-seat claims/reconnect, exactly-once authority routing, sanitized diagnostics, and deterministic 1–8-client privacy/authority simulations.
+- Added a strict TypeScript Cloudflare-compatible ephemeral room coordinator plus an accessible responsive browser companion for join, approval, privacy reveal/obscure, legal action, acknowledgement, reconnect, and leave/clear flows.
+- Added the Companion Room Lab, ADR-0019, protocol/service/browser/threat-model guides, pinned lockfile and CI, v0.0.9 release notes, and explicit deferred physical-device/network/security checks.
+
 ## v0.0.8 - Roles, Factions & Afterlife
 
 - Added scene-independent deterministic social-role authority, stable-seat secrets, isolated role RNG, validated declarative factions/forms/modes/objectives/actions/transitions, atomic cross-authority proposals, snapshots, and mixed outcomes.

@@ -11,7 +11,7 @@ All views are versioned and JSON-compatible. They are regenerated from `RoleSess
 
 ## Shared-screen honesty
 
-An ordinary television panel is always public. A seat-private reveal overlays an opaque full-screen obscurer, names the authorized seat, requires seat-scoped input, and closes back to a newly generated public view after acknowledgement or cancel. It warns that future companion devices are the better simultaneous-privacy layer.
+An ordinary television panel is always public. A seat-private reveal overlays an opaque full-screen obscurer, names the authorized seat, requires seat-scoped input, and closes back to a newly generated public view after acknowledgement or cancel. The v0.0.9 companion bridge reuses the filtered stable-seat contract for optional simultaneous private presentation without moving authority into the browser.
 
 ## Leak surfaces and recursion
 

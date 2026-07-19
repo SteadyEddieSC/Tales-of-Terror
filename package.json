@@ -1,0 +1,27 @@
+{
+  "name": "terror-turn-companion-prototype",
+  "version": "0.0.9",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p services/room-service/tsconfig.json --noEmit && tsc -p web/companion/tsconfig.json --noEmit",
+    "test": "npm run test:service && npm run test:browser",
+    "test:service": "vitest run --config services/room-service/vitest.config.ts",
+    "test:browser": "vitest run --config web/companion/vitest.config.ts",
+    "test:e2e:local": "node tools/run_companion_live_e2e.mjs",
+    "build": "npm run build:service && npm run build:browser",
+    "build:service": "wrangler deploy --dry-run --config services/room-service/wrangler.jsonc --outdir dist",
+    "build:browser": "vite build --config web/companion/vite.config.ts",
+    "dev:service": "wrangler dev --config services/room-service/wrangler.jsonc --local",
+    "dev:browser": "vite --config web/companion/vite.config.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260713.1",
+    "@types/node": "26.1.1",
+    "jsdom": "29.1.1",
+    "typescript": "7.0.2",
+    "vite": "8.1.4",
+    "vitest": "4.1.10",
+    "wrangler": "4.110.0"
+  }
+}

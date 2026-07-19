@@ -244,6 +244,12 @@ func diagnostics_snapshot() -> Dictionary:
 		"last_no_op_reason": last_no_op_reason, "audit_history": audit_history.duplicate(true),
 	}
 
+func companion_public_view() -> Dictionary:
+	return {
+		"view_version": 1, "revision": revision, "profile_label": profile.get("display_name", "Director"),
+		"pacing_act": pacing_act.capitalize(), "status": "Active" if profile.get("mode", "") != "off" else "Off",
+	}
+
 func _evaluate_candidate(candidate: Dictionary, telemetry: Dictionary, mercy_active: bool) -> Dictionary:
 	var reasons := PackedStringArray()
 	var tags: Array = candidate.tags

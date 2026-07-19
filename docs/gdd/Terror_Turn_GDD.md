@@ -1,6 +1,6 @@
 # Terror Turn — Living Game Design Document
 
-**Version:** 0.4
+**Version:** 0.5
 **Date:** July 13, 2026
 **Status:** Pre-production; preferred working title not legally cleared
 
@@ -62,7 +62,7 @@ The Living, Betrayer, Horror, Changed, and Restless have scenario-specific objec
 
 The v0.0.8 foundation represents those categories through validated authored factions and roles/forms rather than hardcoded paths. A Tale selects an explicit social mode: cooperative, hidden/revealed betrayal, Hunted transformation, Outbreak conversion, faction teams, mixed objectives, or a clearly warned no-afterlife variant. Unsupported player counts select an authored no-secret fallback instead of creating a nonsensical hostile layout.
 
-Role, faction, objective, and capability ownership follows the stable seat through disconnect and reconnect. The public television shows only deliberately public identity, cover, lifecycle, objectives, actions, and results. A controlled pass-and-play reveal obscures the whole display and authorizes one stable seat; future companion devices consume the same filtered views but do not own rules.
+Role, faction, objective, and capability ownership follows the stable seat through disconnect and reconnect. The public television shows only deliberately public identity, cover, lifecycle, objectives, actions, and results. A controlled pass-and-play reveal obscures the whole display and authorizes one stable seat; optional companion devices consume the same filtered views but do not own rules.
 
 Defeat normally opens a meaningful Restless path within one bounded transition: a wraith may place an omen, a guardian may warn, a witness may testify, or an authored replacement may return. Death, faction defeat, individual defeat, and victory are separate authored outcomes. Endings can name several winning factions or individuals and retain partial, escaped, Changed, or Restless results.
 
@@ -79,8 +79,14 @@ The Underteller is fiction and interface. The Director begins as an authored, ru
 - Godot 4.7 stable; typed GDScript; Compatibility renderer.
 - Windows/Linux first; Batocera through Linux validation; Android/Android TV later.
 - Native Godot host owns gameplay initially.
-- Cloudflare later handles room membership, join codes, private state, reconnect metadata, and companion communication.
+- The v0.0.9 Cloudflare-compatible prototype handles only ephemeral room membership, join codes, filtered relays, reconnect capabilities, and companion communication.
 - Companion-first online roadmap; full browser/remote parity only after the local vertical slice.
+
+The v0.0.9 companion prototype now proves that boundary locally. A transport-neutral Godot bridge generates filtered public, stable-seat private, and authored faction-private projections on demand. Browser devices submit bounded prompt or role-action intents; the native authorities revalidate and apply them exactly once. The replaceable Cloudflare-compatible coordinator owns only short-lived communication membership, capabilities, ordering, limits, heartbeat, and expiry. It owns no gameplay or player profile.
+
+Join codes are public routing handles and remain distinct from opaque host/resume capabilities. A browser waits for explicit host approval of an existing stable seat, and reconnect restores only that same seat without transferring controller ownership. One seat may use its local controller plus one approved companion surface; revision, request-ID, and authority-level response/use rules reject duplicated input deterministically.
+
+Private browser content is gated and removable, but HTTPS/WSS is transport protection rather than end-to-end encryption against the relay operator. Local shared-screen/controller play remains complete when the service is disabled or unavailable. Production deployment, accounts, matchmaking, campaign persistence, full remote play, and security certification remain later work.
 
 ## Shared exploration foundation
 
@@ -130,3 +136,11 @@ Pressure, relief, clue, event, board, and ambient proposals obey authored budget
 The v0.0.8 `RoleSession` separately owns social assignment, current faction/form, reveal/lifecycle state, private objectives/actions, bounded uses, transitions, outcome references, and a dedicated salted RNG. Authored social content is validated before assignment; fixed plans consume no randomness, invalid plans consume none, and one-seat betrayal selects the declared cooperative fallback.
 
 Social actions validate stable-seat authority, form/lifecycle, targets, phase, use bounds, and cooldowns. General and board consequences cross the existing `RulesSession` and `BoardState` transaction boundary before role state commits. Rejected multi-system work leaves every authority unchanged. Public, seat-private, faction-private, and diagnostics views are built independently, with recursive privacy regression checks and full spoiler separation.
+
+## Companion room loop
+
+The v0.0.9 host creates one ephemeral room for up to eight optional browser companions. A browser enters the human join code, waits while the public host approves a stable seat, passes an explicit privacy gate, receives only that seat's filtered role/objective/prompt/action information, submits one bounded intent, and may disconnect/resume the same seat with an opaque room-scoped capability.
+
+The room coordinator relays already-filtered views and intents; it does not run the board, rules, roles, Director, pawns, controllers, seats, RNG, cards, inventory, or outcomes. Wrong-seat, stale, duplicate, malformed, tampered, expired, rate-limited, and unsupported work fails closed. Invalid network work consumes no gameplay randomness and creates no partial gameplay mutation. Room loss disconnects companions safely while native play continues.
+
+The native host adapter now proves the real local loop through the ephemeral service and back to the browser's authoritative acknowledgement. Wire naming is converted explicitly at the transport boundary, relay time windows survive Durable Object reload without relying on test-only steps, client traffic cannot mask host loss, and unrevealed authored board spaces are absent from every public companion projection.
