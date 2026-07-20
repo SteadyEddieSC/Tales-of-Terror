@@ -64,7 +64,7 @@ func _process(delta: float) -> void:
 		if is_instance_valid(_sandbox):
 			_sandbox.present_reset_progress(minf(_reset_held / RESET_HOLD_SECONDS, 1.0))
 		if _reset_held >= RESET_HOLD_SECONDS:
-			_seats.reset_all()
+			_perform_protected_reset()
 			_reset_held = 0.0
 	else:
 		if _reset_held > 0.0:
@@ -107,12 +107,8 @@ func _input(event: InputEvent) -> void:
 			_sandbox.process_mode = (
 				Node.PROCESS_MODE_DISABLED if _coordinator.paused else Node.PROCESS_MODE_INHERIT
 			)
-	elif event.is_action_pressed("ui_cancel_action") and _coordinator.lifecycle == "lobby":
-		_seats.leave_device(device_id)
-		if _coordinator.active_seats().is_empty():
-			_coordinator.cancel_setup()
-	elif event.is_action_pressed("ui_cancel_action") and _coordinator.lifecycle == "ending":
-		_coordinator.return_to_title()
+	elif event.is_action_pressed("ui_cancel_action"):
+		_cancel_player_flow(device_id)
 
 
 func _ensure_sandbox() -> void:
@@ -208,6 +204,28 @@ func _advance_player_flow() -> void:
 		"ending":
 			if _coordinator.rematch().accepted:
 				_destroy_sandbox()
+	_refresh_slice_view()
+
+
+func _cancel_player_flow(device_id: int) -> void:
+	match _coordinator.lifecycle:
+		"confirmation":
+			_coordinator.cancel_setup()
+		"lobby":
+			_seats.leave_device(device_id)
+			if _coordinator.active_seats().is_empty():
+				_coordinator.cancel_setup()
+		"ending":
+			_coordinator.return_to_title()
+	_refresh_slice_view()
+
+
+func _perform_protected_reset() -> void:
+	_coordinator.protected_reset_to_title()
+	_reset_held = 0.0
+	_ui.present_reset_progress(0.0)
+	if is_instance_valid(_sandbox):
+		_sandbox.present_reset_progress(0.0)
 	_refresh_slice_view()
 
 

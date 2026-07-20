@@ -71,7 +71,7 @@ func present(state: Dictionary, seats: Array[Dictionary], developer_lab: bool = 
 				"Hidden Betrayer is selected for 3–8 seats. One or two seats use the "
 				+ "authored no-secret cooperative fallback. No phone is required."
 			)
-			_footer.text = "CONFIRM: PREPARE THE TALE  •  CANCEL: RETURN"
+			_footer.text = "CONFIRM: PREPARE THE TALE  •  CANCEL: RETURN TO LOBBY"
 		"briefing":
 			_title.text = "THE LANTERN HOUSE WAKES"
 			_body.text = "%s\n\nOBJECTIVE\n%s" % [state.briefing, state.public_objective]

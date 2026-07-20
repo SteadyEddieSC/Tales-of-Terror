@@ -8,7 +8,9 @@ var _failures: int = 0
 func _initialize() -> void:
 	_test_manifest_validation()
 	_test_manifest_reference_and_policy_negatives()
+	_test_manifest_operation_sequence_negatives()
 	_test_lifecycle_and_atomic_initialization()
+	_test_confirmation_cancel_player_flow()
 	_test_supported_seats_and_fallback()
 	_test_shared_screen_and_optional_companion()
 	_test_complete_fixture_and_privacy()
@@ -16,6 +18,8 @@ func _initialize() -> void:
 	_test_pre_session_snapshot_coherence()
 	_test_exploration_snapshot_and_progression_rejection()
 	_test_stage_transaction_rollback_across_wait()
+	_test_resumable_snapshot_boundaries()
+	_test_protected_reset_paths()
 	_test_atomic_rematch_and_restore_room_cleanup()
 	if _failures == 0:
 		print("Vertical slice tests passed")
@@ -96,6 +100,64 @@ func _test_lifecycle_and_atomic_initialization() -> void:
 	_expect(initial.seat_manager == coordinator.to_snapshot().seat_manager, "retains stable seats")
 
 
+func _test_confirmation_cancel_player_flow() -> void:
+	var coordinator := VerticalSliceCoordinator.new()
+	coordinator.seat_manager.join_device(0, "cancel-flow-pad", "Fixture Pad")
+	coordinator.enter_lobby()
+	coordinator.confirm_roster()
+	var view := VerticalSliceView.new()
+	view._ready()
+	view.present(coordinator.public_state(), coordinator.seat_manager.get_seats())
+	var footer: Label = view.get("_footer")
+	_expect(
+		footer.text.ends_with("CANCEL: RETURN TO LOBBY"),
+		"advertises the implemented confirmation Cancel destination",
+	)
+	var retained_roster: Dictionary = coordinator.seat_manager.to_snapshot()
+	coordinator.cancel_setup()
+	_expect(
+		(
+			coordinator.lifecycle == "lobby"
+			and coordinator.seat_manager.to_snapshot() == retained_roster
+		),
+		"routes controller Cancel from confirmation to the retained-roster lobby",
+	)
+	_expect(
+		(
+			coordinator.manifest.is_empty()
+			and coordinator.board_state == null
+			and coordinator.rules_session == null
+			and coordinator.companion_bridge == null
+		),
+		"keeps session authorities absent after confirmation Cancel",
+	)
+	var coherence_probe := VerticalSliceCoordinator.new()
+	_expect(
+		coherence_probe.restore_snapshot(coordinator.to_snapshot()).accepted,
+		"keeps the cancelled lobby snapshot coherent",
+	)
+	coordinator.confirm_roster()
+	_expect(coordinator.lifecycle == "confirmation", "re-enters confirmation after Cancel")
+	coordinator.initialize_session()
+	_expect(
+		coordinator.lifecycle == "briefing" and coordinator.rules_session != null,
+		"initializes normally after the lobby-confirmation retry",
+	)
+	var empty_lobby := VerticalSliceCoordinator.new()
+	empty_lobby.seat_manager.join_device(1, "last-lobby-pad", "Fixture Pad")
+	empty_lobby.enter_lobby()
+	empty_lobby.seat_manager.leave_device(1)
+	_expect(
+		empty_lobby.cancel_setup().accepted and empty_lobby.lifecycle == "boot_title",
+		"returns an empty lobby to coherent boot/title",
+	)
+	_expect(
+		VerticalSliceCoordinator.new().restore_snapshot(empty_lobby.to_snapshot()).accepted,
+		"round-trips the empty-lobby title snapshot",
+	)
+	view.free()
+
+
 func _test_manifest_reference_and_policy_negatives() -> void:
 	var cases: Array[Dictionary] = []
 	var unknown_check: Dictionary = _manifest_copy()
@@ -148,6 +210,42 @@ func _test_manifest_reference_and_policy_negatives() -> void:
 		coordinator.to_snapshot() == before,
 		"rejects an undeclared requested mode before session mutation",
 	)
+
+
+func _test_manifest_operation_sequence_negatives() -> void:
+	var cases: Array[Dictionary] = []
+	var resolve_before_queue: Dictionary = _manifest_copy()
+	var first: Dictionary = resolve_before_queue.stages[0].operations[0]
+	resolve_before_queue.stages[0].operations[0] = resolve_before_queue.stages[0].operations[1]
+	resolve_before_queue.stages[0].operations[1] = first
+	cases.append({"manifest": resolve_before_queue, "label": "resolve_event before queue_event"})
+	var missing_queue: Dictionary = _manifest_copy()
+	missing_queue.stages[0].operations.remove_at(0)
+	cases.append({"manifest": missing_queue, "label": "missing queue_event"})
+	var submit_vote_without_open: Dictionary = _manifest_copy()
+	submit_vote_without_open.stages[1].operations.remove_at(0)
+	cases.append({"manifest": submit_vote_without_open, "label": "submit_vote without open_vote"})
+	var duplicate_resolve_vote: Dictionary = _manifest_copy()
+	duplicate_resolve_vote.stages[1].operations.append({"type": "resolve_vote"})
+	cases.append({"manifest": duplicate_resolve_vote, "label": "duplicate resolve_vote"})
+	var missing_director: Dictionary = _manifest_copy()
+	missing_director.stages[2].operations.remove_at(3)
+	cases.append({"manifest": missing_director, "label": "omitted Director opportunity"})
+	var action_before_transition: Dictionary = _manifest_copy()
+	var transition: Dictionary = action_before_transition.stages[3].operations[0]
+	action_before_transition.stages[3].operations[0] = (
+		action_before_transition.stages[3].operations[1]
+	)
+	action_before_transition.stages[3].operations[1] = transition
+	cases.append({"manifest": action_before_transition, "label": "role action before transition"})
+	var outcome_outside_ending: Dictionary = _manifest_copy()
+	outcome_outside_ending.stages[0].operations.append({"type": "resolve_outcomes"})
+	cases.append({"manifest": outcome_outside_ending, "label": "outcome outside ending"})
+	for test_case: Dictionary in cases:
+		_expect(
+			not _manifest_failures(test_case.manifest).is_empty(),
+			"rejects %s under the manifest v1 stage-operation policy" % test_case.label,
+		)
 
 
 func _test_supported_seats_and_fallback() -> void:
@@ -422,6 +520,133 @@ func _test_stage_transaction_rollback_across_wait() -> void:
 	)
 
 
+func _test_resumable_snapshot_boundaries() -> void:
+	var prompt_source := _initialized_coordinator(3, 4706)
+	_expect(
+		prompt_source.advance_player_stage().waiting_for_players,
+		"creates a genuine prompt wait boundary",
+	)
+	var prompt_wait: Dictionary = prompt_source.to_snapshot()
+	var vote_source := _initialized_coordinator(3, 4706)
+	vote_source.run_current_stage()
+	_expect(
+		vote_source.advance_player_stage().waiting_for_players,
+		"creates a genuine vote wait boundary",
+	)
+	var vote_wait: Dictionary = vote_source.to_snapshot()
+	var cases: Array[Dictionary] = []
+	var arbitrary_index: Dictionary = prompt_wait.duplicate(true)
+	arbitrary_index.operation_index = 4
+	cases.append({"snapshot": arbitrary_index, "label": "arbitrary synchronous operation index"})
+	var prompt_without_pending: Dictionary = prompt_wait.duplicate(true)
+	prompt_without_pending.rules.pending_prompt.clear()
+	cases.append({"snapshot": prompt_without_pending, "label": "prompt wait without prompt"})
+	var vote_with_prompt_state: Dictionary = vote_wait.duplicate(true)
+	vote_with_prompt_state.rules.active_vote.clear()
+	cases.append({"snapshot": vote_with_prompt_state, "label": "vote boundary with prompt state"})
+	var prompt_with_vote_state: Dictionary = prompt_wait.duplicate(true)
+	prompt_with_vote_state.rules.active_vote = vote_wait.rules.active_vote.duplicate(true)
+	cases.append({"snapshot": prompt_with_vote_state, "label": "prompt boundary with vote state"})
+	var mismatched_eligible: Dictionary = prompt_wait.duplicate(true)
+	mismatched_eligible.rules.pending_prompt.eligible_seats = [2]
+	cases.append({"snapshot": mismatched_eligible, "label": "mismatched eligible seats"})
+	var malformed_response: Dictionary = prompt_wait.duplicate(true)
+	malformed_response.rules.pending_prompt.responses = [{"seat": 1, "value": ["unknown"]}]
+	cases.append({"snapshot": malformed_response, "label": "malformed wait response"})
+	var mismatched_transaction: Dictionary = prompt_wait.duplicate(true)
+	mismatched_transaction.stage_transaction.stage_index = 1
+	cases.append({"snapshot": mismatched_transaction, "label": "mismatched stage transaction"})
+	var transaction_at_zero: Dictionary = _initialized_coordinator(3, 4706).to_snapshot()
+	transaction_at_zero.stage_transaction = prompt_wait.stage_transaction.duplicate(true)
+	cases.append({"snapshot": transaction_at_zero, "label": "transaction at operation zero"})
+	var pending_at_zero: Dictionary = _initialized_coordinator(3, 4706).to_snapshot()
+	pending_at_zero.rules.pending_prompt = prompt_wait.rules.pending_prompt.duplicate(true)
+	cases.append({"snapshot": pending_at_zero, "label": "pending wait at operation zero"})
+	var receiver := VerticalSliceCoordinator.new()
+	for test_case: Dictionary in cases:
+		var stable: Dictionary = receiver.to_snapshot()
+		_expect(
+			not receiver.restore_snapshot(test_case.snapshot).accepted,
+			"rejects %s before mutation" % test_case.label,
+		)
+		_expect(
+			receiver.to_snapshot() == stable,
+			"keeps receiver byte-equivalent after %s rejection" % test_case.label,
+		)
+	var resumed := VerticalSliceCoordinator.new()
+	_expect(resumed.restore_snapshot(prompt_wait).accepted, "restores a real prompt wait")
+	var revision: int = resumed.rules_session.pending_prompt.revision
+	_expect(
+		resumed.rules_session.submit_response(1, ["listen"], revision).accepted,
+		"accepts the remaining response after wait restore",
+	)
+	_expect(resumed.advance_player_stage().accepted, "completes the restored stage")
+	_expect(
+		resumed.stage_index == 1 and resumed.stage_history.size() == 1,
+		"completes the restored stage exactly once",
+	)
+
+
+func _test_protected_reset_paths() -> void:
+	var active := _initialized_coordinator(3, 9017)
+	var old_rules: RulesSession = active.rules_session
+	var old_roster: Array[int] = old_rules.participating_seats.duplicate()
+	var reset_states: Array[Dictionary] = []
+	active.lifecycle_changed.connect(
+		func(state: Dictionary) -> void: reset_states.append(state.duplicate(true))
+	)
+	_expect(active.protected_reset_to_title().accepted, "resets ordinary active play")
+	_expect(_is_clean_title(active), "clears every authority after active-play reset")
+	_expect(
+		(
+			reset_states.size() == 1
+			and reset_states[0].lifecycle == "boot_title"
+			and reset_states[0].seat_count == 0
+		),
+		"emits one coherent final public reset state",
+	)
+	active.seat_manager.join_device(7, "fresh-reset-pad", "Fresh Fixture Pad")
+	active.enter_lobby()
+	_expect(
+		(
+			active.lifecycle == "lobby"
+			and active.rules_session == null
+			and old_rules.participating_seats == old_roster
+		),
+		"joins a fresh lobby without attaching the roster to old authority",
+	)
+	var waiting := _initialized_coordinator(3, 4706)
+	_expect(waiting.advance_player_stage().waiting_for_players, "opens a reset probe prompt")
+	_expect(
+		not waiting.to_snapshot().stage_transaction.is_empty(),
+		"retains a stage checkpoint before protected reset",
+	)
+	waiting.protected_reset_to_title()
+	_expect(_is_clean_title(waiting), "clears an in-progress wait and checkpoint")
+	var room := _initialized_coordinator(3, 6201)
+	var old_bridge: CompanionBridge = room.companion_bridge
+	_expect(old_bridge.create_room("reset_room", "RSET3").accepted, "opens reset probe room")
+	var transport := CompanionFakeTransport.new(old_bridge)
+	_expect(transport.connect_client("reset_claimed").accepted, "joins reset probe client")
+	_expect(transport.approve_client("reset_claimed", 1).accepted, "approves reset claim")
+	_expect(
+		transport.send_intent("reset_claimed", "private_reveal_ack", "reset_ack", {}, 1).accepted,
+		"populates reset acknowledgement cache",
+	)
+	room.protected_reset_to_title()
+	_expect(_is_clean_title(room), "removes authorities and seats after room reset")
+	_expect(_bridge_is_fully_discarded(old_bridge), "closes and clears the reset probe room")
+	var slice_view := VerticalSliceView.new()
+	slice_view._ready()
+	slice_view.present(waiting.public_state(), waiting.seat_manager.get_seats())
+	var title: Label = slice_view.get("_title")
+	_expect(
+		slice_view.visible and title.text == "TERROR TURN",
+		"presents the title after the protected reset",
+	)
+	slice_view.free()
+
+
 func _test_atomic_rematch_and_restore_room_cleanup() -> void:
 	var coordinator := _initialized_coordinator(3, 22031)
 	_complete(coordinator)
@@ -468,13 +693,112 @@ func _test_atomic_rematch_and_restore_room_cleanup() -> void:
 	var source := _initialized_coordinator(2, 4706)
 	var source_snapshot: Dictionary = source.to_snapshot()
 	var restore_old_bridge: CompanionBridge = coordinator.companion_bridge
-	restore_old_bridge.create_room("restore_room", "RSTORE")
-	restore_old_bridge.request_join("restore_pending")
-	_expect(coordinator.restore_snapshot(source_snapshot).accepted, "restores a detached candidate")
-	_expect(not restore_old_bridge.room_open, "closes the old room before restored replacement")
 	_expect(
-		coordinator.companion_bridge.diagnostics().pending_clients == 0,
+		restore_old_bridge.create_room("restore_room", "RSTR3").accepted,
+		"opens the valid restore cleanup probe room",
+	)
+	var restore_transport := CompanionFakeTransport.new(restore_old_bridge)
+	_expect(
+		restore_transport.connect_client("restore_claimed").accepted,
+		"adds a restore cleanup claim request",
+	)
+	_expect(
+		restore_transport.approve_client("restore_claimed", 1).accepted,
+		"approves the restore cleanup claim",
+	)
+	_expect(
+		(
+			restore_transport
+			. send_intent("restore_claimed", "private_reveal_ack", "restore_cached_ack", {}, 1)
+			. accepted
+		),
+		"populates the restore cleanup acknowledgement cache",
+	)
+	_expect(
+		restore_transport.connect_client("restore_pending").accepted,
+		"retains a pending restore cleanup client",
+	)
+	var restore_before: Dictionary = restore_old_bridge.diagnostics()
+	_expect(
+		(
+			restore_old_bridge.room_open
+			and restore_before.pending_clients > 0
+			and not restore_before.seat_claims.is_empty()
+			and restore_before.connected_client_records > 0
+			and restore_before.client_sequence_entries > 0
+			and restore_before.ack_cache_entries > 0
+			and restore_before.ack_order_entries > 0
+			and restore_before.sequence > 0
+			and not restore_before.history.is_empty()
+		),
+		"proves the old room contains real transport and acknowledgement state",
+	)
+	_expect(coordinator.restore_snapshot(source_snapshot).accepted, "restores a detached candidate")
+	_expect(
+		_bridge_is_fully_discarded(restore_old_bridge),
+		"closes and fully discards the old room before restored replacement",
+	)
+	var replacement: Dictionary = coordinator.companion_bridge.diagnostics()
+	_expect(
+		(
+			replacement.room_state == "closed"
+			and coordinator.companion_bridge.room_id.is_empty()
+			and replacement.join_code.is_empty()
+			and replacement.pending_clients == 0
+			and replacement.seat_claims.is_empty()
+			and replacement.connected_client_records == 0
+			and replacement.client_sequence_entries == 0
+			and replacement.ack_cache_entries == 0
+			and replacement.ack_order_entries == 0
+			and replacement.sequence == 0
+			and replacement.history.is_empty()
+		),
 		"keeps the replacement companion bridge clean and optional",
+	)
+
+
+func _is_clean_title(coordinator: VerticalSliceCoordinator) -> bool:
+	var snapshot: Dictionary = coordinator.to_snapshot()
+	return (
+		coordinator.lifecycle == "boot_title"
+		and coordinator.active_seats().is_empty()
+		and coordinator.manifest.is_empty()
+		and coordinator.board_state == null
+		and coordinator.rules_session == null
+		and coordinator.director_runtime == null
+		and coordinator.role_session == null
+		and coordinator.companion_bridge == null
+		and coordinator.pawn_registry.get_pawns().is_empty()
+		and snapshot.stage_history.is_empty()
+		and snapshot.stage_transaction.is_empty()
+		and snapshot.operation_index == 0
+		and snapshot.stage_index == -1
+		and not snapshot.paused
+		and snapshot.last_director_decision.is_empty()
+		and snapshot.last_director_application.is_empty()
+	)
+
+
+func _bridge_is_fully_discarded(bridge: CompanionBridge) -> bool:
+	var diagnostics: Dictionary = bridge.diagnostics()
+	var counters_clear: bool = true
+	for count: int in diagnostics.counters.values():
+		counters_clear = counters_clear and count == 0
+	return (
+		not bridge.room_open
+		and bridge.room_id.is_empty()
+		and diagnostics.join_code.is_empty()
+		and diagnostics.pending_clients == 0
+		and diagnostics.seat_claims.is_empty()
+		and diagnostics.connected_clients == 0
+		and diagnostics.connected_client_records == 0
+		and diagnostics.client_sequence_entries == 0
+		and diagnostics.ack_cache_entries == 0
+		and diagnostics.ack_order_entries == 0
+		and diagnostics.sequence == 0
+		and diagnostics.history.is_empty()
+		and counters_clear
+		and diagnostics.stored_revision == diagnostics.last_authoritative_revision
 	)
 
 

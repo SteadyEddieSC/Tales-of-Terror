@@ -29,7 +29,9 @@ The coordinator owns session-scoped references and lifecycle only. Mutable domai
 - Terminal reason: `social_outcome`; snapshot version 2 adds pawn/exploration state to the authority digest, so the corrected exact digests supersede the pre-review values.
 - Snapshot: a pawn moved from spawn into the Sealed Archive round-trips with exact position, device/seat ownership, connection/input/focus state, BoardState occupancy, authority digest, and public-history digest. Negative/oversized indices, impossible history, paused briefing, invalid pawn ownership/position, inconsistent occupancy, empty confirmation, and assigned-seat boot/title state all reject without changing the receiver snapshot. A validated assigned roster round-trips in the lobby.
 - Stage transaction: a later authored `clue_revealed` no-change rejection after a real prompt wait restores the exact stage-start snapshot, including pawn/board/rules/Director/role/progression state and the cleared prompt; the clean retry commits exactly once.
-- Rematch/restore: failed candidate construction preserves the ending and open room byte-for-byte. Successful replacement closes the former room, discards claims/pending/cache/sequence/history, retains stable seats, and creates clean authorities. Restore over an open room closes it before adopting the detached candidate.
+- Resumable boundaries: operation zero rejects a transaction or pending prompt/vote. Nonzero operation indices accept only the exact v1 prompt or vote submit/resolve boundary with matching authored kind, ID/source/options, eligible seats, revision, responses, and same-stage operation-zero checkpoint. Arbitrary synchronous indices and mismatched prompt/vote/transaction state reject without changing the receiver. A real prompt wait restores, accepts the remaining response, and completes once.
+- Protected reset and Cancel: active play, a retained prompt checkpoint, and an open room containing a claim plus cached acknowledgement all reset to a visible clean title with no authorities or seats. A subsequent join enters a fresh lobby. Confirmation Cancel retains the roster in lobby, exposes no authorities, passes snapshot coherence, and can confirm and initialize normally.
+- Rematch/restore: failed candidate construction preserves the ending and open room byte-for-byte. Successful replacement closes the former room, discards claims/pending/cache/sequence/history, retains stable seats, and creates clean authorities. The restore proof uses valid code `RSTR3`, an approved claim, a pending client, nonzero sequence/history/client sequence, and a cached accepted acknowledgement; after restore every old room identifier, transport collection, cache, counter, sequence, and history is empty/reset before the detached candidate is adopted.
 - Failed initialization: missing/malformed manifest leaves the pre-attempt coordinator snapshot unchanged.
 
 ### Corrected deterministic public-history digests
@@ -47,7 +49,7 @@ The coordinator owns session-scoped references and lifecycle only. Mutable domai
 
 ## Strict manifest and mode negatives
 
-The corrected validator rejects unknown check IDs, role selectors, transition triggers, action tags, incompatible selector/trigger or selector/action combinations, unknown nested policy keys, non-native companion authority, malformed or duplicate/out-of-range fixture seeds, malformed ordered inputs, incoherent stage conditions/order, and an illegal default/fallback relationship. `initialize_session()` rejects the existing but undeclared `hunted` mode before changing the confirmation snapshot.
+The corrected validator rejects unknown check IDs, role selectors, transition triggers, action tags, incompatible selector/trigger or selector/action combinations, unknown nested policy keys, non-native companion authority, malformed or duplicate/out-of-range fixture seeds, malformed ordered inputs, incoherent stage conditions/order, and an illegal default/fallback relationship. The fixed v1 per-stage operation policy additionally rejects resolve-before-queue, missing queue, vote submission without open, duplicate vote resolution, omitted Director evaluation, afterlife action before transition, and outcome resolution outside Ending. `initialize_session()` rejects the existing but undeclared `hunted` mode before changing the confirmation snapshot.
 
 ## Privacy and companion evidence
 
@@ -61,9 +63,9 @@ The corrected validator rejects unknown check IDs, role selectors, transition tr
 
 | Surface | Result |
 | --- | --- |
-| New lifecycle/manifest/privacy/snapshot/rematch test | PASS |
+| New reset/Cancel/manifest/privacy/snapshot/rematch test | PASS |
 | New multi-seed vertical-slice simulation | PASS, 24/24 |
-| Focused GUT | PASS, 10 tests / 44 assertions |
+| Focused GUT | PASS, 13 tests / 69 assertions |
 | Inherited Godot suites | PASS: seat, visual, exploration, Living Board, rules, Director, roles, companion |
 | Inherited simulations | PASS: Director 90/90, social 157/157, companion 40/40 |
 | Companion service/browser | PASS: service 26/26, browser 10/10, strict TypeScript, production dry-run/build |
@@ -88,10 +90,12 @@ The 3840×2160 capture is virtual/offscreen evidence only, not physical/native 4
 - The first correction import exposed that `PackedStringArray(...)` constructor calls are not Godot constant expressions. They were replaced with typed literal constants; typed import then passed.
 - An occupancy-negative probe initially changed only the top-level BoardState snapshot while RulesSession still carried its embedded board copy. This exposed and then added an explicit cross-authority board-snapshot equality rule; the negative restore now fails closed.
 - During focused development, JSON integer normalization, one incorrect RulesSession initialization-field assumption, one invalid synthetic join-code character, and one outcome-operation ordering conflict were corrected; every affected test was rerun successfully.
-- A temporary focused GUT failure probe produced exit code 1 and a failing JUnit report. The probe script, UID, and generated report were removed; the restored suite passed 10 tests and 44 assertions.
+- A temporary focused GUT failure probe produced exit code 1 and a failing JUnit report (14 tests, 13 passing, 1 failing, 69/70 assertions). The probe script and generated report were removed; the restored suite passed 13 tests and 69 assertions.
 - Strengthening pre-session seat coherence temporarily raised the coordinator to 1,003 lines, and `gdlint` correctly rejected it. The pure predicate moved into the typed snapshot-policy helper; the rerun passed all 74 files without a suppression or threshold change.
 - The first local JSON sweep included an ignored prior-release evidence file with a UTF-8 BOM and failed. The CI-equivalent tracked-file sweep then passed all nine committed JSON files; the ignored file is not part of the repository or Actions checkout.
 - Two attempted PowerShell wrappers for the local service smoke were rejected before execution by the command safety layer. The service was instead run as a managed tool process; health and room creation passed, and the process was terminated.
+- The first main-scene integration probe instantiated the scene inside `SceneTree._initialize()`, so deferred child `_ready()` callbacks had not populated the view/sandbox fields before access. Godot logged nil-access errors after the harness had already scheduled a zero exit. The brittle timing-dependent probe was removed; stable coordinator/view seams now cover the player flow and title presentation, while typed import and main-scene smoke exercise the production wiring.
+- The first correction `npm ci` attempt encountered `EBUSY` because an inherited repository-scoped Wrangler process still held `node_modules/miniflare`. Only the exact Tales-of-Terror Node/workerd processes were stopped; the clean install rerun succeeded. A later combined validation used a stale local `GODOT_BIN` path and failed only when spawning the native E2E; discovery found the existing pinned 4.7.1 executable, and the genuine E2E rerun passed exactly once with history delta 1.
 - `npm ci` warned that three locked packages have install scripts not yet listed in npm `allowScripts`; install, audit, tests, and builds all succeeded with zero reported vulnerabilities. No dependency file changed.
 - Windows headless dummy rendering crashed during the first AVI capture attempt. No evidence file survived. The normal Compatibility renderer then produced exact-dimension PNG-sequence frames; temporary AVI/WAV/probe files were removed and the committed PNGs were inspected.
 - No balance, fun, duration, security, or physical-device certification is claimed.

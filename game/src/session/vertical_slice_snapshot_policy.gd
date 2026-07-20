@@ -84,6 +84,33 @@ static func stable_seat_snapshot_is_coherent(manager: SeatManager) -> bool:
 	return coherent
 
 
+static func validate_resumable_boundary(
+	snapshot: Dictionary, candidate_manifest: Dictionary, session: RulesSession
+) -> Dictionary:
+	var reason: String = ""
+	if snapshot.lifecycle != "active_tale" or snapshot.operation_index == 0:
+		if not session.pending_prompt.is_empty() or not session.active_vote.is_empty():
+			reason = "unexpected_pending_player_wait"
+	else:
+		var stage: Dictionary = candidate_manifest.stages[snapshot.stage_index]
+		var boundary: Dictionary = VerticalSliceManifest.resumable_boundary(
+			stage.id, snapshot.operation_index
+		)
+		if boundary.is_empty() or not _operation_pair_matches(stage, snapshot, boundary):
+			reason = "operation_index_not_resumable"
+		elif not _pending_wait_matches(boundary, session):
+			reason = "pending_player_wait_mismatch"
+	return (
+		{"accepted": true, "reason": ""}
+		if reason.is_empty()
+		else {"accepted": false, "reason": reason}
+	)
+
+
+static func stage_start_authorities_are_clean(session: RulesSession) -> bool:
+	return session.pending_prompt.is_empty() and session.active_vote.is_empty()
+
+
 static func _lifecycle_rejection(
 	snapshot: Dictionary, candidate_manifest: Dictionary, terminal_reason: String
 ) -> String:
@@ -110,6 +137,148 @@ static func _lifecycle_rejection(
 		_:
 			return "unknown_snapshot_lifecycle"
 	return ""
+
+
+static func _operation_pair_matches(
+	stage: Dictionary, snapshot: Dictionary, boundary: Dictionary
+) -> bool:
+	var operations: Array = stage.operations
+	return (
+		snapshot.operation_index > 0
+		and snapshot.operation_index < operations.size()
+		and operations[snapshot.operation_index - 1].get("type", "") == boundary.submit_type
+		and operations[snapshot.operation_index].get("type", "") == boundary.resolve_type
+	)
+
+
+static func _pending_wait_matches(boundary: Dictionary, session: RulesSession) -> bool:
+	var pending: Dictionary = session.pending_prompt
+	if (
+		pending.is_empty()
+		or pending.get("id", "") != boundary.prompt_id
+		or pending.get("source_id", "") != boundary.source_id
+		or pending.get("revision") != session.phase_revision
+	):
+		return false
+	var definition: Dictionary = _wait_definition(boundary, session)
+	if definition.is_empty() or not _wait_kind_matches(boundary, session, definition):
+		return false
+	var expected_eligible: Array[int] = _expected_eligible(boundary, session, definition)
+	if pending.get("eligible_seats", []) != expected_eligible:
+		return false
+	if _option_ids(pending.get("options", [])) != _option_ids(definition.get("options", [])):
+		return false
+	if not _selection_policy_matches(boundary, pending, definition):
+		return false
+	return _responses_are_coherent(pending, expected_eligible)
+
+
+static func _wait_definition(boundary: Dictionary, session: RulesSession) -> Dictionary:
+	if boundary.kind == "vote":
+		return (
+			(session.content as LanternHouseRulesContent).vote_definition()
+			if session.content is LanternHouseRulesContent
+			else {}
+		)
+	for event: Dictionary in session.content.events:
+		if event.get("id", "") != boundary.source_id:
+			continue
+		for prompt: Dictionary in event.get("prompts", []):
+			if prompt.get("id", "") == boundary.prompt_id:
+				return prompt
+	return {}
+
+
+static func _wait_kind_matches(
+	boundary: Dictionary, session: RulesSession, definition: Dictionary
+) -> bool:
+	if boundary.kind == "prompt":
+		return session.active_vote.is_empty() and definition.get("scope", "") == "single"
+	var vote: Dictionary = session.active_vote
+	return (
+		boundary.kind == "vote"
+		and vote.get("id", "") == boundary.prompt_id
+		and vote.get("revision") == session.phase_revision
+		and vote.get("rule", "") == definition.get("rule", "")
+		and vote.get("quorum") == definition.get("quorum")
+		and vote.get("tie_policy", "") == definition.get("tie_policy", "")
+	)
+
+
+static func _expected_eligible(
+	boundary: Dictionary, session: RulesSession, definition: Dictionary
+) -> Array[int]:
+	if boundary.kind == "prompt":
+		return [definition.get("seat", 0)]
+	var seats: Array[int] = session.participating_seats.duplicate()
+	seats.sort()
+	return seats
+
+
+static func _option_ids(value: Variant) -> Array[String]:
+	var ids: Array[String] = []
+	if not value is Array:
+		return ids
+	for option: Variant in value:
+		if not option is Dictionary or not option.get("id") is String:
+			return []
+		ids.append(option.id)
+	return ids
+
+
+static func _selection_policy_matches(
+	boundary: Dictionary, pending: Dictionary, definition: Dictionary
+) -> bool:
+	var expected_minimum: int = definition.get("min_selections", 0)
+	var expected_maximum: int = definition.get("max_selections", 1)
+	var expected_pass: bool = definition.get("allow_pass", false)
+	if boundary.kind == "vote":
+		expected_minimum = 0 if definition.get("allow_abstain", false) else 1
+		expected_maximum = 1
+		expected_pass = definition.get("allow_abstain", false)
+	return (
+		pending.get("min_selections") == expected_minimum
+		and pending.get("max_selections") == expected_maximum
+		and pending.get("allow_pass") == expected_pass
+	)
+
+
+static func _responses_are_coherent(pending: Dictionary, eligible: Array[int]) -> bool:
+	var responses: Variant = pending.get("responses")
+	var minimum: Variant = pending.get("min_selections")
+	var maximum: Variant = pending.get("max_selections")
+	if not responses is Dictionary or not minimum is int or not maximum is int:
+		return false
+	if responses.size() > eligible.size() or minimum < 0 or maximum < minimum:
+		return false
+	var allowed: Array[String] = _option_ids(pending.get("options", []))
+	for seat: Variant in responses:
+		if not seat is int or not eligible.has(seat):
+			return false
+		var selections: Variant = responses[seat]
+		if (
+			not selections is Array
+			or not _selections_are_coherent(
+				selections, allowed, minimum, maximum, pending.get("allow_pass", false)
+			)
+		):
+			return false
+	return true
+
+
+static func _selections_are_coherent(
+	selections: Array, allowed: Array[String], minimum: int, maximum: int, allow_pass: bool
+) -> bool:
+	if selections.is_empty():
+		return allow_pass
+	if selections.size() < minimum or selections.size() > maximum:
+		return false
+	var seen: Dictionary = {}
+	for selection: Variant in selections:
+		if not selection is String or not allowed.has(selection) or seen.has(selection):
+			return false
+		seen[selection] = true
+	return true
 
 
 static func _active_rejection(

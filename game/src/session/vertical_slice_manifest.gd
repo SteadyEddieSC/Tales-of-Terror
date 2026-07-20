@@ -80,6 +80,41 @@ const STAGE_CONDITION_POLICY: Dictionary = {
 	"afterlife": ["reckoning_resolved", "afterlife_action_resolved"],
 	"ending": ["afterlife_resolved", "terminal_result_committed"],
 }
+const STAGE_OPERATION_POLICY: Dictionary = {
+	"threshold":
+	[
+		"queue_event",
+		"resolve_event",
+		"submit_prompt",
+		"resolve_prompt",
+		"resolve_event",
+		"apply_effects",
+	],
+	"council": ["open_vote", "submit_vote", "resolve_vote"],
+	"reckoning": ["apply_effects", "play_card", "resolve_check", "director_evaluate"],
+	"afterlife": ["role_transition", "role_action"],
+	"ending": ["apply_effects", "resolve_outcomes"],
+}
+const RESUMABLE_BOUNDARY_POLICY: Dictionary = {
+	"threshold":
+	{
+		"operation_index": 3,
+		"submit_type": "submit_prompt",
+		"resolve_type": "resolve_prompt",
+		"kind": "prompt",
+		"prompt_id": "choose_path",
+		"source_id": "threshold_whisper",
+	},
+	"council":
+	{
+		"operation_index": 2,
+		"submit_type": "submit_vote",
+		"resolve_type": "resolve_vote",
+		"kind": "vote",
+		"prompt_id": "archive_route_vote",
+		"source_id": "gallery_council",
+	},
+}
 const CHECK_IDS: PackedStringArray = ["courage"]
 const EFFECT_FIXTURES: PackedStringArray = ["reveal_clue", "grant_flame_and_mist", "secure_house"]
 const FIXTURE_INPUTS: PackedStringArray = [
@@ -155,6 +190,11 @@ static func authorize_mode(
 	):
 		return {"accepted": false, "reason": "unsupported_manifest_seat_policy"}
 	return {"accepted": true, "reason": ""}
+
+
+static func resumable_boundary(stage_id: String, operation_index: int) -> Dictionary:
+	var policy: Dictionary = RESUMABLE_BOUNDARY_POLICY.get(stage_id, {})
+	return policy.duplicate(true) if policy.get("operation_index", -1) == operation_index else {}
 
 
 static func _validate_authority_references(
@@ -244,6 +284,7 @@ static func _validate_stages(
 		):
 			failures.append("stage '%s' has incoherent entry/completion conditions" % stage_id)
 		_validate_operations(stage.get("operations"), rules, social, failures)
+		_validate_stage_operation_policy(stage_id, stage.get("operations"), failures)
 
 
 static func _validate_operations(
@@ -297,6 +338,19 @@ static func _validate_operations(
 			failures.append("submit_vote references an unknown option")
 	if social == null:
 		failures.append("operations require social content")
+
+
+static func _validate_stage_operation_policy(
+	stage_id: String, value: Variant, failures: PackedStringArray
+) -> void:
+	if not value is Array or not STAGE_OPERATION_POLICY.has(stage_id):
+		return
+	var actual: Array[String] = []
+	for operation: Variant in value:
+		actual.append(operation.get("type", "") if operation is Dictionary else "")
+	var expected: Array = STAGE_OPERATION_POLICY[stage_id]
+	if actual != expected:
+		failures.append("stage '%s' violates manifest v1 operation policy" % stage_id)
 
 
 static func _validate_policies(manifest: Dictionary, failures: PackedStringArray) -> void:

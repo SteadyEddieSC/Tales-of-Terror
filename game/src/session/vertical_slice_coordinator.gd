@@ -6,6 +6,8 @@ signal session_rejected(reason: String)
 
 const SNAPSHOT_VERSION: int = 2
 const MANIFEST_PATH: String = "res://data/scenarios/lantern_house_vertical_slice_v1.json"
+const DEFAULT_SEED: int = 4706
+const DEFAULT_MODE: String = "hidden_betrayer"
 const LIFECYCLES: PackedStringArray = [
 	"boot_title", "lobby", "confirmation", "briefing", "active_tale", "terminal", "ending"
 ]
@@ -62,8 +64,8 @@ var companion_bridge: CompanionBridge
 var lifecycle: String = "boot_title"
 var stage_index: int = -1
 var operation_index: int = 0
-var seed: int = 4706
-var requested_mode: String = "hidden_betrayer"
+var seed: int = DEFAULT_SEED
+var requested_mode: String = DEFAULT_MODE
 var stage_history: Array[Dictionary] = []
 var last_director_decision: Dictionary = {}
 var last_director_application: Dictionary = {}
@@ -83,18 +85,23 @@ func confirm_roster() -> Dictionary:
 
 
 func cancel_setup() -> Dictionary:
-	if not lifecycle in ["lobby", "confirmation"]:
+	if lifecycle == "confirmation":
+		return _transition("confirmation", "lobby")
+	if lifecycle != "lobby":
 		return _reject("invalid_lifecycle_transition")
+	if not active_seats().is_empty():
+		return _reject("roster_still_assigned")
 	_clear_session_authorities()
 	lifecycle = "boot_title"
+	last_rejection = ""
 	_emit_state()
-	return {"accepted": true}
+	return {"accepted": true, "lifecycle": lifecycle}
 
 
 func initialize_session(
 	p_manifest_path: String = MANIFEST_PATH,
-	p_seed: int = 4706,
-	p_requested_mode: String = "hidden_betrayer",
+	p_seed: int = DEFAULT_SEED,
+	p_requested_mode: String = DEFAULT_MODE,
 ) -> Dictionary:
 	if lifecycle != "confirmation":
 		return _reject("invalid_lifecycle_transition")
@@ -306,12 +313,19 @@ func rematch_with_manifest(p_manifest_path: String) -> Dictionary:
 func return_to_title() -> Dictionary:
 	if lifecycle != "ending":
 		return _reject("invalid_lifecycle_transition")
+	return protected_reset_to_title()
+
+
+func protected_reset_to_title() -> Dictionary:
 	_close_companion_room()
 	_clear_session_authorities()
-	seat_manager.reset_all()
 	lifecycle = "boot_title"
+	seed = DEFAULT_SEED
+	requested_mode = DEFAULT_MODE
+	last_rejection = ""
+	seat_manager.reset_all()
 	_emit_state()
-	return {"accepted": true}
+	return {"accepted": true, "lifecycle": lifecycle}
 
 
 func active_seats() -> Array[int]:
@@ -665,6 +679,12 @@ func _build_session_restore_candidate(
 		if not progression.accepted:
 			reason = progression.reason
 	if reason.is_empty():
+		var boundary: Dictionary = VerticalSliceSnapshotPolicy.validate_resumable_boundary(
+			snapshot, candidate.manifest, candidate.rules_session
+		)
+		if not boundary.accepted:
+			reason = boundary.reason
+	if reason.is_empty():
 		var transaction: Dictionary = _validate_stage_transaction(snapshot)
 		if not transaction.accepted:
 			reason = transaction.reason
@@ -790,8 +810,8 @@ func _validate_active_stage_transaction(
 			or transaction.stage_index != snapshot.stage_index
 			or transaction.operation_index != 0
 			or transaction.stage_history != snapshot.stage_history
-			or not transaction.last_director_decision is Dictionary
-			or not transaction.last_director_application is Dictionary
+			or transaction.last_director_decision != snapshot.last_director_decision
+			or transaction.last_director_application != snapshot.last_director_application
 		)
 	):
 		reason = "incoherent_stage_transaction"
@@ -811,6 +831,9 @@ func _validate_active_stage_transaction(
 		if (
 			not initialized.accepted
 			or not _restore_candidate_authorities(checkpoint, transaction).accepted
+			or not VerticalSliceSnapshotPolicy.stage_start_authorities_are_clean(
+				checkpoint.rules_session
+			)
 		):
 			reason = "transaction_authority_snapshot_rejected"
 	return (
