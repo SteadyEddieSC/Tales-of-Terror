@@ -1,0 +1,85 @@
+{
+  "manifest_version": 1,
+  "scenario_id": "lantern_house_vertical_slice",
+  "scenario_version": 1,
+  "board_reference": "lantern_house",
+  "rules_reference": "lantern_house_rules_sandbox",
+  "director_reference": "lantern_house_director",
+  "director_profile": "standard",
+  "social_reference": "lantern_house_social_lab",
+  "default_mode": "hidden_betrayer",
+  "fallback_mode": "cooperative",
+  "supported_seats": {
+    "minimum": 1,
+    "maximum": 8
+  },
+  "briefing": "The Lantern House is waking. Hold the hall together, recover the archive's memory, and face what waits beneath the black water.",
+  "public_objective": "Open the iron threshold, investigate both house features, choose a route, and survive the vault reckoning.",
+  "stages": [
+    {
+      "id": "threshold",
+      "title": "The Threshold Whispers",
+      "entry_condition": "briefing_acknowledged",
+      "completion_condition": "threshold_prompt_resolved",
+      "operations": [
+        {"type": "queue_event", "event_id": "threshold_whisper"},
+        {"type": "resolve_event"},
+        {"type": "submit_prompt", "option_id": "listen"},
+        {"type": "resolve_prompt"},
+        {"type": "resolve_event"},
+        {"type": "apply_effects", "fixture": "reveal_clue"}
+      ]
+    },
+    {
+      "id": "council",
+      "title": "Council in the Gallery",
+      "entry_condition": "archive_revealed",
+      "completion_condition": "public_vote_resolved",
+      "operations": [
+        {"type": "open_vote"},
+        {"type": "submit_vote", "odd_option": "gallery", "even_option": "vault"},
+        {"type": "resolve_vote"}
+      ]
+    },
+    {
+      "id": "reckoning",
+      "title": "The Vault Reckoning",
+      "entry_condition": "council_resolved",
+      "completion_condition": "check_card_and_director_resolved",
+      "operations": [
+        {"type": "apply_effects", "fixture": "grant_flame_and_mist"},
+        {"type": "play_card", "card_id": "steady_flame"},
+        {"type": "resolve_check", "check_id": "courage"},
+        {"type": "director_evaluate"}
+      ]
+    },
+    {
+      "id": "afterlife",
+      "title": "A Voice Beyond the Lantern",
+      "entry_condition": "reckoning_resolved",
+      "completion_condition": "afterlife_action_resolved",
+      "operations": [
+        {"type": "role_transition", "selector_tag": "living", "trigger": "defeat"},
+        {"type": "role_action", "selector_tag": "afterlife", "action_tag": "afterlife_support"}
+      ]
+    },
+    {
+      "id": "ending",
+      "title": "The House Remembers",
+      "entry_condition": "afterlife_resolved",
+      "completion_condition": "terminal_result_committed",
+      "operations": [
+        {"type": "apply_effects", "fixture": "secure_house"},
+        {"type": "resolve_outcomes"}
+      ]
+    }
+  ],
+  "terminal_policy": {"source": "rules_and_social_outcomes", "deterministic": true},
+  "ending": {"view": "public_mixed_outcome", "private_details": "controlled_reveal_only"},
+  "rematch_policy": {"retain_stable_seats": true, "reset_all_session_authorities": true},
+  "companion_policy": {"available": true, "required": false, "authority": "native_godot"},
+  "fixture": {
+    "seeds": [4706, 9017, 22031],
+    "ordered_inputs": ["join", "confirm", "briefing", "threshold", "council", "reckoning", "afterlife", "ending"]
+  }
+}

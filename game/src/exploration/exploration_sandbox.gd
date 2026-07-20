@@ -44,17 +44,34 @@ var _safe_overlay: SafeAreaOverlay
 var _hud_root: Control
 var _showcase_mode: bool = false
 var _safe_margin: int = 24
+var _session_coordinator: VerticalSliceCoordinator
 
 
-func setup(input_router: PlayerInputRouter) -> void:
+func setup(
+	input_router: PlayerInputRouter, session_coordinator: VerticalSliceCoordinator = null
+) -> void:
 	_input_router = input_router
+	_session_coordinator = session_coordinator
+	if _session_coordinator != null:
+		pawn_registry = _session_coordinator.pawn_registry
 
 
 func _ready() -> void:
 	_room = ExplorationRoom.new()
 	add_child(_room)
-	_board_definition = LanternHouseBoardDefinition.new()
-	_board_state = BoardState.new(_board_definition)
+	if _session_coordinator == null:
+		_board_definition = LanternHouseBoardDefinition.new()
+		_board_state = BoardState.new(_board_definition)
+	else:
+		_board_definition = _session_coordinator.board_definition
+		_board_state = _session_coordinator.board_state
+		_rules_content = _session_coordinator.rules_content
+		_rules_session = _session_coordinator.rules_session
+		_director_content = _session_coordinator.director_content
+		_director_runtime = _session_coordinator.director_runtime
+		_social_content = _session_coordinator.social_content
+		_role_session = _session_coordinator.role_session
+		_companion_bridge = _session_coordinator.companion_bridge
 	_board_state.state_changed.connect(_on_board_state_changed)
 	_board_state.mutation_rejected.connect(_on_board_mutation_rejected)
 	_board_overlay = BoardDebugOverlay.new()
@@ -239,7 +256,7 @@ func _build_hud() -> void:
 	layer.add_child(root)
 	_hud_root = root
 	_title_label = Label.new()
-	_title_label.text = "LANTERN HOUSE COMPANION ROOM LAB  •  v0.0.9"
+	_title_label.text = "LANTERN HOUSE  •  FIRST VERTICAL SLICE  •  v0.1.0"
 	_title_label.theme_type_variation = "SectionTitle"
 	_title_label.size = Vector2(540, 30)
 	root.add_child(_title_label)
