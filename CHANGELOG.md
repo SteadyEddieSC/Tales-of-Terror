@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.0 - First Vertical Slice
+
+- Added a strict version-1 Lantern House scenario manifest and typed native coordinator that composes existing seat, exploration, board, rules, Director, social-role, and optional companion authorities without duplicating their mutable state.
+- Added the controller-first title, stable-seat lobby, mode confirmation, briefing, active tale, deterministic terminal result, privacy-safe ending, rematch, and return-to-title route while retaining engineering labs for diagnostics.
+- Added atomic initialization and restore, coordinator snapshots, canonical deterministic digests, 1–8-seat fallback coverage, afterlife continuation, optional exactly-once companion integration, focused GUT coverage, and a bounded 24-run multi-seed simulation.
+
 ## v0.0.9.2 - GDScript Quality Gate Cleanup
 
 - Canonically formatted the explicit 67-file first-party GDScript inventory with pinned `gdformat` 4.5.0, then resolved the inherited 1,235 lint findings with bounded typed, behavior-preserving corrections and one focused role-projection regression.

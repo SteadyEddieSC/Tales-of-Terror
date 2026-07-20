@@ -1,0 +1,39 @@
+# First Vertical Slice
+
+## Lifecycle
+
+`VerticalSliceCoordinator` validates transitions across title, lobby, confirmation, briefing, active stages, terminal resolution, and ending. Confirm advances the player-facing route. Cancel from confirmation returns to the lobby with the stable roster retained; Cancel from an empty lobby returns to title; Cancel at the ending performs the same complete reset used by the protected hold gesture. No accepted path can produce assigned seats at boot/title. During active play, the exploration sandbox reuses the coordinator-owned board, rules, Director, role, companion, and pawn references rather than constructing competing authorities.
+
+The five authored stages are Threshold, Council, Reckoning, Afterlife, and Ending. They demonstrate event chaining and a public prompt, archive reveal and public vote, card/inventory/check/Director flow, defeated-to-Restless continuation, and mixed public outcome resolution.
+
+## Atomicity and replay
+
+Initialization validates manifest/content/reference/seat combinations into candidate authorities before commit. A player stage creates one private stage-start checkpoint before its first operation. That checkpoint remains unchanged across prompt and vote waits and contains the stable-seat roster, pawn registry, board, rules, Director, roles, stage/operation indices, ordered stage history, and coordinator-owned Director decision/application evidence. Success appends one stage-history entry and clears the checkpoint. Any later rejection restores the entire checkpoint, clears the transaction, and leaves no prompt, vote, card, board, Director, role, pawn, or progression residue. The automated fixture path uses the same transaction machinery.
+
+Snapshot schema version 2 has an exact top-level key set. In addition to the existing seat, board, rules, Director, and role snapshots, it includes `PawnRegistry` snapshot version 1, Director application evidence, and any active stage transaction. Pawn rows contain only stable seat number, device association, identity, connection state, bounded world position, bounded input vector, and nearby interactable ID. They never contain nodes, input objects, browser identity, tokens, capabilities, or companion-private payloads.
+
+`PawnRegistry.restore_snapshot()` validates exact keys, unique seats/devices, seat/device/identity/connection consistency, finite movement vectors, room bounds and walls, roster equality, and duplicate/unknown pawns before replacing its private registry. Coordinator restore also requires BoardState occupancy and the board copy embedded in RulesSession to agree with positions and with each other.
+
+Coordinator restore accepts only coherent lifecycle/progression combinations. Pre-session states have no session authorities and use stage `-1`, operation `0`, no pause, no history, and no transaction. Boot/title requires every seat to be unassigned; lobby may contain a validated stable-seat roster; confirmation requires a non-empty roster. Seat rows permit only stable unassigned, active, or reserved states with unique identities and active devices. Briefing has initialized authorities but no completed stages. Active operation zero has no transaction or pending player state. A nonzero active operation is resumable only at the exact manifest-v1 submit-prompt/resolve-prompt or submit-vote/resolve-vote boundary. The pending prompt/vote kind, authored ID/source/options, eligible seats, revision, responses, and retained stage-zero transaction must agree with that boundary. Arbitrary synchronous indices and mismatched pending state reject on detached candidates. Terminal and ending snapshots require every authored stage, operation zero, terminal rules state, and Director evidence. Pause is active-tale-only. Every nested authority is restored into detached candidates before the current session is touched.
+
+At a resumable boundary, the snapshot policy reconstructs the immutable pending definition from `LanternHouseRulesContent` and requires exact dictionary equality for prompt/vote ID, scope or vote metadata, authored seat, title, ordered option dictionaries, text, symbols, effects, selection/pass policy, and source. Only revision, eligible seats, and responses are runtime-generated; each is validated separately. Unknown pending keys and same-ID content substitutions therefore fail before mutation.
+
+Rematch and restore are two-phase replacements. Candidate manifest/content and all candidate authorities are built and validated while the current ending or open-room session remains intact. After validation succeeds, the old companion room is closed and its claims, pending clients, acknowledgement cache, sequence/history, join code, and transport state are discarded; only then are clean candidate authorities committed. Rematch retains the authored stable-seat roster and returns to briefing. Candidate failure changes neither lifecycle nor any authority or room state.
+
+`protected_reset_to_title()` is the sole destructive session reset used by the 1.5-second main-scene hold and ending return. It closes and discards any companion room, clears the transaction and every session authority, resets seats and coordinator evidence/defaults, sets boot/title before the seat-change signal is emitted, and then publishes one coherent final coordinator state. The main-scene integration also clears its presentation-only developer-lab flag, hides `InputDisplayLab`, destroys any sandbox, and renders the normal `TERROR TURN` title; this display state deliberately remains outside authority snapshots. New joins therefore enter a fresh lobby without access to an old authority graph.
+
+Canonical JSON key ordering produces SHA-256 authority and public-history digests. The bounded simulation runs seeds 4706, 9017, and 22031 for every supported seat count and compares two independent executions per fixture.
+
+## Manifest references and mode policy
+
+Manifest version 1 uses exact schemas for supported seats, terminal, ending, rematch, companion, and deterministic fixture policies. The five stage IDs, entry/completion conditions, and complete canonical operation dictionaries are ordered and fixed for this bounded slice. The explicit policy fixes each operation's type and authored event, prompt option, vote option arrangement, effect fixture, card, check, Director position, role selector/trigger/action, and outcome position. Missing, duplicate, reordered, stage-incompatible, or valid-but-wrong referenced data rejects before session construction. Individual event/card/prompt/vote/check/effect/role reference validation remains as defense in depth.
+
+Only the manifest's default and fallback modes are selectable. The default is used whenever its player-count policy supports the roster. Its declared fallback must match the manifest fallback and may be selected only for a player count unsupported by the default. Other valid `SocialContent` modes are deliberately unavailable to this release and reject before authority construction.
+
+## Input and diagnostics
+
+Controllers remain primary; keyboard actions mirror join, confirm, cancel, movement, interaction, and diagnostics. The normal route requires no mouse or companion. The diagnostics action exposes the previous input/display lab outside active play and the inherited exploration/board/rules/Director/social diagnostics during the tale.
+
+## Companion boundary
+
+`CompanionBridge` is optional. Room creation, host-approved stable-seat claims, reconnect, filtered projections, revision checks, request IDs, and exactly-once acknowledgements are unchanged. Closing a room clears identifiers, pending clients, claims, connected-client records, client sequences, acknowledgement cache/order, room sequence/history, counters, and stored revision bookkeeping before replacement. Closing or omitting the room cannot block native play.

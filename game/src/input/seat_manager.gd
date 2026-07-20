@@ -7,6 +7,7 @@ enum SeatState { UNASSIGNED, JOINING, ACTIVE, DISCONNECTED, RESERVED }
 const MAX_SEATS: int = 8
 const KEYBOARD_DEVICE_ID: int = -1
 const KEYBOARD_IDENTITY: String = "keyboard-development"
+const SNAPSHOT_VERSION: int = 1
 var _seats: Array[Dictionary] = []
 
 
@@ -51,6 +52,15 @@ func disconnect_device(device_id: int) -> int:
 	return index
 
 
+func leave_device(device_id: int) -> int:
+	var index: int = find_seat_by_device(device_id)
+	if index < 0:
+		return -1
+	_seats[index] = _new_seat(index)
+	_emit()
+	return index
+
+
 func reconnect_device(device_id: int, identity: String, display_name: String) -> int:
 	var index: int = find_reserved_seat(identity, device_id)
 	if index >= 0:
@@ -70,6 +80,27 @@ func reset_all() -> void:
 	for index: int in MAX_SEATS:
 		_seats[index] = _new_seat(index)
 	_emit()
+
+
+func to_snapshot() -> Dictionary:
+	return {"snapshot_version": SNAPSHOT_VERSION, "seats": get_seats()}
+
+
+func restore_snapshot(snapshot: Dictionary) -> Dictionary:
+	if snapshot.get("snapshot_version") != SNAPSHOT_VERSION:
+		return {"accepted": false, "reason": "unsupported_snapshot_version"}
+	var rows: Variant = snapshot.get("seats")
+	if not rows is Array or rows.size() != MAX_SEATS:
+		return {"accepted": false, "reason": "malformed_snapshot"}
+	var restored: Array[Dictionary] = []
+	for index: int in MAX_SEATS:
+		var row_value: Variant = rows[index]
+		if not row_value is Dictionary or not _valid_snapshot_row(row_value, index + 1):
+			return {"accepted": false, "reason": "malformed_snapshot"}
+		restored.append(row_value.duplicate(true))
+	_seats = restored
+	_emit()
+	return {"accepted": true, "reason": ""}
 
 
 func find_seat_by_device(device_id: int) -> int:
@@ -120,6 +151,21 @@ func _new_seat(index: int) -> Dictionary:
 		"device_name": "—",
 		"last_action": "—"
 	}
+
+
+func _valid_snapshot_row(row: Dictionary, expected_number: int) -> bool:
+	return (
+		row.size() == 7
+		and row.get("seat_number") == expected_number
+		and row.get("state") is int
+		and row.state >= SeatState.UNASSIGNED
+		and row.state <= SeatState.RESERVED
+		and row.get("device_id") is int
+		and row.get("previous_device_id") is int
+		and row.get("identity") is String
+		and row.get("device_name") is String
+		and row.get("last_action") is String
+	)
 
 
 func _emit() -> void:
