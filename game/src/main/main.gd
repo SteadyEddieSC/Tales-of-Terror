@@ -3,8 +3,16 @@ extends Control
 const LAB_VERSION: String = "v0.0.9"
 const RESET_HOLD_SECONDS: float = 1.5
 const SEMANTIC_ACTIONS: PackedStringArray = [
-	"ui_navigate_up", "ui_navigate_down", "ui_navigate_left", "ui_navigate_right",
-	"ui_confirm", "ui_cancel_action", "player_join", "pause_options", "diagnostic_test", "interact",
+	"ui_navigate_up",
+	"ui_navigate_down",
+	"ui_navigate_left",
+	"ui_navigate_right",
+	"ui_confirm",
+	"ui_cancel_action",
+	"player_join",
+	"pause_options",
+	"diagnostic_test",
+	"interact",
 ]
 
 var _devices: DeviceRegistry
@@ -14,6 +22,7 @@ var _input_router: PlayerInputRouter
 var _sandbox: ExplorationSandbox
 var _reset_held: float = 0.0
 var _safe_margin: int = 24
+
 
 func _ready() -> void:
 	_devices = DeviceRegistry.new()
@@ -32,7 +41,10 @@ func _ready() -> void:
 	_seats.seats_changed.connect(_on_seats_changed)
 	_on_seats_changed(_seats.get_seats())
 	_on_devices_changed(_devices.get_devices())
-	print(ProjectSettings.get_setting("application/config/name"), " exploration loaded: ", LAB_VERSION)
+	print(
+		ProjectSettings.get_setting("application/config/name"), " exploration loaded: ", LAB_VERSION
+	)
+
 
 func _process(delta: float) -> void:
 	if Input.is_action_pressed("reset_seats"):
@@ -50,6 +62,7 @@ func _process(delta: float) -> void:
 				_sandbox.present_reset_progress(0.0)
 		_reset_held = 0.0
 
+
 func _input(event: InputEvent) -> void:
 	if not event.is_pressed() or event.is_echo():
 		return
@@ -60,7 +73,9 @@ func _input(event: InputEvent) -> void:
 		if device_id == SeatManager.KEYBOARD_DEVICE_ID:
 			_seats.join_device(device_id, SeatManager.KEYBOARD_IDENTITY, "Keyboard (development)")
 		elif _devices.has_device(device_id):
-			_seats.join_device(device_id, _devices.get_identity(device_id), _devices.get_display_name(device_id))
+			_seats.join_device(
+				device_id, _devices.get_identity(device_id), _devices.get_display_name(device_id)
+			)
 	for action: String in SEMANTIC_ACTIONS:
 		if event.is_action_pressed(action):
 			_seats.record_action(device_id, action)
@@ -69,6 +84,7 @@ func _input(event: InputEvent) -> void:
 		_adjust_safe_margin(-1)
 	elif event.is_action_pressed("safe_area_increase"):
 		_adjust_safe_margin(1)
+
 
 func _ensure_sandbox() -> void:
 	if is_instance_valid(_sandbox):
@@ -79,11 +95,13 @@ func _ensure_sandbox() -> void:
 	_sandbox.set_safe_margin(_safe_margin)
 	_ui.visible = false
 
+
 func _destroy_sandbox() -> void:
 	if is_instance_valid(_sandbox):
 		_sandbox.queue_free()
 	_sandbox = null
 	_ui.visible = true
+
 
 func _adjust_safe_margin(direction: int) -> void:
 	_safe_margin = clampi(_safe_margin + direction * 8, 0, 48)
@@ -91,32 +109,48 @@ func _adjust_safe_margin(direction: int) -> void:
 	if is_instance_valid(_sandbox):
 		_sandbox.set_safe_margin(_safe_margin)
 
+
 func _on_interact_requested(device_id: int) -> void:
 	if is_instance_valid(_sandbox):
 		_sandbox.request_interaction(device_id)
+
 
 func _on_diagnostics_requested(_device_id: int) -> void:
 	if is_instance_valid(_sandbox):
 		_sandbox.toggle_diagnostics()
 
-func _on_rules_navigation_requested(device_id: int, direction: int, confirm: bool, cancel: bool) -> void:
+
+func _on_rules_navigation_requested(
+	device_id: int, direction: int, confirm: bool, cancel: bool
+) -> void:
 	if is_instance_valid(_sandbox):
 		_sandbox.request_rules_navigation(device_id, direction, confirm, cancel)
 
+
 func _on_device_connected(device_id: int, identity: String) -> void:
 	_seats.reconnect_device(device_id, identity, _devices.get_display_name(device_id))
+
 
 func _on_device_disconnected(device_id: int) -> void:
 	_input_router.clear_device(device_id)
 	_seats.disconnect_device(device_id)
 
+
 func _on_devices_changed(devices: Array[Dictionary]) -> void:
 	_ui.present_devices(devices, _seats.get_seats())
+
 
 func _on_seats_changed(seats: Array[Dictionary]) -> void:
 	_ui.present_seats(seats)
 	_ui.present_devices(_devices.get_devices() if is_instance_valid(_devices) else [], seats)
-	var has_pawns: bool = seats.any(func(seat: Dictionary) -> bool: return seat.state == SeatManager.SeatState.ACTIVE or seat.state == SeatManager.SeatState.RESERVED or seat.state == SeatManager.SeatState.DISCONNECTED)
+	var has_pawns: bool = seats.any(
+		func(seat: Dictionary) -> bool:
+			return (
+				seat.state == SeatManager.SeatState.ACTIVE
+				or seat.state == SeatManager.SeatState.RESERVED
+				or seat.state == SeatManager.SeatState.DISCONNECTED
+			)
+	)
 	if has_pawns:
 		_ensure_sandbox()
 		_sandbox.sync_seats(seats)

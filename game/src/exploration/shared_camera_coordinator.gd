@@ -10,17 +10,21 @@ var target_zoom: float = 1.0
 var separation_state: SharedCameraPolicy.SeparationState = SharedCameraPolicy.SeparationState.NORMAL
 var reduced_motion: bool = false
 
+
 func _ready() -> void:
 	enabled = true
 	position = room_bounds.get_center()
 	target_position = position
 	zoom = Vector2.ONE
 
+
 func update_group(pawns: Array[PawnState], delta: float) -> void:
 	var positions: Array[Vector2] = []
 	for pawn: PawnState in pawns:
 		positions.append(pawn.position)
-	var frame: Dictionary = SharedCameraPolicy.calculate_frame(positions, Vector2(960, 540), room_bounds)
+	var frame: Dictionary = SharedCameraPolicy.calculate_frame(
+		positions, Vector2(960, 540), room_bounds
+	)
 	target_position = frame.center
 	target_zoom = frame.zoom
 	separation_state = frame.separation

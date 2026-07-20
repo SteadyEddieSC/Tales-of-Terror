@@ -8,6 +8,7 @@ var _tokens: VisualTokens
 var _symbol: Label
 var _focused: bool = false
 
+
 func setup(state: PawnState, tokens: VisualTokens) -> void:
 	pawn_state = state
 	_tokens = tokens
@@ -28,13 +29,25 @@ func setup(state: PawnState, tokens: VisualTokens) -> void:
 	add_child(_symbol)
 	queue_redraw()
 
-func apply_movement(raw_input: Vector2, resistance: float, _delta: float, room_bounds: Rect2) -> void:
+
+func apply_movement(
+	raw_input: Vector2, resistance: float, _delta: float, room_bounds: Rect2
+) -> void:
 	pawn_state.set_input(raw_input)
 	velocity = pawn_state.input_vector * PawnState.MOVE_SPEED * resistance
 	move_and_slide()
-	global_position.x = clampf(global_position.x, room_bounds.position.x + PawnState.COLLISION_RADIUS, room_bounds.end.x - PawnState.COLLISION_RADIUS)
-	global_position.y = clampf(global_position.y, room_bounds.position.y + PawnState.COLLISION_RADIUS, room_bounds.end.y - PawnState.COLLISION_RADIUS)
+	global_position.x = clampf(
+		global_position.x,
+		room_bounds.position.x + PawnState.COLLISION_RADIUS,
+		room_bounds.end.x - PawnState.COLLISION_RADIUS
+	)
+	global_position.y = clampf(
+		global_position.y,
+		room_bounds.position.y + PawnState.COLLISION_RADIUS,
+		room_bounds.end.y - PawnState.COLLISION_RADIUS
+	)
 	pawn_state.position = global_position
+
 
 func set_interaction_focus(focused: bool) -> void:
 	if _focused == focused:
@@ -42,9 +55,11 @@ func set_interaction_focus(focused: bool) -> void:
 	_focused = focused
 	queue_redraw()
 
+
 func refresh_connection() -> void:
 	modulate.a = 1.0 if pawn_state.connected else 0.48
 	queue_redraw()
+
 
 func _draw() -> void:
 	if pawn_state == null or _tokens == null:

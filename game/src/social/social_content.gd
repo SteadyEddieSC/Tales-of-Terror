@@ -1,25 +1,51 @@
 class_name SocialContent
 extends Resource
 
-const VALID_VISIBILITIES: PackedStringArray = ["public", "seat_private", "faction_private", "diagnostics"]
+const VALID_VISIBILITIES: PackedStringArray = [
+	"public", "seat_private", "faction_private", "diagnostics"
+]
 const VALID_REVEAL_POLICIES: PackedStringArray = ["public", "hidden", "revealable", "partial"]
-const VALID_DISPOSITIONS: PackedStringArray = ["allied", "cooperative", "neutral", "wary", "hostile", "conditional"]
-const VALID_LIFECYCLES: PackedStringArray = ["active", "transformed", "defeated", "afterlife", "replacement", "escaped"]
+const VALID_DISPOSITIONS: PackedStringArray = [
+	"allied", "cooperative", "neutral", "wary", "hostile", "conditional"
+]
+const VALID_LIFECYCLES: PackedStringArray = [
+	"active", "transformed", "defeated", "afterlife", "replacement", "escaped"
+]
 const VALID_TARGET_SCOPES: PackedStringArray = ["none", "self", "other", "any", "faction_other"]
 const VALID_OBJECTIVE_SCOPES: PackedStringArray = ["shared", "faction", "individual", "afterlife"]
-const VALID_OBJECTIVE_RESULTS: PackedStringArray = ["victory", "defeat", "escaped", "changed", "restless", "partial", "unresolved"]
-const VALID_CONDITION_TYPES: PackedStringArray = [
-	"always", "rules_flag", "rules_counter_at_least", "board_feature", "faction_count_at_least",
-	"seat_state", "action_used", "objective_complete",
+const VALID_OBJECTIVE_RESULTS: PackedStringArray = [
+	"victory", "defeat", "escaped", "changed", "restless", "partial", "unresolved"
 ]
-const VALID_PROPOSAL_TYPES: PackedStringArray = ["rules_effects", "board_mutation", "role_transition", "presentation"]
+const VALID_CONDITION_TYPES: PackedStringArray = [
+	"always",
+	"rules_flag",
+	"rules_counter_at_least",
+	"board_feature",
+	"faction_count_at_least",
+	"seat_state",
+	"action_used",
+	"objective_complete",
+]
+const VALID_PROPOSAL_TYPES: PackedStringArray = [
+	"rules_effects", "board_mutation", "role_transition", "presentation"
+]
 const VALID_ASSIGNMENT_POLICIES: PackedStringArray = ["fixed", "random_pool"]
 const VALID_DIRECTOR_SIGNALS: PackedStringArray = [
-	"revealed_faction_count", "public_hostility", "defeated_count", "restless_count",
-	"public_conversion_pressure", "revealed_imbalance", "social_choice_pressure", "afterlife_support_available",
+	"revealed_faction_count",
+	"public_hostility",
+	"defeated_count",
+	"restless_count",
+	"public_conversion_pressure",
+	"revealed_imbalance",
+	"social_choice_pressure",
+	"afterlife_support_available",
 ]
 const VALID_FIXTURE_OPERATIONS: PackedStringArray = [
-	"transition", "action", "connection_cycle", "rules_effects", "resolve_outcomes",
+	"transition",
+	"action",
+	"connection_cycle",
+	"rules_effects",
+	"resolve_outcomes",
 ]
 
 @export var scenario_id: String = ""
@@ -32,7 +58,10 @@ const VALID_FIXTURE_OPERATIONS: PackedStringArray = [
 @export var modes: Array[Dictionary] = []
 @export var fixtures: Array[Dictionary] = []
 
-func validate(rules_content: RulesContent = null, board_definition: BoardDefinition = null) -> PackedStringArray:
+
+func validate(
+	rules_content: RulesContent = null, board_definition: BoardDefinition = null
+) -> PackedStringArray:
 	var failures := PackedStringArray()
 	if not _valid_id(scenario_id) or scenario_version < 1:
 		failures.append("malformed social scenario identity")
@@ -46,7 +75,9 @@ func validate(rules_content: RulesContent = null, board_definition: BoardDefinit
 	for faction: Dictionary in factions:
 		_validate_faction(faction, faction_index, objective_index, transition_index, failures)
 	for role: Dictionary in roles:
-		_validate_role(role, faction_index, objective_index, action_index, transition_index, failures)
+		_validate_role(
+			role, faction_index, objective_index, action_index, transition_index, failures
+		)
 	for objective: Dictionary in objectives:
 		_validate_objective(objective, failures)
 	for action: Dictionary in actions:
@@ -61,23 +92,30 @@ func validate(rules_content: RulesContent = null, board_definition: BoardDefinit
 	_validate_afterlife_guarantees(role_index, action_index, objective_index, failures)
 	return failures
 
+
 func faction_by_id(stable_id: String) -> Dictionary:
 	return _definition_by_id(factions, stable_id)
+
 
 func role_by_id(stable_id: String) -> Dictionary:
 	return _definition_by_id(roles, stable_id)
 
+
 func objective_by_id(stable_id: String) -> Dictionary:
 	return _definition_by_id(objectives, stable_id)
+
 
 func action_by_id(stable_id: String) -> Dictionary:
 	return _definition_by_id(actions, stable_id)
 
+
 func transition_by_id(stable_id: String) -> Dictionary:
 	return _definition_by_id(transitions, stable_id)
 
+
 func mode_by_id(stable_id: String) -> Dictionary:
 	return _definition_by_id(modes, stable_id)
+
 
 func fixture_by_stage(stage: String) -> Dictionary:
 	for fixture: Dictionary in fixtures:
@@ -85,13 +123,26 @@ func fixture_by_stage(stage: String) -> Dictionary:
 			return fixture.duplicate(true)
 	return {}
 
-func _validate_faction(definition: Dictionary, faction_index: Dictionary, objective_index: Dictionary, transition_index: Dictionary, failures: PackedStringArray) -> void:
+
+func _validate_faction(
+	definition: Dictionary,
+	faction_index: Dictionary,
+	objective_index: Dictionary,
+	transition_index: Dictionary,
+	failures: PackedStringArray
+) -> void:
 	_validate_presentation(definition, "faction", failures)
 	if not VALID_REVEAL_POLICIES.has(definition.get("membership_policy", "")):
 		failures.append("invalid faction membership policy")
 	var minimum: Variant = definition.get("minimum_seats")
 	var maximum: Variant = definition.get("maximum_seats")
-	if not minimum is int or not maximum is int or minimum < 0 or maximum < minimum or maximum > SeatManager.MAX_SEATS:
+	if (
+		not minimum is int
+		or not maximum is int
+		or minimum < 0
+		or maximum < minimum
+		or maximum > SeatManager.MAX_SEATS
+	):
 		failures.append("invalid faction seat bounds")
 	for objective_id: Variant in definition.get("shared_objectives", []):
 		if not objective_id is String or not objective_index.has(objective_id):
@@ -107,10 +158,21 @@ func _validate_faction(definition: Dictionary, faction_index: Dictionary, object
 	for signal_name: Variant in definition.get("director_signal_policy", []):
 		if not signal_name is String or not VALID_DIRECTOR_SIGNALS.has(signal_name):
 			failures.append("invalid faction Director signal")
-	if not definition.get("communication_allowed", false) is bool or not definition.get("result_group", "") is String:
+	if (
+		not definition.get("communication_allowed", false) is bool
+		or not definition.get("result_group", "") is String
+	):
 		failures.append("malformed faction communication or result metadata")
 
-func _validate_role(definition: Dictionary, faction_index: Dictionary, objective_index: Dictionary, action_index: Dictionary, transition_index: Dictionary, failures: PackedStringArray) -> void:
+
+func _validate_role(
+	definition: Dictionary,
+	faction_index: Dictionary,
+	objective_index: Dictionary,
+	action_index: Dictionary,
+	transition_index: Dictionary,
+	failures: PackedStringArray
+) -> void:
 	_validate_presentation(definition, "role", failures)
 	if not faction_index.has(definition.get("starting_faction", "")):
 		failures.append("role has no legal faction")
@@ -118,11 +180,22 @@ func _validate_role(definition: Dictionary, faction_index: Dictionary, objective
 		failures.append("invalid role reveal policy")
 	if definition.get("reveal_policy", "") != "public":
 		var cover: Variant = definition.get("public_cover")
-		if not cover is Dictionary or String(cover.get("label", "")).is_empty() or String(cover.get("symbol", "")).is_empty() or String(cover.get("pattern", "")).is_empty():
+		if (
+			not cover is Dictionary
+			or String(cover.get("label", "")).is_empty()
+			or String(cover.get("symbol", "")).is_empty()
+			or String(cover.get("pattern", "")).is_empty()
+		):
 			failures.append("hidden role has no safe public representation")
 	var minimum: Variant = definition.get("minimum_players")
 	var maximum: Variant = definition.get("maximum_players")
-	if not minimum is int or not maximum is int or minimum < 1 or maximum < minimum or maximum > SeatManager.MAX_SEATS:
+	if (
+		not minimum is int
+		or not maximum is int
+		or minimum < 1
+		or maximum < minimum
+		or maximum > SeatManager.MAX_SEATS
+	):
 		failures.append("invalid role player bounds")
 	for faction_id: Variant in definition.get("allowed_factions", []):
 		if not faction_id is String or not faction_index.has(faction_id):
@@ -136,20 +209,30 @@ func _validate_role(definition: Dictionary, faction_index: Dictionary, objective
 	for transition_id: Variant in definition.get("transition_refs", []):
 		if not transition_id is String or not transition_index.has(transition_id):
 			failures.append("unknown role transition")
-	if definition.get("objective_refs", []).is_empty() or definition.get("action_refs", []).is_empty():
+	if (
+		definition.get("objective_refs", []).is_empty()
+		or definition.get("action_refs", []).is_empty()
+	):
 		failures.append("role cannot provide a legal objective and action")
 	var afterlife_mapping: String = definition.get("afterlife_mapping", "")
 	if not afterlife_mapping.is_empty() and not transition_index.has(afterlife_mapping):
 		failures.append("unknown role afterlife mapping")
-	if not definition.get("tags", []) is Array or not definition.get("incompatibilities", []) is Array:
+	if (
+		not definition.get("tags", []) is Array
+		or not definition.get("incompatibilities", []) is Array
+	):
 		failures.append("malformed role tags")
 	var delay: Variant = definition.get("maximum_inactive_transition_delay", 0)
 	if not delay is int or delay < 0:
 		failures.append("invalid role inactive transition delay")
 
+
 func _validate_objective(definition: Dictionary, failures: PackedStringArray) -> void:
 	_validate_presentation(definition, "objective", failures)
-	if not VALID_OBJECTIVE_SCOPES.has(definition.get("scope", "")) or not VALID_VISIBILITIES.has(definition.get("visibility", "")):
+	if (
+		not VALID_OBJECTIVE_SCOPES.has(definition.get("scope", ""))
+		or not VALID_VISIBILITIES.has(definition.get("visibility", ""))
+	):
 		failures.append("invalid objective scope or visibility")
 	if not VALID_OBJECTIVE_RESULTS.has(definition.get("result", "")):
 		failures.append("invalid objective result")
@@ -157,25 +240,51 @@ func _validate_objective(definition: Dictionary, failures: PackedStringArray) ->
 		failures.append("invalid objective priority")
 	_validate_conditions(definition.get("conditions", []), failures)
 	_validate_conditions(definition.get("partial_conditions", []), failures)
-	if not definition.get("reveal_at_end", false) is bool or not definition.get("epilogue_tags", []) is Array:
+	if (
+		not definition.get("reveal_at_end", false) is bool
+		or not definition.get("epilogue_tags", []) is Array
+	):
 		failures.append("malformed objective outcome metadata")
 
-func _validate_action(definition: Dictionary, transition_index: Dictionary, rules_content: RulesContent, board_definition: BoardDefinition, failures: PackedStringArray) -> void:
+
+func _validate_action(
+	definition: Dictionary,
+	transition_index: Dictionary,
+	rules_content: RulesContent,
+	board_definition: BoardDefinition,
+	failures: PackedStringArray
+) -> void:
 	_validate_presentation(definition, "action", failures)
-	if not VALID_VISIBILITIES.has(definition.get("visibility", "")) or not VALID_TARGET_SCOPES.has(definition.get("target_scope", "")):
+	if (
+		not VALID_VISIBILITIES.has(definition.get("visibility", ""))
+		or not VALID_TARGET_SCOPES.has(definition.get("target_scope", ""))
+	):
 		failures.append("invalid action visibility or target scope")
 	var minimum: Variant = definition.get("minimum_targets")
 	var maximum: Variant = definition.get("maximum_targets")
 	var use_limit: Variant = definition.get("use_limit")
 	var per_round: Variant = definition.get("per_round_limit")
 	var cooldown: Variant = definition.get("cooldown")
-	if not minimum is int or not maximum is int or minimum < 0 or maximum < minimum or maximum > SeatManager.MAX_SEATS:
+	if (
+		not minimum is int
+		or not maximum is int
+		or minimum < 0
+		or maximum < minimum
+		or maximum > SeatManager.MAX_SEATS
+	):
 		failures.append("invalid action target bounds")
 	elif definition.get("target_scope", "") == "none" and (minimum != 0 or maximum != 0):
 		failures.append("targetless action has target bounds")
 	elif definition.get("target_scope", "") == "self" and maximum > 1:
 		failures.append("self action has impossible target bounds")
-	if not use_limit is int or not per_round is int or not cooldown is int or use_limit < 0 or per_round < 0 or cooldown < 0:
+	if (
+		not use_limit is int
+		or not per_round is int
+		or not cooldown is int
+		or use_limit < 0
+		or per_round < 0
+		or cooldown < 0
+	):
 		failures.append("invalid action use limit or cooldown")
 	for lifecycle: Variant in definition.get("allowed_lifecycles", []):
 		if not lifecycle is String or not VALID_LIFECYCLES.has(lifecycle):
@@ -188,8 +297,19 @@ func _validate_action(definition: Dictionary, transition_index: Dictionary, rule
 			continue
 		_validate_proposal(proposal, transition_index, rules_content, board_definition, failures)
 
-func _validate_transition(definition: Dictionary, role_index: Dictionary, rules_content: RulesContent, board_definition: BoardDefinition, failures: PackedStringArray) -> void:
-	if String(definition.get("label", "")).is_empty() or not VALID_VISIBILITIES.has(definition.get("visibility", "")) or not _valid_id(definition.get("trigger", "")):
+
+func _validate_transition(
+	definition: Dictionary,
+	role_index: Dictionary,
+	rules_content: RulesContent,
+	board_definition: BoardDefinition,
+	failures: PackedStringArray
+) -> void:
+	if (
+		String(definition.get("label", "")).is_empty()
+		or not VALID_VISIBILITIES.has(definition.get("visibility", ""))
+		or not _valid_id(definition.get("trigger", ""))
+	):
 		failures.append("malformed transition presentation")
 	if not role_index.has(definition.get("target_form", "")):
 		failures.append("unknown transition target form")
@@ -198,15 +318,31 @@ func _validate_transition(definition: Dictionary, role_index: Dictionary, rules_
 	for source_id: Variant in definition.get("source_forms", []):
 		if not source_id is String or not role_index.has(source_id):
 			failures.append("unknown transition source form")
-	if not definition.get("max_chain") is int or definition.get("max_chain", 0) < 1 or definition.get("max_chain", 0) > 16:
+	if (
+		not definition.get("max_chain") is int
+		or definition.get("max_chain", 0) < 1
+		or definition.get("max_chain", 0) > 16
+	):
 		failures.append("unbounded transition chain")
 	var patch: Variant = definition.get("state_patch")
 	if not patch is Dictionary or not VALID_LIFECYCLES.has(patch.get("lifecycle", "active")):
 		failures.append("invalid transition state patch")
-	_validate_rules_effects(definition.get("downstream_effects", []), rules_content, board_definition, failures)
+	_validate_rules_effects(
+		definition.get("downstream_effects", []), rules_content, board_definition, failures
+	)
 
-func _validate_mode(definition: Dictionary, mode_index: Dictionary, role_index: Dictionary, objective_index: Dictionary, failures: PackedStringArray) -> void:
-	if String(definition.get("label", "")).is_empty() or not VALID_ASSIGNMENT_POLICIES.has(definition.get("assignment_policy", "")):
+
+func _validate_mode(
+	definition: Dictionary,
+	mode_index: Dictionary,
+	role_index: Dictionary,
+	objective_index: Dictionary,
+	failures: PackedStringArray
+) -> void:
+	if (
+		String(definition.get("label", "")).is_empty()
+		or not VALID_ASSIGNMENT_POLICIES.has(definition.get("assignment_policy", ""))
+	):
 		failures.append("malformed social mode")
 	var counts: Variant = definition.get("supported_player_counts")
 	if not counts is Array or counts.is_empty():
@@ -224,67 +360,136 @@ func _validate_mode(definition: Dictionary, mode_index: Dictionary, role_index: 
 		failures.append("unknown default role")
 	var pool_total: int = 0
 	for assignment: Variant in definition.get("assignment_pool", []):
-		if not assignment is Dictionary or not role_index.has(assignment.get("role_id", "")) or not assignment.get("count") is int or assignment.get("count", 0) < 1:
+		if (
+			not assignment is Dictionary
+			or not role_index.has(assignment.get("role_id", ""))
+			or not assignment.get("count") is int
+			or assignment.get("count", 0) < 1
+		):
 			failures.append("malformed assignment pool")
 		else:
 			pool_total += assignment.count
 	var fixed_seats: Dictionary = {}
 	for assignment: Variant in definition.get("fixed_assignments", []):
-		if not assignment is Dictionary or not assignment.get("seat") is int or assignment.get("seat", 0) < 1 or assignment.get("seat", 0) > SeatManager.MAX_SEATS or fixed_seats.has(assignment.get("seat")) or not role_index.has(assignment.get("role_id", "")):
+		if (
+			not assignment is Dictionary
+			or not assignment.get("seat") is int
+			or assignment.get("seat", 0) < 1
+			or assignment.get("seat", 0) > SeatManager.MAX_SEATS
+			or fixed_seats.has(assignment.get("seat"))
+			or not role_index.has(assignment.get("role_id", ""))
+		):
 			failures.append("malformed fixed assignment")
 		else:
 			fixed_seats[assignment.seat] = true
 	for count: Variant in definition.get("supported_player_counts", []):
-		if count is int and (pool_total > count or fixed_seats.keys().any(func(seat: Variant) -> bool: return seat > count)):
+		if (
+			count is int
+			and (
+				pool_total > count
+				or fixed_seats.keys().any(func(seat: Variant) -> bool: return seat > count)
+			)
+		):
 			failures.append("impossible assignment plan")
 	for combination_key: String in ["required_combinations", "forbidden_combinations"]:
 		if not definition.get(combination_key, []) is Array:
 			failures.append("malformed mode combination policy")
 			continue
 		for role_id: Variant in definition.get(combination_key, []):
-			if not role_id is String or not role_index.has(role_id): failures.append("unknown mode combination role")
+			if not role_id is String or not role_index.has(role_id):
+				failures.append("unknown mode combination role")
 	for objective_id: Variant in definition.get("objective_refs", []):
 		if not objective_id is String or not objective_index.has(objective_id):
 			failures.append("unknown mode objective")
 	for signal_name: Variant in definition.get("director_signal_allowlist", []):
 		if not signal_name is String or not VALID_DIRECTOR_SIGNALS.has(signal_name):
 			failures.append("invalid mode Director signal")
-	for key: String in ["assignment_retry_limit", "transition_chain_limit", "maximum_inactive_transition_delay"]:
-		if not definition.get(key) is int or definition.get(key, 0) < 1 or definition.get(key, 0) > 32:
+	for key: String in [
+		"assignment_retry_limit", "transition_chain_limit", "maximum_inactive_transition_delay"
+	]:
+		if (
+			not definition.get(key) is int
+			or definition.get(key, 0) < 1
+			or definition.get(key, 0) > 32
+		):
 			failures.append("invalid mode bound")
-	if not definition.get("privacy_policy") is Dictionary or not definition.get("terminal_policy") is Dictionary or not definition.get("afterlife_enabled") is bool:
+	if (
+		not definition.get("privacy_policy") is Dictionary
+		or not definition.get("terminal_policy") is Dictionary
+		or not definition.get("afterlife_enabled") is bool
+	):
 		failures.append("malformed mode policy")
 
-func _validate_fixture(definition: Dictionary, mode_index: Dictionary, failures: PackedStringArray) -> void:
-	if not mode_index.has(definition.get("mode_id", "")) or String(definition.get("evidence_stage", "")).is_empty():
+
+func _validate_fixture(
+	definition: Dictionary, mode_index: Dictionary, failures: PackedStringArray
+) -> void:
+	if (
+		not mode_index.has(definition.get("mode_id", ""))
+		or String(definition.get("evidence_stage", "")).is_empty()
+	):
 		failures.append("malformed social fixture")
-	if not definition.get("seat_count") is int or definition.get("seat_count", 0) < 1 or definition.get("seat_count", 0) > SeatManager.MAX_SEATS:
+	if (
+		not definition.get("seat_count") is int
+		or definition.get("seat_count", 0) < 1
+		or definition.get("seat_count", 0) > SeatManager.MAX_SEATS
+	):
 		failures.append("invalid fixture seat count")
 	for operation: Variant in definition.get("operations", []):
-		if not operation is Dictionary or not VALID_FIXTURE_OPERATIONS.has(operation.get("type", "")):
+		if (
+			not operation is Dictionary
+			or not VALID_FIXTURE_OPERATIONS.has(operation.get("type", ""))
+		):
 			failures.append("invalid fixture operation")
 	if not definition.get("view") is Dictionary:
 		failures.append("malformed fixture view")
 
-func _validate_proposal(proposal: Dictionary, transition_index: Dictionary, rules_content: RulesContent, board_definition: BoardDefinition, failures: PackedStringArray) -> void:
+
+func _validate_proposal(
+	proposal: Dictionary,
+	transition_index: Dictionary,
+	rules_content: RulesContent,
+	board_definition: BoardDefinition,
+	failures: PackedStringArray
+) -> void:
 	match proposal.get("type", ""):
 		"rules_effects":
-			_validate_rules_effects(proposal.get("effects", []), rules_content, board_definition, failures)
+			_validate_rules_effects(
+				proposal.get("effects", []), rules_content, board_definition, failures
+			)
 		"board_mutation":
-			_validate_rules_effects([{"type": "board_mutation", "mutation": proposal.get("mutation", {})}], rules_content, board_definition, failures)
+			_validate_rules_effects(
+				[{"type": "board_mutation", "mutation": proposal.get("mutation", {})}],
+				rules_content,
+				board_definition,
+				failures
+			)
 		"role_transition":
-			if not transition_index.has(proposal.get("transition_id", "")) or not proposal.get("target", "") in ["self", "selected"]:
+			if (
+				not transition_index.has(proposal.get("transition_id", ""))
+				or not proposal.get("target", "") in ["self", "selected"]
+			):
 				failures.append("invalid action transition proposal")
 		"presentation":
-			if not VALID_VISIBILITIES.has(proposal.get("visibility", "")) or String(proposal.get("message", "")).is_empty():
+			if (
+				not VALID_VISIBILITIES.has(proposal.get("visibility", ""))
+				or String(proposal.get("message", "")).is_empty()
+			):
 				failures.append("invalid action presentation proposal")
 
-func _validate_rules_effects(effects: Variant, rules_content: RulesContent, board_definition: BoardDefinition, failures: PackedStringArray) -> void:
+
+func _validate_rules_effects(
+	effects: Variant,
+	rules_content: RulesContent,
+	board_definition: BoardDefinition,
+	failures: PackedStringArray
+) -> void:
 	if not effects is Array:
 		failures.append("malformed downstream effects")
 		return
 	if rules_content != null:
 		rules_content._validate_effects(effects, {}, board_definition, failures)
+
 
 func _validate_conditions(conditions: Variant, failures: PackedStringArray) -> void:
 	if not conditions is Array:
@@ -293,6 +498,7 @@ func _validate_conditions(conditions: Variant, failures: PackedStringArray) -> v
 	for condition: Variant in conditions:
 		if not condition is Dictionary or not VALID_CONDITION_TYPES.has(condition.get("type", "")):
 			failures.append("unsupported objective condition")
+
 
 func _validate_transition_graph(transition_index: Dictionary, failures: PackedStringArray) -> void:
 	var adjacency: Dictionary = {}
@@ -306,14 +512,24 @@ func _validate_transition_graph(transition_index: Dictionary, failures: PackedSt
 		if _graph_has_unbounded_cycle(root_id, root_id, adjacency, transition_index, {}):
 			failures.append("circular transition graph without explicit bounds")
 
-func _graph_has_unbounded_cycle(root_id: String, current_id: String, adjacency: Dictionary, transition_index: Dictionary, visited: Dictionary) -> bool:
+
+func _graph_has_unbounded_cycle(
+	root_id: String,
+	current_id: String,
+	adjacency: Dictionary,
+	transition_index: Dictionary,
+	visited: Dictionary
+) -> bool:
 	if visited.has(current_id):
 		return current_id == root_id and _transition_bounds_missing(transition_index)
 	visited[current_id] = true
 	for next_id: String in adjacency.get(current_id, []):
-		if _graph_has_unbounded_cycle(root_id, next_id, adjacency, transition_index, visited.duplicate()):
+		if _graph_has_unbounded_cycle(
+			root_id, next_id, adjacency, transition_index, visited.duplicate()
+		):
 			return true
 	return false
+
 
 func _transition_bounds_missing(transition_index: Dictionary) -> bool:
 	for definition: Dictionary in transition_index.values():
@@ -321,7 +537,13 @@ func _transition_bounds_missing(transition_index: Dictionary) -> bool:
 			return true
 	return false
 
-func _validate_afterlife_guarantees(role_index: Dictionary, action_index: Dictionary, objective_index: Dictionary, failures: PackedStringArray) -> void:
+
+func _validate_afterlife_guarantees(
+	role_index: Dictionary,
+	action_index: Dictionary,
+	objective_index: Dictionary,
+	failures: PackedStringArray
+) -> void:
 	for role: Dictionary in roles:
 		if not role.get("tags", []).has("afterlife"):
 			continue
@@ -333,21 +555,43 @@ func _validate_afterlife_guarantees(role_index: Dictionary, action_index: Dictio
 		var meaningful_objective: bool = false
 		for objective_id: String in role.get("objective_refs", []):
 			meaningful_objective = meaningful_objective or objective_index.has(objective_id)
-		if not meaningful_action or not meaningful_objective or role.get("maximum_inactive_transition_delay", 99) > 1:
+		if (
+			not meaningful_action
+			or not meaningful_objective
+			or role.get("maximum_inactive_transition_delay", 99) > 1
+		):
 			failures.append("afterlife mapping can lead to permanent inactivity")
 
-func _validate_presentation(definition: Dictionary, kind: String, failures: PackedStringArray) -> void:
+
+func _validate_presentation(
+	definition: Dictionary, kind: String, failures: PackedStringArray
+) -> void:
 	var label: Variant = definition.get("label")
 	var symbol: Variant = definition.get("symbol")
 	var pattern: Variant = definition.get("pattern")
-	if not label is String or label.is_empty() or not symbol is String or symbol.is_empty() or symbol.length() > 4 or not pattern is String or pattern.is_empty():
+	if (
+		not label is String
+		or label.is_empty()
+		or not symbol is String
+		or symbol.is_empty()
+		or symbol.length() > 4
+		or not pattern is String
+		or pattern.is_empty()
+	):
 		failures.append("malformed %s presentation" % kind)
 
-func _index_definitions(definitions: Array[Dictionary], kind: String, failures: PackedStringArray) -> Dictionary:
+
+func _index_definitions(
+	definitions: Array[Dictionary], kind: String, failures: PackedStringArray
+) -> Dictionary:
 	var index: Dictionary = {}
 	for definition: Dictionary in definitions:
 		var stable_id: String = definition.get("id", "")
-		if not _valid_id(stable_id) or not definition.get("version") is int or definition.get("version", 0) < 1:
+		if (
+			not _valid_id(stable_id)
+			or not definition.get("version") is int
+			or definition.get("version", 0) < 1
+		):
 			failures.append("malformed %s identity" % kind)
 		elif index.has(stable_id):
 			failures.append("duplicate %s id" % kind)
@@ -355,11 +599,13 @@ func _index_definitions(definitions: Array[Dictionary], kind: String, failures: 
 			index[stable_id] = definition
 	return index
 
+
 func _definition_by_id(definitions: Array[Dictionary], stable_id: String) -> Dictionary:
 	for definition: Dictionary in definitions:
 		if definition.get("id", "") == stable_id:
 			return definition.duplicate(true)
 	return {}
+
 
 func _valid_id(value: Variant) -> bool:
 	if not value is String or value.is_empty() or value[0] == "_" or value[-1] == "_":

@@ -3,6 +3,7 @@ extends RefCounted
 
 const SNAPSHOT_VERSION: int = 1
 
+
 static func build(rules: RulesSession, board: BoardState, social: RoleSession = null) -> Dictionary:
 	var seats: Array[int] = rules.participating_seats.duplicate()
 	var active_seats: Array[int] = []
@@ -29,7 +30,9 @@ static func build(rules: RulesSession, board: BoardState, social: RoleSession = 
 			failure_count += 1
 	var resource_units: int = rules.counters.get("hope", 0) + rules.counters.get("resolve", 0)
 	for seat: int in seats:
-		resource_units += rules.hands.get(seat, []).size() + rules.inventory.get(seat, []).size() * 2
+		resource_units += (
+			rules.hands.get(seat, []).size() + rules.inventory.get(seat, []).size() * 2
+		)
 	var hazard_units: int = 0
 	var occupied_spaces: int = 0
 	if board != null:
@@ -63,7 +66,12 @@ static func build(rules: RulesSession, board: BoardState, social: RoleSession = 
 		"group_spread": clampi(maxi(0, occupied_spaces - 1) * 25, 0, 100),
 		"stalled_steps": clampi(rules.counters.get("objective_stall_steps", 0) * 12, 0, 100),
 		"prompt_latency": clampi(rules.counters.get("prompt_latency_steps", 0) * 10, 0, 100),
-		"pass_frequency": clampi(roundi(float(rules.passed_seats.size()) / float(maxi(1, active_seats.size())) * 100.0), 0, 100),
+		"pass_frequency":
+		clampi(
+			roundi(float(rules.passed_seats.size()) / float(maxi(1, active_seats.size())) * 100.0),
+			0,
+			100
+		),
 		"participation_imbalance": clampi(participation_span * 20, 0, 100),
 		"rejected_actions": clampi(rules.counters.get("rejected_actions", 0) * 15, 0, 100),
 		"objective_progress": objective_progress,
@@ -78,23 +86,40 @@ static func build(rules: RulesSession, board: BoardState, social: RoleSession = 
 	}
 	return snapshot
 
+
 static func validate(snapshot: Dictionary) -> PackedStringArray:
 	var failures := PackedStringArray()
 	if snapshot.get("snapshot_version") != SNAPSHOT_VERSION:
 		failures.append("unsupported telemetry snapshot")
 	for field: String in DirectorContent.VALID_METRICS:
-		if not snapshot.get(field) is int or snapshot.get(field, -1) < 0 or snapshot.get(field, 101) > 100:
+		if (
+			not snapshot.get(field) is int
+			or snapshot.get(field, -1) < 0
+			or snapshot.get(field, 101) > 100
+		):
 			failures.append("invalid telemetry metric %s" % field)
-	for field: String in ["round", "objective_progress", "reserved_seat_count", "future_balance_signal"]:
+	for field: String in [
+		"round", "objective_progress", "reserved_seat_count", "future_balance_signal"
+	]:
 		if not snapshot.get(field) is int or snapshot.get(field, -1) < 0:
 			failures.append("invalid telemetry field %s" % field)
-	if not snapshot.get("phase") is String or not snapshot.get("active_seats") is Array or not snapshot.get("disconnected_seats") is Array:
+	if (
+		not snapshot.get("phase") is String
+		or not snapshot.get("active_seats") is Array
+		or not snapshot.get("disconnected_seats") is Array
+	):
 		failures.append("malformed telemetry identity fields")
 	if not snapshot.get("social_signals", {}) is Dictionary:
 		failures.append("malformed authorized social signals")
 	else:
 		for signal_name: Variant in snapshot.get("social_signals", {}).keys():
-			if not signal_name is String or not SocialContent.VALID_DIRECTOR_SIGNALS.has(signal_name) or not snapshot.social_signals[signal_name] is int or snapshot.social_signals[signal_name] < 0 or snapshot.social_signals[signal_name] > 100:
+			if (
+				not signal_name is String
+				or not SocialContent.VALID_DIRECTOR_SIGNALS.has(signal_name)
+				or not snapshot.social_signals[signal_name] is int
+				or snapshot.social_signals[signal_name] < 0
+				or snapshot.social_signals[signal_name] > 100
+			):
 				failures.append("invalid authorized social signal")
 	for seat_list: String in ["active_seats", "disconnected_seats"]:
 		for seat: Variant in snapshot.get(seat_list, []):

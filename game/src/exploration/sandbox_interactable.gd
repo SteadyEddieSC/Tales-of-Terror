@@ -12,6 +12,7 @@ var _tokens: VisualTokens
 var _door_body: StaticBody2D
 var _door_collision: CollisionShape2D
 
+
 func setup(p_id: String, p_kind: Kind, p_position: Vector2, tokens: VisualTokens) -> void:
 	interaction_id = p_id
 	kind = p_kind
@@ -27,12 +28,15 @@ func setup(p_id: String, p_kind: Kind, p_position: Vector2, tokens: VisualTokens
 		add_child(_door_body)
 	queue_redraw()
 
+
 func descriptor() -> Dictionary:
 	return {"id": interaction_id, "position": global_position, "enabled": true}
+
 
 func set_focused(seat_number: int) -> void:
 	focused_seat = seat_number
 	queue_redraw()
+
 
 func interact(seat_number: int) -> String:
 	set_active(not active)
@@ -41,11 +45,13 @@ func interact(seat_number: int) -> String:
 		return "IRON GATE %s BY SEAT %s" % ["OPENED" if active else "CLOSED", _roman(seat_number)]
 	return "CLUE %s BY SEAT %s" % ["REVEALED" if active else "VEILED", _roman(seat_number)]
 
+
 func set_active(value: bool) -> void:
 	active = value
 	if _door_collision != null:
 		_door_collision.set_deferred("disabled", active)
 	queue_redraw()
+
 
 func _draw() -> void:
 	if _tokens == null:
@@ -64,6 +70,7 @@ func _draw() -> void:
 		draw_circle(Vector2(0, -8), 12.0, Color("f2dd9b") if active else Color("1b1521"))
 	if focused_seat > 0:
 		draw_arc(Vector2.ZERO, 46.0, 0.0, TAU, 32, _tokens.warning, 4.0)
+
 
 func _roman(seat_number: int) -> String:
 	return _tokens.player_symbols[seat_number - 1]

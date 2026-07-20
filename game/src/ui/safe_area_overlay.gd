@@ -6,12 +6,15 @@ var frame_margin: int = 24
 var frame_width: float = 2.0
 var _lines: Array[ColorRect] = []
 
+
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 
 func set_frame_margin(value: int) -> void:
 	frame_margin = value
 	_update_frame()
+
 
 func _ready() -> void:
 	for index: int in 4:
@@ -21,6 +24,7 @@ func _ready() -> void:
 		add_child(line)
 		_lines.append(line)
 	_update_frame()
+
 
 func _update_frame() -> void:
 	if _lines.size() != 4:
@@ -36,6 +40,7 @@ func _update_frame() -> void:
 	_lines[2].size = Vector2(frame_width, height)
 	_lines[3].position = Vector2(size.x - inset - frame_width, inset)
 	_lines[3].size = Vector2(frame_width, height)
+
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:

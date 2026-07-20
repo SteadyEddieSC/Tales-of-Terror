@@ -8,16 +8,19 @@ var initial_seed: int
 var state: int
 var counter: int = 0
 
+
 func _init(seed_value: int = 1) -> void:
 	initial_seed = absi(seed_value) % MODULUS
 	if initial_seed == 0:
 		initial_seed = 1
 	state = initial_seed
 
+
 func draw_range(minimum: int, maximum: int) -> int:
 	state = int((state * MULTIPLIER) % MODULUS)
 	counter += 1
 	return minimum + (state % (maximum - minimum + 1))
+
 
 func shuffle(values: Array) -> Array:
 	var result: Array = values.duplicate(true)
@@ -28,13 +31,25 @@ func shuffle(values: Array) -> Array:
 		result[swap_index] = value
 	return result
 
+
 func to_snapshot() -> Dictionary:
 	return {"initial_seed": initial_seed, "state": state, "counter": counter}
 
+
 func restore(snapshot: Dictionary) -> bool:
-	if not snapshot.get("initial_seed") is int or not snapshot.get("state") is int or not snapshot.get("counter") is int:
+	if (
+		not snapshot.get("initial_seed") is int
+		or not snapshot.get("state") is int
+		or not snapshot.get("counter") is int
+	):
 		return false
-	if snapshot.initial_seed <= 0 or snapshot.initial_seed >= MODULUS or snapshot.state <= 0 or snapshot.state >= MODULUS or snapshot.counter < 0:
+	if (
+		snapshot.initial_seed <= 0
+		or snapshot.initial_seed >= MODULUS
+		or snapshot.state <= 0
+		or snapshot.state >= MODULUS
+		or snapshot.counter < 0
+	):
 		return false
 	initial_seed = snapshot.initial_seed
 	state = snapshot.state

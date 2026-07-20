@@ -3,9 +3,11 @@ extends Control
 
 @export var tokens: VisualTokens
 
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	queue_redraw()
+
 
 func _draw() -> void:
 	if tokens == null:
@@ -21,17 +23,22 @@ func _draw() -> void:
 	for index: int in 9:
 		var x: float = float(index) * size.x / 8.0
 		var height: float = 35.0 + float((index * 17) % 70)
-		var points := PackedVector2Array([
-			Vector2(x - 70.0, size.y),
-			Vector2(x - 52.0, size.y - height * 0.45),
-			Vector2(x - 30.0, size.y - height),
-			Vector2(x - 12.0, size.y - height * 0.55),
-			Vector2(x + 10.0, size.y - height * 1.2),
-			Vector2(x + 35.0, size.y - height * 0.4),
-			Vector2(x + 70.0, size.y),
-		])
+		var points := PackedVector2Array(
+			[
+				Vector2(x - 70.0, size.y),
+				Vector2(x - 52.0, size.y - height * 0.45),
+				Vector2(x - 30.0, size.y - height),
+				Vector2(x - 12.0, size.y - height * 0.55),
+				Vector2(x + 10.0, size.y - height * 1.2),
+				Vector2(x + 35.0, size.y - height * 0.4),
+				Vector2(x + 70.0, size.y),
+			]
+		)
 		draw_colored_polygon(points, Color(tokens.ink, 0.72))
-	draw_line(Vector2(0.0, size.y - 3.0), Vector2(size.x, size.y - 3.0), Color(tokens.warning, 0.35), 3.0)
+	draw_line(
+		Vector2(0.0, size.y - 3.0), Vector2(size.x, size.y - 3.0), Color(tokens.warning, 0.35), 3.0
+	)
+
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:

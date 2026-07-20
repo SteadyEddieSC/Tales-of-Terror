@@ -9,6 +9,7 @@ var _label: RichTextLabel
 var _decision: Dictionary = {}
 var _application: Dictionary = {}
 
+
 func _ready() -> void:
 	theme = LAB_THEME
 	theme_type_variation = "PanelContainer"
@@ -28,6 +29,7 @@ func _ready() -> void:
 	margin.add_child(_label)
 	visible = false
 
+
 func present(decision: Dictionary, application: Dictionary) -> void:
 	_decision = decision.duplicate(true)
 	_application = application.duplicate(true)
@@ -35,22 +37,33 @@ func present(decision: Dictionary, application: Dictionary) -> void:
 		_label.text = rendered_player_text()
 	visible = true
 
+
 func rendered_player_text() -> String:
 	if _decision.is_empty():
 		return ""
 	var presentation: Dictionary = _decision.get("presentation", {})
 	var symbol: String = presentation.get("symbol", "◇")
 	var pattern: String = presentation.get("pattern", "open ring")
-	var lines := PackedStringArray([
-		"[font_size=20][b]DREAD DIRECTOR[/b][/font_size]",
-		"[b]%s[/b]  •  %s" % [_decision.profile_name, RulesHud.friendly_label(_decision.pacing_act)],
-		"%s  [b]%s[/b]" % [symbol, _decision.selected_name],
-		"Pattern: %s" % pattern.capitalize(),
-		_decision.selected_summary,
-		"[b]WHY NOW[/b]  %s" % _decision.rationale,
-	])
+	var lines := PackedStringArray(
+		[
+			"[font_size=20][b]DREAD DIRECTOR[/b][/font_size]",
+			(
+				"[b]%s[/b]  •  %s"
+				% [_decision.profile_name, RulesHud.friendly_label(_decision.pacing_act)]
+			),
+			"%s  [b]%s[/b]" % [symbol, _decision.selected_name],
+			"Pattern: %s" % pattern.capitalize(),
+			_decision.selected_summary,
+			"[b]WHY NOW[/b]  %s" % _decision.rationale,
+		]
+	)
 	if _decision.target_seat > 0:
-		lines.append("Target: Seat %s  %s" % [_roman(_decision.target_seat), "◆".repeat(_decision.target_seat)])
+		lines.append(
+			(
+				"Target: Seat %s  %s"
+				% [_roman(_decision.target_seat), "◆".repeat(_decision.target_seat)]
+			)
+		)
 	var outcome: String = "Accepted" if _application.get("accepted", false) else "Held / No Change"
 	if _decision.category == "no_op":
 		outcome = "Intentional Hold — no state changed"
@@ -60,6 +73,7 @@ func rendered_player_text() -> String:
 		lines.append("HOST ◉ %s" % proposal.get("message", "The house offers an omen."))
 	lines.append("ⓘ Scoring and raw telemetry: Diagnostics (X / T)")
 	return "\n".join(lines.slice(0, MAX_PLAYER_LINES))
+
 
 func get_view_model() -> Dictionary:
 	return {
@@ -72,14 +86,17 @@ func get_view_model() -> Dictionary:
 		"contains_raw_ids": _decision.get("selected_candidate_id", "") in rendered_player_text(),
 	}
 
+
 func set_safe_margin(value: int) -> void:
 	var rect: Rect2 = calculate_panel_rect(Vector2(960, 540), value)
 	position = rect.position
 	size = rect.size
 
+
 static func calculate_panel_rect(viewport_size: Vector2, safe_margin: int) -> Rect2:
 	var safe: int = clampi(safe_margin, 0, 48)
 	return Rect2(Vector2(viewport_size.x - safe - PANEL_SIZE.x - 10.0, safe + 60.0), PANEL_SIZE)
+
 
 func _roman(seat: int) -> String:
 	return RulesHud.ROMAN_NUMERALS[seat - 1]
