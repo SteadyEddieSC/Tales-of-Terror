@@ -101,12 +101,8 @@ func close_room() -> Dictionary:
 	for client_id: String in _connected_clients:
 		outbound_envelope.emit(client_id, envelope.duplicate(true))
 	room_open = false
-	_pending_clients.clear()
-	_claims.clear()
-	_connected_clients.clear()
-	_ack_cache.clear()
-	_ack_order.clear()
 	_record("room_closed", "close_room", "accepted", 0)
+	_discard_room_state()
 	return {"accepted": true, "envelope": envelope}
 
 
@@ -119,12 +115,8 @@ func expire_room() -> Dictionary:
 	for client_id: String in _connected_clients:
 		outbound_envelope.emit(client_id, envelope.duplicate(true))
 	room_open = false
-	_pending_clients.clear()
-	_claims.clear()
-	_connected_clients.clear()
-	_ack_cache.clear()
-	_ack_order.clear()
 	_record("room_expired", "expire_room", "expired", 0)
+	_discard_room_state()
 	return {"accepted": true, "envelope": envelope}
 
 
@@ -625,3 +617,19 @@ func _payload_has_exact_keys(payload: Dictionary, expected: PackedStringArray) -
 		if not key is String or not expected.has(key):
 			return false
 	return true
+
+
+func _discard_room_state() -> void:
+	room_id = ""
+	join_code = ""
+	_pending_clients.clear()
+	_claims.clear()
+	_connected_clients.clear()
+	_last_client_sequences.clear()
+	_ack_cache.clear()
+	_ack_order.clear()
+	_sequence = 0
+	_history.clear()
+	_last_revision = authoritative_revision()
+	for key: String in _counters:
+		_counters[key] = 0

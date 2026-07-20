@@ -4,10 +4,47 @@ extends RefCounted
 signal lifecycle_changed(public_state: Dictionary)
 signal session_rejected(reason: String)
 
-const SNAPSHOT_VERSION: int = 1
+const SNAPSHOT_VERSION: int = 2
 const MANIFEST_PATH: String = "res://data/scenarios/lantern_house_vertical_slice_v1.json"
 const LIFECYCLES: PackedStringArray = [
 	"boot_title", "lobby", "confirmation", "briefing", "active_tale", "terminal", "ending"
+]
+const SNAPSHOT_KEYS: PackedStringArray = [
+	"snapshot_version",
+	"manifest_version",
+	"scenario_id",
+	"scenario_version",
+	"lifecycle",
+	"stage_index",
+	"operation_index",
+	"seed",
+	"requested_mode",
+	"paused",
+	"stage_history",
+	"last_director_decision",
+	"last_director_application",
+	"stage_transaction",
+	"seat_manager",
+	"pawns",
+	"board",
+	"rules",
+	"director",
+	"roles",
+]
+const TRANSACTION_VERSION: int = 1
+const TRANSACTION_KEYS: PackedStringArray = [
+	"transaction_version",
+	"stage_index",
+	"operation_index",
+	"stage_history",
+	"last_director_decision",
+	"last_director_application",
+	"seat_manager",
+	"pawns",
+	"board",
+	"rules",
+	"director",
+	"roles",
 ]
 
 var seat_manager := SeatManager.new()
@@ -32,6 +69,7 @@ var last_director_decision: Dictionary = {}
 var last_director_application: Dictionary = {}
 var last_rejection: String = ""
 var paused: bool = false
+var _stage_checkpoint: Dictionary = {}
 
 
 func enter_lobby() -> Dictionary:
@@ -92,6 +130,11 @@ func _build_authorities(
 	failures.append_array(candidate_rules.validate(candidate_board))
 	failures.append_array(candidate_director.validate(candidate_rules, candidate_board))
 	failures.append_array(candidate_social.validate(candidate_rules, candidate_board))
+	var mode_authorization: Dictionary = VerticalSliceManifest.authorize_mode(
+		candidate_manifest, candidate_social, p_requested_mode, roster.size()
+	)
+	if not mode_authorization.accepted:
+		failures.append(mode_authorization.reason)
 	if not failures.is_empty():
 		return {"accepted": false, "reason": "invalid_manifest_or_content: %s" % failures[0]}
 	var candidate_board_state := BoardState.new(candidate_board)
@@ -167,6 +210,7 @@ func _commit_authorities(build: Dictionary, p_seed: int, p_requested_mode: Strin
 	paused = false
 	last_director_decision.clear()
 	last_director_application.clear()
+	_stage_checkpoint.clear()
 
 
 func begin_tale() -> Dictionary:
@@ -185,19 +229,7 @@ func run_current_stage() -> Dictionary:
 		return _reject("session_paused")
 	if lifecycle != "active_tale" or stage_index < 0 or stage_index >= manifest.stages.size():
 		return _reject("no_active_stage")
-	var before: Dictionary = _authority_snapshot()
-	var stage: Dictionary = manifest.stages[stage_index]
-	for operation: Dictionary in stage.operations:
-		var result: Dictionary = _apply_operation(operation)
-		if not result.get("accepted", false):
-			_restore_authorities(before)
-			return _reject(
-				(
-					"stage_operation_failed:%s:%s:%s"
-					% [stage.id, operation.type, result.get("reason", "rejected")]
-				)
-			)
-	return _finish_stage(stage)
+	return _execute_stage(true)
 
 
 func advance_player_stage() -> Dictionary:
@@ -205,28 +237,34 @@ func advance_player_stage() -> Dictionary:
 		return _reject("session_paused")
 	if lifecycle != "active_tale" or stage_index < 0 or stage_index >= manifest.stages.size():
 		return _reject("no_active_stage")
+	return _execute_stage(false)
+
+
+func _execute_stage(automated: bool) -> Dictionary:
 	var stage: Dictionary = manifest.stages[stage_index]
-	var before: Dictionary = _authority_snapshot()
+	if _stage_checkpoint.is_empty():
+		_stage_checkpoint = _transaction_snapshot()
 	while operation_index < stage.operations.size():
 		var operation: Dictionary = stage.operations[operation_index]
-		if operation.type in ["submit_prompt", "submit_vote"]:
+		if not automated and operation.type in ["submit_prompt", "submit_vote"]:
 			operation_index += 1
 			if not _pending_responses_complete():
 				_emit_state()
 				return {"accepted": true, "waiting_for_players": true, "stage_id": stage.id}
 			continue
 		if (
-			operation.type in ["resolve_prompt", "resolve_vote"]
+			not automated
+			and operation.type in ["resolve_prompt", "resolve_vote"]
 			and not _pending_responses_complete()
 		):
 			_emit_state()
 			return {"accepted": true, "waiting_for_players": true, "stage_id": stage.id}
 		var result: Dictionary = _apply_operation(operation)
 		if not result.get("accepted", false):
-			_restore_authorities(before)
+			_rollback_stage_transaction()
 			return _reject(
 				(
-					"player_stage_operation_failed:%s:%s:%s"
+					"stage_operation_failed:%s:%s:%s"
 					% [stage.id, operation.type, result.get("reason", "rejected")]
 				)
 			)
@@ -247,14 +285,22 @@ func toggle_pause() -> Dictionary:
 
 
 func rematch() -> Dictionary:
+	return rematch_with_manifest(MANIFEST_PATH)
+
+
+func rematch_with_manifest(p_manifest_path: String) -> Dictionary:
 	if lifecycle != "ending":
 		return _reject("invalid_lifecycle_transition")
-	var prior_seed: int = seed
-	var prior_mode: String = requested_mode
-	var transition: Dictionary = _transition("ending", "confirmation")
-	if not transition.accepted:
-		return transition
-	return initialize_session(MANIFEST_PATH, prior_seed, prior_mode)
+	var roster: Array[int] = active_seats()
+	var build: Dictionary = _build_authorities(p_manifest_path, seed, requested_mode, roster)
+	if not build.accepted:
+		return _reject(build.reason)
+	_close_companion_room()
+	_commit_authorities(build, seed, requested_mode)
+	lifecycle = "briefing"
+	last_rejection = ""
+	_emit_state()
+	return {"accepted": true, "lifecycle": lifecycle}
 
 
 func return_to_title() -> Dictionary:
@@ -314,7 +360,11 @@ func to_snapshot() -> Dictionary:
 		"requested_mode": requested_mode,
 		"paused": paused,
 		"stage_history": stage_history.duplicate(true),
+		"last_director_decision": last_director_decision.duplicate(true),
+		"last_director_application": last_director_application.duplicate(true),
+		"stage_transaction": _stage_checkpoint.duplicate(true),
 		"seat_manager": seat_manager.to_snapshot(),
+		"pawns": pawn_registry.to_snapshot(),
 		"board": board_state.to_snapshot() if board_state != null else {},
 		"rules": rules_session.to_snapshot() if rules_session != null else {},
 		"director": director_runtime.to_snapshot() if director_runtime != null else {},
@@ -323,14 +373,18 @@ func to_snapshot() -> Dictionary:
 
 
 func restore_snapshot(snapshot: Dictionary) -> Dictionary:
-	var before: Dictionary = to_snapshot()
 	var validation: Dictionary = _build_restore_candidate(snapshot)
 	if not validation.accepted:
 		return _reject(validation.reason)
-	var seat_result: Dictionary = seat_manager.restore_snapshot(snapshot.seat_manager)
-	if not seat_result.accepted:
-		return _reject("seat_restore_failed")
 	var candidate: VerticalSliceCoordinator = validation.candidate
+	_close_companion_room()
+	_adopt_candidate(candidate)
+	_emit_state()
+	return {"accepted": true}
+
+
+func _adopt_candidate(candidate: VerticalSliceCoordinator) -> void:
+	seat_manager = candidate.seat_manager
 	manifest = candidate.manifest
 	board_definition = candidate.board_definition
 	board_state = candidate.board_state
@@ -340,20 +394,18 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 	director_runtime = candidate.director_runtime
 	social_content = candidate.social_content
 	role_session = candidate.role_session
-	companion_bridge = CompanionBridge.new(
-		seat_manager, board_state, rules_session, director_runtime, role_session
-	)
-	lifecycle = snapshot.lifecycle
-	stage_index = snapshot.stage_index
-	operation_index = snapshot.operation_index
-	seed = snapshot.seed
-	requested_mode = snapshot.requested_mode
-	paused = snapshot.get("paused", false)
-	stage_history = snapshot.stage_history.duplicate(true)
-	if before.is_empty():
-		return _reject("restore_commit_failed")
-	_emit_state()
-	return {"accepted": true}
+	companion_bridge = candidate.companion_bridge
+	pawn_registry = candidate.pawn_registry
+	lifecycle = candidate.lifecycle
+	stage_index = candidate.stage_index
+	operation_index = candidate.operation_index
+	seed = candidate.seed
+	requested_mode = candidate.requested_mode
+	paused = candidate.paused
+	stage_history = candidate.stage_history.duplicate(true)
+	last_director_decision = candidate.last_director_decision.duplicate(true)
+	last_director_application = candidate.last_director_application.duplicate(true)
+	_stage_checkpoint = candidate._stage_checkpoint.duplicate(true)
 
 
 func authority_digest() -> String:
@@ -495,7 +547,7 @@ func _evaluate_director() -> Dictionary:
 func _apply_role_transition(operation: Dictionary) -> Dictionary:
 	var seat: int = role_session.seat_with_tag(operation.get("selector_tag", ""))
 	if seat <= 0:
-		seat = active_seats()[0]
+		return {"accepted": false, "reason": "role_actor_not_found"}
 	return role_session.request_transition_by_trigger(
 		seat, operation.trigger, rules_session, board_state
 	)
@@ -512,58 +564,298 @@ func _apply_role_action(operation: Dictionary) -> Dictionary:
 
 func _authority_snapshot() -> Dictionary:
 	return {
+		"seat_manager": seat_manager.to_snapshot(),
+		"pawns": pawn_registry.to_snapshot(),
 		"board": board_state.to_snapshot() if board_state != null else {},
 		"rules": rules_session.to_snapshot() if rules_session != null else {},
 		"director": director_runtime.to_snapshot() if director_runtime != null else {},
 		"roles": role_session.to_snapshot() if role_session != null else {},
+		"last_director_decision": last_director_decision.duplicate(true),
+		"last_director_application": last_director_application.duplicate(true),
 	}
 
 
 func _restore_authorities(snapshot: Dictionary) -> bool:
-	return (
-		board_state.restore_snapshot(snapshot.board).accepted
-		and rules_session.restore_snapshot(snapshot.rules).accepted
-		and director_runtime.restore_snapshot(snapshot.director).accepted
-		and role_session.restore_snapshot(snapshot.roles).accepted
+	var accepted: bool = seat_manager.restore_snapshot(snapshot.seat_manager).accepted
+	accepted = (
+		(
+			pawn_registry
+			. restore_snapshot(snapshot.pawns, seat_manager.get_seats(), ExplorationRoom.BOUNDS)
+			. accepted
+		)
+		and accepted
 	)
+	accepted = board_state.restore_snapshot(snapshot.board).accepted and accepted
+	accepted = rules_session.restore_snapshot(snapshot.rules).accepted and accepted
+	accepted = director_runtime.restore_snapshot(snapshot.director).accepted and accepted
+	accepted = role_session.restore_snapshot(snapshot.roles).accepted and accepted
+	last_director_decision = snapshot.last_director_decision.duplicate(true)
+	last_director_application = snapshot.last_director_application.duplicate(true)
+	return accepted
 
 
 func _build_restore_candidate(snapshot: Dictionary) -> Dictionary:
-	if (
-		snapshot.get("snapshot_version") != SNAPSHOT_VERSION
-		or not LIFECYCLES.has(snapshot.get("lifecycle", ""))
-		or not snapshot.get("stage_index") is int
-		or not snapshot.get("operation_index") is int
-		or not snapshot.get("seed") is int
-		or not snapshot.get("requested_mode") is String
-		or not snapshot.get("paused", false) is bool
-		or not snapshot.get("stage_history") is Array
-		or not snapshot.get("seat_manager") is Dictionary
-	):
+	if not _snapshot_header_is_valid(snapshot):
 		return {"accepted": false, "reason": "malformed_snapshot"}
 	var candidate := VerticalSliceCoordinator.new()
 	if not candidate.seat_manager.restore_snapshot(snapshot.seat_manager).accepted:
 		return {"accepted": false, "reason": "malformed_seat_snapshot"}
-	candidate.lifecycle = "confirmation"
-	var initialized: Dictionary = candidate.initialize_session(
-		MANIFEST_PATH, snapshot.seed, snapshot.requested_mode
+	if not VerticalSliceSnapshotPolicy.stable_seat_snapshot_is_coherent(candidate.seat_manager):
+		return {"accepted": false, "reason": "incoherent_seat_snapshot"}
+	if snapshot.lifecycle in ["briefing", "active_tale", "terminal", "ending"]:
+		return _build_session_restore_candidate(snapshot, candidate)
+	return _build_pre_session_restore_candidate(snapshot, candidate)
+
+
+func _snapshot_header_is_valid(snapshot: Dictionary) -> bool:
+	return (
+		_has_exact_keys(snapshot, SNAPSHOT_KEYS)
+		and snapshot.get("snapshot_version") == SNAPSHOT_VERSION
+		and LIFECYCLES.has(snapshot.get("lifecycle", ""))
+		and snapshot.get("stage_index") is int
+		and snapshot.get("operation_index") is int
+		and snapshot.get("seed") is int
+		and snapshot.get("seed", 0) >= -2147483646
+		and snapshot.get("seed", 0) <= 2147483646
+		and snapshot.get("requested_mode") is String
+		and snapshot.get("paused") is bool
+		and snapshot.get("stage_history") is Array
+		and snapshot.get("last_director_decision") is Dictionary
+		and snapshot.get("last_director_application") is Dictionary
+		and snapshot.get("stage_transaction") is Dictionary
+		and snapshot.get("seat_manager") is Dictionary
+		and snapshot.get("pawns") is Dictionary
+		and snapshot.get("board") is Dictionary
+		and snapshot.get("rules") is Dictionary
+		and snapshot.get("director") is Dictionary
+		and snapshot.get("roles") is Dictionary
 	)
-	if not initialized.accepted:
-		return {"accepted": false, "reason": initialized.get("reason", "restore_failed")}
+
+
+func _build_pre_session_restore_candidate(
+	snapshot: Dictionary, candidate: VerticalSliceCoordinator
+) -> Dictionary:
+	if not _pre_session_snapshot_is_coherent(snapshot, candidate.seat_manager):
+		return {"accepted": false, "reason": "incoherent_pre_session_snapshot"}
+	candidate.lifecycle = snapshot.lifecycle
+	candidate.seed = snapshot.seed
+	candidate.requested_mode = snapshot.requested_mode
+	return {"accepted": true, "candidate": candidate}
+
+
+func _build_session_restore_candidate(
+	snapshot: Dictionary, candidate: VerticalSliceCoordinator
+) -> Dictionary:
+	var reason: String = ""
+	if active_seats_from(candidate.seat_manager).is_empty():
+		reason = "empty_snapshot_roster"
+	if reason.is_empty():
+		candidate.lifecycle = "confirmation"
+		var initialized: Dictionary = candidate.initialize_session(
+			MANIFEST_PATH, snapshot.seed, snapshot.requested_mode
+		)
+		if not initialized.accepted:
+			reason = initialized.get("reason", "restore_failed")
+	if reason.is_empty() and not _snapshot_manifest_matches(snapshot, candidate.manifest):
+		reason = "snapshot_manifest_mismatch"
+	if reason.is_empty() and not _restore_candidate_authorities(candidate, snapshot).accepted:
+		reason = "authority_snapshot_rejected"
+	if reason.is_empty():
+		var progression: Dictionary = _validate_progression_snapshot(snapshot, candidate)
+		if not progression.accepted:
+			reason = progression.reason
+	if reason.is_empty():
+		var transaction: Dictionary = _validate_stage_transaction(snapshot)
+		if not transaction.accepted:
+			reason = transaction.reason
+	if not reason.is_empty():
+		return {"accepted": false, "reason": reason}
+	candidate.lifecycle = snapshot.lifecycle
+	candidate.stage_index = snapshot.stage_index
+	candidate.operation_index = snapshot.operation_index
+	candidate.seed = snapshot.seed
+	candidate.requested_mode = snapshot.requested_mode
+	candidate.paused = snapshot.paused
+	candidate.stage_history = RulesContent.SessionData.dict_array(snapshot.stage_history)
+	candidate.last_director_decision = snapshot.last_director_decision.duplicate(true)
+	candidate.last_director_application = snapshot.last_director_application.duplicate(true)
+	candidate._stage_checkpoint = snapshot.stage_transaction.duplicate(true)
+	return {"accepted": true, "candidate": candidate}
+
+
+func _snapshot_manifest_matches(snapshot: Dictionary, candidate_manifest: Dictionary) -> bool:
+	return (
+		snapshot.get("manifest_version") == candidate_manifest.manifest_version
+		and snapshot.get("scenario_id") == candidate_manifest.scenario_id
+		and snapshot.get("scenario_version") == candidate_manifest.scenario_version
+	)
+
+
+static func active_seats_from(manager: SeatManager) -> Array[int]:
+	var seats: Array[int] = []
+	for seat: Dictionary in manager.get_seats():
+		if seat.state in [SeatManager.SeatState.ACTIVE, SeatManager.SeatState.RESERVED]:
+			seats.append(seat.seat_number)
+	return seats
+
+
+func _pre_session_snapshot_is_coherent(snapshot: Dictionary, manager: SeatManager) -> bool:
+	var roster: Array[int] = active_seats_from(manager)
+	var lifecycle_roster_is_valid: bool = true
+	if snapshot.lifecycle == "boot_title":
+		lifecycle_roster_is_valid = roster.is_empty()
+		for seat: Dictionary in manager.get_seats():
+			lifecycle_roster_is_valid = (
+				lifecycle_roster_is_valid and seat.state == SeatManager.SeatState.UNASSIGNED
+			)
+	elif snapshot.lifecycle == "confirmation":
+		lifecycle_roster_is_valid = not roster.is_empty()
+	return (
+		lifecycle_roster_is_valid
+		and snapshot.lifecycle in ["boot_title", "lobby", "confirmation"]
+		and snapshot.stage_index == -1
+		and snapshot.operation_index == 0
+		and snapshot.stage_history.is_empty()
+		and snapshot.stage_transaction.is_empty()
+		and not snapshot.paused
+		and snapshot.manifest_version == 0
+		and snapshot.scenario_id == ""
+		and snapshot.scenario_version == 0
+		and snapshot.pawns == PawnRegistry.new().to_snapshot()
+		and snapshot.board.is_empty()
+		and snapshot.rules.is_empty()
+		and snapshot.director.is_empty()
+		and snapshot.roles.is_empty()
+		and snapshot.last_director_decision.is_empty()
+		and snapshot.last_director_application.is_empty()
+	)
+
+
+func _restore_candidate_authorities(
+	candidate: VerticalSliceCoordinator, source: Dictionary
+) -> Dictionary:
+	if source.rules.get("board", {}) != source.board:
+		return {"accepted": false, "reason": "authority_board_snapshot_mismatch"}
 	if (
-		snapshot.get("manifest_version") != candidate.manifest.manifest_version
-		or snapshot.get("scenario_id") != candidate.manifest.scenario_id
-		or snapshot.get("scenario_version") != candidate.manifest.scenario_version
-	):
-		return {"accepted": false, "reason": "snapshot_manifest_mismatch"}
-	if (
-		not candidate.board_state.restore_snapshot(snapshot.get("board", {})).accepted
-		or not candidate.rules_session.restore_snapshot(snapshot.get("rules", {})).accepted
-		or not candidate.director_runtime.restore_snapshot(snapshot.get("director", {})).accepted
-		or not candidate.role_session.restore_snapshot(snapshot.get("roles", {})).accepted
+		not (
+			candidate
+			. pawn_registry
+			. restore_snapshot(
+				source.pawns, candidate.seat_manager.get_seats(), ExplorationRoom.BOUNDS
+			)
+			. accepted
+		)
+		or not candidate.board_state.restore_snapshot(source.board).accepted
+		or not candidate.rules_session.restore_snapshot(source.rules).accepted
+		or not candidate.director_runtime.restore_snapshot(source.director).accepted
+		or not candidate.role_session.restore_snapshot(source.roles).accepted
 	):
 		return {"accepted": false, "reason": "authority_snapshot_rejected"}
-	return {"accepted": true, "candidate": candidate}
+	if not _occupancy_matches_pawns(candidate.board_state, candidate.pawn_registry):
+		return {"accepted": false, "reason": "pawn_occupancy_mismatch"}
+	if not _authority_rosters_match(candidate):
+		return {"accepted": false, "reason": "authority_roster_mismatch"}
+	return {"accepted": true, "reason": ""}
+
+
+func _validate_progression_snapshot(
+	snapshot: Dictionary, candidate: VerticalSliceCoordinator
+) -> Dictionary:
+	return VerticalSliceSnapshotPolicy.validate_progression(
+		snapshot, candidate.manifest, candidate.rules_session.terminal_reason
+	)
+
+
+func _validate_stage_transaction(snapshot: Dictionary) -> Dictionary:
+	var transaction: Dictionary = snapshot.stage_transaction
+	if snapshot.lifecycle != "active_tale" or snapshot.operation_index == 0:
+		return (
+			{"accepted": true, "reason": ""}
+			if transaction.is_empty()
+			else {"accepted": false, "reason": "unexpected_stage_transaction"}
+		)
+	return _validate_active_stage_transaction(snapshot, transaction)
+
+
+func _validate_active_stage_transaction(
+	snapshot: Dictionary, transaction: Dictionary
+) -> Dictionary:
+	var reason: String = ""
+	if not _has_exact_keys(transaction, TRANSACTION_KEYS):
+		reason = "malformed_stage_transaction"
+	if (
+		reason.is_empty()
+		and (
+			transaction.transaction_version != TRANSACTION_VERSION
+			or transaction.stage_index != snapshot.stage_index
+			or transaction.operation_index != 0
+			or transaction.stage_history != snapshot.stage_history
+			or not transaction.last_director_decision is Dictionary
+			or not transaction.last_director_application is Dictionary
+		)
+	):
+		reason = "incoherent_stage_transaction"
+	var checkpoint := VerticalSliceCoordinator.new()
+	if (
+		reason.is_empty()
+		and not checkpoint.seat_manager.restore_snapshot(transaction.seat_manager).accepted
+	):
+		reason = "transaction_seat_snapshot_rejected"
+	if reason.is_empty() and checkpoint.seat_manager.to_snapshot() != snapshot.seat_manager:
+		reason = "transaction_roster_mismatch"
+	if reason.is_empty():
+		checkpoint.lifecycle = "confirmation"
+		var initialized: Dictionary = checkpoint.initialize_session(
+			MANIFEST_PATH, snapshot.seed, snapshot.requested_mode
+		)
+		if (
+			not initialized.accepted
+			or not _restore_candidate_authorities(checkpoint, transaction).accepted
+		):
+			reason = "transaction_authority_snapshot_rejected"
+	return (
+		{"accepted": true, "reason": ""}
+		if reason.is_empty()
+		else {"accepted": false, "reason": reason}
+	)
+
+
+func _occupancy_matches_pawns(state: BoardState, registry: PawnRegistry) -> bool:
+	var occupancy: Dictionary = state.get_occupancy()
+	var pawns: Array[PawnState] = registry.get_pawns()
+	if occupancy.size() != pawns.size():
+		return false
+	for pawn: PawnState in pawns:
+		if occupancy.get(pawn.seat_number, "") != state.space_for_position(pawn.position):
+			return false
+	return true
+
+
+func _authority_rosters_match(candidate: VerticalSliceCoordinator) -> bool:
+	var expected: Array[int] = active_seats_from(candidate.seat_manager)
+	var rules_seats: Array[int] = candidate.rules_session.participating_seats.duplicate()
+	var role_seats: Array[int] = []
+	var pawn_seats: Array[int] = []
+	for value: Variant in candidate.role_session.seat_states:
+		if not value is int:
+			return false
+		role_seats.append(value)
+	for pawn: PawnState in candidate.pawn_registry.get_pawns():
+		pawn_seats.append(pawn.seat_number)
+	expected.sort()
+	rules_seats.sort()
+	role_seats.sort()
+	pawn_seats.sort()
+	return expected == rules_seats and expected == role_seats and expected == pawn_seats
+
+
+func _has_exact_keys(value: Dictionary, expected: PackedStringArray) -> bool:
+	if value.size() != expected.size():
+		return false
+	for key: Variant in value:
+		if not key is String or not expected.has(key):
+			return false
+	return true
 
 
 func _public_ending() -> Dictionary:
@@ -603,6 +895,9 @@ func _clear_session_authorities() -> void:
 	operation_index = 0
 	stage_history.clear()
 	paused = false
+	last_director_decision.clear()
+	last_director_application.clear()
+	_stage_checkpoint.clear()
 
 
 func _close_companion_room() -> void:
@@ -616,10 +911,41 @@ func _finish_stage(stage: Dictionary) -> Dictionary:
 	)
 	stage_index += 1
 	operation_index = 0
+	_stage_checkpoint.clear()
 	if stage_index >= manifest.stages.size():
 		_transition("active_tale", "terminal")
 	_emit_state()
 	return {"accepted": true, "stage_id": stage.id, "lifecycle": lifecycle}
+
+
+func _transaction_snapshot() -> Dictionary:
+	return {
+		"transaction_version": TRANSACTION_VERSION,
+		"stage_index": stage_index,
+		"operation_index": operation_index,
+		"stage_history": stage_history.duplicate(true),
+		"last_director_decision": last_director_decision.duplicate(true),
+		"last_director_application": last_director_application.duplicate(true),
+		"seat_manager": seat_manager.to_snapshot(),
+		"pawns": pawn_registry.to_snapshot(),
+		"board": board_state.to_snapshot(),
+		"rules": rules_session.to_snapshot(),
+		"director": director_runtime.to_snapshot(),
+		"roles": role_session.to_snapshot(),
+	}
+
+
+func _rollback_stage_transaction() -> void:
+	if _stage_checkpoint.is_empty():
+		return
+	var checkpoint: Dictionary = _stage_checkpoint.duplicate(true)
+	_restore_authorities(checkpoint)
+	stage_index = checkpoint.stage_index
+	operation_index = checkpoint.operation_index
+	stage_history = RulesContent.SessionData.dict_array(checkpoint.stage_history)
+	last_director_decision = checkpoint.last_director_decision.duplicate(true)
+	last_director_application = checkpoint.last_director_application.duplicate(true)
+	_stage_checkpoint.clear()
 
 
 func _pending_responses_complete() -> bool:

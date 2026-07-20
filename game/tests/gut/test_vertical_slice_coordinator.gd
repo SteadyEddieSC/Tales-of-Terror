@@ -24,3 +24,30 @@ func test_no_phone_fixture_reaches_public_ending() -> void:
 		coordinator.public_state().ending.privacy,
 		"public_summary_only_private_details_require_controlled_reveal"
 	)
+
+
+func test_undeclared_existing_mode_is_rejected_atomically() -> void:
+	var coordinator := VerticalSliceCoordinator.new()
+	coordinator.seat_manager.join_device(-1, SeatManager.KEYBOARD_IDENTITY, "Keyboard")
+	coordinator.enter_lobby()
+	coordinator.confirm_roster()
+	var before: Dictionary = coordinator.to_snapshot()
+	assert_false(coordinator.initialize_session(coordinator.MANIFEST_PATH, 4706, "hunted").accepted)
+	assert_eq(coordinator.to_snapshot(), before)
+
+
+func test_exploration_snapshot_preserves_pawn_and_occupancy() -> void:
+	var coordinator := VerticalSliceCoordinator.new()
+	coordinator.seat_manager.join_device(-1, SeatManager.KEYBOARD_IDENTITY, "Keyboard")
+	coordinator.enter_lobby()
+	coordinator.confirm_roster()
+	assert_true(coordinator.initialize_session().accepted)
+	assert_true(coordinator.begin_tale().accepted)
+	var pawn: PawnState = coordinator.pawn_registry.get_by_seat(1)
+	pawn.position = Vector2(1240.0, 500.0)
+	coordinator.board_state.sync_occupancy(coordinator.pawn_registry.get_pawns())
+	var restored := VerticalSliceCoordinator.new()
+	assert_true(restored.restore_snapshot(coordinator.to_snapshot()).accepted)
+	assert_eq(restored.pawn_registry.get_by_seat(1).position, pawn.position)
+	assert_eq(restored.board_state.space_for_seat(1), "sealed_archive")
+	assert_eq(restored.authority_digest(), coordinator.authority_digest())
