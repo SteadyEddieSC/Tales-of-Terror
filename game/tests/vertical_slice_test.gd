@@ -80,6 +80,14 @@ func _test_lifecycle_and_atomic_initialization() -> void:
 	_expect(coordinator.toggle_pause().accepted and coordinator.paused, "pauses active play safely")
 	_expect(not coordinator.run_current_stage().accepted, "rejects stage input while paused")
 	_expect(coordinator.toggle_pause().accepted and not coordinator.paused, "resumes active play")
+	var waiting: Dictionary = coordinator.advance_player_stage()
+	_expect(waiting.accepted and waiting.waiting_for_players, "presents the authored prompt")
+	var prompt_revision: int = coordinator.rules_session.pending_prompt.revision
+	_expect(
+		coordinator.rules_session.submit_response(1, ["force"], prompt_revision).accepted,
+		"accepts a controller-selected public prompt option",
+	)
+	_expect(coordinator.advance_player_stage().accepted, "continues after the inspected choice")
 	_expect(initial.seat_manager == coordinator.to_snapshot().seat_manager, "retains stable seats")
 
 

@@ -198,8 +198,9 @@ func _advance_player_flow() -> void:
 			if _coordinator.begin_tale().accepted:
 				_ensure_sandbox()
 				_sandbox.sync_seats(_seats.get_seats())
+				_coordinator.advance_player_stage()
 		"active_tale":
-			var result: Dictionary = _coordinator.run_current_stage()
+			var result: Dictionary = _coordinator.advance_player_stage()
 			if result.accepted and _coordinator.lifecycle == "terminal":
 				_destroy_sandbox()
 		"terminal":

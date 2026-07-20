@@ -24,6 +24,7 @@ var pawn_registry := PawnRegistry.new()
 var companion_bridge: CompanionBridge
 var lifecycle: String = "boot_title"
 var stage_index: int = -1
+var operation_index: int = 0
 var seed: int = 4706
 var requested_mode: String = "hidden_betrayer"
 var stage_history: Array[Dictionary] = []
@@ -161,6 +162,7 @@ func _commit_authorities(build: Dictionary, p_seed: int, p_requested_mode: Strin
 	seed = p_seed
 	requested_mode = p_requested_mode
 	stage_index = -1
+	operation_index = 0
 	stage_history.clear()
 	paused = false
 	last_director_decision.clear()
@@ -173,6 +175,7 @@ func begin_tale() -> Dictionary:
 	var result: Dictionary = _transition("briefing", "active_tale")
 	if result.accepted:
 		stage_index = 0
+		operation_index = 0
 		_emit_state()
 	return result
 
@@ -194,14 +197,41 @@ func run_current_stage() -> Dictionary:
 					% [stage.id, operation.type, result.get("reason", "rejected")]
 				)
 			)
-	stage_history.append(
-		{"index": stage_index, "stage_id": stage.id, "authority_digest": authority_digest()}
-	)
-	stage_index += 1
-	if stage_index >= manifest.stages.size():
-		_transition("active_tale", "terminal")
-	_emit_state()
-	return {"accepted": true, "stage_id": stage.id, "lifecycle": lifecycle}
+	return _finish_stage(stage)
+
+
+func advance_player_stage() -> Dictionary:
+	if paused:
+		return _reject("session_paused")
+	if lifecycle != "active_tale" or stage_index < 0 or stage_index >= manifest.stages.size():
+		return _reject("no_active_stage")
+	var stage: Dictionary = manifest.stages[stage_index]
+	var before: Dictionary = _authority_snapshot()
+	while operation_index < stage.operations.size():
+		var operation: Dictionary = stage.operations[operation_index]
+		if operation.type in ["submit_prompt", "submit_vote"]:
+			operation_index += 1
+			if not _pending_responses_complete():
+				_emit_state()
+				return {"accepted": true, "waiting_for_players": true, "stage_id": stage.id}
+			continue
+		if (
+			operation.type in ["resolve_prompt", "resolve_vote"]
+			and not _pending_responses_complete()
+		):
+			_emit_state()
+			return {"accepted": true, "waiting_for_players": true, "stage_id": stage.id}
+		var result: Dictionary = _apply_operation(operation)
+		if not result.get("accepted", false):
+			_restore_authorities(before)
+			return _reject(
+				(
+					"player_stage_operation_failed:%s:%s:%s"
+					% [stage.id, operation.type, result.get("reason", "rejected")]
+				)
+			)
+		operation_index += 1
+	return _finish_stage(stage)
 
 
 func review_ending() -> Dictionary:
@@ -255,6 +285,7 @@ func public_state() -> Dictionary:
 		"scenario_id": manifest.get("scenario_id", "lantern_house_vertical_slice"),
 		"lifecycle": lifecycle,
 		"stage_index": stage_index,
+		"operation_index": operation_index,
 		"stage": stage,
 		"seat_count": active_seats().size(),
 		"mode": role_session.mode_id if role_session != null else requested_mode,
@@ -278,6 +309,7 @@ func to_snapshot() -> Dictionary:
 		"scenario_version": manifest.get("scenario_version", 0),
 		"lifecycle": lifecycle,
 		"stage_index": stage_index,
+		"operation_index": operation_index,
 		"seed": seed,
 		"requested_mode": requested_mode,
 		"paused": paused,
@@ -313,6 +345,7 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 	)
 	lifecycle = snapshot.lifecycle
 	stage_index = snapshot.stage_index
+	operation_index = snapshot.operation_index
 	seed = snapshot.seed
 	requested_mode = snapshot.requested_mode
 	paused = snapshot.get("paused", false)
@@ -500,6 +533,7 @@ func _build_restore_candidate(snapshot: Dictionary) -> Dictionary:
 		snapshot.get("snapshot_version") != SNAPSHOT_VERSION
 		or not LIFECYCLES.has(snapshot.get("lifecycle", ""))
 		or not snapshot.get("stage_index") is int
+		or not snapshot.get("operation_index") is int
 		or not snapshot.get("seed") is int
 		or not snapshot.get("requested_mode") is String
 		or not snapshot.get("paused", false) is bool
@@ -566,6 +600,7 @@ func _clear_session_authorities() -> void:
 	companion_bridge = null
 	pawn_registry.clear()
 	stage_index = -1
+	operation_index = 0
 	stage_history.clear()
 	paused = false
 
@@ -573,6 +608,26 @@ func _clear_session_authorities() -> void:
 func _close_companion_room() -> void:
 	if companion_bridge != null and companion_bridge.room_open:
 		companion_bridge.close_room()
+
+
+func _finish_stage(stage: Dictionary) -> Dictionary:
+	stage_history.append(
+		{"index": stage_index, "stage_id": stage.id, "authority_digest": authority_digest()}
+	)
+	stage_index += 1
+	operation_index = 0
+	if stage_index >= manifest.stages.size():
+		_transition("active_tale", "terminal")
+	_emit_state()
+	return {"accepted": true, "stage_id": stage.id, "lifecycle": lifecycle}
+
+
+func _pending_responses_complete() -> bool:
+	if rules_session.pending_prompt.is_empty():
+		return false
+	var eligible: Array = rules_session.pending_prompt.get("eligible_seats", [])
+	var responses: Dictionary = rules_session.pending_prompt.get("responses", {})
+	return not eligible.is_empty() and responses.size() >= eligible.size()
 
 
 func _reject(reason: String) -> Dictionary:
