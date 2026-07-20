@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** July 19, 2026
-- **Decision scope:** v0.0.9.1 toolchain and test infrastructure only
+- **Decision scope:** v0.0.9.1 toolchain/test infrastructure and the bounded v0.0.9.2 quality-gate follow-up
 
 ## Context
 
@@ -37,3 +37,15 @@ The v0.0.9 project has broad deterministic coverage, but its Windows and Linux v
 - Python tool installation no longer permits transitive drift, and an empty working-tree diff can no longer make committed whitespace validation vacuously pass.
 - A dedicated lint/format cleanup is an explicit prerequisite to v0.1.0. That follow-up must not change gameplay behavior.
 - Export, deployment, physical-device certification, production Cloudflare work, and player-facing redesign remain separate future decisions.
+
+## v0.0.9.2 amendment: enforced first-party quality gates
+
+The separately bounded issue #28 follow-up resolves the inherited baseline without changing the reviewed toolchain. Protected `main` at `44a364dd90a134a9ee91c3485df5435d4dbc80e1` reproduced 67 first-party files, 1,235 lint findings (1,210 line-length, 17 return-count, three public-method-count, three argument-count, one unused argument, and one class-definition-order finding), and 64 files failing `gdformat --check`. The earlier 66-file figure describes the pre-correction v0.0.9.1 inventory before two added first-party GUT tests were already canonical; 64 is the inherited issue #28 starting state.
+
+The decision is amended as follows:
+
+1. Pinned `gdformat` 4.5.0 canonicalizes the explicit first-party inventory in a formatter-only commit. Targeted typed helpers, inherited contract adapters, and deterministic read-only projection/serialization splits resolve the non-format findings while preserving public method names, signatures, authored identifiers, ordering, native authority, RNG behavior, and state-transition semantics.
+2. `gdlint` and `gdformat --check` are now required zero-finding gates. Both consume the same committed inventory, run with `set -euo pipefail`, preserve their real exit codes through `tee`, and never rewrite source. The `gdscript-quality` artifact contains the exact inventory and both clean outputs.
+3. The repository validator rejects informational or masked execution, `set +e`, broadened exclusions, changed inventory construction, source-rewriting `gdformat`, duplicate/omitted quality commands, or removal of the enforced artifact contract.
+4. The direct and hash-locked Python graph, Godot/GUT pins, immutable action pins, renderer, viewport, tests, simulations, native E2E, companion boundaries, and repository validation remain unchanged. One focused GUT regression protects the role projection split, bringing the suite to six tests and 24 assertions.
+5. v0.1.0 remains blocked until this draft release is independently reviewed and accepted. This amendment does not authorize gameplay, export, deployment, production Cloudflare, visual redesign, balance, or hardware-certification work.

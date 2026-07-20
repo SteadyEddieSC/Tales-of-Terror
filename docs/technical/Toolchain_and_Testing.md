@@ -107,7 +107,7 @@ New-Item -ItemType Directory -Force game\test-results | Out-Null
 
 The committed `.gutconfig.json` supplies the test directory, naming convention, and deterministic JUnit filename. `game/test-results` is ignored. GUT's nonzero exit code is not masked in CI; the JUnit upload uses `if: always()` so a failing report is retained without converting the job to success.
 
-## First-party GDScript quality baseline
+## Enforced first-party GDScript quality gates
 
 Install the exact tool pin:
 
@@ -123,21 +123,24 @@ $files = Get-ChildItem game -Recurse -File -Filter *.gd |
 & .\.venv\Scripts\gdformat.exe --check @files
 ```
 
-The same explicit inclusion rule runs in Linux CI. No `.gdlintrc` weakens the defaults, vendored GUT is excluded, and `gdformat` only checks. Initial findings are categorized as follows:
+The same explicit inclusion rule runs in Linux CI. No `.gdlintrc` weakens the defaults, vendored GUT and `.godot` cache files are the only path exclusions, and CI invokes `gdformat` only with `--check`. The v0.0.9.2 cleanup retained 67 files and moved the inherited state to enforced zero findings:
 
-| Category | Initial result | Decision |
+| Category | Inherited result | v0.0.9.2 result |
 | --- | --- | --- |
-| Correctness/typed-GDScript | No parser or typed-syntax blocker reported | Preserve typed standards; investigate any future correctness finding directly |
-| Targeted style/complexity | 17 `max-returns`, 3 argument-count, 3 public-method-count, 1 unused-argument, 1 class-order finding | Review in a bounded cleanup, not alongside gameplay |
-| Line-length/style | 1,210 findings | Large repository-wide baseline; informational artifact |
-| Formatter-only | 66 of 67 initial files would change | Large baseline; no mass formatting in v0.0.9.1 |
-| Parser/tool limitations | None observed with gdtoolkit 4.5.0 across the full first-party tree | No suppression or fallback version needed |
+| First-party inventory | 67 files | 67 files; same construction and reviewed exclusions |
+| `max-line-length` | 1,210 | 0 |
+| `max-returns` | 17 | 0 |
+| `max-public-methods` | 3 | 0; public contracts preserved through typed inherited adapters |
+| `function-arguments-number` | 3 | 0 |
+| `unused-argument` | 1 | 0; callback signature retained with Godot's underscore convention |
+| class-definition order | 1 | 0 |
+| `gdformat --check` | 64 files differed | 0 files differ |
 
-Because the baseline is large, both steps are informational in this release. Their full outputs and exit codes are uploaded as `gdscript-quality-baselines`. v0.1.0 remains blocked until separately bounded cleanup makes the checks enforceable.
+Both commands run with `set -euo pipefail`; `tee` records output without masking a nonzero tool status. The `gdscript-quality` artifact contains `first-party-files.txt`, `gdlint.txt`, and `gdformat.txt`, including clean exit-code records. `tools/validate_toolchain.py` rejects warning-only execution, `set +e`, broadened exclusions, inventory changes, source-rewriting `gdformat`, and artifact removal. A future finding or format difference fails the Godot job.
 
 ## GitHub Actions orchestration
 
-The existing Godot workflow/job names remain unchanged for branch-policy compatibility. The Godot job performs checksum verification, hash-enforced Python/tool installation plus `pip check` and `pip freeze --all`, informational lint/format capture, import, main smoke, every legacy test and simulation, locked companion dependency installation, the genuine local native-authority E2E, GUT, and JUnit upload. Companion and repository workflows retain their existing TypeScript, browser, service, audit, build, privacy, secret, JSON, LFS, provenance, oversized-file, title, and whitespace checks.
+The existing Godot workflow/job names remain unchanged for branch-policy compatibility. The Godot job performs checksum verification, hash-enforced Python/tool installation plus `pip check` and `pip freeze --all`, enforced lint/format validation and evidence capture, import, main smoke, every legacy test and simulation, locked companion dependency installation, the genuine local native-authority E2E, GUT, and JUnit upload. Companion and repository workflows retain their existing TypeScript, browser, service, audit, build, privacy, secret, JSON, LFS, provenance, oversized-file, title, and whitespace checks.
 
 Repository checkout uses `fetch-depth: 0` so whitespace validation inspects committed work. Pull requests run `git diff --check` on `pull_request.base.sha...pull_request.head.sha`; pushes to `main` compare `github.event.before` with `github.sha`. An all-zero initial-push `before` value checks only the pushed commit against its first parent, or the empty tree for a root commit. Missing or unavailable event SHAs fail closed. The pathspec excludes only `game/addons/gut/**`; first-party files are never exempt.
 

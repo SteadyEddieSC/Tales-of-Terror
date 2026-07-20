@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.9.2 - GDScript Quality Gate Cleanup
+
+- Canonically formatted the explicit 67-file first-party GDScript inventory with pinned `gdformat` 4.5.0, then resolved the inherited 1,235 lint findings with bounded typed, behavior-preserving corrections and one focused role-projection regression.
+- Converted `gdlint` and `gdformat --check` from informational baselines to fail-closed zero-finding CI gates over the unchanged inventory/exclusions, retained inspectable quality artifacts, and hardened repository validation against masking, source rewriting, or inventory drift.
+- Preserved gameplay, public method names and signatures, native authority, deterministic RNG/state transitions, companion behavior/privacy, renderer, viewport, visual design, assets, dependencies, export, and deployment behavior. v0.1.0 remains blocked pending independent acceptance.
+
 ## v0.0.9.1 - Toolchain & Test Infrastructure Hardening
 
 - Upgraded local Windows and Linux CI validation to checksum-pinned official Godot 4.7.1-stable while preserving the Compatibility renderer, 960×540 logical viewport, typed GDScript, and native gameplay authority.
