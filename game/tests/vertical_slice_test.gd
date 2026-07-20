@@ -1,6 +1,7 @@
 extends SceneTree
 
 const MANIFEST_PATH: String = "res://data/scenarios/lantern_house_vertical_slice_v1.json"
+const MAIN_SCRIPT: Script = preload("res://src/main/main.gd")
 
 var _failures: int = 0
 
@@ -241,6 +242,37 @@ func _test_manifest_operation_sequence_negatives() -> void:
 	var outcome_outside_ending: Dictionary = _manifest_copy()
 	outcome_outside_ending.stages[0].operations.append({"type": "resolve_outcomes"})
 	cases.append({"manifest": outcome_outside_ending, "label": "outcome outside ending"})
+	var wrong_threshold_event: Dictionary = _manifest_copy()
+	wrong_threshold_event.stages[0].operations[0].event_id = "gallery_council"
+	cases.append({"manifest": wrong_threshold_event, "label": "wrong valid Threshold event"})
+	var wrong_prompt_option: Dictionary = _manifest_copy()
+	wrong_prompt_option.stages[0].operations[2].option_id = "force"
+	cases.append({"manifest": wrong_prompt_option, "label": "wrong valid Threshold option"})
+	var wrong_threshold_fixture: Dictionary = _manifest_copy()
+	wrong_threshold_fixture.stages[0].operations[5].fixture = "secure_house"
+	cases.append({"manifest": wrong_threshold_fixture, "label": "wrong valid Threshold fixture"})
+	var wrong_reckoning_fixture: Dictionary = _manifest_copy()
+	wrong_reckoning_fixture.stages[2].operations[0].fixture = "reveal_clue"
+	cases.append({"manifest": wrong_reckoning_fixture, "label": "wrong valid Reckoning fixture"})
+	var wrong_reckoning_card: Dictionary = _manifest_copy()
+	wrong_reckoning_card.stages[2].operations[1].card_id = "iron_resolve"
+	cases.append({"manifest": wrong_reckoning_card, "label": "wrong valid Reckoning card"})
+	var swapped_vote_options: Dictionary = _manifest_copy()
+	swapped_vote_options.stages[1].operations[1].odd_option = "vault"
+	swapped_vote_options.stages[1].operations[1].even_option = "gallery"
+	cases.append({"manifest": swapped_vote_options, "label": "swapped valid vote options"})
+	var wrong_afterlife_transition: Dictionary = _manifest_copy()
+	wrong_afterlife_transition.stages[3].operations[0].selector_tag = "afterlife"
+	wrong_afterlife_transition.stages[3].operations[0].trigger = "guardian_path"
+	cases.append(
+		{"manifest": wrong_afterlife_transition, "label": "wrong valid afterlife transition"}
+	)
+	var wrong_afterlife_action: Dictionary = _manifest_copy()
+	wrong_afterlife_action.stages[3].operations[1].action_tag = "guardian"
+	cases.append({"manifest": wrong_afterlife_action, "label": "wrong valid afterlife action"})
+	var wrong_ending_fixture: Dictionary = _manifest_copy()
+	wrong_ending_fixture.stages[4].operations[0].fixture = "reveal_clue"
+	cases.append({"manifest": wrong_ending_fixture, "label": "wrong valid Ending fixture"})
 	for test_case: Dictionary in cases:
 		_expect(
 			not _manifest_failures(test_case.manifest).is_empty(),
@@ -562,6 +594,46 @@ func _test_resumable_snapshot_boundaries() -> void:
 	var pending_at_zero: Dictionary = _initialized_coordinator(3, 4706).to_snapshot()
 	pending_at_zero.rules.pending_prompt = prompt_wait.rules.pending_prompt.duplicate(true)
 	cases.append({"snapshot": pending_at_zero, "label": "pending wait at operation zero"})
+	var changed_prompt_scope: Dictionary = prompt_wait.duplicate(true)
+	changed_prompt_scope.rules.pending_prompt.scope = "all"
+	cases.append({"snapshot": changed_prompt_scope, "label": "changed prompt scope"})
+	var changed_prompt_title: Dictionary = prompt_wait.duplicate(true)
+	changed_prompt_title.rules.pending_prompt.title = "A different authored title"
+	cases.append({"snapshot": changed_prompt_title, "label": "changed prompt title"})
+	var changed_prompt_text: Dictionary = prompt_wait.duplicate(true)
+	changed_prompt_text.rules.pending_prompt.options[0].text = "A different choice"
+	cases.append({"snapshot": changed_prompt_text, "label": "same-ID changed prompt text"})
+	var changed_prompt_symbol: Dictionary = prompt_wait.duplicate(true)
+	changed_prompt_symbol.rules.pending_prompt.options[0].symbol = "!"
+	cases.append({"snapshot": changed_prompt_symbol, "label": "same-ID changed prompt symbol"})
+	var injected_prompt_effect: Dictionary = prompt_wait.duplicate(true)
+	injected_prompt_effect.rules.pending_prompt.options[0]["effects"] = [
+		{"type": "set_flag", "flag_id": "injected_prompt_effect", "value": true}
+	]
+	cases.append({"snapshot": injected_prompt_effect, "label": "same-ID injected prompt effect"})
+	var extra_prompt_key: Dictionary = prompt_wait.duplicate(true)
+	extra_prompt_key.rules.pending_prompt["unreviewed"] = true
+	cases.append({"snapshot": extra_prompt_key, "label": "unknown pending prompt key"})
+	var changed_vote_effect: Dictionary = vote_wait.duplicate(true)
+	changed_vote_effect.rules.pending_prompt.options[0].effects = [
+		{"type": "set_flag", "flag_id": "wrong_vote_effect", "value": true}
+	]
+	cases.append({"snapshot": changed_vote_effect, "label": "same-ID changed vote effect"})
+	var changed_vote_rule: Dictionary = vote_wait.duplicate(true)
+	changed_vote_rule.rules.pending_prompt.rule = "majority"
+	changed_vote_rule.rules.active_vote.rule = "majority"
+	cases.append({"snapshot": changed_vote_rule, "label": "changed vote rule"})
+	var changed_vote_quorum: Dictionary = vote_wait.duplicate(true)
+	changed_vote_quorum.rules.pending_prompt.quorum = 2
+	changed_vote_quorum.rules.active_vote.quorum = 2
+	cases.append({"snapshot": changed_vote_quorum, "label": "changed vote quorum"})
+	var changed_vote_tie: Dictionary = vote_wait.duplicate(true)
+	changed_vote_tie.rules.pending_prompt.tie_policy = "first_submitted"
+	changed_vote_tie.rules.active_vote.tie_policy = "first_submitted"
+	cases.append({"snapshot": changed_vote_tie, "label": "changed vote tie policy"})
+	var changed_vote_source: Dictionary = vote_wait.duplicate(true)
+	changed_vote_source.rules.pending_prompt.source_id = "threshold_whisper"
+	cases.append({"snapshot": changed_vote_source, "label": "changed vote source"})
 	var receiver := VerticalSliceCoordinator.new()
 	for test_case: Dictionary in cases:
 		var stable: Dictionary = receiver.to_snapshot()
@@ -584,6 +656,20 @@ func _test_resumable_snapshot_boundaries() -> void:
 	_expect(
 		resumed.stage_index == 1 and resumed.stage_history.size() == 1,
 		"completes the restored stage exactly once",
+	)
+	var resumed_vote := VerticalSliceCoordinator.new()
+	_expect(resumed_vote.restore_snapshot(vote_wait).accepted, "restores a real vote wait")
+	var vote_revision: int = resumed_vote.rules_session.pending_prompt.revision
+	for seat: int in resumed_vote.active_seats():
+		var option: String = "gallery" if seat % 2 == 1 else "vault"
+		_expect(
+			resumed_vote.rules_session.submit_response(seat, [option], vote_revision).accepted,
+			"accepts vote response after wait restore for Seat %d" % seat,
+		)
+	_expect(resumed_vote.advance_player_stage().accepted, "completes the restored vote stage")
+	_expect(
+		resumed_vote.stage_index == 2 and resumed_vote.stage_history.size() == 2,
+		"completes the restored vote stage exactly once",
 	)
 
 
@@ -645,6 +731,39 @@ func _test_protected_reset_paths() -> void:
 		"presents the title after the protected reset",
 	)
 	slice_view.free()
+	var main = MAIN_SCRIPT.new()
+	var integration := _initialized_coordinator(3, 9017)
+	var input_lab := InputDisplayLab.new()
+	input_lab._ready()
+	var integration_view := VerticalSliceView.new()
+	integration_view._ready()
+	var sandbox := ExplorationSandbox.new()
+	main.set("_coordinator", integration)
+	main.set("_seats", integration.seat_manager)
+	main.set("_ui", input_lab)
+	main.set("_slice_view", integration_view)
+	main.set("_sandbox", sandbox)
+	main.set("_developer_lab", true)
+	input_lab.visible = true
+	integration_view.present(integration.public_state(), integration.seat_manager.get_seats(), true)
+	main.call("_perform_protected_reset")
+	var integration_title: Label = integration_view.get("_title")
+	_expect(not main.get("_developer_lab"), "clears developer-lab mode during protected reset")
+	_expect(not input_lab.visible, "hides InputDisplayLab during protected reset")
+	_expect(main.get("_sandbox") == null, "destroys the sandbox during protected reset")
+	_expect(
+		integration_view.visible and integration_title.text == "TERROR TURN",
+		"shows the normal title after resetting from developer-lab presentation",
+	)
+	_expect(_is_clean_title(integration), "keeps developer-lab reset authority state coherent")
+	integration.seat_manager.join_device(8, "post-lab-reset-pad", "Fresh Fixture Pad")
+	_expect(
+		integration.enter_lobby().accepted and integration.lifecycle == "lobby",
+		"starts a fresh lobby after developer-lab protected reset",
+	)
+	input_lab.free()
+	integration_view.free()
+	main.free()
 
 
 func _test_atomic_rematch_and_restore_room_cleanup() -> void:

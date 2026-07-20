@@ -221,12 +221,15 @@ func _cancel_player_flow(device_id: int) -> void:
 
 
 func _perform_protected_reset() -> void:
+	_developer_lab = false
+	_ui.visible = false
 	_coordinator.protected_reset_to_title()
 	_reset_held = 0.0
 	_ui.present_reset_progress(0.0)
 	if is_instance_valid(_sandbox):
-		_sandbox.present_reset_progress(0.0)
-	_refresh_slice_view()
+		_destroy_sandbox()
+	else:
+		_refresh_slice_view()
 
 
 func _on_lifecycle_changed(_state: Dictionary) -> void:

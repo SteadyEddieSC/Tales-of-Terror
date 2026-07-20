@@ -161,16 +161,36 @@ static func _pending_wait_matches(boundary: Dictionary, session: RulesSession) -
 	):
 		return false
 	var definition: Dictionary = _wait_definition(boundary, session)
-	if definition.is_empty() or not _wait_kind_matches(boundary, session, definition):
+	if definition.is_empty():
 		return false
 	var expected_eligible: Array[int] = _expected_eligible(boundary, session, definition)
-	if pending.get("eligible_seats", []) != expected_eligible:
+	var expected_pending: Dictionary = _expected_pending(
+		boundary, definition, session.phase_revision, expected_eligible, pending.get("responses")
+	)
+	if pending != expected_pending:
 		return false
-	if _option_ids(pending.get("options", [])) != _option_ids(definition.get("options", [])):
-		return false
-	if not _selection_policy_matches(boundary, pending, definition):
+	if not _wait_kind_matches(boundary, session, definition):
 		return false
 	return _responses_are_coherent(pending, expected_eligible)
+
+
+static func _expected_pending(
+	boundary: Dictionary,
+	definition: Dictionary,
+	revision: int,
+	eligible: Array[int],
+	responses: Variant,
+) -> Dictionary:
+	var expected: Dictionary = definition.duplicate(true)
+	if boundary.kind == "vote":
+		expected["min_selections"] = 0 if definition.get("allow_abstain", false) else 1
+		expected["max_selections"] = 1
+		expected["allow_pass"] = definition.get("allow_abstain", false)
+	expected["revision"] = revision
+	expected["eligible_seats"] = eligible
+	expected["responses"] = responses
+	expected["source_id"] = boundary.source_id
+	return expected
 
 
 static func _wait_definition(boundary: Dictionary, session: RulesSession) -> Dictionary:
@@ -193,16 +213,16 @@ static func _wait_kind_matches(
 	boundary: Dictionary, session: RulesSession, definition: Dictionary
 ) -> bool:
 	if boundary.kind == "prompt":
-		return session.active_vote.is_empty() and definition.get("scope", "") == "single"
+		return session.active_vote.is_empty()
 	var vote: Dictionary = session.active_vote
-	return (
-		boundary.kind == "vote"
-		and vote.get("id", "") == boundary.prompt_id
-		and vote.get("revision") == session.phase_revision
-		and vote.get("rule", "") == definition.get("rule", "")
-		and vote.get("quorum") == definition.get("quorum")
-		and vote.get("tie_policy", "") == definition.get("tie_policy", "")
-	)
+	var expected_vote: Dictionary = {
+		"id": boundary.prompt_id,
+		"rule": definition.get("rule", ""),
+		"quorum": definition.get("quorum"),
+		"tie_policy": definition.get("tie_policy", ""),
+		"revision": session.phase_revision,
+	}
+	return boundary.kind == "vote" and vote == expected_vote
 
 
 static func _expected_eligible(
@@ -224,23 +244,6 @@ static func _option_ids(value: Variant) -> Array[String]:
 			return []
 		ids.append(option.id)
 	return ids
-
-
-static func _selection_policy_matches(
-	boundary: Dictionary, pending: Dictionary, definition: Dictionary
-) -> bool:
-	var expected_minimum: int = definition.get("min_selections", 0)
-	var expected_maximum: int = definition.get("max_selections", 1)
-	var expected_pass: bool = definition.get("allow_pass", false)
-	if boundary.kind == "vote":
-		expected_minimum = 0 if definition.get("allow_abstain", false) else 1
-		expected_maximum = 1
-		expected_pass = definition.get("allow_abstain", false)
-	return (
-		pending.get("min_selections") == expected_minimum
-		and pending.get("max_selections") == expected_maximum
-		and pending.get("allow_pass") == expected_pass
-	)
 
 
 static func _responses_are_coherent(pending: Dictionary, eligible: Array[int]) -> bool:

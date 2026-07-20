@@ -1,5 +1,7 @@
 extends GutTest
 
+const MAIN_SCRIPT: Script = preload("res://src/main/main.gd")
+
 
 func test_coordinator_rejects_out_of_order_lifecycle_without_mutation() -> void:
 	var coordinator := VerticalSliceCoordinator.new()
@@ -106,3 +108,69 @@ func test_real_prompt_wait_restores_and_completes_once() -> void:
 	assert_true(restored.advance_player_stage().accepted)
 	assert_eq(restored.stage_index, 1)
 	assert_eq(restored.stage_history.size(), 1)
+
+
+func test_protected_reset_clears_developer_lab_presentation() -> void:
+	var coordinator := VerticalSliceCoordinator.new()
+	coordinator.seat_manager.join_device(-1, SeatManager.KEYBOARD_IDENTITY, "Keyboard")
+	coordinator.enter_lobby()
+	coordinator.confirm_roster()
+	coordinator.initialize_session()
+	coordinator.begin_tale()
+	var main = MAIN_SCRIPT.new()
+	var input_lab := InputDisplayLab.new()
+	input_lab._ready()
+	var view := VerticalSliceView.new()
+	view._ready()
+	main.set("_coordinator", coordinator)
+	main.set("_seats", coordinator.seat_manager)
+	main.set("_ui", input_lab)
+	main.set("_slice_view", view)
+	main.set("_developer_lab", true)
+	input_lab.visible = true
+	main.call("_perform_protected_reset")
+	var title: Label = view.get("_title")
+	assert_false(main.get("_developer_lab"))
+	assert_false(input_lab.visible)
+	assert_true(view.visible)
+	assert_eq(title.text, "TERROR TURN")
+	assert_eq(coordinator.lifecycle, "boot_title")
+	assert_true(coordinator.active_seats().is_empty())
+	assert_null(coordinator.rules_session)
+	input_lab.free()
+	view.free()
+	main.free()
+
+
+func test_resumable_prompt_requires_exact_authored_content() -> void:
+	var coordinator := VerticalSliceCoordinator.new()
+	coordinator.seat_manager.join_device(-1, SeatManager.KEYBOARD_IDENTITY, "Keyboard")
+	coordinator.enter_lobby()
+	coordinator.confirm_roster()
+	coordinator.initialize_session()
+	coordinator.begin_tale()
+	assert_true(coordinator.advance_player_stage().waiting_for_players)
+	var changed: Dictionary = coordinator.to_snapshot()
+	changed.rules.pending_prompt.options[0].text = "Changed under the same option ID"
+	var receiver := VerticalSliceCoordinator.new()
+	var stable: Dictionary = receiver.to_snapshot()
+	assert_false(receiver.restore_snapshot(changed).accepted)
+	assert_eq(receiver.to_snapshot(), stable)
+
+
+func test_manifest_v1_rejects_valid_but_wrong_operation_data() -> void:
+	var manifest: Dictionary = VerticalSliceManifest.load_file(
+		VerticalSliceCoordinator.MANIFEST_PATH
+	)
+	manifest.stages[0].operations[0].event_id = "gallery_council"
+	var failures: PackedStringArray = (
+		VerticalSliceManifest
+		. validate(
+			manifest,
+			LanternHouseBoardDefinition.new(),
+			LanternHouseRulesContent.new(),
+			LanternHouseDirectorContent.new(),
+			LanternHouseSocialContent.new(),
+		)
+	)
+	assert_false(failures.is_empty())

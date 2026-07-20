@@ -83,17 +83,36 @@ const STAGE_CONDITION_POLICY: Dictionary = {
 const STAGE_OPERATION_POLICY: Dictionary = {
 	"threshold":
 	[
-		"queue_event",
-		"resolve_event",
-		"submit_prompt",
-		"resolve_prompt",
-		"resolve_event",
-		"apply_effects",
+		{"type": "queue_event", "event_id": "threshold_whisper"},
+		{"type": "resolve_event"},
+		{"type": "submit_prompt", "option_id": "listen"},
+		{"type": "resolve_prompt"},
+		{"type": "resolve_event"},
+		{"type": "apply_effects", "fixture": "reveal_clue"},
 	],
-	"council": ["open_vote", "submit_vote", "resolve_vote"],
-	"reckoning": ["apply_effects", "play_card", "resolve_check", "director_evaluate"],
-	"afterlife": ["role_transition", "role_action"],
-	"ending": ["apply_effects", "resolve_outcomes"],
+	"council":
+	[
+		{"type": "open_vote"},
+		{"type": "submit_vote", "odd_option": "gallery", "even_option": "vault"},
+		{"type": "resolve_vote"},
+	],
+	"reckoning":
+	[
+		{"type": "apply_effects", "fixture": "grant_flame_and_mist"},
+		{"type": "play_card", "card_id": "steady_flame"},
+		{"type": "resolve_check", "check_id": "courage"},
+		{"type": "director_evaluate"},
+	],
+	"afterlife":
+	[
+		{"type": "role_transition", "selector_tag": "living", "trigger": "defeat"},
+		{"type": "role_action", "selector_tag": "afterlife", "action_tag": "afterlife_support"},
+	],
+	"ending":
+	[
+		{"type": "apply_effects", "fixture": "secure_house"},
+		{"type": "resolve_outcomes"},
+	],
 }
 const RESUMABLE_BOUNDARY_POLICY: Dictionary = {
 	"threshold":
@@ -345,11 +364,8 @@ static func _validate_stage_operation_policy(
 ) -> void:
 	if not value is Array or not STAGE_OPERATION_POLICY.has(stage_id):
 		return
-	var actual: Array[String] = []
-	for operation: Variant in value:
-		actual.append(operation.get("type", "") if operation is Dictionary else "")
 	var expected: Array = STAGE_OPERATION_POLICY[stage_id]
-	if actual != expected:
+	if value != expected:
 		failures.append("stage '%s' violates manifest v1 operation policy" % stage_id)
 
 
