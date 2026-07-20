@@ -27,11 +27,25 @@ var last_intervention_step: int = -999
 var last_no_op_reason: String = "not_evaluated"
 var last_application: Dictionary = {}
 
-func _init(p_content: DirectorContent = null, profile_id: String = "standard", session_seed: int = 1, rules_content: RulesContent = null, board_definition: BoardDefinition = null) -> void:
+
+func _init(
+	p_content: DirectorContent = null,
+	profile_id: String = "standard",
+	session_seed: int = 1,
+	rules_content: RulesContent = null,
+	board_definition: BoardDefinition = null
+) -> void:
 	if p_content != null:
 		initialize(p_content, profile_id, session_seed, rules_content, board_definition)
 
-func initialize(p_content: DirectorContent, profile_id: String, session_seed: int, rules_content: RulesContent, board_definition: BoardDefinition) -> PackedStringArray:
+
+func initialize(
+	p_content: DirectorContent,
+	profile_id: String,
+	session_seed: int,
+	rules_content: RulesContent,
+	board_definition: BoardDefinition
+) -> PackedStringArray:
 	var failures: PackedStringArray = p_content.validate(rules_content, board_definition)
 	var selected_profile: Dictionary = p_content.profile_by_id(profile_id)
 	if selected_profile.is_empty():
@@ -44,12 +58,14 @@ func initialize(p_content: DirectorContent, profile_id: String, session_seed: in
 	budgets = profile.budgets.duplicate(true)
 	return failures
 
+
 static func derive_seed(session_seed: int, profile_id: String) -> int:
 	var value: int = absi(session_seed) % DeterministicRng.MODULUS
 	var salted: String = "%s:%s" % [DIRECTOR_SALT, profile_id]
 	for index: int in salted.length():
 		value = int((value * 131 + salted.unicode_at(index)) % DeterministicRng.MODULUS)
 	return 1 if value == 0 else value
+
 
 func evaluate(telemetry: Dictionary) -> Dictionary:
 	if content == null or profile.is_empty() or rng == null:
@@ -67,19 +83,34 @@ func evaluate(telemetry: Dictionary) -> Dictionary:
 	ordered.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.id < b.id)
 	for candidate: Dictionary in ordered:
 		if candidate.category == "no_op":
-			evaluations.append({"candidate_id": candidate.id, "name": candidate.name, "category": "no_op", "eligible": true, "rejection_reasons": PackedStringArray(), "target_seat": 0, "components": {"fallback": 0}, "final_score": 0})
+			evaluations.append(
+				{
+					"candidate_id": candidate.id,
+					"name": candidate.name,
+					"category": "no_op",
+					"eligible": true,
+					"rejection_reasons": PackedStringArray(),
+					"target_seat": 0,
+					"components": {"fallback": 0},
+					"final_score": 0
+				}
+			)
 			continue
 		var evaluation: Dictionary = _evaluate_candidate(candidate, telemetry, mercy_active)
 		evaluations.append(evaluation)
 		if evaluation.eligible and evaluation.final_score > 0:
 			eligible.append(evaluation)
 	var selected: Dictionary = {}
-	var tie_break: Dictionary = {"method": "highest_score_then_director_rng", "contenders": [], "draw": -1}
+	var tie_break: Dictionary = {
+		"method": "highest_score_then_director_rng", "contenders": [], "draw": -1
+	}
 	var no_op_reason: String = ""
 	if profile.mode == "off":
 		no_op_reason = "profile_off"
 	elif profile.mode == "fixed":
-		var fixed: Array[Dictionary] = eligible.filter(func(value: Dictionary) -> bool: return value.category == "ambient")
+		var fixed: Array[Dictionary] = eligible.filter(
+			func(value: Dictionary) -> bool: return value.category == "ambient"
+		)
 		if not fixed.is_empty():
 			selected = fixed[0]
 		else:
@@ -87,9 +118,15 @@ func evaluate(telemetry: Dictionary) -> Dictionary:
 	elif eligible.is_empty():
 		no_op_reason = "no_legal_positive_candidate"
 	else:
-		var high_score: int = eligible.reduce(func(best: int, value: Dictionary) -> int: return maxi(best, value.final_score), -1)
-		var tied: Array[Dictionary] = eligible.filter(func(value: Dictionary) -> bool: return value.final_score == high_score)
-		tie_break.contenders = tied.map(func(value: Dictionary) -> String: return value.candidate_id)
+		var high_score: int = eligible.reduce(
+			func(best: int, value: Dictionary) -> int: return maxi(best, value.final_score), -1
+		)
+		var tied: Array[Dictionary] = eligible.filter(
+			func(value: Dictionary) -> bool: return value.final_score == high_score
+		)
+		tie_break.contenders = tied.map(
+			func(value: Dictionary) -> String: return value.candidate_id
+		)
 		if tied.size() == 1:
 			selected = tied[0]
 		else:
@@ -132,8 +169,13 @@ func evaluate(telemetry: Dictionary) -> Dictionary:
 	}
 	return decision
 
+
 func record_application(decision: Dictionary, result: Dictionary) -> Dictionary:
-	if decision.get("decision_version") != DECISION_VERSION or decision.get("evaluation_step") != evaluation_step or decision.get("director_revision") != revision:
+	if (
+		decision.get("decision_version") != DECISION_VERSION
+		or decision.get("evaluation_step") != evaluation_step
+		or decision.get("director_revision") != revision
+	):
 		return {"accepted": false, "reason": "stale_or_malformed_decision"}
 	var accepted: bool = result.get("accepted", false)
 	var candidate: Dictionary = content.candidate_by_id(decision.get("selected_candidate_id", ""))
@@ -147,7 +189,9 @@ func record_application(decision: Dictionary, result: Dictionary) -> Dictionary:
 			budgets.intervention = maxi(0, budgets.get("intervention", 0) - candidate.budget_cost)
 		if candidate.category != "no_op":
 			last_intervention_step = evaluation_step
-			candidate_cooldowns[candidate.id] = evaluation_step + candidate.cooldown + profile.global_cooldown
+			candidate_cooldowns[candidate.id] = (
+				evaluation_step + candidate.cooldown + profile.global_cooldown
+			)
 			for tag: String in candidate.tags:
 				tag_cooldowns[tag] = evaluation_step + profile.tag_cooldown
 		if candidate.pressure_impact > 0:
@@ -159,8 +203,17 @@ func record_application(decision: Dictionary, result: Dictionary) -> Dictionary:
 			relief_momentum = clampi(relief_momentum + candidate.relief_impact, 0, 100)
 			pressure_momentum = maxi(0, pressure_momentum - candidate.relief_impact / 2)
 		if decision.target_seat > 0 and candidate.target_scope == "active_negative":
-			target_history.append({"step": evaluation_step, "seat": decision.target_seat, "negative": true})
-		recent_decisions.append({"step": evaluation_step, "candidate_id": candidate.id, "tags": candidate.tags.duplicate(), "pressure_impact": candidate.pressure_impact})
+			target_history.append(
+				{"step": evaluation_step, "seat": decision.target_seat, "negative": true}
+			)
+		recent_decisions.append(
+			{
+				"step": evaluation_step,
+				"candidate_id": candidate.id,
+				"tags": candidate.tags.duplicate(),
+				"pressure_impact": candidate.pressure_impact
+			}
+		)
 		_trim_runtime_history()
 	last_application = {
 		"accepted": accepted,
@@ -175,7 +228,12 @@ func record_application(decision: Dictionary, result: Dictionary) -> Dictionary:
 	audit_history.append(audit)
 	if audit_history.size() > AUDIT_LIMIT:
 		audit_history.pop_front()
-	return {"accepted": accepted, "director_revision": revision, "application": last_application.duplicate(true)}
+	return {
+		"accepted": accepted,
+		"director_revision": revision,
+		"application": last_application.duplicate(true)
+	}
+
 
 func to_snapshot() -> Dictionary:
 	return {
@@ -203,6 +261,7 @@ func to_snapshot() -> Dictionary:
 		"audit_history": audit_history.duplicate(true),
 		"rng": rng.to_snapshot(),
 	}
+
 
 func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 	snapshot = _normalize_json_numbers(snapshot)
@@ -232,28 +291,49 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 	rng = rng_probe
 	return {"accepted": true}
 
+
 func diagnostics_snapshot() -> Dictionary:
 	return {
-		"content": "%s v%d" % [content.content_id, content.content_version], "profile": profile.id,
-		"profile_name": profile.display_name, "revision": revision, "rng_counter": rng.counter,
-		"act": pacing_act, "target_tension": target_tension, "estimated_tension": estimated_tension,
-		"pressure_momentum": pressure_momentum, "relief_momentum": relief_momentum,
-		"budgets": budgets.duplicate(true), "candidate_cooldowns": candidate_cooldowns.duplicate(true),
-		"tag_cooldowns": tag_cooldowns.duplicate(true), "target_ledger": target_history.duplicate(true),
-		"recovery_until_step": recovery_until_step, "last_application": last_application.duplicate(true),
-		"last_no_op_reason": last_no_op_reason, "audit_history": audit_history.duplicate(true),
+		"content": "%s v%d" % [content.content_id, content.content_version],
+		"profile": profile.id,
+		"profile_name": profile.display_name,
+		"revision": revision,
+		"rng_counter": rng.counter,
+		"act": pacing_act,
+		"target_tension": target_tension,
+		"estimated_tension": estimated_tension,
+		"pressure_momentum": pressure_momentum,
+		"relief_momentum": relief_momentum,
+		"budgets": budgets.duplicate(true),
+		"candidate_cooldowns": candidate_cooldowns.duplicate(true),
+		"tag_cooldowns": tag_cooldowns.duplicate(true),
+		"target_ledger": target_history.duplicate(true),
+		"recovery_until_step": recovery_until_step,
+		"last_application": last_application.duplicate(true),
+		"last_no_op_reason": last_no_op_reason,
+		"audit_history": audit_history.duplicate(true),
 	}
+
 
 func companion_public_view() -> Dictionary:
 	return {
-		"view_version": 1, "revision": revision, "profile_label": profile.get("display_name", "Director"),
-		"pacing_act": pacing_act.capitalize(), "status": "Active" if profile.get("mode", "") != "off" else "Off",
+		"view_version": 1,
+		"revision": revision,
+		"profile_label": profile.get("display_name", "Director"),
+		"pacing_act": pacing_act.capitalize(),
+		"status": "Active" if profile.get("mode", "") != "off" else "Off",
 	}
 
-func _evaluate_candidate(candidate: Dictionary, telemetry: Dictionary, mercy_active: bool) -> Dictionary:
+
+func _evaluate_candidate(
+	candidate: Dictionary, telemetry: Dictionary, mercy_active: bool
+) -> Dictionary:
 	var reasons := PackedStringArray()
 	var tags: Array = candidate.tags
-	if not profile.allow_tags.is_empty() and not tags.any(func(tag: Variant) -> bool: return profile.allow_tags.has(tag)):
+	if (
+		not profile.allow_tags.is_empty()
+		and not tags.any(func(tag: Variant) -> bool: return profile.allow_tags.has(tag))
+	):
 		reasons.append("profile_allow_tags")
 	if tags.any(func(tag: Variant) -> bool: return profile.deny_tags.has(tag)):
 		reasons.append("profile_deny_tags")
@@ -263,7 +343,10 @@ func _evaluate_candidate(candidate: Dictionary, telemetry: Dictionary, mercy_act
 		reasons.append("tag_cooldown")
 	if evaluation_step - last_intervention_step < profile.min_spacing:
 		reasons.append("minimum_spacing")
-	if budgets.get(candidate.budget_kind, 0) < candidate.budget_cost or budgets.get("intervention", 0) < candidate.budget_cost:
+	if (
+		budgets.get(candidate.budget_kind, 0) < candidate.budget_cost
+		or budgets.get("intervention", 0) < candidate.budget_cost
+	):
 		reasons.append("budget_exhausted")
 	for condition: Dictionary in candidate.conditions:
 		if not _condition_met(condition, telemetry):
@@ -272,7 +355,10 @@ func _evaluate_candidate(candidate: Dictionary, telemetry: Dictionary, mercy_act
 		reasons.append("mercy_pressure_suppression")
 	if evaluation_step <= recovery_until_step and candidate.pressure_impact > 0:
 		reasons.append("recovery_window")
-	if candidate.pressure_impact > 0 and _recent_pressure() + candidate.pressure_impact > profile.max_pressure_per_window:
+	if (
+		candidate.pressure_impact > 0
+		and _recent_pressure() + candidate.pressure_impact > profile.max_pressure_per_window
+	):
 		reasons.append("pressure_window_cap")
 	var target: Dictionary = _select_target(candidate, telemetry)
 	if not target.valid:
@@ -299,7 +385,18 @@ func _evaluate_candidate(candidate: Dictionary, telemetry: Dictionary, mercy_act
 			components.tension_gap_fit = clampi(-gap / 2, -30, 30)
 		components.pacing_curve_fit = clampi(12 - absi(gap) / 5, -8, 12)
 		for metric: String in candidate.metric_affinities:
-			components.telemetry_affinities += roundi(float(telemetry.get(metric, 0) * candidate.metric_affinities[metric] * profile.metric_weights.get(metric, 1)) / 100.0)
+			components.telemetry_affinities += roundi(
+				(
+					float(
+						(
+							telemetry.get(metric, 0)
+							* candidate.metric_affinities[metric]
+							* profile.metric_weights.get(metric, 1)
+						)
+					)
+					/ 100.0
+				)
+			)
 		for tag: String in tags:
 			components.profile_tag_affinity += profile.tag_affinities.get(tag, 0)
 		components.repetition_penalty = _repetition_penalty(candidate)
@@ -316,10 +413,16 @@ func _evaluate_candidate(candidate: Dictionary, telemetry: Dictionary, mercy_act
 		final_score += value
 	final_score = maxi(0, final_score)
 	return {
-		"candidate_id": candidate.id, "name": candidate.name, "category": candidate.category,
-		"eligible": reasons.is_empty(), "rejection_reasons": reasons, "target_seat": target.seat,
-		"components": components, "final_score": final_score,
+		"candidate_id": candidate.id,
+		"name": candidate.name,
+		"category": candidate.category,
+		"eligible": reasons.is_empty(),
+		"rejection_reasons": reasons,
+		"target_seat": target.seat,
+		"components": components,
+		"final_score": final_score,
 	}
+
 
 func _select_target(candidate: Dictionary, telemetry: Dictionary) -> Dictionary:
 	if candidate.target_scope == "none":
@@ -341,14 +444,24 @@ func _select_target(candidate: Dictionary, telemetry: Dictionary) -> Dictionary:
 		return {"valid": false, "seat": 0, "reason": "target_fairness_cap"}
 	return {"valid": true, "seat": best_seat, "reason": ""}
 
+
 func _condition_met(condition: Dictionary, telemetry: Dictionary) -> bool:
 	match condition.type:
-		"always": return true
-		"metric_at_least": return telemetry.get(condition.metric, 0) >= condition.value
-		"metric_at_most": return telemetry.get(condition.metric, 0) <= condition.value
-		"rules_flag": return telemetry.get("rules_flags", {}).get(condition.get("flag_id", ""), false) == condition.get("value", true)
-		"board_hazard_below": return telemetry.hazard_pressure < condition.value
+		"always":
+			return true
+		"metric_at_least":
+			return telemetry.get(condition.metric, 0) >= condition.value
+		"metric_at_most":
+			return telemetry.get(condition.metric, 0) <= condition.value
+		"rules_flag":
+			return (
+				telemetry.get("rules_flags", {}).get(condition.get("flag_id", ""), false)
+				== condition.get("value", true)
+			)
+		"board_hazard_below":
+			return telemetry.hazard_pressure < condition.value
 	return false
+
 
 func _update_pacing(telemetry: Dictionary) -> void:
 	var selected: Dictionary = profile.pacing_curve[0]
@@ -357,10 +470,22 @@ func _update_pacing(telemetry: Dictionary) -> void:
 			selected = point
 	pacing_act = selected.act
 	target_tension = [selected.low, selected.high]
-	estimated_tension = clampi(roundi(
-		telemetry.failure_pressure * 0.28 + telemetry.resource_pressure * 0.22 + telemetry.hazard_pressure * 0.22
-		+ telemetry.group_spread * 0.08 + telemetry.stalled_steps * 0.08 + pressure_momentum * 0.12 - relief_momentum * 0.10
-	), 0, 100)
+	estimated_tension = clampi(
+		roundi(
+			(
+				telemetry.failure_pressure * 0.28
+				+ telemetry.resource_pressure * 0.22
+				+ telemetry.hazard_pressure * 0.22
+				+ telemetry.group_spread * 0.08
+				+ telemetry.stalled_steps * 0.08
+				+ pressure_momentum * 0.12
+				- relief_momentum * 0.10
+			)
+		),
+		0,
+		100
+	)
+
 
 func _recent_pressure() -> int:
 	var total: int = 0
@@ -368,6 +493,7 @@ func _recent_pressure() -> int:
 		if evaluation_step - record.step <= profile.pressure_window:
 			total += record.get("pressure_impact", 0)
 	return total
+
 
 func _repetition_penalty(candidate: Dictionary) -> int:
 	var penalty: int = 0
@@ -381,6 +507,7 @@ func _repetition_penalty(candidate: Dictionary) -> int:
 					penalty -= 4
 	return maxi(penalty, -60)
 
+
 func _target_count(seat: int) -> int:
 	var count: int = 0
 	for record: Dictionary in target_history:
@@ -388,22 +515,47 @@ func _target_count(seat: int) -> int:
 			count += 1
 	return count
 
+
 func _friendly_rationale(category: String, telemetry: Dictionary, mercy_active: bool) -> String:
-	if category == "no_op": return "The fair choice is to hold this beat and leave play unchanged."
-	if telemetry.stalled_steps >= 45 and category in ["hint", "event", "ambient"]: return "Progress has paused, so the house offers a nudge instead of punishment."
-	if mercy_active and category in ["relief", "hint", "ambient"]: return "The group needs recovery space, so pressure is being held back."
-	if category in ["pressure", "board"]: return "The group has momentum; a bounded omen restores dramatic tension."
-	if category == "relief": return "Resources are thin, so a bounded recovery beat is available."
-	if category == "hint": return "An authored clue keeps a legal route visible."
-	if category == "event": return "An authored pacing event can move the tale forward."
-	return "A presentation-only omen supports the current pacing beat."
+	var rationale: String = "A presentation-only omen supports the current pacing beat."
+	if category == "no_op":
+		rationale = "The fair choice is to hold this beat and leave play unchanged."
+	elif telemetry.stalled_steps >= 45 and category in ["hint", "event", "ambient"]:
+		rationale = "Progress has paused, so the house offers a nudge instead of punishment."
+	elif mercy_active and category in ["relief", "hint", "ambient"]:
+		rationale = "The group needs recovery space, so pressure is being held back."
+	elif category in ["pressure", "board"]:
+		rationale = "The group has momentum; a bounded omen restores dramatic tension."
+	elif category == "relief":
+		rationale = "Resources are thin, so a bounded recovery beat is available."
+	elif category == "hint":
+		rationale = "An authored clue keeps a legal route visible."
+	elif category == "event":
+		rationale = "An authored pacing event can move the tale forward."
+	return rationale
+
 
 func _no_op_evaluation(reason: String) -> Dictionary:
 	var candidate: Dictionary = content.no_op_candidate()
-	return {"candidate_id": candidate.get("id", ""), "category": "no_op", "target_seat": 0, "final_score": 0, "components": {"fallback": 0}, "reason": reason}
+	return {
+		"candidate_id": candidate.get("id", ""),
+		"category": "no_op",
+		"target_seat": 0,
+		"final_score": 0,
+		"components": {"fallback": 0},
+		"reason": reason
+	}
+
 
 func _invalid_decision(reason: String) -> Dictionary:
-	return {"decision_version": DECISION_VERSION, "accepted": false, "reason": reason, "rng_before": rng.counter if rng != null else 0, "rng_after": rng.counter if rng != null else 0}
+	return {
+		"decision_version": DECISION_VERSION,
+		"accepted": false,
+		"reason": reason,
+		"rng_before": rng.counter if rng != null else 0,
+		"rng_after": rng.counter if rng != null else 0
+	}
+
 
 func _trim_runtime_history() -> void:
 	while recent_decisions.size() > 16:
@@ -411,48 +563,135 @@ func _trim_runtime_history() -> void:
 	while target_history.size() > 32:
 		target_history.pop_front()
 
+
 func _validate_snapshot(snapshot: Dictionary) -> Dictionary:
-	if snapshot.get("snapshot_version") != SNAPSHOT_VERSION or snapshot.get("content_id") != content.content_id or snapshot.get("content_version") != content.content_version:
-		return {"valid": false, "reason": "director_snapshot_identity_mismatch"}
-	if snapshot.get("profile_id") != profile.id or snapshot.get("profile_version") != profile.version:
-		return {"valid": false, "reason": "director_snapshot_profile_mismatch"}
-	for field: String in ["revision", "evaluation_step", "estimated_tension", "pressure_momentum", "relief_momentum", "recovery_until_step"]:
+	var reason: String = _snapshot_identity_rejection(snapshot)
+	if reason.is_empty():
+		reason = _snapshot_numeric_rejection(snapshot)
+	if reason.is_empty():
+		reason = _snapshot_dictionary_rejection(snapshot)
+	if reason.is_empty():
+		reason = _snapshot_history_rejection(snapshot)
+	return {"valid": reason.is_empty(), "reason": reason}
+
+
+func _snapshot_identity_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
+	if (
+		snapshot.get("snapshot_version") != SNAPSHOT_VERSION
+		or snapshot.get("content_id") != content.content_id
+		or snapshot.get("content_version") != content.content_version
+	):
+		reason = "director_snapshot_identity_mismatch"
+	elif (
+		snapshot.get("profile_id") != profile.id
+		or snapshot.get("profile_version") != profile.version
+	):
+		reason = "director_snapshot_profile_mismatch"
+	return reason
+
+
+func _snapshot_numeric_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
+	for field: String in [
+		"revision",
+		"evaluation_step",
+		"estimated_tension",
+		"pressure_momentum",
+		"relief_momentum",
+		"recovery_until_step"
+	]:
 		if not snapshot.get(field) is int or snapshot.get(field, -1) < 0:
-			return {"valid": false, "reason": "malformed_director_snapshot"}
-	if not snapshot.get("last_intervention_step") is int or not snapshot.get("target_tension") is Array or snapshot.target_tension.size() != 2:
-		return {"valid": false, "reason": "malformed_director_snapshot"}
-	if not snapshot.get("budgets") is Dictionary or not snapshot.get("candidate_cooldowns") is Dictionary or not snapshot.get("tag_cooldowns") is Dictionary:
-		return {"valid": false, "reason": "malformed_director_snapshot"}
-	for budget: String in DirectorContent.VALID_BUDGETS:
-		if not snapshot.budgets.get(budget) is int or snapshot.budgets.get(budget, -1) < 0:
-			return {"valid": false, "reason": "malformed_director_budget_snapshot"}
-	for candidate_id: Variant in snapshot.candidate_cooldowns:
-		if not candidate_id is String or content.candidate_by_id(candidate_id).is_empty():
-			return {"valid": false, "reason": "unknown_snapshot_candidate"}
-	for tag: Variant in snapshot.tag_cooldowns:
-		if not tag is String or not DirectorContent.VALID_TAGS.has(tag):
-			return {"valid": false, "reason": "unknown_snapshot_tag"}
+			reason = "malformed_director_snapshot"
+			break
+	if (
+		reason.is_empty()
+		and (
+			not snapshot.get("last_intervention_step") is int
+			or not snapshot.get("target_tension") is Array
+			or snapshot.target_tension.size() != 2
+		)
+	):
+		reason = "malformed_director_snapshot"
+	return reason
+
+
+func _snapshot_dictionary_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
+	if (
+		not snapshot.get("budgets") is Dictionary
+		or not snapshot.get("candidate_cooldowns") is Dictionary
+		or not snapshot.get("tag_cooldowns") is Dictionary
+	):
+		reason = "malformed_director_snapshot"
+	if reason.is_empty():
+		for budget: String in DirectorContent.VALID_BUDGETS:
+			if not snapshot.budgets.get(budget) is int or snapshot.budgets.get(budget, -1) < 0:
+				reason = "malformed_director_budget_snapshot"
+				break
+	if reason.is_empty():
+		for candidate_id: Variant in snapshot.get("candidate_cooldowns", {}):
+			if not candidate_id is String or content.candidate_by_id(candidate_id).is_empty():
+				reason = "unknown_snapshot_candidate"
+				break
+	if reason.is_empty():
+		for tag: Variant in snapshot.get("tag_cooldowns", {}):
+			if not tag is String or not DirectorContent.VALID_TAGS.has(tag):
+				reason = "unknown_snapshot_tag"
+				break
+	return reason
+
+
+func _snapshot_history_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
 	for field: String in ["target_history", "recent_decisions", "audit_history"]:
 		if not snapshot.get(field) is Array:
-			return {"valid": false, "reason": "malformed_director_snapshot"}
-	for record: Variant in snapshot.recent_decisions:
-		if not record is Dictionary or content.candidate_by_id(record.get("candidate_id", "")).is_empty():
-			return {"valid": false, "reason": "unknown_snapshot_candidate"}
-	for record: Variant in snapshot.audit_history:
-		if not record is Dictionary or content.candidate_by_id(record.get("selected_candidate_id", "")).is_empty():
-			return {"valid": false, "reason": "unknown_snapshot_candidate"}
-	for record: Variant in snapshot.target_history:
-		if not record is Dictionary or not record.get("seat") is int or record.get("seat", 0) < 1 or record.get("seat", 0) > SeatManager.MAX_SEATS:
-			return {"valid": false, "reason": "malformed_target_ledger"}
-	if not snapshot.get("rng") is Dictionary or not snapshot.get("last_application", {}) is Dictionary or not snapshot.get("last_no_op_reason") is String:
-		return {"valid": false, "reason": "malformed_director_snapshot"}
-	return {"valid": true, "reason": ""}
+			reason = "malformed_director_snapshot"
+			break
+	if reason.is_empty():
+		for record: Variant in snapshot.get("recent_decisions", []):
+			if (
+				not record is Dictionary
+				or content.candidate_by_id(record.get("candidate_id", "")).is_empty()
+			):
+				reason = "unknown_snapshot_candidate"
+				break
+	if reason.is_empty():
+		for record: Variant in snapshot.get("audit_history", []):
+			if (
+				not record is Dictionary
+				or content.candidate_by_id(record.get("selected_candidate_id", "")).is_empty()
+			):
+				reason = "unknown_snapshot_candidate"
+				break
+	if reason.is_empty():
+		for record: Variant in snapshot.get("target_history", []):
+			if (
+				not record is Dictionary
+				or not record.get("seat") is int
+				or record.get("seat", 0) < 1
+				or record.get("seat", 0) > SeatManager.MAX_SEATS
+			):
+				reason = "malformed_target_ledger"
+				break
+	if (
+		reason.is_empty()
+		and (
+			not snapshot.get("rng") is Dictionary
+			or not snapshot.get("last_application", {}) is Dictionary
+			or not snapshot.get("last_no_op_reason") is String
+		)
+	):
+		reason = "malformed_director_snapshot"
+	return reason
+
 
 func _dict_array(values: Array) -> Array[Dictionary]:
 	var typed: Array[Dictionary] = []
 	for value: Dictionary in values:
 		typed.append(value.duplicate(true))
 	return typed
+
 
 func _normalize_json_numbers(value: Variant) -> Variant:
 	if value is float and is_equal_approx(value, round(value)):

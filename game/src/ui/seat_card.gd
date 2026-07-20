@@ -11,12 +11,14 @@ var _badge: Label
 var _detail: Label
 var _last_action: Label
 
+
 func setup(seat_number: int, tokens: VisualTokens) -> void:
 	_seat_number = seat_number
 	_tokens = tokens
 	custom_minimum_size = Vector2(250.0, 78.0)
 	theme_type_variation = "SeatCard"
 	_build()
+
 
 func present(seat: Dictionary) -> void:
 	var state: int = seat.state
@@ -40,6 +42,7 @@ func present(seat: Dictionary) -> void:
 		_:
 			theme_type_variation = "SeatCard"
 			_badge_panel.theme_type_variation = "StatusBadge"
+
 
 func _build() -> void:
 	var row := HBoxContainer.new()

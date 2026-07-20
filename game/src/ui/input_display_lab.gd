@@ -14,16 +14,19 @@ var _safe_overlay: SafeAreaOverlay
 var _reset_label: Label
 var _safe_margin: int = 24
 
+
 func _ready() -> void:
 	theme = LAB_THEME
 	_build_ui()
 	set_safe_margin(_safe_margin)
+
 
 func present_seats(seats: Array[Dictionary]) -> void:
 	if _seat_cards.is_empty():
 		return
 	for index: int in mini(seats.size(), _seat_cards.size()):
 		_seat_cards[index].present(seats[index])
+
 
 func present_devices(devices: Array[Dictionary], seats: Array[Dictionary]) -> void:
 	var lines: PackedStringArray = []
@@ -39,16 +42,24 @@ func present_devices(devices: Array[Dictionary], seats: Array[Dictionary]) -> vo
 		lines.append("   %s" % assigned)
 	_devices_label.text = "\n".join(lines)
 
+
 func adjust_safe_margin(delta: int) -> void:
 	set_safe_margin(_safe_margin + delta * SAFE_STEP)
+
 
 func set_safe_margin(value: int) -> void:
 	_safe_margin = clampi(value, MIN_SAFE_MARGIN, MAX_SAFE_MARGIN)
 	_safe_overlay.set_frame_margin(_safe_margin)
 	_safe_label.text = "SAFE FRAME %d px   LB/RB or -/+" % _safe_margin
 
+
 func present_reset_progress(progress: float) -> void:
-	_reset_label.text = "Hold Y / R 1.5s to clear seats" if progress <= 0.0 else "BREAKING THE SEAL… %d%%" % roundi(progress * 100.0)
+	_reset_label.text = (
+		"Hold Y / R 1.5s to clear seats"
+		if progress <= 0.0
+		else "BREAKING THE SEAL… %d%%" % roundi(progress * 100.0)
+	)
+
 
 func _build_ui() -> void:
 	var backdrop := LabBackdrop.new()
@@ -116,6 +127,7 @@ func _build_ui() -> void:
 	_safe_overlay.frame_width = 2.0
 	add_child(_safe_overlay)
 
+
 func _build_header(root: VBoxContainer) -> void:
 	var header := HBoxContainer.new()
 	root.add_child(header)
@@ -135,6 +147,7 @@ func _build_header(root: VBoxContainer) -> void:
 	callout.theme_type_variation = "SectionTitle"
 	callout.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	header.add_child(callout)
+
 
 func _build_footer(root: VBoxContainer) -> void:
 	var footer := PanelContainer.new()

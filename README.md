@@ -8,7 +8,7 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 
 1. Preserve the Godot 4.7.1 controller/display, visual, exploration, Living Board, rules, Director, social-role, and companion authority foundations.
 2. Run every legacy regression and deterministic simulation plus the focused GUT 9.7.1 boundary suite under the pinned engine patch.
-3. Resolve the published first-party lint/format baseline in separately bounded work before beginning v0.1.0; do not mix mass formatting with gameplay.
+3. Keep the enforced zero-finding first-party `gdlint` and `gdformat --check` gates green; v0.1.0 remains blocked pending independent acceptance of the bounded cleanup.
 4. Keep stable-seat privacy and exactly-once intent boundaries regression-tested through the fake transport, local Worker emulation, browser lab, and native-authority E2E.
 5. Defer production Cloudflare deployment, accounts, matchmaking, persistence, full remote play, and security certification until their own reviewed gates.
 
@@ -36,7 +36,7 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 
 ## Validation layers
 
-GitHub Actions keeps the established `Godot 4.7 headless validation`, companion, and foundation check identities. The Godot job verifies the official Linux archive checksum, runs all standalone tests and simulations, runs the focused GUT suite, uploads GUT JUnit output, and publishes informational first-party `gdlint`/`gdformat --check` baselines. See `docs/technical/Toolchain_and_Testing.md` for equivalent Windows commands and the current cleanup gate.
+GitHub Actions keeps the established `Godot 4.7 headless validation`, companion, and foundation check identities. The Godot job verifies the official Linux archive checksum, enforces zero-finding first-party `gdlint` and `gdformat --check` gates, runs all standalone tests and simulations, runs the focused GUT suite, and uploads quality evidence plus GUT JUnit output. See `docs/technical/Toolchain_and_Testing.md` for equivalent Windows commands.
 
 ## Documentation rule
 

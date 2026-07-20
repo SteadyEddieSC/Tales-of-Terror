@@ -11,14 +11,17 @@ var _result_path: String = ""
 var _finished: bool = false
 var _pending_evidence: Dictionary = {}
 
+
 func _initialize() -> void:
 	call_deferred("_start")
+
 
 func _process(delta: float) -> bool:
 	_elapsed += delta
 	if not _finished and _elapsed >= TIMEOUT_SECONDS:
 		_finish(false, "timeout_waiting_for_browser_authority_path")
 	return false
+
 
 func _start() -> void:
 	var service_url: String = "http://127.0.0.1:8787"
@@ -34,7 +37,9 @@ func _start() -> void:
 	var rules_content := LanternHouseRulesContent.new()
 	var seat_numbers: Array[int] = [1]
 	_rules = RulesSession.new(rules_content, board, 2309, seat_numbers)
-	var director := DirectorRuntime.new(LanternHouseDirectorContent.new(), "standard", 2309, rules_content, board.definition)
+	var director := DirectorRuntime.new(
+		LanternHouseDirectorContent.new(), "standard", 2309, rules_content, board.definition
+	)
 	var roles := RoleSession.new(LanternHouseSocialContent.new(), "cooperative", 2309, seat_numbers)
 	_bridge = CompanionBridge.new(seats, board, _rules, director, roles)
 	var prompt: Dictionary = rules_content.events[0].prompts[0].duplicate(true)
@@ -57,8 +62,10 @@ func _start() -> void:
 	if not _adapter.create_room().accepted:
 		_finish(false, "room_creation_not_queued")
 
+
 func _on_room_ready(room_id: String, join_code: String) -> void:
 	print("COMPANION_E2E_ROOM:%s" % JSON.stringify({"roomId": room_id, "joinCode": join_code}))
+
 
 func _on_pending_client(client_id: String, client_display: String) -> void:
 	print("COMPANION_E2E_PENDING:%s" % JSON.stringify({"clientDisplay": client_display}))
@@ -66,17 +73,34 @@ func _on_pending_client(client_id: String, client_display: String) -> void:
 	if not queued.accepted:
 		_finish(false, "host_seat_approval_not_queued")
 
-func _on_client_resumed(client_id: String, seat_number: int) -> void:
-	print("COMPANION_E2E_RECONNECT:%s" % JSON.stringify({
-		"clientDisplay": CompanionProtocol.request_display(client_id), "seat": seat_number,
-		"sameStableSeat": true,
-	}))
 
-func _on_authoritative_intent(_client_id: String, request_id: String, accepted: bool, code: String) -> void:
+func _on_client_resumed(client_id: String, seat_number: int) -> void:
+	print(
+		(
+			"COMPANION_E2E_RECONNECT:%s"
+			% (
+				JSON
+				. stringify(
+					{
+						"clientDisplay": CompanionProtocol.request_display(client_id),
+						"seat": seat_number,
+						"sameStableSeat": true,
+					}
+				)
+			)
+		)
+	)
+
+
+func _on_authoritative_intent(
+	_client_id: String, request_id: String, accepted: bool, code: String
+) -> void:
 	if _finished:
 		return
 	var response: Variant = _rules.pending_prompt.get("responses", {}).get(1)
-	var applied_once: bool = accepted and response == ["listen"] and _rules.history().size() == _history_before + 1
+	var applied_once: bool = (
+		accepted and response == ["listen"] and _rules.history().size() == _history_before + 1
+	)
 	if not applied_once:
 		_finish(false, "authority_result_%s" % code)
 		return
@@ -93,7 +117,10 @@ func _on_authoritative_intent(_client_id: String, request_id: String, accepted: 
 	}
 	print("COMPANION_E2E_AUTHORITY:%s" % JSON.stringify(_pending_evidence))
 
-func _on_outbound_delivery(_client_id: String, request_id: String, message_type: String, accepted: bool, code: String) -> void:
+
+func _on_outbound_delivery(
+	_client_id: String, request_id: String, message_type: String, accepted: bool, code: String
+) -> void:
 	if _finished or _pending_evidence.is_empty() or message_type != "acknowledgement":
 		return
 	if CompanionProtocol.request_display(request_id) != _pending_evidence.requestDisplay:
@@ -102,16 +129,25 @@ func _on_outbound_delivery(_client_id: String, request_id: String, message_type:
 		_finish(false, "authoritative_ack_delivery_%s" % code)
 		return
 	_pending_evidence["browserAcknowledgementDelivered"] = true
-	print("COMPANION_E2E_DELIVERED:%s" % JSON.stringify({"requestDisplay": _pending_evidence.requestDisplay, "authoritative": true}))
+	print(
+		(
+			"COMPANION_E2E_DELIVERED:%s"
+			% JSON.stringify(
+				{"requestDisplay": _pending_evidence.requestDisplay, "authoritative": true}
+			)
+		)
+	)
 	if not _result_path.is_empty():
 		var file := FileAccess.open(_result_path, FileAccess.WRITE)
 		if file != null:
 			file.store_string(JSON.stringify(_pending_evidence, "  "))
 	_finish(true, "accepted_once")
 
+
 func _on_service_state(state: String) -> void:
 	if not _finished and state == "unavailable":
 		_finish(false, "service_unavailable_without_gameplay_mutation")
+
 
 func _finish(success: bool, reason: String) -> void:
 	if _finished:

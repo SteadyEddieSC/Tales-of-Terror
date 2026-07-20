@@ -13,6 +13,7 @@ var _authentication: Dictionary = {}
 var _sent_authentication: bool = false
 var _inbox: Array[Dictionary] = []
 
+
 func connect_to_room(url: String, authentication: Dictionary) -> Dictionary:
 	if not _valid_url(url) or not CompanionProtocol.is_bounded_json(authentication):
 		return {"accepted": false, "code": "malformed"}
@@ -20,6 +21,7 @@ func connect_to_room(url: String, authentication: Dictionary) -> Dictionary:
 	_sent_authentication = false
 	var error: Error = _peer.connect_to_url(url)
 	return {"accepted": error == OK, "code": "accepted" if error == OK else "transport_unavailable"}
+
 
 func poll() -> void:
 	_peer.poll()
@@ -45,6 +47,7 @@ func poll() -> void:
 		_sent_authentication = false
 		disconnected.emit(code, reason)
 
+
 func send_envelope(envelope: Dictionary) -> Dictionary:
 	var serialized: Dictionary = CompanionWireCodec.stringify_wire_envelope(envelope)
 	if not serialized.accepted:
@@ -54,15 +57,21 @@ func send_envelope(envelope: Dictionary) -> Dictionary:
 	var error: Error = _peer.send_text(serialized.raw)
 	return {"accepted": error == OK, "code": "accepted" if error == OK else "transport_unavailable"}
 
+
 func close() -> void:
 	_authentication.clear()
 	_peer.close(1000, "client_leave")
 
+
 func sanitized_diagnostics() -> Dictionary:
 	return {
-		"transport": "websocket", "state": _peer.get_ready_state(), "inbox_depth": _inbox.size(),
-		"authentication_buffered": not _authentication.is_empty(), "privacy": "AUTHENTICATION VALUES HIDDEN",
+		"transport": "websocket",
+		"state": _peer.get_ready_state(),
+		"inbox_depth": _inbox.size(),
+		"authentication_buffered": not _authentication.is_empty(),
+		"privacy": "AUTHENTICATION VALUES HIDDEN",
 	}
+
 
 func _valid_url(url: String) -> bool:
 	if url.begins_with("wss://"):

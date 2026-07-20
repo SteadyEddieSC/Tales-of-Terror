@@ -3,17 +3,24 @@ extends RefCounted
 
 const FOCUS_RADIUS: float = 86.0
 
-static func nearest_interactable(pawn_position: Vector2, candidates: Array[Dictionary], radius: float = FOCUS_RADIUS) -> String:
+
+static func nearest_interactable(
+	pawn_position: Vector2, candidates: Array[Dictionary], radius: float = FOCUS_RADIUS
+) -> String:
 	var nearest_id: String = ""
 	var nearest_distance: float = radius
 	for candidate: Dictionary in candidates:
 		if not candidate.get("enabled", true):
 			continue
 		var distance: float = pawn_position.distance_to(candidate.position)
-		if distance < nearest_distance or (is_equal_approx(distance, nearest_distance) and str(candidate.id) < nearest_id):
+		if (
+			distance < nearest_distance
+			or (is_equal_approx(distance, nearest_distance) and str(candidate.id) < nearest_id)
+		):
 			nearest_distance = distance
 			nearest_id = candidate.id
 	return nearest_id
+
 
 static func resolve_requests(requests: Array[Dictionary]) -> Array[Dictionary]:
 	var ordered: Array[Dictionary] = requests.duplicate(true)

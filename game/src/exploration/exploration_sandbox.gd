@@ -45,8 +45,10 @@ var _hud_root: Control
 var _showcase_mode: bool = false
 var _safe_margin: int = 24
 
+
 func setup(input_router: PlayerInputRouter) -> void:
 	_input_router = input_router
+
 
 func _ready() -> void:
 	_room = ExplorationRoom.new()
@@ -70,6 +72,7 @@ func _ready() -> void:
 	add_child(_camera)
 	_build_hud()
 
+
 func sync_seats(seats: Array[Dictionary]) -> void:
 	pawn_registry.sync_seats(seats, ExplorationRoom.SPAWN_POINTS)
 	var active_seats: Dictionary = {}
@@ -88,10 +91,16 @@ func sync_seats(seats: Array[Dictionary]) -> void:
 	_board_state.sync_occupancy(pawn_registry.get_pawns())
 	_sync_rules_seats()
 
+
 func request_rules_navigation(device_id: int, direction: int, confirm: bool, cancel: bool) -> bool:
 	if _social_showcase_active and _role_session != null and is_instance_valid(_role_hud):
 		var social_pawn: PawnState = pawn_registry.get_by_device(device_id)
-		if social_pawn != null and _role_hud.handle_private_input(_role_session, social_pawn.seat_number, confirm, cancel):
+		if (
+			social_pawn != null
+			and _role_hud.handle_private_input(
+				_role_session, social_pawn.seat_number, confirm, cancel
+			)
+		):
 			return true
 	if _rules_session == null or not is_instance_valid(_rules_hud):
 		return false
@@ -100,8 +109,10 @@ func request_rules_navigation(device_id: int, direction: int, confirm: bool, can
 		return false
 	return _rules_hud.handle_navigation(pawn.seat_number, direction, confirm, cancel)
 
+
 func request_interaction(device_id: int) -> bool:
 	return _interactions.request(pawn_registry.get_by_device(device_id))
+
 
 func toggle_diagnostics() -> void:
 	if _social_showcase_active and is_instance_valid(_role_diagnostics):
@@ -120,6 +131,7 @@ func toggle_diagnostics() -> void:
 	_diagnostics.toggle()
 	_board_overlay.visible = _diagnostics.visible
 	_room.set_show_authored_headings(not _board_overlay.visible)
+
 
 func set_safe_margin(value: int) -> void:
 	_safe_margin = clampi(value, 0, 48)
@@ -141,23 +153,39 @@ func set_safe_margin(value: int) -> void:
 	_layout_top_hud()
 	_layout_bottom_hud()
 
+
 func present_reset_progress(progress: float) -> void:
-	_reset_label.text = "HOLD Y / R 1.5s TO RETURN TO LAB" if progress <= 0.0 else "RETURNING TO LAB… %d%%" % roundi(progress * 100.0)
+	_reset_label.text = (
+		"HOLD Y / R 1.5s TO RETURN TO LAB"
+		if progress <= 0.0
+		else "RETURNING TO LAB… %d%%" % roundi(progress * 100.0)
+	)
+
 
 func enable_showcase(stage: String = "terminal") -> void:
 	_showcase_mode = true
-	var showcase_positions: Array[Vector2] = [Vector2(250, 540), Vector2(1030, 500), Vector2(1300, 350), Vector2(1600, 630)]
+	var showcase_positions: Array[Vector2] = [
+		Vector2(250, 540), Vector2(1030, 500), Vector2(1300, 350), Vector2(1600, 630)
+	]
 	for index: int in mini(showcase_positions.size(), pawn_registry.get_pawns().size()):
 		var pawn: PawnState = pawn_registry.get_pawns()[index]
 		pawn.position = showcase_positions[index]
 		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).global_position = pawn.position
 	_board_state.sync_occupancy(pawn_registry.get_pawns())
 	_run_rules_showcase(stage)
-	if not stage.begins_with("director_") and not stage.begins_with("social_") and not stage.begins_with("companion_"):
-		_message_label.text = "EVIDENCE: %s  •  PROMPT ◉  •  CHECK ⚄  •  CARD ◫  •  VOTE ◈  •  BOARD r%d" % [stage.to_upper(), _board_state.revision]
+	if (
+		not stage.begins_with("director_")
+		and not stage.begins_with("social_")
+		and not stage.begins_with("companion_")
+	):
+		_message_label.text = (
+			"EVIDENCE: %s  •  PROMPT ◉  •  CHECK ⚄  •  CARD ◫  •  VOTE ◈  •  BOARD r%d"
+			% [stage.to_upper(), _board_state.revision]
+		)
 	_diagnostics.visible = false
 	_board_overlay.visible = false
 	_room.set_show_authored_headings(true)
+
 
 func _physics_process(delta: float) -> void:
 	var pawns: Array[PawnState] = pawn_registry.get_pawns()
@@ -171,23 +199,35 @@ func _physics_process(delta: float) -> void:
 		var raw_input := Vector2.ZERO
 		if not _showcase_mode and pawn.connected and _input_router != null:
 			raw_input = _input_router.get_movement_vector(pawn.device_id)
-		var resistance: float = SharedCameraPolicy.movement_resistance(pawn.position, raw_input, group_center)
-		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).apply_movement(raw_input, resistance, delta, ExplorationRoom.BOUNDS)
+		var resistance: float = SharedCameraPolicy.movement_resistance(
+			pawn.position, raw_input, group_center
+		)
+		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).apply_movement(
+			raw_input, resistance, delta, ExplorationRoom.BOUNDS
+		)
 	_board_state.sync_occupancy(pawns)
 	_interactions.update_focus(pawns)
 	for pawn: PawnState in pawns:
-		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).set_interaction_focus(pawn.nearby_interactable != "—")
+		(_pawn_nodes[pawn.seat_number] as ExplorationPawn).set_interaction_focus(
+			pawn.nearby_interactable != "—"
+		)
 	_interactions.resolve_pending()
 	_camera.update_group(pawns, delta)
 	_separation_label.text = SharedCameraPolicy.state_label(_camera.separation_state)
-	_separation_label.modulate = TOKENS.danger if _camera.separation_state == SharedCameraPolicy.SeparationState.REGROUP else TOKENS.warning
+	_separation_label.modulate = (
+		TOKENS.danger
+		if _camera.separation_state == SharedCameraPolicy.SeparationState.REGROUP
+		else TOKENS.warning
+	)
 	_diagnostics.update_snapshot(pawns, _camera, _board_state, _rules_session)
+
 
 func _add_interactable(id: String, kind: SandboxInteractable.Kind, world_position: Vector2) -> void:
 	var interactable := SandboxInteractable.new()
 	interactable.setup(id, kind, world_position, TOKENS)
 	add_child(interactable)
 	_interactions.register(interactable)
+
 
 func _build_hud() -> void:
 	var layer := CanvasLayer.new()
@@ -259,6 +299,7 @@ func _build_hud() -> void:
 	_layout_bottom_hud()
 	_ensure_rules_hud()
 
+
 func _sync_rules_seats() -> void:
 	var current: Array[int] = []
 	for pawn: PawnState in pawn_registry.get_pawns():
@@ -270,9 +311,13 @@ func _sync_rules_seats() -> void:
 		_rules_content = LanternHouseRulesContent.new()
 		_rules_session = RulesSession.new(_rules_content, _board_state, 4706, current)
 		_director_content = LanternHouseDirectorContent.new()
-		_director_runtime = DirectorRuntime.new(_director_content, "standard", _rules_session.seed, _rules_content, _board_definition)
+		_director_runtime = DirectorRuntime.new(
+			_director_content, "standard", _rules_session.seed, _rules_content, _board_definition
+		)
 		_social_content = LanternHouseSocialContent.new()
-		_role_session = RoleSession.new(_social_content, "cooperative", _rules_session.seed, current)
+		_role_session = RoleSession.new(
+			_social_content, "cooperative", _rules_session.seed, current
+		)
 		_ensure_rules_hud()
 	else:
 		for seat_number: int in _rules_session.participating_seats:
@@ -280,14 +325,21 @@ func _sync_rules_seats() -> void:
 			if pawn != null:
 				_rules_session.seat_connection[seat_number] = pawn.connected
 		for seat_number: int in current:
-			if not _rules_session.participating_seats.has(seat_number) and not _rules_session.pending_late_seats.has(seat_number):
+			if (
+				not _rules_session.participating_seats.has(seat_number)
+				and not _rules_session.pending_late_seats.has(seat_number)
+			):
 				_rules_session.request_late_join(seat_number)
 			if _role_session != null and _role_session.seat_states.has(seat_number):
 				var current_pawn: PawnState = pawn_registry.get_by_seat(seat_number)
-				if current_pawn != null and _role_session.seat_states[seat_number].connected != current_pawn.connected:
+				if (
+					current_pawn != null
+					and _role_session.seat_states[seat_number].connected != current_pawn.connected
+				):
 					_role_session.set_seat_connected(seat_number, current_pawn.connected)
 	if is_instance_valid(_rules_hud):
 		_rules_hud.refresh()
+
 
 func _ensure_rules_hud() -> void:
 	if _rules_session == null or not is_instance_valid(_hud_root) or is_instance_valid(_rules_hud):
@@ -296,6 +348,7 @@ func _ensure_rules_hud() -> void:
 	_rules_hud.setup(_rules_session)
 	_hud_root.add_child(_rules_hud)
 	_rules_hud.set_safe_margin(_safe_margin)
+
 
 func _run_rules_showcase(stage: String = "terminal") -> void:
 	if _rules_session == null:
@@ -338,12 +391,23 @@ func _run_rules_showcase(stage: String = "terminal") -> void:
 		_rules_session.submit_response(seat_number, option, _rules_session.pending_prompt.revision)
 	_rules_session.resolve_vote()
 	_rules_session.resolve_check(_rules_content.courage_check(), 1, "vault_reckoning")
-	_rules_session.apply_effect_bundle([{"type": "board_mutation", "mutation": BoardMutation.hazard("narrow_gallery", "echo_mist", true)}, {"type": "grant_card", "seat": 1, "card_id": "steady_flame"}], 1, "showcase_setup")
+	_rules_session.apply_effect_bundle(
+		[
+			{
+				"type": "board_mutation",
+				"mutation": BoardMutation.hazard("narrow_gallery", "echo_mist", true)
+			},
+			{"type": "grant_card", "seat": 1, "card_id": "steady_flame"}
+		],
+		1,
+		"showcase_setup"
+	)
 	var steady_flame: Dictionary = _rules_session.hands[1][-1]
 	_rules_session.play_card(1, steady_flame.instance_id)
 	_rules_session.queue_event("vault_reckoning")
 	_rules_session.resolve_next_event()
 	_rules_session.complete("lantern_house_secured")
+
 
 func _run_companion_showcase(stage: String) -> void:
 	_separation_label.visible = false
@@ -366,68 +430,163 @@ func _run_companion_showcase(stage: String) -> void:
 		seat_numbers.append(index + 1)
 	if _rules_session.participating_seats.size() != client_count:
 		_rules_session = RulesSession.new(_rules_content, _board_state, 4706, seat_numbers)
-		_director_runtime = DirectorRuntime.new(_director_content, "standard", 4706, _rules_content, _board_definition)
-	_role_session = RoleSession.new(_social_content, "hidden_betrayer" if client_count >= 3 else "cooperative", 4706, seat_numbers)
-	_companion_bridge = CompanionBridge.new(companion_seats, _board_state, _rules_session, _director_runtime, _role_session)
+		_director_runtime = DirectorRuntime.new(
+			_director_content, "standard", 4706, _rules_content, _board_definition
+		)
+	_role_session = RoleSession.new(
+		_social_content,
+		"hidden_betrayer" if client_count >= 3 else "cooperative",
+		4706,
+		seat_numbers
+	)
+	_companion_bridge = CompanionBridge.new(
+		companion_seats, _board_state, _rules_session, _director_runtime, _role_session
+	)
 	var transport := CompanionFakeTransport.new(_companion_bridge)
 	_companion_bridge.create_room("room_lantern", "GHST27")
-	var outcome: Dictionary = {"headline": "HOST ROOM OPEN  •  shared-screen play remains active without companions."}
+	var outcome: Dictionary = {
+		"headline": "HOST ROOM OPEN  •  shared-screen play remains active without companions."
+	}
 	if stage == "companion_join":
 		transport.connect_client("browser_guest")
-		outcome = {"headline": "BROWSER JOIN RECEIVED  •  awaiting explicit host approval.", "detail": "No stable seat or private view was inferred from the browser identity."}
+		outcome = {
+			"headline": "BROWSER JOIN RECEIVED  •  awaiting explicit host approval.",
+			"detail": "No stable seat or private view was inferred from the browser identity."
+		}
 	elif stage.begins_with("companion_scale_"):
 		for index: int in client_count:
 			var scale_client: String = "browser_scale_%d" % (index + 1)
 			transport.connect_client(scale_client)
 			transport.approve_client(scale_client, index + 1)
-		outcome = {"headline": "%d SIMULATED COMPANIONS CONNECTED  •  deterministic stable-seat claims." % client_count, "detail": "The lab covers the required 1, 2, 4, and 8 client scales without changing gameplay ownership."}
+		outcome = {
+			"headline":
+			(
+				"%d SIMULATED COMPANIONS CONNECTED  •  deterministic stable-seat claims."
+				% client_count
+			),
+			"detail":
+			"The lab covers the required 1, 2, 4, and 8 client scales without changing gameplay ownership."
+		}
 	elif stage in ["companion_close", "companion_expiry"]:
 		transport.connect_client("browser_lifecycle")
 		transport.approve_client("browser_lifecycle", 1)
-		var lifecycle_result: Dictionary = _companion_bridge.expire_room() if stage == "companion_expiry" else _companion_bridge.close_room()
+		var lifecycle_result: Dictionary = (
+			_companion_bridge.expire_room()
+			if stage == "companion_expiry"
+			else _companion_bridge.close_room()
+		)
 		var resume_denied: Dictionary = transport.resume_client("browser_lifecycle", 1)
-		outcome = {"headline": "%s  •  COMPANIONS DISCONNECTED SAFELY" % ("ROOM EXPIRED" if stage == "companion_expiry" else "HOST CLOSED ROOM"), "detail": "Lifecycle accepted: %s. Resume denied: %s. Local shared-screen play remains active." % [lifecycle_result.accepted, not resume_denied.accepted]}
+		outcome = {
+			"headline":
+			(
+				"%s  •  COMPANIONS DISCONNECTED SAFELY"
+				% ("ROOM EXPIRED" if stage == "companion_expiry" else "HOST CLOSED ROOM")
+			),
+			"detail":
+			(
+				"Lifecycle accepted: %s. Resume denied: %s. Local shared-screen play remains active."
+				% [lifecycle_result.accepted, not resume_denied.accepted]
+			)
+		}
 	elif stage in ["companion_private", "companion_reconnect"]:
 		var secret_seat: int = _role_session.seat_with_tag("secret")
 		transport.connect_client("browser_private")
 		transport.approve_client("browser_private", secret_seat)
 		if stage == "companion_reconnect":
-			var private_before: Dictionary = _companion_bridge.seat_view_for_client("browser_private").social_private
+			var private_before: Dictionary = (
+				_companion_bridge.seat_view_for_client("browser_private").social_private
+			)
 			transport.disconnect_client("browser_private")
 			var resumed: Dictionary = transport.resume_client("browser_private", secret_seat)
-			var preserved: bool = private_before == _companion_bridge.seat_view_for_client("browser_private").social_private
-			outcome = {"headline": "RECONNECT ACCEPTED  •  SAME STABLE SEAT %s" % _companion_bridge.seat_identity(secret_seat).numeral, "detail": "Private role/objective/action state preserved: %s. Wrong-seat resume fails closed." % ("YES" if resumed.accepted and preserved else "NO")}
+			var preserved: bool = (
+				private_before
+				== _companion_bridge.seat_view_for_client("browser_private").social_private
+			)
+			outcome = {
+				"headline":
+				(
+					"RECONNECT ACCEPTED  •  SAME STABLE SEAT %s"
+					% _companion_bridge.seat_identity(secret_seat).numeral
+				),
+				"detail":
+				(
+					"Private role/objective/action state preserved: %s. Wrong-seat resume fails closed."
+					% ("YES" if resumed.accepted and preserved else "NO")
+				)
+			}
 		else:
-			outcome = {"headline": "AUTHORIZED PRIVATE VIEW DELIVERED ONLY TO ITS OWNING SEAT.", "detail": "The public host withholds the secret payload. Recursive privacy evaluation: %s." % ("PASS" if _role_session.privacy_report().passed else "FAIL")}
+			outcome = {
+				"headline": "AUTHORIZED PRIVATE VIEW DELIVERED ONLY TO ITS OWNING SEAT.",
+				"detail":
+				(
+					"The public host withholds the secret payload. Recursive privacy evaluation: %s."
+					% ("PASS" if _role_session.privacy_report().passed else "FAIL")
+				)
+			}
 	elif stage == "companion_denial":
 		transport.connect_client("browser_wrong")
 		transport.approve_client("browser_wrong", 1)
-		var denied: Dictionary = transport.send_intent("browser_wrong", "private_reveal_ack", "wrong_seat", {}, 2)
-		outcome = {"headline": "WRONG-SEAT REQUEST DENIED  •  %s" % denied.code.to_upper(), "detail": "No role, rules, board, Director, RNG, controller, pawn, or seat ownership mutation was applied."}
+		var denied: Dictionary = transport.send_intent(
+			"browser_wrong", "private_reveal_ack", "wrong_seat", {}, 2
+		)
+		outcome = {
+			"headline": "WRONG-SEAT REQUEST DENIED  •  %s" % denied.code.to_upper(),
+			"detail":
+			"No role, rules, board, Director, RNG, controller, pawn, or seat ownership mutation was applied."
+		}
 	elif stage == "companion_action":
 		transport.connect_client("browser_action")
 		transport.approve_client("browser_action", 1)
 		var prompt: Dictionary = _rules_content.events[0].prompts[0].duplicate(true)
 		prompt.scope = "all"
 		_rules_session.open_prompt(prompt, seat_numbers, "companion_showcase")
-		var accepted: Dictionary = transport.send_intent("browser_action", "prompt_choice_submit", "accepted_action", {"option_ids": ["listen"], "prompt_revision": _rules_session.pending_prompt.revision}, 1)
-		outcome = {"headline": "COMPANION ACTION ACCEPTED EXACTLY ONCE  •  AUTHORITY r%d" % accepted.after_revision, "detail": "Bounded prompt intent crossed RulesSession validation; replay cache prevents duplicate mutation."}
+		var accepted: Dictionary = transport.send_intent(
+			"browser_action",
+			"prompt_choice_submit",
+			"accepted_action",
+			{"option_ids": ["listen"], "prompt_revision": _rules_session.pending_prompt.revision},
+			1
+		)
+		outcome = {
+			"headline":
+			"COMPANION ACTION ACCEPTED EXACTLY ONCE  •  AUTHORITY r%d" % accepted.after_revision,
+			"detail":
+			(
+				"Bounded prompt intent crossed RulesSession validation; replay cache prevents "
+				+ "duplicate mutation."
+			)
+		}
 	elif stage == "companion_diagnostics":
 		for index: int in client_count:
 			var client_id: String = "browser_%d" % (index + 1)
 			transport.connect_client(client_id)
 			transport.approve_client(client_id, index + 1)
-		outcome = {"headline": "EIGHT SIMULATED COMPANIONS  •  SANITIZED + BOUNDED", "detail": "Capabilities, private payloads, storage contents, raw audits, and spoiler diagnostics are absent."}
+		outcome = {
+			"headline": "EIGHT SIMULATED COMPANIONS  •  SANITIZED + BOUNDED",
+			"detail":
+			(
+				"Capabilities, private payloads, storage contents, raw audits, and spoiler "
+				+ "diagnostics are absent."
+			)
+		}
 	for child: Node in get_children():
 		if child is ExplorationRoom or child is ExplorationPawn or child is SandboxInteractable:
 			(child as CanvasItem).visible = false
-	if is_instance_valid(_rules_hud): _rules_hud.visible = false
-	if is_instance_valid(_director_hud): _director_hud.visible = false
-	if is_instance_valid(_director_diagnostics): _director_diagnostics.visible = false
-	if is_instance_valid(_role_hud): _role_hud.visible = false
-	if is_instance_valid(_role_diagnostics): _role_diagnostics.visible = false
+	if is_instance_valid(_rules_hud):
+		_rules_hud.visible = false
+	if is_instance_valid(_director_hud):
+		_director_hud.visible = false
+	if is_instance_valid(_director_diagnostics):
+		_director_diagnostics.visible = false
+	if is_instance_valid(_role_hud):
+		_role_hud.visible = false
+	if is_instance_valid(_role_diagnostics):
+		_role_diagnostics.visible = false
 	_companion_lab.present(_companion_bridge, stage, outcome)
-	_message_label.text = "EVIDENCE: COMPANION ROOM  •  OPTIONAL INPUT/PRESENTATION  •  NATIVE GODOT AUTHORITY"
+	_message_label.text = (
+		"EVIDENCE: COMPANION ROOM  •  OPTIONAL INPUT/PRESENTATION  •  " + "NATIVE GODOT AUTHORITY"
+	)
+
 
 func _run_director_showcase(trajectory: String) -> void:
 	if _director_runtime == null:
@@ -436,7 +595,9 @@ func _run_director_showcase(trajectory: String) -> void:
 	match trajectory:
 		"struggling", "diagnostics":
 			for _index: int in 3:
-				_rules_session.resolve_check({"dice": 1, "sides": 6, "target": 99}, 1, "director_fixture")
+				_rules_session.resolve_check(
+					{"dice": 1, "sides": 6, "target": 99}, 1, "director_fixture"
+				)
 		"cruising":
 			fixture_effects = [
 				{"type": "set_counter", "counter_id": "objective_progress", "value": 10},
@@ -459,7 +620,9 @@ func _run_director_showcase(trajectory: String) -> void:
 	var telemetry: Dictionary = DirectorTelemetry.build(_rules_session, _board_state)
 	var core_rng_before: int = _rules_session.rng.counter
 	_director_decision = _director_runtime.evaluate(telemetry)
-	var application: Dictionary = DirectorProposalApplier.apply(_director_decision, _rules_session, _board_state)
+	var application: Dictionary = DirectorProposalApplier.apply(
+		_director_decision, _rules_session, _board_state
+	)
 	_director_runtime.record_application(_director_decision, application)
 	application["core_rng_before"] = core_rng_before
 	application["core_rng_after"] = _rules_session.rng.counter
@@ -469,7 +632,11 @@ func _run_director_showcase(trajectory: String) -> void:
 		_rules_hud.visible = false
 	_director_diagnostics.visible = trajectory == "diagnostics"
 	_director_hud.visible = trajectory != "diagnostics"
-	_message_label.text = "EVIDENCE: %s GROUP  •  LOCAL + DETERMINISTIC  •  CORE RNG #%d UNCHANGED" % [trajectory.to_upper(), core_rng_before]
+	_message_label.text = (
+		"EVIDENCE: %s GROUP  •  LOCAL + DETERMINISTIC  •  CORE RNG #%d UNCHANGED"
+		% [trajectory.to_upper(), core_rng_before]
+	)
+
 
 func _run_social_showcase(stage: String) -> void:
 	if _social_content == null:
@@ -480,7 +647,9 @@ func _run_social_showcase(stage: String) -> void:
 	var fixture_seats: Array[int] = []
 	for seat_number: int in range(1, fixture.seat_count + 1):
 		fixture_seats.append(seat_number)
-	_role_session = RoleSession.new(_social_content, fixture.mode_id, _rules_session.seed, fixture_seats)
+	_role_session = RoleSession.new(
+		_social_content, fixture.mode_id, _rules_session.seed, fixture_seats
+	)
 	for operation: Dictionary in fixture.get("operations", []):
 		_apply_social_fixture_operation(operation)
 	for child: Node in get_children():
@@ -490,34 +659,54 @@ func _run_social_showcase(stage: String) -> void:
 	if view_spec.get("kind", "") == "seat_private":
 		view_spec["seat"] = _fixture_select_seat(view_spec.get("selector_tag", ""), 0, [])
 	_social_showcase_active = true
-	if is_instance_valid(_rules_hud): _rules_hud.visible = false
-	if is_instance_valid(_director_hud): _director_hud.visible = false
-	if is_instance_valid(_director_diagnostics): _director_diagnostics.visible = false
+	if is_instance_valid(_rules_hud):
+		_rules_hud.visible = false
+	if is_instance_valid(_director_hud):
+		_director_hud.visible = false
+	if is_instance_valid(_director_diagnostics):
+		_director_diagnostics.visible = false
 	if view_spec.get("kind", "") == "diagnostics":
 		_role_hud.visible = false
 		_role_diagnostics.present(_role_session)
 	else:
 		_role_diagnostics.visible = false
 		_role_hud.present(_role_session, view_spec)
-	_message_label.text = "EVIDENCE: %s  •  DATA-DRIVEN SOCIAL AUTHORITY  •  ROLE RNG #%d  •  PUBLIC/PRIVATE CONTRACT" % [view_spec.get("title", "SOCIAL STATE"), _role_session.rng.counter]
+	_message_label.text = (
+		"EVIDENCE: %s  •  DATA-DRIVEN SOCIAL AUTHORITY  •  ROLE RNG #%d  •  PUBLIC/PRIVATE CONTRACT"
+		% [view_spec.get("title", "SOCIAL STATE"), _role_session.rng.counter]
+	)
+
 
 func _apply_social_fixture_operation(operation: Dictionary) -> void:
 	match operation.get("type", ""):
 		"transition":
-			var seat: int = _fixture_select_seat(operation.get("selector_tag", ""), operation.get("seat", 0), [])
+			var seat: int = _fixture_select_seat(
+				operation.get("selector_tag", ""), operation.get("seat", 0), []
+			)
 			if seat > 0:
-				_role_session.request_transition_by_trigger(seat, operation.get("trigger", ""), _rules_session, _board_state)
+				_role_session.request_transition_by_trigger(
+					seat, operation.get("trigger", ""), _rules_session, _board_state
+				)
 		"action":
-			var actor: int = _fixture_select_seat(operation.get("selector_tag", ""), operation.get("seat", 0), [])
+			var actor: int = _fixture_select_seat(
+				operation.get("selector_tag", ""), operation.get("seat", 0), []
+			)
 			var targets: Array[int] = []
 			var target_tag: String = operation.get("target_selector_tag", "")
 			if not target_tag.is_empty():
-				var target: int = _fixture_select_seat(target_tag, operation.get("target_seat", 0), [actor])
-				if target > 0: targets.append(target)
+				var target: int = _fixture_select_seat(
+					target_tag, operation.get("target_seat", 0), [actor]
+				)
+				if target > 0:
+					targets.append(target)
 			if actor > 0:
-				_role_session.perform_action_by_tag(actor, operation.get("action_tag", ""), targets, _rules_session, _board_state)
+				_role_session.perform_action_by_tag(
+					actor, operation.get("action_tag", ""), targets, _rules_session, _board_state
+				)
 		"connection_cycle":
-			var seat: int = _fixture_select_seat(operation.get("selector_tag", ""), operation.get("seat", 0), [])
+			var seat: int = _fixture_select_seat(
+				operation.get("selector_tag", ""), operation.get("seat", 0), []
+			)
 			if seat > 0:
 				_role_session.set_seat_connected(seat, false)
 				_role_session.set_seat_connected(seat, true)
@@ -526,10 +715,16 @@ func _apply_social_fixture_operation(operation: Dictionary) -> void:
 		"resolve_outcomes":
 			_role_session.resolve_outcomes(_rules_session, _board_state)
 
+
 func _fixture_select_seat(selector_tag: String, explicit_seat: int, excluded: Array[int]) -> int:
-	if explicit_seat > 0 and _role_session.seat_states.has(explicit_seat) and not excluded.has(explicit_seat):
+	if (
+		explicit_seat > 0
+		and _role_session.seat_states.has(explicit_seat)
+		and not excluded.has(explicit_seat)
+	):
 		return explicit_seat
 	return _role_session.seat_with_tag(selector_tag, excluded)
+
 
 func _layout_top_hud() -> void:
 	if not is_instance_valid(_title_label) or not is_instance_valid(_separation_label):
@@ -538,14 +733,20 @@ func _layout_top_hud() -> void:
 	_title_label.position = (layout.title as Rect2).position
 	_separation_label.position = (layout.separation as Rect2).position
 
+
 static func calculate_top_hud_layout(viewport_size: Vector2, safe_margin: int) -> Dictionary:
 	var left: float = float(safe_margin) + HUD_EDGE_INSET
 	var top: float = float(safe_margin) + 4.0
 	return {
-		"safe": Rect2(Vector2(safe_margin, safe_margin), viewport_size - Vector2(safe_margin, safe_margin) * 2.0),
+		"safe":
+		Rect2(
+			Vector2(safe_margin, safe_margin),
+			viewport_size - Vector2(safe_margin, safe_margin) * 2.0
+		),
 		"title": Rect2(Vector2(left, top), Vector2(540, 30)),
 		"separation": Rect2(Vector2(viewport_size.x - left - 276.0, top), Vector2(276, 30)),
 	}
+
 
 func _layout_bottom_hud() -> void:
 	if not is_instance_valid(_status_panel) or not is_instance_valid(_reset_panel):
@@ -560,34 +761,53 @@ func _layout_bottom_hud() -> void:
 	_reset_panel.size = reset_rect.size
 	_reset_label.size = reset_rect.size - Vector2(20, 8)
 
+
 static func calculate_bottom_hud_layout(viewport_size: Vector2, safe_margin: int) -> Dictionary:
 	var inset: float = float(safe_margin) + HUD_EDGE_INSET
 	var available_width: float = viewport_size.x - inset * 2.0
 	var status_width: float = available_width - RESET_REGION_WIDTH - HUD_REGION_GAP
 	var region_y: float = viewport_size.y - float(safe_margin) - HUD_EDGE_INSET - HUD_REGION_HEIGHT
 	return {
-		"safe": Rect2(Vector2(safe_margin, safe_margin), viewport_size - Vector2(safe_margin, safe_margin) * 2.0),
+		"safe":
+		Rect2(
+			Vector2(safe_margin, safe_margin),
+			viewport_size - Vector2(safe_margin, safe_margin) * 2.0
+		),
 		"status": Rect2(Vector2(inset, region_y), Vector2(status_width, HUD_REGION_HEIGHT)),
-		"reset": Rect2(Vector2(inset + status_width + HUD_REGION_GAP, region_y), Vector2(RESET_REGION_WIDTH, HUD_REGION_HEIGHT)),
+		"reset":
+		Rect2(
+			Vector2(inset + status_width + HUD_REGION_GAP, region_y),
+			Vector2(RESET_REGION_WIDTH, HUD_REGION_HEIGHT)
+		),
 	}
+
 
 func _on_interaction_resolved(message: String) -> void:
 	_message_label.text = message
 
+
 func _resolve_board_interaction(interactable_id: String, seat_number: int) -> String:
 	var mutation: Dictionary
 	if interactable_id == "iron_gate":
-		var next_state: String = "closed" if _board_state.get_connector_state("hall_gate") == "open" else "open"
+		var next_state: String = (
+			"closed" if _board_state.get_connector_state("hall_gate") == "open" else "open"
+		)
 		mutation = BoardMutation.connector("hall_gate", next_state)
 	elif interactable_id == "clue_pedestal":
-		var clue_active: bool = _board_state.get_space_state("lantern_hall").features.has("clue_revealed")
+		var clue_active: bool = _board_state.get_space_state("lantern_hall").features.has(
+			"clue_revealed"
+		)
 		mutation = BoardMutation.feature("lantern_hall", "clue_revealed", not clue_active)
 	else:
 		return ""
 	var result: Dictionary = _board_state.apply_mutation(mutation, seat_number)
 	if not result.accepted:
 		return "BOARD MUTATION REJECTED: %s" % result.reason
-	return "BOARD r%d  •  %s" % [_board_state.revision, _board_state.get_history()[-1].summary.to_upper()]
+	return (
+		"BOARD r%d  •  %s"
+		% [_board_state.revision, _board_state.get_history()[-1].summary.to_upper()]
+	)
+
 
 func _on_board_state_changed(_change: Dictionary) -> void:
 	if not is_instance_valid(_interactions):
@@ -598,6 +818,7 @@ func _on_board_state_changed(_change: Dictionary) -> void:
 	var clue: SandboxInteractable = _interactions.get_interactable("clue_pedestal")
 	if clue != null:
 		clue.set_active(_board_state.get_space_state("lantern_hall").features.has("clue_revealed"))
+
 
 func _on_board_mutation_rejected(reason: String) -> void:
 	_message_label.text = "BOARD MUTATION REJECTED  •  %s" % reason.to_upper()

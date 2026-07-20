@@ -5,8 +5,12 @@ signal room_ready(room_id: String, join_code: String)
 signal pending_client_discovered(client_id: String, client_display: String)
 signal claim_completed(client_id: String, seat_number: int, accepted: bool, code: String)
 signal client_resumed(client_id: String, seat_number: int)
-signal authoritative_intent_completed(client_id: String, request_id: String, accepted: bool, code: String)
-signal outbound_delivery_completed(client_id: String, request_id: String, message_type: String, accepted: bool, code: String)
+signal authoritative_intent_completed(
+	client_id: String, request_id: String, accepted: bool, code: String
+)
+signal outbound_delivery_completed(
+	client_id: String, request_id: String, message_type: String, accepted: bool, code: String
+)
 signal room_closed
 signal service_state_changed(state: String)
 
@@ -32,6 +36,7 @@ var _drain_queued: bool = false
 var _room_active: bool = false
 var _service_state: String = "disabled"
 
+
 func _ready() -> void:
 	_http = HTTPRequest.new()
 	_http.use_threads = true
@@ -39,6 +44,7 @@ func _ready() -> void:
 	add_child(_http)
 	_http.request_completed.connect(_on_request_completed)
 	set_process(true)
+
 
 func initialize(p_service_base_url: String, p_bridge: CompanionBridge) -> Dictionary:
 	if p_bridge == null or not _valid_service_url(p_service_base_url):
@@ -50,43 +56,67 @@ func initialize(p_service_base_url: String, p_bridge: CompanionBridge) -> Dictio
 	_set_service_state("ready")
 	return {"accepted": true, "code": "accepted"}
 
+
 func create_room() -> Dictionary:
 	if bridge == null or _room_active or not is_instance_valid(_http):
 		return {"accepted": false, "code": "transport_unavailable"}
 	return _enqueue_request({"kind": "create", "path": "/v1/rooms", "body": {}})
 
+
 func approve_client(client_id: String, seat_number: int) -> Dictionary:
-	if not _room_active or not _pending_clients.has(client_id) or not bridge.can_approve_claim(client_id, seat_number):
+	if (
+		not _room_active
+		or not _pending_clients.has(client_id)
+		or not bridge.can_approve_claim(client_id, seat_number)
+	):
 		return {"accepted": false, "code": "unauthorized"}
-	return _enqueue_host_operation("approve", {"clientId": client_id, "seatClaim": seat_number}, {
-		"client_id": client_id, "seat_number": seat_number,
-	})
+	return _enqueue_host_operation(
+		"approve",
+		{"clientId": client_id, "seatClaim": seat_number},
+		{
+			"client_id": client_id,
+			"seat_number": seat_number,
+		}
+	)
+
 
 func deny_client(client_id: String) -> Dictionary:
 	if not _room_active or not _pending_clients.has(client_id):
 		return {"accepted": false, "code": "unauthorized"}
 	return _enqueue_host_operation("deny", {"clientId": client_id}, {"client_id": client_id})
 
+
 func close_room() -> Dictionary:
 	if not _room_active:
 		return {"accepted": false, "code": "expired"}
 	return _enqueue_host_operation("close", {}, {})
 
+
 func sanitized_diagnostics() -> Dictionary:
 	var claims: Array[Dictionary] = []
 	for client_id: String in _client_seats:
-		claims.append({
-			"client_display": CompanionProtocol.request_display(client_id),
-			"seat": _client_seats[client_id],
-		})
+		(
+			claims
+			. append(
+				{
+					"client_display": CompanionProtocol.request_display(client_id),
+					"seat": _client_seats[client_id],
+				}
+			)
+		)
 	claims.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.seat < b.seat)
 	return {
-		"transport": "local_room_service_http", "service_state": _service_state,
-		"room_active": _room_active, "room_id": room_id, "join_code": join_code,
-		"pending_clients": _pending_clients.size(), "claims": claims,
+		"transport": "local_room_service_http",
+		"service_state": _service_state,
+		"room_active": _room_active,
+		"room_id": room_id,
+		"join_code": join_code,
+		"pending_clients": _pending_clients.size(),
+		"claims": claims,
 		"request_queue_depth": _request_queue.size() + (0 if _active_request.is_empty() else 1),
 		"privacy": "HOST AUTHORIZATION AND PAYLOAD VALUES HIDDEN",
 	}
+
 
 func _process(delta: float) -> void:
 	if _room_active:
@@ -102,16 +132,23 @@ func _process(delta: float) -> void:
 			_enqueue_host_operation("drain", {}, {})
 	_start_next_request()
 
-func _enqueue_host_operation(operation: String, fields: Dictionary, context: Dictionary) -> Dictionary:
+
+func _enqueue_host_operation(
+	operation: String, fields: Dictionary, context: Dictionary
+) -> Dictionary:
 	if not _room_active or _host_capability.is_empty():
 		return {"accepted": false, "code": "transport_unavailable"}
 	var body: Dictionary = {"joinCode": join_code, "operation": operation}
 	body.merge(fields, true)
 	var request: Dictionary = {
-		"kind": operation, "path": "/v1/rooms/host", "body": body,
-		"authorized": true, "context": context.duplicate(true),
+		"kind": operation,
+		"path": "/v1/rooms/host",
+		"body": body,
+		"authorized": true,
+		"context": context.duplicate(true),
 	}
 	return _enqueue_request(request)
+
 
 func _enqueue_request(request: Dictionary) -> Dictionary:
 	if _request_queue.size() >= MAX_REQUEST_QUEUE:
@@ -120,6 +157,7 @@ func _enqueue_request(request: Dictionary) -> Dictionary:
 	_start_next_request()
 	return {"accepted": true, "code": "accepted"}
 
+
 func _start_next_request() -> void:
 	if not is_instance_valid(_http) or not _active_request.is_empty() or _request_queue.is_empty():
 		return
@@ -127,18 +165,24 @@ func _start_next_request() -> void:
 	var headers := PackedStringArray(["Content-Type: application/json", "Accept: application/json"])
 	if _active_request.get("authorized", false):
 		headers.append("Authorization: Bearer %s" % _host_capability)
-	var error: Error = _http.request(
-		service_base_url + _active_request.path,
-		headers,
-		HTTPClient.METHOD_POST,
-		JSON.stringify(_active_request.get("body", {})),
+	var error: Error = (
+		_http
+		. request(
+			service_base_url + _active_request.path,
+			headers,
+			HTTPClient.METHOD_POST,
+			JSON.stringify(_active_request.get("body", {})),
+		)
 	)
 	if error != OK:
 		var failed: Dictionary = _active_request
 		_active_request = {}
 		_request_failed(failed, "transport_unavailable")
 
-func _on_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+
+func _on_request_completed(
+	result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
+) -> void:
 	var request: Dictionary = _active_request
 	_active_request = {}
 	if request.is_empty():
@@ -148,7 +192,9 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 	elif request.kind == "drain":
 		_drain_queued = false
 	if result != HTTPRequest.RESULT_SUCCESS or response_code < 200 or response_code >= 300:
-		_request_failed(request, "transport_unavailable" if response_code == 0 else _safe_service_code(body))
+		_request_failed(
+			request, "transport_unavailable" if response_code == 0 else _safe_service_code(body)
+		)
 		return
 	var parsed: Variant = JSON.parse_string(body.get_string_from_utf8())
 	if not parsed is Dictionary:
@@ -158,10 +204,16 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 	_handle_response(request, response)
 	_start_next_request()
 
+
 func _handle_response(request: Dictionary, response: Dictionary) -> void:
 	match request.kind:
 		"create":
-			if not response.get("accepted", false) or not response.get("roomId") is String or not response.get("joinCode") is String or not response.get("hostCapability") is String:
+			if (
+				not response.get("accepted", false)
+				or not response.get("roomId") is String
+				or not response.get("joinCode") is String
+				or not response.get("hostCapability") is String
+			):
 				_request_failed(request, "malformed")
 				return
 			var created: Dictionary = bridge.create_room(response.roomId, response.joinCode)
@@ -190,16 +242,27 @@ func _handle_response(request: Dictionary, response: Dictionary) -> void:
 					_client_seats[client_id] = seat_number
 					claim_completed.emit(client_id, seat_number, true, "accepted")
 				else:
-					_enqueue_host_operation("revoke", {"clientId": client_id}, {"client_id": client_id})
-					claim_completed.emit(client_id, seat_number, false, approved.get("code", "unauthorized"))
+					_enqueue_host_operation(
+						"revoke", {"clientId": client_id}, {"client_id": client_id}
+					)
+					claim_completed.emit(
+						client_id, seat_number, false, approved.get("code", "unauthorized")
+					)
 			else:
-				claim_completed.emit(client_id, seat_number, false, String(response.get("code", "unauthorized")))
+				claim_completed.emit(
+					client_id, seat_number, false, String(response.get("code", "unauthorized"))
+				)
 		"deny":
 			var client_id: String = request.context.get("client_id", "")
 			if response.get("accepted", false):
 				bridge.deny_claim(client_id)
 				_pending_clients.erase(client_id)
-			claim_completed.emit(client_id, 0, response.get("accepted", false), String(response.get("code", "unauthorized")))
+			claim_completed.emit(
+				client_id,
+				0,
+				response.get("accepted", false),
+				String(response.get("code", "unauthorized"))
+			)
 		"close":
 			if not response.get("accepted", false):
 				_request_failed(request, String(response.get("code", "unauthorized")))
@@ -210,17 +273,22 @@ func _handle_response(request: Dictionary, response: Dictionary) -> void:
 			room_closed.emit()
 		"relay":
 			var accepted: bool = response.get("accepted", false)
-			outbound_delivery_completed.emit(
-				String(request.context.get("client_id", "")),
-				String(request.context.get("request_id", "")),
-				String(request.context.get("message_type", "")),
-				accepted, String(response.get("code", "unauthorized")),
+			(
+				outbound_delivery_completed
+				. emit(
+					String(request.context.get("client_id", "")),
+					String(request.context.get("request_id", "")),
+					String(request.context.get("message_type", "")),
+					accepted,
+					String(response.get("code", "unauthorized")),
+				)
 			)
 			if not accepted:
 				_request_failed(request, String(response.get("code", "unauthorized")))
 		"heartbeat", "revoke":
 			if not response.get("accepted", false):
 				_request_failed(request, String(response.get("code", "unauthorized")))
+
 
 func _process_host_message(value: Variant) -> void:
 	var converted: Dictionary = CompanionWireCodec.from_wire_envelope(value)
@@ -234,7 +302,14 @@ func _process_host_message(value: Variant) -> void:
 			if not client_id is String or not bridge.request_join(client_id).accepted:
 				return
 			_pending_clients[client_id] = true
-			pending_client_discovered.emit(client_id, String(envelope.payload.get("client_display", CompanionProtocol.request_display(client_id))))
+			pending_client_discovered.emit(
+				client_id,
+				String(
+					envelope.payload.get(
+						"client_display", CompanionProtocol.request_display(client_id)
+					)
+				)
+			)
 		"client_left":
 			var client_id: Variant = envelope.payload.get("client_id")
 			if client_id is String:
@@ -250,27 +325,49 @@ func _process_host_message(value: Variant) -> void:
 			if client_id.is_empty():
 				return
 			var result: Dictionary = bridge.receive_client_envelope(client_id, envelope)
-			authoritative_intent_completed.emit(
-				client_id, envelope.request_id, result.accepted,
-				"accepted" if result.accepted else String(result.get("code", "malformed")),
+			(
+				authoritative_intent_completed
+				. emit(
+					client_id,
+					envelope.request_id,
+					result.accepted,
+					"accepted" if result.accepted else String(result.get("code", "malformed")),
+				)
 			)
 
+
 func _on_bridge_outbound_envelope(client_id: String, envelope: Dictionary) -> void:
-	if not _room_active or not [
-		"public_view_update", "seat_private_view_update", "faction_private_view_update",
-		"acknowledgement", "rejection",
-	].has(envelope.get("message_type", "")):
+	if (
+		not _room_active
+		or not (
+			[
+				"public_view_update",
+				"seat_private_view_update",
+				"faction_private_view_update",
+				"acknowledgement",
+				"rejection",
+			]
+			. has(envelope.get("message_type", ""))
+		)
+	):
 		return
 	var serialized: Dictionary = CompanionWireCodec.stringify_wire_envelope(envelope)
 	if not serialized.accepted:
 		_set_service_state("protocol_rejected")
 		return
-	_enqueue_host_operation("relay", {
-		"clientId": client_id, "envelope": serialized.raw,
-	}, {
-		"client_id": client_id, "request_id": envelope.get("request_id", ""),
-		"message_type": envelope.get("message_type", ""),
-	})
+	_enqueue_host_operation(
+		"relay",
+		{
+			"clientId": client_id,
+			"envelope": serialized.raw,
+		},
+		{
+			"client_id": client_id,
+			"request_id": envelope.get("request_id", ""),
+			"message_type": envelope.get("message_type", ""),
+		}
+	)
+
 
 func _request_failed(request: Dictionary, code: String) -> void:
 	if request.get("kind") == "heartbeat":
@@ -280,6 +377,7 @@ func _request_failed(request: Dictionary, code: String) -> void:
 	_set_service_state("unavailable" if code == "transport_unavailable" else "rejected_%s" % code)
 	_start_next_request()
 
+
 func _safe_service_code(body: PackedByteArray) -> String:
 	var parsed: Variant = JSON.parse_string(body.get_string_from_utf8())
 	if parsed is Dictionary and parsed.get("code") is String:
@@ -288,11 +386,13 @@ func _safe_service_code(body: PackedByteArray) -> String:
 			return code
 	return "transport_unavailable"
 
+
 func _client_for_seat(seat_number: int) -> String:
 	for client_id: String in _client_seats:
 		if _client_seats[client_id] == seat_number:
 			return client_id
 	return ""
+
 
 func _clear_room_state() -> void:
 	_host_capability = ""
@@ -305,11 +405,13 @@ func _clear_room_state() -> void:
 	_heartbeat_queued = false
 	_drain_queued = false
 
+
 func _set_service_state(value: String) -> void:
 	if value == _service_state:
 		return
 	_service_state = value
 	service_state_changed.emit(value)
+
 
 func _valid_service_url(value: String) -> bool:
 	if value.begins_with("https://"):

@@ -2,13 +2,16 @@ class_name BoardDefinition
 extends Resource
 
 const VALID_CONNECTOR_STATES: PackedStringArray = ["open", "closed", "locked", "collapsed"]
-const VALID_CONNECTOR_TYPES: PackedStringArray = ["open_passage", "door", "locked_door", "collapsed_route", "one_way", "scenario_link"]
+const VALID_CONNECTOR_TYPES: PackedStringArray = [
+	"open_passage", "door", "locked_door", "collapsed_route", "one_way", "scenario_link"
+]
 
 var board_id: String = ""
 var board_version: int = 1
 var spaces: Array[Dictionary] = []
 var connectors: Array[Dictionary] = []
 var required_space_ids: PackedStringArray = []
+
 
 func validate() -> PackedStringArray:
 	var failures := PackedStringArray()
@@ -29,17 +32,20 @@ func validate() -> PackedStringArray:
 		_validate_required_reachability(space_ids, failures)
 	return failures
 
+
 func get_space(space_id: String) -> Dictionary:
 	for space: Dictionary in spaces:
 		if space.get("id", "") == space_id:
 			return space.duplicate(true)
 	return {}
 
+
 func get_connector(connector_id: String) -> Dictionary:
 	for connector: Dictionary in connectors:
 		if connector.get("id", "") == connector_id:
 			return connector.duplicate(true)
 	return {}
+
 
 func space_ids() -> PackedStringArray:
 	var result := PackedStringArray()
@@ -48,12 +54,14 @@ func space_ids() -> PackedStringArray:
 	result.sort()
 	return result
 
+
 func connector_ids() -> PackedStringArray:
 	var result := PackedStringArray()
 	for connector: Dictionary in connectors:
 		result.append(connector.id)
 	result.sort()
 	return result
+
 
 func space_center(space_id: String) -> Vector2:
 	var space: Dictionary = get_space(space_id)
@@ -68,6 +76,7 @@ func space_center(space_id: String) -> Vector2:
 		weighted_center += area.get_center() * weight
 		total_area += weight
 	return weighted_center / total_area if total_area > 0.0 else Vector2.ZERO
+
 
 func _validate_space(space: Dictionary, seen: Dictionary, failures: PackedStringArray) -> void:
 	var space_id: Variant = space.get("id")
@@ -101,7 +110,10 @@ func _validate_space(space: Dictionary, seen: Dictionary, failures: PackedString
 	if space.has("label_position") and typeof(space.label_position) != TYPE_VECTOR2:
 		failures.append("space '%s' has malformed label position" % space_id)
 
-func _validate_connector(connector: Dictionary, space_ids: Dictionary, seen: Dictionary, failures: PackedStringArray) -> void:
+
+func _validate_connector(
+	connector: Dictionary, space_ids: Dictionary, seen: Dictionary, failures: PackedStringArray
+) -> void:
 	var connector_id: Variant = connector.get("id")
 	if not _valid_id(connector_id):
 		failures.append("connector has malformed id")
@@ -125,6 +137,7 @@ func _validate_connector(connector: Dictionary, space_ids: Dictionary, seen: Dic
 	if not connector.get("one_way", false) is bool:
 		failures.append("connector '%s' has malformed direction state" % connector_id)
 
+
 func _validate_required_reachability(space_ids: Dictionary, failures: PackedStringArray) -> void:
 	if required_space_ids.size() < 2:
 		return
@@ -147,11 +160,13 @@ func _validate_required_reachability(space_ids: Dictionary, failures: PackedStri
 		if not visited.has(required_id):
 			failures.append("required space '%s' is unreachable in authored topology" % required_id)
 
+
 func _valid_id(value: Variant) -> bool:
 	if not value is String:
 		return false
 	var text: String = value
 	return not text.is_empty() and text == text.to_lower() and text.is_valid_identifier()
+
 
 func _is_string_collection(value: Variant) -> bool:
 	if not value is Array and not value is PackedStringArray:
