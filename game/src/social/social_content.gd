@@ -40,6 +40,232 @@ const VALID_DIRECTOR_SIGNALS: PackedStringArray = [
 	"social_choice_pressure",
 	"afterlife_support_available",
 ]
+
+
+class SessionContract:
+	extends RefCounted
+
+	func public_view() -> Dictionary:
+		return _contract_public_view()
+
+	func seat_private_view(seat_number: int) -> Dictionary:
+		return _contract_seat_private_view(seat_number)
+
+	func faction_private_view(requester_seat: int) -> Dictionary:
+		return _contract_faction_private_view(requester_seat)
+
+	func diagnostics_view(spoilers_enabled: bool = false) -> Dictionary:
+		return _contract_diagnostics_view(spoilers_enabled)
+
+	func director_safe_signals() -> Dictionary:
+		return _contract_director_safe_signals()
+
+	func privacy_report() -> Dictionary:
+		return _contract_privacy_report()
+
+	func _contract_public_view() -> Dictionary:
+		return {}
+
+	func _contract_seat_private_view(_seat_number: int) -> Dictionary:
+		return {}
+
+	func _contract_faction_private_view(_requester_seat: int) -> Dictionary:
+		return {}
+
+	func _contract_diagnostics_view(_spoilers_enabled: bool = false) -> Dictionary:
+		return {}
+
+	func _contract_director_safe_signals() -> Dictionary:
+		return {}
+
+	func _contract_privacy_report() -> Dictionary:
+		return {}
+
+	func _accept() -> Dictionary:
+		return {"accepted": true, "reason": ""}
+
+
+class SessionData:
+	extends RefCounted
+
+	static func validate_snapshot(
+		snapshot: Dictionary, content: SocialContent, snapshot_version: int
+	) -> Dictionary:
+		var reason: String = _snapshot_identity_rejection(snapshot, content, snapshot_version)
+		if reason.is_empty():
+			reason = _snapshot_scalar_rejection(snapshot)
+		if reason.is_empty():
+			reason = _snapshot_seat_rejection(snapshot, content)
+		if reason.is_empty():
+			reason = _snapshot_collection_rejection(snapshot)
+		return {"accepted": reason.is_empty(), "reason": reason}
+
+	static func _snapshot_identity_rejection(
+		snapshot: Dictionary, content: SocialContent, snapshot_version: int
+	) -> String:
+		var reason: String = ""
+		if snapshot.get("snapshot_version", -1) != snapshot_version:
+			reason = "unsupported_snapshot_version"
+		elif (
+			snapshot.get("scenario_id", "") != content.scenario_id
+			or snapshot.get("scenario_version", -1) != content.scenario_version
+		):
+			reason = "snapshot_content_mismatch"
+		elif (
+			content.mode_by_id(snapshot.get("mode_id", "")).is_empty()
+			or content.mode_by_id(snapshot.get("requested_mode_id", "")).is_empty()
+		):
+			reason = "unknown_snapshot_content"
+		return reason
+
+	static func _snapshot_scalar_rejection(snapshot: Dictionary) -> String:
+		var reason: String = ""
+		for key: String in [
+			"session_seed", "revision", "assignment_count", "audit_sequence", "action_step"
+		]:
+			if not snapshot.get(key) is int or snapshot.get(key, -1) < 0:
+				reason = "malformed_snapshot"
+				break
+		if (
+			reason.is_empty()
+			and (not snapshot.get("rng") is Dictionary or not snapshot.get("seat_states") is Array)
+		):
+			reason = "malformed_snapshot"
+		return reason
+
+	static func _snapshot_seat_rejection(snapshot: Dictionary, content: SocialContent) -> String:
+		var reason: String = ""
+		var seats: Dictionary = {}
+		for row: Variant in snapshot.seat_states:
+			reason = _snapshot_seat_row_rejection(row, seats, content)
+			if not reason.is_empty():
+				break
+			seats[row.seat] = true
+		if reason.is_empty():
+			var selected_mode: Dictionary = content.mode_by_id(snapshot.mode_id)
+			if not selected_mode.get("supported_player_counts", []).has(seats.size()):
+				reason = "impossible_snapshot_combination"
+		return reason
+
+	static func _snapshot_seat_row_rejection(
+		row: Variant, seats: Dictionary, content: SocialContent
+	) -> String:
+		var reason: String = ""
+		if (
+			not row is Dictionary
+			or not row.get("seat") is int
+			or not row.get("state") is Dictionary
+			or seats.has(row.seat)
+		):
+			return "malformed_snapshot"
+		var state: Dictionary = row.state
+		var form: Dictionary = content.role_by_id(state.get("form_id", ""))
+		if (
+			row.seat < 1
+			or row.seat > SeatManager.MAX_SEATS
+			or form.is_empty()
+			or content.role_by_id(state.get("assigned_role_id", "")).is_empty()
+			or content.faction_by_id(state.get("faction_id", "")).is_empty()
+		):
+			reason = "unknown_snapshot_content"
+		elif not form.get("allowed_factions", []).has(state.get("faction_id", "")):
+			reason = "impossible_snapshot_combination"
+		elif (
+			not VALID_LIFECYCLES.has(state.get("lifecycle", ""))
+			or not state.get("objective_refs") is Array
+		):
+			reason = "malformed_snapshot"
+		else:
+			reason = _snapshot_seat_content_rejection(state, content)
+		return reason
+
+	static func _snapshot_seat_content_rejection(
+		state: Dictionary, content: SocialContent
+	) -> String:
+		var reason: String = ""
+		for objective_id: Variant in state.objective_refs:
+			if not objective_id is String or content.objective_by_id(objective_id).is_empty():
+				reason = "unknown_snapshot_content"
+				break
+		if reason.is_empty():
+			for action_id: Variant in state.get("uses", {}).keys():
+				if (
+					not action_id is String
+					or content.action_by_id(action_id).is_empty()
+					or not state.uses[action_id] is int
+					or state.uses[action_id] < 0
+				):
+					reason = "unknown_snapshot_content"
+					break
+		return reason
+
+	static func _snapshot_collection_rejection(snapshot: Dictionary) -> String:
+		var reason: String = ""
+		for array_key: String in [
+			"pending_late_seats", "audit_history", "public_history", "last_host_payloads"
+		]:
+			if not snapshot.get(array_key) is Array:
+				reason = "malformed_snapshot"
+				break
+		if (
+			reason.is_empty()
+			and (
+				not snapshot.get("transition_counts") is Dictionary
+				or not snapshot.get("fallback_applied") is bool
+				or not snapshot.get("fallback_message") is String
+				or not snapshot.get("resolved_outcome") is Dictionary
+			)
+		):
+			reason = "malformed_snapshot"
+		return reason
+
+	static func seat_state_rows(seat_states: Dictionary) -> Array[Dictionary]:
+		var rows: Array[Dictionary] = []
+		for seat_number: int in sorted_seats(seat_states):
+			rows.append({"seat": seat_number, "state": seat_states[seat_number].duplicate(true)})
+		return rows
+
+	static func sorted_seats(seat_states: Dictionary) -> Array[int]:
+		var result: Array[int] = []
+		for key: Variant in seat_states.keys():
+			result.append(int(key))
+		result.sort()
+		return result
+
+	static func roman(seat_number: int, numerals: PackedStringArray) -> String:
+		return numerals[clampi(seat_number - 1, 0, numerals.size() - 1)]
+
+	static func json_copy(value: Variant) -> Variant:
+		return _normalize_json_numbers(JSON.parse_string(JSON.stringify(value)))
+
+	static func _normalize_json_numbers(value: Variant) -> Variant:
+		if value is float and is_equal_approx(value, round(value)):
+			return int(value)
+		if value is Array:
+			var array: Array = []
+			for item: Variant in value:
+				array.append(_normalize_json_numbers(item))
+			return array
+		if value is Dictionary:
+			var dictionary: Dictionary = {}
+			for key: Variant in value:
+				dictionary[key] = _normalize_json_numbers(value[key])
+			return dictionary
+		return value
+
+	static func int_array(values: Array) -> Array[int]:
+		var result: Array[int] = []
+		for value: Variant in values:
+			result.append(int(value))
+		return result
+
+	static func dict_array(values: Array) -> Array[Dictionary]:
+		var result: Array[Dictionary] = []
+		for value: Variant in values:
+			result.append(value.duplicate(true))
+		return result
+
+
 const VALID_FIXTURE_OPERATIONS: PackedStringArray = [
 	"transition",
 	"action",
@@ -539,7 +765,7 @@ func _transition_bounds_missing(transition_index: Dictionary) -> bool:
 
 
 func _validate_afterlife_guarantees(
-	role_index: Dictionary,
+	_role_index: Dictionary,
 	action_index: Dictionary,
 	objective_index: Dictionary,
 	failures: PackedStringArray
@@ -614,3 +840,116 @@ func _valid_id(value: Variant) -> bool:
 		if not character in "abcdefghijklmnopqrstuvwxyz0123456789_":
 			return false
 	return true
+
+
+func _faction(
+	stable_id: String,
+	friendly_label: String,
+	symbol: String,
+	pattern: String,
+	membership_policy: String,
+	communication_allowed: bool,
+	result_group: String,
+	director_signals: Array[String]
+) -> Dictionary:
+	return {
+		"id": stable_id,
+		"version": 1,
+		"label": friendly_label,
+		"symbol": symbol,
+		"pattern": pattern,
+		"presentation_tags": [result_group],
+		"membership_policy": membership_policy,
+		"minimum_seats": 0,
+		"maximum_seats": SeatManager.MAX_SEATS,
+		"relationships": {},
+		"shared_objectives": [],
+		"transition_refs": [],
+		"communication_allowed": communication_allowed,
+		"result_group": result_group,
+		"director_signal_policy": director_signals,
+		"presentation": {"tone": result_group},
+	}
+
+
+func _transition(
+	stable_id: String,
+	friendly_label: String,
+	source_forms: Array[String],
+	target_form: String,
+	trigger: String,
+	visibility: String,
+	max_chain: int,
+	state_patch: Dictionary
+) -> Dictionary:
+	return {
+		"id": stable_id,
+		"version": 1,
+		"label": friendly_label,
+		"source_forms": source_forms,
+		"target_form": target_form,
+		"trigger": trigger,
+		"visibility": visibility,
+		"max_chain": max_chain,
+		"state_patch": state_patch,
+		"downstream_effects": [],
+		"presentation": {"public_message": "%s." % friendly_label},
+	}
+
+
+func _mode(
+	stable_id: String,
+	friendly_label: String,
+	supported_counts: Array,
+	policy: String,
+	default_role_id: String,
+	pool: Array[Dictionary],
+	fixed: Array[Dictionary],
+	fallback: String,
+	afterlife_enabled: bool
+) -> Dictionary:
+	return {
+		"id": stable_id,
+		"version": 1,
+		"label": friendly_label,
+		"supported_player_counts": supported_counts,
+		"assignment_policy": policy,
+		"default_role_id": default_role_id,
+		"assignment_pool": pool,
+		"fixed_assignments": fixed,
+		"required_combinations": [],
+		"forbidden_combinations": [],
+		"fallback_mode": fallback,
+		"objective_refs": ["secure_lantern_house"],
+		"afterlife_enabled": afterlife_enabled,
+		"privacy_policy":
+		{
+			"public_shared_screen": true,
+			"seat_private_requires_obscure": true,
+			"late_join": "deferred"
+		},
+		"terminal_policy": {"tie": "compatible_highest_priority", "result_key": "social_outcome"},
+		"assignment_retry_limit": 8,
+		"transition_chain_limit": 8,
+		"maximum_inactive_transition_delay": 1,
+		"director_signal_allowlist": VALID_DIRECTOR_SIGNALS.duplicate(),
+	}
+
+
+func _fixture(
+	stable_id: String,
+	evidence_stage: String,
+	mode_id: String,
+	seat_count: int,
+	operations: Array[Dictionary],
+	view: Dictionary
+) -> Dictionary:
+	return {
+		"id": stable_id,
+		"version": 1,
+		"evidence_stage": evidence_stage,
+		"mode_id": mode_id,
+		"seat_count": seat_count,
+		"operations": operations,
+		"view": view,
+	}

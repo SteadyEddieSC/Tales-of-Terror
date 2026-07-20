@@ -551,7 +551,10 @@ func _run_companion_showcase(stage: String) -> void:
 			"headline":
 			"COMPANION ACTION ACCEPTED EXACTLY ONCE  •  AUTHORITY r%d" % accepted.after_revision,
 			"detail":
-			"Bounded prompt intent crossed RulesSession validation; replay cache prevents duplicate mutation."
+			(
+				"Bounded prompt intent crossed RulesSession validation; replay cache prevents "
+				+ "duplicate mutation."
+			)
 		}
 	elif stage == "companion_diagnostics":
 		for index: int in client_count:
@@ -561,7 +564,10 @@ func _run_companion_showcase(stage: String) -> void:
 		outcome = {
 			"headline": "EIGHT SIMULATED COMPANIONS  •  SANITIZED + BOUNDED",
 			"detail":
-			"Capabilities, private payloads, storage contents, raw audits, and spoiler diagnostics are absent."
+			(
+				"Capabilities, private payloads, storage contents, raw audits, and spoiler "
+				+ "diagnostics are absent."
+			)
 		}
 	for child: Node in get_children():
 		if child is ExplorationRoom or child is ExplorationPawn or child is SandboxInteractable:
@@ -577,7 +583,9 @@ func _run_companion_showcase(stage: String) -> void:
 	if is_instance_valid(_role_diagnostics):
 		_role_diagnostics.visible = false
 	_companion_lab.present(_companion_bridge, stage, outcome)
-	_message_label.text = "EVIDENCE: COMPANION ROOM  •  OPTIONAL INPUT/PRESENTATION  •  NATIVE GODOT AUTHORITY"
+	_message_label.text = (
+		"EVIDENCE: COMPANION ROOM  •  OPTIONAL INPUT/PRESENTATION  •  " + "NATIVE GODOT AUTHORITY"
+	)
 
 
 func _run_director_showcase(trajectory: String) -> void:

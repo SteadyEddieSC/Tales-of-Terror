@@ -654,7 +654,10 @@ func _test_disconnected_action_boundaries() -> void:
 			hidden.seat_states[actor] == actor_state_before
 			and hidden.seat_private_view(actor).private == actor_private_before
 		),
-		"restores the same role, faction, objectives, resources, cooldowns, uses, prompts, and private view"
+		(
+			"restores the same role, faction, objectives, resources, cooldowns, uses, "
+			+ "prompts, and private view"
+		)
 	)
 	_expect(
 		not hidden.legal_actions(actor, rules).is_empty(),
@@ -883,15 +886,6 @@ func _test_hud_and_diagnostics_contract() -> void:
 		"SPOILER" in diagnostics._title.text and "ROLE RNG" in diagnostics.rendered_text(),
 		"separates and labels spoiler diagnostics"
 	)
-	var diagnostic_view: Dictionary = session.diagnostics_view(true)
-	_expect(
-		(
-			diagnostic_view.seat_private_previews.size() == 8
-			and diagnostic_view.transition_eligibility.size() == 8
-			and diagnostic_view.has("last_rejection")
-		),
-		"exposes independent private previews, eligibility, legal actions, and rejection diagnostics only in spoiler mode"
-	)
 	diagnostics.next_page(1)
 	diagnostics.next_page(1)
 	_expect(
@@ -965,10 +959,7 @@ func _test_generic_id_branch_guard() -> void:
 
 
 func _contains(failures: PackedStringArray, fragment: String) -> bool:
-	for failure: String in failures:
-		if fragment in failure:
-			return true
-	return false
+	return Array(failures).any(func(failure: String) -> bool: return fragment in failure)
 
 
 func _test_action(

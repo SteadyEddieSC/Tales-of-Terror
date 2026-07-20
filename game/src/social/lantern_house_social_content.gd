@@ -68,8 +68,7 @@ func _init() -> void:
 			40,
 			[{"type": "rules_flag", "flag_id": "house_secured", "value": true}],
 			[],
-			true,
-			["house_secured"]
+			[true, ["house_secured"]]
 		),
 		_objective(
 			"survive_the_tale",
@@ -81,8 +80,7 @@ func _init() -> void:
 			20,
 			[{"type": "seat_state", "key": "defeated", "value": false}],
 			[],
-			true,
-			["survivor"]
+			[true, ["survivor"]]
 		),
 		_objective(
 			"break_the_archive",
@@ -94,8 +92,7 @@ func _init() -> void:
 			60,
 			[{"type": "rules_flag", "flag_id": "archive_broken", "value": true}],
 			[{"type": "rules_flag", "flag_id": "path_misdirected", "value": true}],
-			true,
-			["betrayal"]
+			[true, ["betrayal"]]
 		),
 		_objective(
 			"claim_the_house",
@@ -107,8 +104,7 @@ func _init() -> void:
 			55,
 			[{"type": "rules_flag", "flag_id": "horror_claimed", "value": true}],
 			[{"type": "rules_counter_at_least", "counter_id": "dread", "value": 1}],
-			true,
-			["horror_claim"]
+			[true, ["horror_claim"]]
 		),
 		_objective(
 			"form_the_chorus",
@@ -120,8 +116,7 @@ func _init() -> void:
 			50,
 			[{"type": "faction_count_at_least", "value": 2}],
 			[{"type": "faction_count_at_least", "value": 1}],
-			true,
-			["changed_chorus"]
+			[true, ["changed_chorus"]]
 		),
 		_objective(
 			"guide_from_beyond",
@@ -133,8 +128,7 @@ func _init() -> void:
 			45,
 			[{"type": "action_used", "action_tag": "afterlife_support"}],
 			[],
-			true,
-			["restless_guide"]
+			[true, ["restless_guide"]]
 		),
 		_objective(
 			"guard_the_lantern",
@@ -146,8 +140,7 @@ func _init() -> void:
 			48,
 			[{"type": "rules_flag", "flag_id": "guardian_warning", "value": true}],
 			[],
-			true,
-			["guardian"]
+			[true, ["guardian"]]
 		),
 		_objective(
 			"bear_witness",
@@ -159,8 +152,7 @@ func _init() -> void:
 			35,
 			[{"type": "rules_counter_at_least", "counter_id": "testimony", "value": 1}],
 			[],
-			true,
-			["witness"]
+			[true, ["witness"]]
 		),
 		_objective(
 			"return_to_the_light",
@@ -172,8 +164,7 @@ func _init() -> void:
 			42,
 			[{"type": "rules_flag", "flag_id": "house_secured", "value": true}],
 			[{"type": "rules_counter_at_least", "counter_id": "objective_progress", "value": 1}],
-			true,
-			["replacement"]
+			[true, ["replacement"]]
 		),
 		_objective(
 			"keep_the_token",
@@ -185,8 +176,7 @@ func _init() -> void:
 			30,
 			[{"type": "action_used", "action_tag": "investigation"}],
 			[],
-			true,
-			["individual_memory"]
+			[true, ["individual_memory"]]
 		),
 	]
 	factions[0].shared_objectives = ["secure_lantern_house"]
@@ -207,12 +197,14 @@ func _init() -> void:
 			"public",
 			["active", "replacement"],
 			"none",
-			0,
-			0,
-			0,
-			1,
-			0,
-			["investigation", "living"],
+			{
+				"minimum_targets": 0,
+				"maximum_targets": 0,
+				"use_limit": 0,
+				"per_round_limit": 1,
+				"cooldown": 0,
+				"tags": ["investigation", "living"],
+			},
 			[
 				{
 					"type": "rules_effects",
@@ -234,12 +226,14 @@ func _init() -> void:
 			"seat_private",
 			["active"],
 			"none",
-			0,
-			0,
-			1,
-			1,
-			0,
-			["opposition", "secret"],
+			{
+				"minimum_targets": 0,
+				"maximum_targets": 0,
+				"use_limit": 1,
+				"per_round_limit": 1,
+				"cooldown": 0,
+				"tags": ["opposition", "secret"],
+			},
 			[
 				{
 					"type": "rules_effects",
@@ -261,12 +255,14 @@ func _init() -> void:
 			"public",
 			["transformed", "active"],
 			"none",
-			0,
-			0,
-			2,
-			1,
-			0,
-			["horror", "pressure"],
+			{
+				"minimum_targets": 0,
+				"maximum_targets": 0,
+				"use_limit": 2,
+				"per_round_limit": 1,
+				"cooldown": 0,
+				"tags": ["horror", "pressure"],
+			},
 			[
 				{
 					"type": "rules_effects",
@@ -288,12 +284,14 @@ func _init() -> void:
 			"faction_private",
 			["transformed", "active"],
 			"other",
-			1,
-			1,
-			1,
-			1,
-			1,
-			["changed", "spread"],
+			{
+				"minimum_targets": 1,
+				"maximum_targets": 1,
+				"use_limit": 1,
+				"per_round_limit": 1,
+				"cooldown": 1,
+				"tags": ["changed", "spread"],
+			},
 			[
 				{
 					"type": "role_transition",
@@ -316,12 +314,14 @@ func _init() -> void:
 			"public",
 			["afterlife"],
 			"none",
-			0,
-			0,
-			1,
-			1,
-			0,
-			["afterlife", "afterlife_support"],
+			{
+				"minimum_targets": 0,
+				"maximum_targets": 0,
+				"use_limit": 1,
+				"per_round_limit": 1,
+				"cooldown": 0,
+				"tags": ["afterlife", "afterlife_support"],
+			},
 			[
 				{
 					"type": "board_mutation",
@@ -343,12 +343,14 @@ func _init() -> void:
 			"public",
 			["afterlife"],
 			"none",
-			0,
-			0,
-			1,
-			1,
-			0,
-			["afterlife", "guardian"],
+			{
+				"minimum_targets": 0,
+				"maximum_targets": 0,
+				"use_limit": 1,
+				"per_round_limit": 1,
+				"cooldown": 0,
+				"tags": ["afterlife", "guardian"],
+			},
 			[
 				{
 					"type": "rules_effects",
@@ -370,12 +372,14 @@ func _init() -> void:
 			"public",
 			["afterlife"],
 			"none",
-			0,
-			0,
-			2,
-			1,
-			0,
-			["afterlife", "witness"],
+			{
+				"minimum_targets": 0,
+				"maximum_targets": 0,
+				"use_limit": 2,
+				"per_round_limit": 1,
+				"cooldown": 0,
+				"tags": ["afterlife", "witness"],
+			},
 			[
 				{
 					"type": "rules_effects",
@@ -397,12 +401,14 @@ func _init() -> void:
 			"public",
 			["replacement", "active"],
 			"none",
-			0,
-			0,
-			2,
-			1,
-			0,
-			["investigation", "replacement"],
+			{
+				"minimum_targets": 0,
+				"maximum_targets": 0,
+				"use_limit": 2,
+				"per_round_limit": 1,
+				"cooldown": 0,
+				"tags": ["investigation", "replacement"],
+			},
 			[
 				{
 					"type": "rules_effects",
@@ -536,15 +542,18 @@ func _init() -> void:
 			"public",
 			["living", "investigator"],
 			["secure_lantern_house", "survive_the_tale", "keep_the_token"],
-			["investigate_clue"],
 			[
-				"become_house_horror",
-				"convert_to_changed",
-				"spread_to_changed",
-				"fall_restless",
-				"escape_the_house"
-			],
-			"active"
+				["investigate_clue"],
+				[
+					"become_house_horror",
+					"convert_to_changed",
+					"spread_to_changed",
+					"fall_restless",
+					"escape_the_house"
+				],
+				"active",
+				0,
+			]
 		),
 		_role(
 			"veiled_guest",
@@ -556,9 +565,7 @@ func _init() -> void:
 			"hidden",
 			["opposition", "secret"],
 			["break_the_archive"],
-			["misdirect_route"],
-			["reveal_opposition", "fall_restless"],
-			"active"
+			[["misdirect_route"], ["reveal_opposition", "fall_restless"], "active", 0]
 		),
 		_role(
 			"house_horror",
@@ -570,9 +577,7 @@ func _init() -> void:
 			"public",
 			["horror", "opposition"],
 			["claim_the_house"],
-			["raise_dread"],
-			["fall_restless"],
-			"transformed"
+			[["raise_dread"], ["fall_restless"], "transformed", 0]
 		),
 		_role(
 			"echo_changed",
@@ -584,9 +589,7 @@ func _init() -> void:
 			"revealable",
 			["changed", "third_faction"],
 			["form_the_chorus"],
-			["spread_echo"],
-			["fall_restless", "cure_the_changed"],
-			"transformed"
+			[["spread_echo"], ["fall_restless", "cure_the_changed"], "transformed", 0]
 		),
 		_role(
 			"lantern_wraith",
@@ -598,10 +601,12 @@ func _init() -> void:
 			"public",
 			["afterlife", "restless"],
 			["guide_from_beyond"],
-			["place_restless_omen"],
-			["choose_guardian_path", "choose_witness_path", "receive_replacement"],
-			"afterlife",
-			1
+			[
+				["place_restless_omen"],
+				["choose_guardian_path", "choose_witness_path", "receive_replacement"],
+				"afterlife",
+				1,
+			]
 		),
 		_role(
 			"watchful_guardian",
@@ -613,10 +618,7 @@ func _init() -> void:
 			"public",
 			["afterlife", "guardian"],
 			["guard_the_lantern"],
-			["guardian_warning"],
-			["receive_replacement"],
-			"afterlife",
-			1
+			[["guardian_warning"], ["receive_replacement"], "afterlife", 1]
 		),
 		_role(
 			"silent_witness",
@@ -628,10 +630,7 @@ func _init() -> void:
 			"public",
 			["afterlife", "witness"],
 			["bear_witness"],
-			["witness_testimony"],
-			["receive_replacement"],
-			"afterlife",
-			1
+			[["witness_testimony"], ["receive_replacement"], "afterlife", 1]
 		),
 		_role(
 			"replacement_investigator",
@@ -643,15 +642,18 @@ func _init() -> void:
 			"public",
 			["living", "replacement"],
 			["return_to_the_light"],
-			["replacement_search"],
 			[
-				"become_house_horror",
-				"convert_to_changed",
-				"spread_to_changed",
-				"fall_restless",
-				"escape_the_house"
-			],
-			"replacement"
+				["replacement_search"],
+				[
+					"become_house_horror",
+					"convert_to_changed",
+					"spread_to_changed",
+					"fall_restless",
+					"escape_the_house"
+				],
+				"replacement",
+				0,
+			]
 		),
 	]
 	for role: Dictionary in roles:
@@ -885,36 +887,6 @@ func _init() -> void:
 	]
 
 
-func _faction(
-	stable_id: String,
-	friendly_label: String,
-	symbol: String,
-	pattern: String,
-	membership_policy: String,
-	communication_allowed: bool,
-	result_group: String,
-	director_signals: Array[String]
-) -> Dictionary:
-	return {
-		"id": stable_id,
-		"version": 1,
-		"label": friendly_label,
-		"symbol": symbol,
-		"pattern": pattern,
-		"presentation_tags": [result_group],
-		"membership_policy": membership_policy,
-		"minimum_seats": 0,
-		"maximum_seats": SeatManager.MAX_SEATS,
-		"relationships": {},
-		"shared_objectives": [],
-		"transition_refs": [],
-		"communication_allowed": communication_allowed,
-		"result_group": result_group,
-		"director_signal_policy": director_signals,
-		"presentation": {"tone": result_group},
-	}
-
-
 func _role(
 	stable_id: String,
 	friendly_label: String,
@@ -925,10 +897,7 @@ func _role(
 	reveal_policy: String,
 	tags: Array[String],
 	objective_refs: Array[String],
-	action_refs: Array[String],
-	transition_refs: Array[String],
-	initial_lifecycle: String,
-	inactive_delay: int = 0
+	mechanics: Array
 ) -> Dictionary:
 	return {
 		"id": stable_id,
@@ -950,12 +919,12 @@ func _role(
 		"minimum_players": 1,
 		"maximum_players": SeatManager.MAX_SEATS,
 		"objective_refs": objective_refs,
-		"action_refs": action_refs,
-		"transition_refs": transition_refs,
+		"action_refs": mechanics[0],
+		"transition_refs": mechanics[1],
 		"tags": tags,
 		"incompatibilities": [],
-		"initial_lifecycle": initial_lifecycle,
-		"maximum_inactive_transition_delay": inactive_delay,
+		"initial_lifecycle": mechanics[2],
+		"maximum_inactive_transition_delay": mechanics[3],
 		"afterlife_mapping": "",
 		"result_metadata": {"epilogue_tags": tags},
 		"private_view_metadata": {"future_companion_ready": true},
@@ -972,8 +941,7 @@ func _objective(
 	priority: int,
 	conditions: Array[Dictionary],
 	partial_conditions: Array[Dictionary],
-	reveal_at_end: bool,
-	epilogue_tags: Array[String]
+	ending: Array
 ) -> Dictionary:
 	return {
 		"id": stable_id,
@@ -988,8 +956,8 @@ func _objective(
 		"priority": priority,
 		"conditions": conditions,
 		"partial_conditions": partial_conditions,
-		"reveal_at_end": reveal_at_end,
-		"epilogue_tags": epilogue_tags,
+		"reveal_at_end": ending[0],
+		"epilogue_tags": ending[1],
 	}
 
 
@@ -1002,12 +970,7 @@ func _action(
 	visibility: String,
 	lifecycles: Array[String],
 	target_scope: String,
-	minimum_targets: int,
-	maximum_targets: int,
-	use_limit: int,
-	per_round_limit: int,
-	cooldown: int,
-	tags: Array[String],
+	constraints: Dictionary,
 	proposals: Array[Dictionary]
 ) -> Dictionary:
 	return {
@@ -1020,95 +983,12 @@ func _action(
 		"visibility": visibility,
 		"allowed_lifecycles": lifecycles,
 		"target_scope": target_scope,
-		"minimum_targets": minimum_targets,
-		"maximum_targets": maximum_targets,
-		"use_limit": use_limit,
-		"per_round_limit": per_round_limit,
-		"cooldown": cooldown,
+		"minimum_targets": constraints.minimum_targets,
+		"maximum_targets": constraints.maximum_targets,
+		"use_limit": constraints.use_limit,
+		"per_round_limit": constraints.per_round_limit,
+		"cooldown": constraints.cooldown,
 		"allowed_phases": [],
-		"tags": tags,
+		"tags": constraints.tags,
 		"proposals": proposals,
-	}
-
-
-func _transition(
-	stable_id: String,
-	friendly_label: String,
-	source_forms: Array[String],
-	target_form: String,
-	trigger: String,
-	visibility: String,
-	max_chain: int,
-	state_patch: Dictionary
-) -> Dictionary:
-	return {
-		"id": stable_id,
-		"version": 1,
-		"label": friendly_label,
-		"source_forms": source_forms,
-		"target_form": target_form,
-		"trigger": trigger,
-		"visibility": visibility,
-		"max_chain": max_chain,
-		"state_patch": state_patch,
-		"downstream_effects": [],
-		"presentation": {"public_message": "%s." % friendly_label},
-	}
-
-
-func _mode(
-	stable_id: String,
-	friendly_label: String,
-	supported_counts: Array,
-	policy: String,
-	default_role_id: String,
-	pool: Array[Dictionary],
-	fixed: Array[Dictionary],
-	fallback: String,
-	afterlife_enabled: bool
-) -> Dictionary:
-	return {
-		"id": stable_id,
-		"version": 1,
-		"label": friendly_label,
-		"supported_player_counts": supported_counts,
-		"assignment_policy": policy,
-		"default_role_id": default_role_id,
-		"assignment_pool": pool,
-		"fixed_assignments": fixed,
-		"required_combinations": [],
-		"forbidden_combinations": [],
-		"fallback_mode": fallback,
-		"objective_refs": ["secure_lantern_house"],
-		"afterlife_enabled": afterlife_enabled,
-		"privacy_policy":
-		{
-			"public_shared_screen": true,
-			"seat_private_requires_obscure": true,
-			"late_join": "deferred"
-		},
-		"terminal_policy": {"tie": "compatible_highest_priority", "result_key": "social_outcome"},
-		"assignment_retry_limit": 8,
-		"transition_chain_limit": 8,
-		"maximum_inactive_transition_delay": 1,
-		"director_signal_allowlist": SocialContent.VALID_DIRECTOR_SIGNALS.duplicate(),
-	}
-
-
-func _fixture(
-	stable_id: String,
-	evidence_stage: String,
-	mode_id: String,
-	seat_count: int,
-	operations: Array[Dictionary],
-	view: Dictionary
-) -> Dictionary:
-	return {
-		"id": stable_id,
-		"version": 1,
-		"evidence_stage": evidence_stage,
-		"mode_id": mode_id,
-		"seat_count": seat_count,
-		"operations": operations,
-		"view": view,
 	}

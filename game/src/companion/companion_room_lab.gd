@@ -54,7 +54,10 @@ func present(bridge: CompanionBridge, stage: String, outcome: Dictionary = {}) -
 		"COMPANION ROOM LAB  •  %s" % stage.trim_prefix("companion_").replace("_", " ").to_upper()
 	)
 	_status.text = (
-		"ROOM %s  •  IN-PROCESS FAKE TRANSPORT  •  PROTOCOL v%d / BRIDGE %s\nJOIN CODE  %s  •  CLIENTS %d / 8  •  PENDING %d  •  AUTHORITY r%d"
+		(
+			"ROOM %s  •  IN-PROCESS FAKE TRANSPORT  •  PROTOCOL v%d / BRIDGE %s\n"
+			+ "JOIN CODE  %s  •  CLIENTS %d / 8  •  PENDING %d  •  AUTHORITY r%d"
+		)
 		% [
 			diagnostics.room_state.to_upper(),
 			diagnostics.protocol_version,
@@ -91,7 +94,11 @@ func present(bridge: CompanionBridge, stage: String, outcome: Dictionary = {}) -
 	if outcome.has("detail"):
 		_result.text += "\n" + outcome.detail
 	_footer.text = (
-		"SANITIZED DIAGNOSTICS  •  %s  •  DUP %d  STALE %d  MALFORMED %d  UNAUTHORIZED %d\nNative Godot remains authoritative. The relay owns no rules. Local controller play remains available."
+		(
+			"SANITIZED DIAGNOSTICS  •  %s  •  DUP %d  STALE %d  MALFORMED %d  "
+			+ "UNAUTHORIZED %d\nNative Godot remains authoritative. The relay owns no rules. "
+			+ "Local controller play remains available."
+		)
 		% [
 			diagnostics.privacy,
 			diagnostics.counters.duplicate,

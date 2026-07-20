@@ -237,7 +237,7 @@ func _test_arbitration() -> void:
 		),
 		"accepts the winning lowest-seat request"
 	)
-	_expect(results.any(func(result: Dictionary) -> bool: return result.seat_number == 5 and result.reason.begins_with("conflict_won")), "rejects the losing conflict without mutation")
+	_expect(results.any(_is_losing_conflict_result), "rejects the losing conflict without mutation")
 	_expect(
 		state.get_space_state("narrow_gallery").hazards.has("bells"),
 		"applies non-conflicting simultaneous requests independently"
@@ -313,7 +313,10 @@ func _test_visual_contract() -> void:
 				region.encloses(label_rect),
 				"clamps named-space labels into the %d px reserved board region" % safe_margin
 			)
-	var long_history := "HISTORY r999  occupancy seat_2:lantern_hall>gate_passage,seat_3:lantern_hall>sealed_archive"
+	var long_history := (
+		"HISTORY r999  occupancy seat_2:lantern_hall>gate_passage,"
+		+ "seat_3:lantern_hall>sealed_archive"
+	)
 	var fitted: String = ExplorationDiagnostics.ellipsize_to_width(
 		long_history, 260.0, ThemeDB.fallback_font, ExplorationDiagnostics.DIAGNOSTIC_FONT_SIZE
 	)
@@ -342,6 +345,10 @@ func _contains_failure(failures: PackedStringArray, fragment: String) -> bool:
 		if fragment in failure:
 			return true
 	return false
+
+
+func _is_losing_conflict_result(result: Dictionary) -> bool:
+	return result.seat_number == 5 and result.reason.begins_with("conflict_won")
 
 
 func _expect(condition: bool, description: String) -> void:

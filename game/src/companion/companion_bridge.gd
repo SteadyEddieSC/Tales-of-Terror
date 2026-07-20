@@ -262,24 +262,10 @@ func receive_client_envelope(client_id: String, value: Variant) -> Dictionary:
 		return {
 			"accepted": true, "idempotent": true, "envelope": _ack_cache[cache_key].duplicate(true)
 		}
-	if not room_open:
-		return _cache_rejection(cache_key, client_id, envelope, "expired")
-	if envelope.room_id != room_id:
-		return _cache_rejection(cache_key, client_id, envelope, "unauthorized")
-	if not _claims.has(client_id) or not _connected_clients.get(client_id, false):
-		return _cache_rejection(cache_key, client_id, envelope, "unauthorized")
+	var rejection_code: String = _envelope_rejection_code(client_id, envelope)
+	if not rejection_code.is_empty():
+		return _cache_rejection(cache_key, client_id, envelope, rejection_code)
 	var authorized_seat: int = _claims[client_id]
-	if envelope.seat_claim != authorized_seat:
-		return _cache_rejection(cache_key, client_id, envelope, "wrong_seat")
-	var last_sequence: int = _last_client_sequences.get(client_id, 0)
-	if envelope.server_sequence > 0 and envelope.server_sequence <= last_sequence:
-		return _cache_rejection(cache_key, client_id, envelope, "stale")
-	if envelope.authoritative_revision != authoritative_revision():
-		return _cache_rejection(cache_key, client_id, envelope, "stale")
-	if not ["prompt_choice_submit", "role_action_submit", "private_reveal_ack"].has(
-		envelope.message_type
-	):
-		return _cache_rejection(cache_key, client_id, envelope, "unsupported_type")
 	if envelope.server_sequence > 0:
 		_last_client_sequences[client_id] = envelope.server_sequence
 	var before_revision: int = authoritative_revision()
@@ -318,6 +304,30 @@ func receive_client_envelope(client_id: String, value: Variant) -> Dictionary:
 		"before_revision": before_revision,
 		"after_revision": after_revision
 	}
+
+
+func _envelope_rejection_code(client_id: String, envelope: Dictionary) -> String:
+	var code: String = ""
+	if not room_open:
+		code = "expired"
+	elif envelope.room_id != room_id:
+		code = "unauthorized"
+	elif not _claims.has(client_id) or not _connected_clients.get(client_id, false):
+		code = "unauthorized"
+	elif envelope.seat_claim != _claims[client_id]:
+		code = "wrong_seat"
+	elif (
+		envelope.server_sequence > 0
+		and envelope.server_sequence <= _last_client_sequences.get(client_id, 0)
+	):
+		code = "stale"
+	elif envelope.authoritative_revision != authoritative_revision():
+		code = "stale"
+	elif not ["prompt_choice_submit", "role_action_submit", "private_reveal_ack"].has(
+		envelope.message_type
+	):
+		code = "unsupported_type"
+	return code
 
 
 func authoritative_revision() -> int:
@@ -389,48 +399,56 @@ func diagnostics() -> Dictionary:
 func _apply_intent(seat_number: int, envelope: Dictionary) -> Dictionary:
 	match envelope.message_type:
 		"prompt_choice_submit":
-			if not _payload_has_exact_keys(
-				envelope.payload, PackedStringArray(["option_ids", "prompt_revision"])
-			):
-				return {"accepted": false, "reason": "malformed_intent"}
-			var option_values: Variant = envelope.payload.get("option_ids")
-			if not option_values is Array or option_values.size() > 8:
-				return {"accepted": false, "reason": "malformed_intent"}
-			var option_ids: Array[String] = []
-			for value: Variant in option_values:
-				if not value is String:
-					return {"accepted": false, "reason": "malformed_intent"}
-				option_ids.append(value)
-			var prompt_revision: Variant = envelope.payload.get("prompt_revision")
-			if not prompt_revision is int:
-				return {"accepted": false, "reason": "malformed_intent"}
-			return _rules_session.submit_response(seat_number, option_ids, prompt_revision)
+			return _apply_prompt_intent(seat_number, envelope.payload)
 		"role_action_submit":
-			if not _payload_has_exact_keys(
-				envelope.payload, PackedStringArray(["action_id", "targets"])
-			):
-				return {"accepted": false, "reason": "malformed_intent"}
-			var action_id: Variant = envelope.payload.get("action_id")
-			var target_values: Variant = envelope.payload.get("targets", [])
-			if (
-				not action_id is String
-				or not target_values is Array
-				or target_values.size() > SeatManager.MAX_SEATS
-			):
-				return {"accepted": false, "reason": "malformed_intent"}
-			var targets: Array[int] = []
-			for value: Variant in target_values:
-				if not value is int:
-					return {"accepted": false, "reason": "malformed_intent"}
-				targets.append(value)
-			return _role_session.perform_action(
-				seat_number, action_id, targets, _rules_session, _board_state
-			)
+			return _apply_role_intent(seat_number, envelope.payload)
 		"private_reveal_ack":
-			if not envelope.payload.is_empty():
-				return {"accepted": false, "reason": "malformed_intent"}
-			return _role_session.acknowledge_private_role(seat_number)
+			return _apply_reveal_intent(seat_number, envelope.payload)
 	return {"accepted": false, "reason": "unsupported_intent"}
+
+
+func _apply_prompt_intent(seat_number: int, payload: Dictionary) -> Dictionary:
+	if not _payload_has_exact_keys(payload, PackedStringArray(["option_ids", "prompt_revision"])):
+		return {"accepted": false, "reason": "malformed_intent"}
+	var option_values: Variant = payload.get("option_ids")
+	if not option_values is Array or option_values.size() > 8:
+		return {"accepted": false, "reason": "malformed_intent"}
+	var option_ids: Array[String] = []
+	for value: Variant in option_values:
+		if not value is String:
+			return {"accepted": false, "reason": "malformed_intent"}
+		option_ids.append(value)
+	var prompt_revision: Variant = payload.get("prompt_revision")
+	if not prompt_revision is int:
+		return {"accepted": false, "reason": "malformed_intent"}
+	return _rules_session.submit_response(seat_number, option_ids, prompt_revision)
+
+
+func _apply_role_intent(seat_number: int, payload: Dictionary) -> Dictionary:
+	if not _payload_has_exact_keys(payload, PackedStringArray(["action_id", "targets"])):
+		return {"accepted": false, "reason": "malformed_intent"}
+	var action_id: Variant = payload.get("action_id")
+	var target_values: Variant = payload.get("targets", [])
+	if (
+		not action_id is String
+		or not target_values is Array
+		or target_values.size() > SeatManager.MAX_SEATS
+	):
+		return {"accepted": false, "reason": "malformed_intent"}
+	var targets: Array[int] = []
+	for value: Variant in target_values:
+		if not value is int:
+			return {"accepted": false, "reason": "malformed_intent"}
+		targets.append(value)
+	return _role_session.perform_action(
+		seat_number, action_id, targets, _rules_session, _board_state
+	)
+
+
+func _apply_reveal_intent(seat_number: int, payload: Dictionary) -> Dictionary:
+	if not payload.is_empty():
+		return {"accepted": false, "reason": "malformed_intent"}
+	return _role_session.acknowledge_private_role(seat_number)
 
 
 func _emit_views(client_id: String) -> void:

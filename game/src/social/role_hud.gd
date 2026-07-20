@@ -143,7 +143,10 @@ func _present_public(view: Dictionary, title: String) -> void:
 		lines.append("LATEST: %s" % history[-1].message)
 	_rendered_text = "\n".join(lines)
 	_body.text = _rendered_text
-	_footer.text = "PUBLIC CONTENT ONLY  •  Private reveals require an explicit obscured pass-and-play step"
+	_footer.text = (
+		"PUBLIC CONTENT ONLY  •  Private reveals require an explicit obscured "
+		+ "pass-and-play step"
+	)
 	_view_model = {
 		"kind": "public",
 		"essential_lines": lines.size(),

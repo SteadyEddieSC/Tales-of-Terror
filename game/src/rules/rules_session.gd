@@ -1,15 +1,15 @@
 class_name RulesSession
-extends RefCounted
+extends RulesContent.SessionContract
 
 signal presentation_requested(payload: Dictionary)
 signal state_changed(change: Dictionary)
 signal submission_rejected(reason: String)
 
+enum TerminalState { RUNNING, COMPLETED, FAILED, ABORTED }
+
 const SNAPSHOT_VERSION: int = 1
 const HISTORY_LIMIT: int = 128
 const EVENT_CHAIN_LIMIT: int = 16
-
-enum TerminalState { RUNNING, COMPLETED, FAILED, ABORTED }
 
 var content: RulesContent
 var board_state: BoardState
@@ -90,7 +90,7 @@ func initialize(
 	return failures
 
 
-func current_phase() -> String:
+func _contract_current_phase() -> String:
 	return (
 		content.phases[phase_index]
 		if content != null and phase_index < content.phases.size()
@@ -98,11 +98,11 @@ func current_phase() -> String:
 	)
 
 
-func authority_revision() -> int:
+func _contract_authority_revision() -> int:
 	return _history_sequence
 
 
-func companion_public_view() -> Dictionary:
+func _contract_companion_public_view() -> Dictionary:
 	var prompt_view: Dictionary = {}
 	if not pending_prompt.is_empty():
 		var response_status: Array[Dictionary] = []
@@ -133,7 +133,7 @@ func companion_public_view() -> Dictionary:
 				"response_status": response_status,
 				"allow_pass": pending_prompt.get("allow_pass", false),
 			}
-	return _normalize_json_numbers(
+	return RulesContent.SessionData.normalize_json_numbers(
 		{
 			"view_version": 1,
 			"round": round_number,
@@ -152,7 +152,7 @@ func companion_public_view() -> Dictionary:
 	)
 
 
-func companion_seat_view(seat_number: int) -> Dictionary:
+func _contract_companion_seat_view(seat_number: int) -> Dictionary:
 	if not participating_seats.has(seat_number):
 		return {"accepted": false, "reason": "seat_not_authorized"}
 	var prompt_view: Dictionary = {}
@@ -197,15 +197,19 @@ func companion_seat_view(seat_number: int) -> Dictionary:
 				"symbol": item.get("symbol", "")
 			}
 		)
-	return _normalize_json_numbers(
-		{
-			"accepted": true,
-			"view_version": 1,
-			"authorized_seat": seat_number,
-			"prompt": prompt_view,
-			"hand": hand_view,
-			"inventory": inventory_view,
-		}
+	return (
+		RulesContent
+		. SessionData
+		. normalize_json_numbers(
+			{
+				"accepted": true,
+				"view_version": 1,
+				"authorized_seat": seat_number,
+				"prompt": prompt_view,
+				"hand": hand_view,
+				"inventory": inventory_view,
+			}
+		)
 	)
 
 
@@ -308,35 +312,48 @@ func open_prompt(
 func submit_response(
 	seat_number: int, option_ids: Array[String], prompt_revision: int
 ) -> Dictionary:
-	if pending_prompt.is_empty():
-		return _reject("no_prompt_pending")
-	if prompt_revision != pending_prompt.revision:
-		return _reject("stale_prompt_revision")
-	if not pending_prompt.eligible_seats.has(seat_number):
-		return _reject("unauthorized_response")
-	if pending_prompt.responses.has(seat_number):
-		return _reject("duplicate_submission")
-	if option_ids.is_empty() and pending_prompt.get("allow_pass", false):
-		pass
-	elif (
-		option_ids.size() < pending_prompt.min_selections
-		or option_ids.size() > pending_prompt.max_selections
-	):
-		return _reject("selection_count_out_of_range")
-	var valid_ids: Array[String] = []
-	for option: Dictionary in pending_prompt.options:
-		valid_ids.append(option.id)
-	var unique: Dictionary = {}
-	for option_id: String in option_ids:
-		if not valid_ids.has(option_id) or unique.has(option_id):
-			return _reject("invalid_prompt_option")
-		unique[option_id] = true
+	var rejection: String = _response_rejection(seat_number, option_ids, prompt_revision)
+	if not rejection.is_empty():
+		return _reject(rejection)
 	pending_prompt.responses[seat_number] = option_ids.duplicate()
 	_record(
 		"prompt_response",
 		{"prompt_id": pending_prompt.id, "seat": seat_number, "options": option_ids}
 	)
 	return _accept()
+
+
+func _response_rejection(
+	seat_number: int, option_ids: Array[String], prompt_revision: int
+) -> String:
+	var reason: String = ""
+	if pending_prompt.is_empty():
+		reason = "no_prompt_pending"
+	elif prompt_revision != pending_prompt.revision:
+		reason = "stale_prompt_revision"
+	elif not pending_prompt.eligible_seats.has(seat_number):
+		reason = "unauthorized_response"
+	elif pending_prompt.responses.has(seat_number):
+		reason = "duplicate_submission"
+	elif (
+		not (option_ids.is_empty() and pending_prompt.get("allow_pass", false))
+		and (
+			option_ids.size() < pending_prompt.min_selections
+			or option_ids.size() > pending_prompt.max_selections
+		)
+	):
+		reason = "selection_count_out_of_range"
+	var valid_ids: Array[String] = []
+	if reason.is_empty():
+		for option: Dictionary in pending_prompt.options:
+			valid_ids.append(option.id)
+		var unique: Dictionary = {}
+		for option_id: String in option_ids:
+			if not valid_ids.has(option_id) or unique.has(option_id):
+				reason = "invalid_prompt_option"
+				break
+			unique[option_id] = true
+	return reason
 
 
 func resolve_prompt() -> Dictionary:
@@ -461,22 +478,18 @@ func queue_event(event_id: String) -> Dictionary:
 
 
 func resolve_next_event() -> Dictionary:
+	var start_rejection: String = ""
 	if event_queue.is_empty():
-		return _reject("event_queue_empty")
-	if event_chain_steps >= EVENT_CHAIN_LIMIT:
-		return _reject("event_chain_limit")
+		start_rejection = "event_queue_empty"
+	elif event_chain_steps >= EVENT_CHAIN_LIMIT:
+		start_rejection = "event_chain_limit"
+	if not start_rejection.is_empty():
+		return _reject(start_rejection)
 	current_event_id = event_queue.pop_front()
 	var event: Dictionary = content.event_by_id(current_event_id)
-	if event.get("once", false) and resolved_event_rounds.has(current_event_id):
-		return _reject("event_already_resolved")
-	if (
-		event.get("repeatability", "") == "cooldown_rounds"
-		and resolved_event_rounds.has(current_event_id)
-		and round_number - resolved_event_rounds[current_event_id] < event.get("cooldown", 0)
-	):
-		return _reject("event_on_cooldown")
-	if not _conditions_met(event.get("conditions", []), 0):
-		return _reject("event_ineligible")
+	var rejection: String = _event_rejection(event)
+	if not rejection.is_empty():
+		return _reject(rejection)
 	event_chain_steps += 1
 	var presenter: Dictionary = event.get("presenter", {}).duplicate(true)
 	presenter.merge(
@@ -519,6 +532,21 @@ func resolve_next_event() -> Dictionary:
 	resolved_event_rounds[current_event_id] = round_number
 	_record("event_resolved", {"event_id": current_event_id, "chain_step": event_chain_steps})
 	return _accept()
+
+
+func _event_rejection(event: Dictionary) -> String:
+	var reason: String = ""
+	if event.get("once", false) and resolved_event_rounds.has(current_event_id):
+		reason = "event_already_resolved"
+	elif (
+		event.get("repeatability", "") == "cooldown_rounds"
+		and resolved_event_rounds.has(current_event_id)
+		and round_number - resolved_event_rounds[current_event_id] < event.get("cooldown", 0)
+	):
+		reason = "event_on_cooldown"
+	elif not _conditions_met(event.get("conditions", []), 0):
+		reason = "event_ineligible"
+	return reason
 
 
 func draw_card(seat_number: int, count: int = 1) -> Dictionary:
@@ -614,11 +642,11 @@ func complete(result: String, failed: bool = false) -> Dictionary:
 	return _accept()
 
 
-func history() -> Array[Dictionary]:
+func _contract_history() -> Array[Dictionary]:
 	return _history.duplicate(true)
 
 
-func to_snapshot() -> Dictionary:
+func _contract_to_snapshot() -> Dictionary:
 	var snapshot: Dictionary = {
 		"snapshot_version": SNAPSHOT_VERSION,
 		"scenario_id": content.scenario_id,
@@ -633,7 +661,7 @@ func to_snapshot() -> Dictionary:
 		"terminal_reason": terminal_reason,
 		"participating_seats": participating_seats.duplicate(),
 		"pending_late_seats": pending_late_seats.duplicate(),
-		"seat_connection": _seat_value_rows(seat_connection),
+		"seat_connection": RulesContent.SessionData.seat_value_rows(seat_connection),
 		"ready_seats": ready_seats.duplicate(),
 		"passed_seats": passed_seats.duplicate(),
 		"pending_prompt": _prompt_snapshot(),
@@ -645,11 +673,11 @@ func to_snapshot() -> Dictionary:
 		"flags": flags.duplicate(true),
 		"result_flags": result_flags.duplicate(true),
 		"draw_pile": draw_pile.duplicate(true),
-		"hands": _seat_value_rows(hands),
+		"hands": RulesContent.SessionData.seat_value_rows(hands),
 		"discard": discard_pile.duplicate(true),
 		"exhausted": exhausted_pile.duplicate(true),
 		"removed": removed_pile.duplicate(true),
-		"inventory": _seat_value_rows(inventory),
+		"inventory": RulesContent.SessionData.seat_value_rows(inventory),
 		"active_vote": active_vote.duplicate(true),
 		"recent_check": recent_check.duplicate(true),
 		"recent_effects": recent_effects.duplicate(true),
@@ -658,11 +686,11 @@ func to_snapshot() -> Dictionary:
 		"card_instance_sequence": _card_instance_sequence,
 		"board": board_state.to_snapshot() if board_state != null else {},
 	}
-	return _normalize_json_numbers(snapshot)
+	return RulesContent.SessionData.normalize_json_numbers(snapshot)
 
 
 func restore_snapshot(snapshot: Dictionary) -> Dictionary:
-	snapshot = _normalize_json_numbers(snapshot)
+	snapshot = RulesContent.SessionData.normalize_json_numbers(snapshot)
 	var parsed: Dictionary = _validate_snapshot(snapshot)
 	if not parsed.valid:
 		return _reject(parsed.reason)
@@ -683,29 +711,29 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 	phase_revision = snapshot.phase_revision
 	terminal_state = snapshot.terminal_state
 	terminal_reason = snapshot.terminal_reason
-	participating_seats = _int_array(snapshot.participating_seats)
-	pending_late_seats = _int_array(snapshot.pending_late_seats)
-	seat_connection = _seat_values_from_rows(snapshot.seat_connection)
-	ready_seats = _int_array(snapshot.ready_seats)
-	passed_seats = _int_array(snapshot.passed_seats)
+	participating_seats = RulesContent.SessionData.int_array(snapshot.participating_seats)
+	pending_late_seats = RulesContent.SessionData.int_array(snapshot.pending_late_seats)
+	seat_connection = RulesContent.SessionData.seat_values_from_rows(snapshot.seat_connection)
+	ready_seats = RulesContent.SessionData.int_array(snapshot.ready_seats)
+	passed_seats = RulesContent.SessionData.int_array(snapshot.passed_seats)
 	pending_prompt = _prompt_from_snapshot(snapshot.pending_prompt)
-	event_queue = _string_array(snapshot.event_queue)
+	event_queue = RulesContent.SessionData.string_array(snapshot.event_queue)
 	current_event_id = snapshot.current_event_id
 	event_chain_steps = snapshot.event_chain_steps
 	resolved_event_rounds = snapshot.resolved_event_rounds.duplicate(true)
 	counters = snapshot.counters.duplicate(true)
 	flags = snapshot.flags.duplicate(true)
 	result_flags = snapshot.result_flags.duplicate(true)
-	draw_pile = _dict_array(snapshot.draw_pile)
-	hands = _seat_values_from_rows(snapshot.hands)
-	discard_pile = _dict_array(snapshot.discard)
-	exhausted_pile = _dict_array(snapshot.exhausted)
-	removed_pile = _dict_array(snapshot.removed)
-	inventory = _seat_values_from_rows(snapshot.inventory)
+	draw_pile = RulesContent.SessionData.dict_array(snapshot.draw_pile)
+	hands = RulesContent.SessionData.seat_values_from_rows(snapshot.hands)
+	discard_pile = RulesContent.SessionData.dict_array(snapshot.discard)
+	exhausted_pile = RulesContent.SessionData.dict_array(snapshot.exhausted)
+	removed_pile = RulesContent.SessionData.dict_array(snapshot.removed)
+	inventory = RulesContent.SessionData.seat_values_from_rows(snapshot.inventory)
 	active_vote = snapshot.active_vote.duplicate(true)
 	recent_check = snapshot.recent_check.duplicate(true)
-	recent_effects = _dict_array(snapshot.recent_effects)
-	_history = _dict_array(snapshot.history)
+	recent_effects = RulesContent.SessionData.dict_array(snapshot.recent_effects)
+	_history = RulesContent.SessionData.dict_array(snapshot.history)
 	_history_sequence = snapshot.history_sequence
 	_card_instance_sequence = snapshot.card_instance_sequence
 	if board_state != null:
@@ -715,7 +743,7 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 	return _accept()
 
 
-func diagnostics_snapshot() -> Dictionary:
+func _contract_diagnostics_snapshot() -> Dictionary:
 	return {
 		"session": session_id,
 		"seed": seed,
@@ -774,6 +802,7 @@ func _validate_effect_bundle(effects: Array, actor_seat: int) -> Dictionary:
 	)
 	if not failures.is_empty():
 		return {"valid": false, "reason": "invalid_effect_bundle"}
+	var validation: Dictionary = {"valid": true, "reason": ""}
 	var inventory_probe: Dictionary = inventory.duplicate(true)
 	var board_probe: BoardState
 	if board_state != null:
@@ -788,7 +817,7 @@ func _validate_effect_bundle(effects: Array, actor_seat: int) -> Dictionary:
 						board_probe.apply_mutation(effect.get("mutation", {}), actor_seat).accepted
 					)
 				):
-					return {"valid": false, "reason": "invalid_board_effect"}
+					validation = {"valid": false, "reason": "invalid_board_effect"}
 			"add_item":
 				var seat: int = effect.get("seat", actor_seat)
 				if (
@@ -796,29 +825,33 @@ func _validate_effect_bundle(effects: Array, actor_seat: int) -> Dictionary:
 					or not content.has_item(effect.get("item_id", ""))
 					or inventory_probe[seat].has(effect.item_id)
 				):
-					return {"valid": false, "reason": "invalid_inventory_effect"}
-				inventory_probe[seat].append(effect.item_id)
+					validation = {"valid": false, "reason": "invalid_inventory_effect"}
+				else:
+					inventory_probe[seat].append(effect.item_id)
 			"remove_item":
 				var seat: int = effect.get("seat", actor_seat)
 				if (
 					not participating_seats.has(seat)
 					or not inventory_probe[seat].has(effect.get("item_id", ""))
 				):
-					return {"valid": false, "reason": "invalid_inventory_effect"}
-				inventory_probe[seat].erase(effect.item_id)
+					validation = {"valid": false, "reason": "invalid_inventory_effect"}
+				else:
+					inventory_probe[seat].erase(effect.item_id)
 			"draw_card":
 				if draw_pile.size() < effect.get("count", 1):
-					return {"valid": false, "reason": "invalid_draw_effect"}
+					validation = {"valid": false, "reason": "invalid_draw_effect"}
 			"queue_event":
 				if content.event_by_id(effect.get("event_id", "")).is_empty():
-					return {"valid": false, "reason": "unknown_event_effect"}
+					validation = {"valid": false, "reason": "unknown_event_effect"}
 			"discard_card", "exhaust_card", "remove_card":
 				if (
 					_card_in_hand(effect.get("seat", actor_seat), effect.get("instance_id", ""))
 					. is_empty()
 				):
-					return {"valid": false, "reason": "invalid_card_zone_effect"}
-	return {"valid": true, "reason": ""}
+					validation = {"valid": false, "reason": "invalid_card_zone_effect"}
+		if not validation.valid:
+			break
+	return validation
 
 
 func _apply_effect(effect: Dictionary, actor_seat: int) -> void:
@@ -877,7 +910,7 @@ func _build_deck() -> void:
 	var instances: Array = []
 	for card_id: String in content.initial_deck:
 		instances.append(_new_card_instance(card_id))
-	draw_pile = _dict_array(rng.shuffle(instances))
+	draw_pile = RulesContent.SessionData.dict_array(rng.shuffle(instances))
 	_record("deck_shuffled", {"count": draw_pile.size(), "rng_counter": rng.counter})
 
 
@@ -935,102 +968,16 @@ func _accept() -> Dictionary:
 
 
 func _validate_snapshot(snapshot: Dictionary) -> Dictionary:
-	if snapshot.get("snapshot_version", -1) != SNAPSHOT_VERSION:
-		return {"valid": false, "reason": "unsupported_snapshot_version"}
-	if (
-		snapshot.get("scenario_id", "") != content.scenario_id
-		or snapshot.get("scenario_version", -1) != content.scenario_version
-	):
-		return {"valid": false, "reason": "snapshot_content_mismatch"}
-	if (
-		not snapshot.get("session_id") is String
-		or not snapshot.get("seed") is int
-		or not snapshot.get("rng") is Dictionary
-	):
-		return {"valid": false, "reason": "malformed_snapshot"}
-	for key: String in [
-		"round",
-		"phase_index",
-		"phase_revision",
-		"terminal_state",
-		"event_chain_steps",
-		"history_sequence",
-		"card_instance_sequence"
-	]:
-		if not snapshot.get(key) is int:
-			return {"valid": false, "reason": "malformed_snapshot"}
-	if (
-		snapshot.round < 1
-		or snapshot.phase_index < 0
-		or snapshot.phase_index >= content.phases.size()
-		or snapshot.event_chain_steps < 0
-		or snapshot.event_chain_steps > EVENT_CHAIN_LIMIT
-	):
-		return {"valid": false, "reason": "malformed_snapshot"}
-	for event_id: Variant in snapshot.get("event_queue", []):
-		if not event_id is String or content.event_by_id(event_id).is_empty():
-			return {"valid": false, "reason": "unknown_snapshot_content"}
-	for zone_key: String in ["draw_pile", "discard", "exhausted", "removed"]:
-		if not snapshot.get(zone_key) is Array:
-			return {"valid": false, "reason": "malformed_snapshot"}
-		for card: Variant in snapshot[zone_key]:
-			if (
-				not card is Dictionary
-				or content.card_by_id(card.get("definition_id", "")).is_empty()
-			):
-				return {"valid": false, "reason": "unknown_snapshot_content"}
-	for rows_key: String in ["seat_connection", "hands", "inventory"]:
-		if not snapshot.get(rows_key) is Array:
-			return {"valid": false, "reason": "malformed_snapshot"}
-	if not snapshot.get("resolved_event_rounds") is Dictionary:
-		return {"valid": false, "reason": "malformed_snapshot"}
-	return {"valid": true, "reason": ""}
-
-
-func _int_array(values: Array) -> Array[int]:
-	var result: Array[int] = []
-	for value: int in values:
-		result.append(value)
-	return result
-
-
-func _string_array(values: Array) -> Array[String]:
-	var result: Array[String] = []
-	for value: String in values:
-		result.append(value)
-	return result
-
-
-func _dict_array(values: Array) -> Array[Dictionary]:
-	var result: Array[Dictionary] = []
-	for value: Dictionary in values:
-		result.append(value.duplicate(true))
-	return result
-
-
-func _seat_value_rows(values: Dictionary) -> Array[Dictionary]:
-	var rows: Array[Dictionary] = []
-	var seats: Array[int] = []
-	for seat: Variant in values:
-		seats.append(seat)
-	seats.sort()
-	for seat: int in seats:
-		rows.append({"seat": seat, "value": values[seat]})
-	return rows
-
-
-func _seat_values_from_rows(rows: Array) -> Dictionary:
-	var values: Dictionary = {}
-	for row: Dictionary in rows:
-		values[int(row.seat)] = row.value
-	return values
+	return RulesContent.SessionData.validate_snapshot(
+		snapshot, content, SNAPSHOT_VERSION, EVENT_CHAIN_LIMIT
+	)
 
 
 func _prompt_snapshot() -> Dictionary:
 	if pending_prompt.is_empty():
 		return {}
 	var snapshot: Dictionary = pending_prompt.duplicate(true)
-	snapshot.responses = _seat_value_rows(pending_prompt.responses)
+	snapshot.responses = RulesContent.SessionData.seat_value_rows(pending_prompt.responses)
 	return snapshot
 
 
@@ -1038,21 +985,5 @@ func _prompt_from_snapshot(snapshot: Dictionary) -> Dictionary:
 	if snapshot.is_empty():
 		return {}
 	var prompt: Dictionary = snapshot.duplicate(true)
-	prompt.responses = _seat_values_from_rows(snapshot.responses)
+	prompt.responses = RulesContent.SessionData.seat_values_from_rows(snapshot.responses)
 	return prompt
-
-
-func _normalize_json_numbers(value: Variant) -> Variant:
-	if value is float and is_equal_approx(value, roundf(value)):
-		return int(value)
-	if value is Array:
-		var normalized_array: Array = []
-		for item: Variant in value:
-			normalized_array.append(_normalize_json_numbers(item))
-		return normalized_array
-	if value is Dictionary:
-		var normalized_dictionary: Dictionary = {}
-		for key: Variant in value:
-			normalized_dictionary[key] = _normalize_json_numbers(value[key])
-		return normalized_dictionary
-	return value

@@ -517,21 +517,22 @@ func _target_count(seat: int) -> int:
 
 
 func _friendly_rationale(category: String, telemetry: Dictionary, mercy_active: bool) -> String:
+	var rationale: String = "A presentation-only omen supports the current pacing beat."
 	if category == "no_op":
-		return "The fair choice is to hold this beat and leave play unchanged."
-	if telemetry.stalled_steps >= 45 and category in ["hint", "event", "ambient"]:
-		return "Progress has paused, so the house offers a nudge instead of punishment."
-	if mercy_active and category in ["relief", "hint", "ambient"]:
-		return "The group needs recovery space, so pressure is being held back."
-	if category in ["pressure", "board"]:
-		return "The group has momentum; a bounded omen restores dramatic tension."
-	if category == "relief":
-		return "Resources are thin, so a bounded recovery beat is available."
-	if category == "hint":
-		return "An authored clue keeps a legal route visible."
-	if category == "event":
-		return "An authored pacing event can move the tale forward."
-	return "A presentation-only omen supports the current pacing beat."
+		rationale = "The fair choice is to hold this beat and leave play unchanged."
+	elif telemetry.stalled_steps >= 45 and category in ["hint", "event", "ambient"]:
+		rationale = "Progress has paused, so the house offers a nudge instead of punishment."
+	elif mercy_active and category in ["relief", "hint", "ambient"]:
+		rationale = "The group needs recovery space, so pressure is being held back."
+	elif category in ["pressure", "board"]:
+		rationale = "The group has momentum; a bounded omen restores dramatic tension."
+	elif category == "relief":
+		rationale = "Resources are thin, so a bounded recovery beat is available."
+	elif category == "hint":
+		rationale = "An authored clue keeps a legal route visible."
+	elif category == "event":
+		rationale = "An authored pacing event can move the tale forward."
+	return rationale
 
 
 func _no_op_evaluation(reason: String) -> Dictionary:
@@ -564,17 +565,34 @@ func _trim_runtime_history() -> void:
 
 
 func _validate_snapshot(snapshot: Dictionary) -> Dictionary:
+	var reason: String = _snapshot_identity_rejection(snapshot)
+	if reason.is_empty():
+		reason = _snapshot_numeric_rejection(snapshot)
+	if reason.is_empty():
+		reason = _snapshot_dictionary_rejection(snapshot)
+	if reason.is_empty():
+		reason = _snapshot_history_rejection(snapshot)
+	return {"valid": reason.is_empty(), "reason": reason}
+
+
+func _snapshot_identity_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
 	if (
 		snapshot.get("snapshot_version") != SNAPSHOT_VERSION
 		or snapshot.get("content_id") != content.content_id
 		or snapshot.get("content_version") != content.content_version
 	):
-		return {"valid": false, "reason": "director_snapshot_identity_mismatch"}
-	if (
+		reason = "director_snapshot_identity_mismatch"
+	elif (
 		snapshot.get("profile_id") != profile.id
 		or snapshot.get("profile_version") != profile.version
 	):
-		return {"valid": false, "reason": "director_snapshot_profile_mismatch"}
+		reason = "director_snapshot_profile_mismatch"
+	return reason
+
+
+func _snapshot_numeric_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
 	for field: String in [
 		"revision",
 		"evaluation_step",
@@ -584,58 +602,88 @@ func _validate_snapshot(snapshot: Dictionary) -> Dictionary:
 		"recovery_until_step"
 	]:
 		if not snapshot.get(field) is int or snapshot.get(field, -1) < 0:
-			return {"valid": false, "reason": "malformed_director_snapshot"}
+			reason = "malformed_director_snapshot"
+			break
 	if (
-		not snapshot.get("last_intervention_step") is int
-		or not snapshot.get("target_tension") is Array
-		or snapshot.target_tension.size() != 2
+		reason.is_empty()
+		and (
+			not snapshot.get("last_intervention_step") is int
+			or not snapshot.get("target_tension") is Array
+			or snapshot.target_tension.size() != 2
+		)
 	):
-		return {"valid": false, "reason": "malformed_director_snapshot"}
+		reason = "malformed_director_snapshot"
+	return reason
+
+
+func _snapshot_dictionary_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
 	if (
 		not snapshot.get("budgets") is Dictionary
 		or not snapshot.get("candidate_cooldowns") is Dictionary
 		or not snapshot.get("tag_cooldowns") is Dictionary
 	):
-		return {"valid": false, "reason": "malformed_director_snapshot"}
-	for budget: String in DirectorContent.VALID_BUDGETS:
-		if not snapshot.budgets.get(budget) is int or snapshot.budgets.get(budget, -1) < 0:
-			return {"valid": false, "reason": "malformed_director_budget_snapshot"}
-	for candidate_id: Variant in snapshot.candidate_cooldowns:
-		if not candidate_id is String or content.candidate_by_id(candidate_id).is_empty():
-			return {"valid": false, "reason": "unknown_snapshot_candidate"}
-	for tag: Variant in snapshot.tag_cooldowns:
-		if not tag is String or not DirectorContent.VALID_TAGS.has(tag):
-			return {"valid": false, "reason": "unknown_snapshot_tag"}
+		reason = "malformed_director_snapshot"
+	if reason.is_empty():
+		for budget: String in DirectorContent.VALID_BUDGETS:
+			if not snapshot.budgets.get(budget) is int or snapshot.budgets.get(budget, -1) < 0:
+				reason = "malformed_director_budget_snapshot"
+				break
+	if reason.is_empty():
+		for candidate_id: Variant in snapshot.get("candidate_cooldowns", {}):
+			if not candidate_id is String or content.candidate_by_id(candidate_id).is_empty():
+				reason = "unknown_snapshot_candidate"
+				break
+	if reason.is_empty():
+		for tag: Variant in snapshot.get("tag_cooldowns", {}):
+			if not tag is String or not DirectorContent.VALID_TAGS.has(tag):
+				reason = "unknown_snapshot_tag"
+				break
+	return reason
+
+
+func _snapshot_history_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
 	for field: String in ["target_history", "recent_decisions", "audit_history"]:
 		if not snapshot.get(field) is Array:
-			return {"valid": false, "reason": "malformed_director_snapshot"}
-	for record: Variant in snapshot.recent_decisions:
-		if (
-			not record is Dictionary
-			or content.candidate_by_id(record.get("candidate_id", "")).is_empty()
-		):
-			return {"valid": false, "reason": "unknown_snapshot_candidate"}
-	for record: Variant in snapshot.audit_history:
-		if (
-			not record is Dictionary
-			or content.candidate_by_id(record.get("selected_candidate_id", "")).is_empty()
-		):
-			return {"valid": false, "reason": "unknown_snapshot_candidate"}
-	for record: Variant in snapshot.target_history:
-		if (
-			not record is Dictionary
-			or not record.get("seat") is int
-			or record.get("seat", 0) < 1
-			or record.get("seat", 0) > SeatManager.MAX_SEATS
-		):
-			return {"valid": false, "reason": "malformed_target_ledger"}
+			reason = "malformed_director_snapshot"
+			break
+	if reason.is_empty():
+		for record: Variant in snapshot.get("recent_decisions", []):
+			if (
+				not record is Dictionary
+				or content.candidate_by_id(record.get("candidate_id", "")).is_empty()
+			):
+				reason = "unknown_snapshot_candidate"
+				break
+	if reason.is_empty():
+		for record: Variant in snapshot.get("audit_history", []):
+			if (
+				not record is Dictionary
+				or content.candidate_by_id(record.get("selected_candidate_id", "")).is_empty()
+			):
+				reason = "unknown_snapshot_candidate"
+				break
+	if reason.is_empty():
+		for record: Variant in snapshot.get("target_history", []):
+			if (
+				not record is Dictionary
+				or not record.get("seat") is int
+				or record.get("seat", 0) < 1
+				or record.get("seat", 0) > SeatManager.MAX_SEATS
+			):
+				reason = "malformed_target_ledger"
+				break
 	if (
-		not snapshot.get("rng") is Dictionary
-		or not snapshot.get("last_application", {}) is Dictionary
-		or not snapshot.get("last_no_op_reason") is String
+		reason.is_empty()
+		and (
+			not snapshot.get("rng") is Dictionary
+			or not snapshot.get("last_application", {}) is Dictionary
+			or not snapshot.get("last_no_op_reason") is String
+		)
 	):
-		return {"valid": false, "reason": "malformed_director_snapshot"}
-	return {"valid": true, "reason": ""}
+		reason = "malformed_director_snapshot"
+	return reason
 
 
 func _dict_array(values: Array) -> Array[Dictionary]:

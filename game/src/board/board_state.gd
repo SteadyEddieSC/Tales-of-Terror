@@ -1,5 +1,5 @@
 class_name BoardState
-extends RefCounted
+extends BoardMutation.StateContract
 
 signal state_changed(change: Dictionary)
 signal mutation_rejected(reason: String)
@@ -75,11 +75,11 @@ func get_occupancy() -> Dictionary:
 	return _occupancy.duplicate(true)
 
 
-func get_history() -> Array[Dictionary]:
+func _contract_get_history() -> Array[Dictionary]:
 	return _history.duplicate(true)
 
 
-func recent_history(limit: int = 5) -> Array[Dictionary]:
+func _contract_recent_history(limit: int = 5) -> Array[Dictionary]:
 	var start: int = maxi(0, _history.size() - limit)
 	return _history.slice(start, _history.size()).duplicate(true)
 
@@ -421,16 +421,50 @@ func _validate_mutation(mutation: Dictionary) -> Dictionary:
 
 
 func _parse_snapshot(snapshot: Dictionary) -> Dictionary:
+	var header_rejection: String = _snapshot_header_rejection(snapshot)
+	if not header_rejection.is_empty():
+		return {"valid": false, "reason": header_rejection}
+	var space_values: Dictionary = _parse_snapshot_space_values(snapshot)
+	if not space_values.valid:
+		return space_values
+	var connectors: Dictionary = _parse_snapshot_connectors(snapshot)
+	if not connectors.valid:
+		return connectors
+	var occupancy: Dictionary = _parse_snapshot_occupancy(snapshot)
+	if not occupancy.valid:
+		return occupancy
+	var history: Dictionary = _parse_snapshot_history(snapshot)
+	if not history.valid:
+		return history
+	return {
+		"valid": true,
+		"reason": "",
+		"revision": snapshot.revision,
+		"revealed": space_values.revealed,
+		"hazards": space_values.hazards,
+		"features": space_values.features,
+		"blockers": space_values.blockers,
+		"connectors": connectors.values,
+		"occupancy": occupancy.values,
+		"history": history.values,
+	}
+
+
+func _snapshot_header_rejection(snapshot: Dictionary) -> String:
+	var reason: String = ""
 	if snapshot.get("snapshot_version", -1) != SNAPSHOT_VERSION:
-		return {"valid": false, "reason": "unsupported_snapshot_version"}
-	if (
+		reason = "unsupported_snapshot_version"
+	elif (
 		snapshot.get("board_id", "") != definition.board_id
 		or snapshot.get("board_version", -1) != definition.board_version
 	):
-		return {"valid": false, "reason": "snapshot_board_mismatch"}
-	if not snapshot.get("revision") is int or snapshot.revision < 0:
-		return {"valid": false, "reason": "malformed_snapshot_revision"}
-	var parsed: Dictionary = {"valid": true, "reason": "", "revision": snapshot.revision}
+		reason = "snapshot_board_mismatch"
+	elif not snapshot.get("revision") is int or snapshot.revision < 0:
+		reason = "malformed_snapshot_revision"
+	return reason
+
+
+func _parse_snapshot_space_values(snapshot: Dictionary) -> Dictionary:
 	for key: String in ["revealed", "hazards", "features", "blockers", "connectors"]:
 		if not snapshot.get(key) is Dictionary:
 			return {"valid": false, "reason": "malformed_snapshot_%s" % key}
@@ -449,6 +483,17 @@ func _parse_snapshot(snapshot: Dictionary) -> Dictionary:
 		for collection: Dictionary in [hazards, features, blockers]:
 			if not collection.has(space_id) or not _valid_string_array(collection[space_id]):
 				return {"valid": false, "reason": "malformed_snapshot_space_values"}
+	return {
+		"valid": true,
+		"reason": "",
+		"revealed": revealed,
+		"hazards": hazards,
+		"features": features,
+		"blockers": blockers,
+	}
+
+
+func _parse_snapshot_connectors(snapshot: Dictionary) -> Dictionary:
 	var connectors: Dictionary = snapshot.connectors.duplicate(true)
 	var expected_connectors: PackedStringArray = definition.connector_ids()
 	for stored_connector: Variant in connectors:
@@ -460,6 +505,10 @@ func _parse_snapshot(snapshot: Dictionary) -> Dictionary:
 			or not BoardDefinition.VALID_CONNECTOR_STATES.has(connectors[connector_id])
 		):
 			return {"valid": false, "reason": "malformed_snapshot_connectors"}
+	return {"valid": true, "reason": "", "values": connectors}
+
+
+func _parse_snapshot_occupancy(snapshot: Dictionary) -> Dictionary:
 	if not snapshot.get("occupancy") is Array:
 		return {"valid": false, "reason": "malformed_snapshot_occupancy"}
 	var occupancy: Dictionary = {}
@@ -478,6 +527,10 @@ func _parse_snapshot(snapshot: Dictionary) -> Dictionary:
 		if space_id != OUTSIDE_SPACE and definition.get_space(space_id).is_empty():
 			return {"valid": false, "reason": "malformed_snapshot_occupancy"}
 		occupancy[row.seat_number] = space_id
+	return {"valid": true, "reason": "", "values": occupancy}
+
+
+func _parse_snapshot_history(snapshot: Dictionary) -> Dictionary:
 	if not snapshot.get("history") is Array:
 		return {"valid": false, "reason": "malformed_snapshot_history"}
 	var history: Array[Dictionary] = []
@@ -496,18 +549,7 @@ func _parse_snapshot(snapshot: Dictionary) -> Dictionary:
 			return {"valid": false, "reason": "malformed_snapshot_history"}
 		previous_history_revision = entry_value.revision
 		history.append((entry_value as Dictionary).duplicate(true))
-	parsed.merge(
-		{
-			"revealed": revealed,
-			"hazards": hazards,
-			"features": features,
-			"blockers": blockers,
-			"connectors": connectors,
-			"occupancy": occupancy,
-			"history": history
-		}
-	)
-	return parsed
+	return {"valid": true, "reason": "", "values": history}
 
 
 func _traversable_neighbors(space_id: String) -> PackedStringArray:

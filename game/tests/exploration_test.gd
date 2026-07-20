@@ -160,7 +160,10 @@ func _test_interactions() -> void:
 	]
 	var winners: Array[Dictionary] = InteractionResolver.resolve_requests(requests)
 	_expect(winners.size() == 2, "resolves at most one action per interactable per physics tick")
-	_expect(winners.any(func(request: Dictionary) -> bool: return request.interactable_id == "door" and request.seat_number == 2), "resolves simultaneous conflicts to the lowest seat number")
+	_expect(
+		winners.any(_is_winning_door_request),
+		"resolves simultaneous conflicts to the lowest seat number"
+	)
 
 
 func _test_bottom_hud_layout() -> void:
@@ -226,6 +229,10 @@ func _seat(number: int, state: int, device_id: int, identity: String) -> Diction
 		"device_name": "Test",
 		"last_action": "—"
 	}
+
+
+func _is_winning_door_request(request: Dictionary) -> bool:
+	return request.interactable_id == "door" and request.seat_number == 2
 
 
 func _expect(condition: bool, description: String) -> void:

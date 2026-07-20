@@ -11,6 +11,22 @@ const VALID_TYPES: PackedStringArray = [
 ]
 
 
+class StateContract:
+	extends RefCounted
+
+	func get_history() -> Array[Dictionary]:
+		return _contract_get_history()
+
+	func recent_history(limit: int = 5) -> Array[Dictionary]:
+		return _contract_recent_history(limit)
+
+	func _contract_get_history() -> Array[Dictionary]:
+		return []
+
+	func _contract_recent_history(_limit: int = 5) -> Array[Dictionary]:
+		return []
+
+
 static func reveal_space(space_id: String, revealed: bool = true) -> Dictionary:
 	return {"type": REVEAL_SPACE, "space_id": space_id, "revealed": revealed}
 

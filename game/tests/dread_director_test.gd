@@ -216,7 +216,10 @@ func _test_trajectories_and_scoring() -> void:
 			"records score components that add to the final score"
 		)
 		_expect(not decision.candidate_evaluations.is_empty(), "audits all candidate evaluations")
-		_expect(decision.candidate_evaluations.any(func(record: Dictionary) -> bool: return not record.eligible and not record.rejection_reasons.is_empty()), "records ineligible-candidate reasons")
+		_expect(
+			decision.candidate_evaluations.any(_is_ineligible_candidate),
+			"records ineligible-candidate reasons"
+		)
 
 
 func _test_fairness_mercy_cooldowns_and_no_op() -> void:
@@ -256,11 +259,17 @@ func _test_fairness_mercy_cooldowns_and_no_op() -> void:
 		severe_decision, {"accepted": true, "authority": "BoardState", "downstream_revision": 1}
 	)
 	var recovery_decision: Dictionary = severe.runtime.evaluate(severe.telemetry)
-	_expect(recovery_decision.candidate_evaluations.any(func(record: Dictionary) -> bool: return not record.eligible and "recovery_window" in record.rejection_reasons), "suppresses further pressure during a recovery window")
+	_expect(
+		recovery_decision.candidate_evaluations.any(_is_recovery_window_rejection),
+		"suppresses further pressure during a recovery window"
+	)
 	var capped: Dictionary = _fixture("cruising", 35)
 	capped.runtime.profile.max_pressure_per_window = 10
 	var capped_decision: Dictionary = capped.runtime.evaluate(capped.telemetry)
-	_expect(capped_decision.candidate_evaluations.any(func(record: Dictionary) -> bool: return not record.eligible and "pressure_window_cap" in record.rejection_reasons), "enforces the rolling stacked-pressure cap")
+	_expect(
+		capped_decision.candidate_evaluations.any(_is_pressure_window_rejection),
+		"enforces the rolling stacked-pressure cap"
+	)
 	var off: Dictionary = _fixture("cruising", 44, "off")
 	var off_decision: Dictionary = off.runtime.evaluate(off.telemetry)
 	_expect(
@@ -542,6 +551,18 @@ func _evaluation(decision: Dictionary, candidate_id: String) -> Dictionary:
 		if evaluation.candidate_id == candidate_id:
 			return evaluation
 	return {}
+
+
+func _is_ineligible_candidate(record: Dictionary) -> bool:
+	return not record.eligible and not record.rejection_reasons.is_empty()
+
+
+func _is_recovery_window_rejection(record: Dictionary) -> bool:
+	return not record.eligible and "recovery_window" in record.rejection_reasons
+
+
+func _is_pressure_window_rejection(record: Dictionary) -> bool:
+	return not record.eligible and "pressure_window_cap" in record.rejection_reasons
 
 
 func _contains(failures: PackedStringArray, fragment: String) -> bool:

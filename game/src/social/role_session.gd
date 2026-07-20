@@ -1,5 +1,5 @@
 class_name RoleSession
-extends RefCounted
+extends SocialContent.SessionContract
 
 signal public_state_changed(payload: Dictionary)
 signal private_state_changed(seat_number: int, payload: Dictionary)
@@ -66,44 +66,24 @@ func assign_mode(p_mode_id: String, seats: Array[int]) -> Dictionary:
 		return _reject("social_content_missing")
 	var normalized_seats: Array[int] = seats.duplicate()
 	normalized_seats.sort()
-	if normalized_seats.is_empty() or normalized_seats.size() > SeatManager.MAX_SEATS:
+	if not _valid_seat_roster(normalized_seats):
 		return _reject("invalid_seat_roster")
-	for index: int in normalized_seats.size():
-		if (
-			normalized_seats[index] < 1
-			or normalized_seats[index] > SeatManager.MAX_SEATS
-			or (index > 0 and normalized_seats[index] == normalized_seats[index - 1])
-		):
-			return _reject("invalid_seat_roster")
-	var requested: Dictionary = content.mode_by_id(p_mode_id)
-	if requested.is_empty():
-		return _reject("unknown_social_mode")
-	var selected: Dictionary = requested
-	var used_fallback: bool = false
-	if not selected.get("supported_player_counts", []).has(normalized_seats.size()):
-		var fallback_id: String = selected.get("fallback_mode", "")
-		selected = content.mode_by_id(fallback_id)
-		if (
-			selected.is_empty()
-			or not selected.get("supported_player_counts", []).has(normalized_seats.size())
-		):
-			return _reject("unsupported_player_count")
-		used_fallback = true
+	var selection: Dictionary = _select_mode(p_mode_id, normalized_seats.size())
+	if not selection.accepted:
+		return _reject(selection.reason)
+	var selected: Dictionary = selection.mode
+	var used_fallback: bool = selection.fallback
 	var probe := DeterministicRng.new(derive_seed(session_seed, selected.id))
 	var plan_result: Dictionary = _build_assignment_plan(selected, normalized_seats, probe)
 	if not plan_result.accepted:
 		return _reject(plan_result.reason)
-	var next_states: Dictionary = {}
-	for seat: int in normalized_seats:
-		var role_id: String = plan_result.plan.get(seat, "")
-		var role: Dictionary = content.role_by_id(role_id)
-		if role.is_empty():
-			return _reject("impossible_assignment_plan")
-		next_states[seat] = _new_seat_state(seat, role)
+	var state_result: Dictionary = _build_seat_states(normalized_seats, plan_result.plan)
+	if not state_result.accepted:
+		return _reject(state_result.reason)
 	requested_mode_id = p_mode_id
 	mode_id = selected.id
 	rng = probe
-	seat_states = next_states
+	seat_states = state_result.states
 	pending_late_seats.clear()
 	fallback_applied = used_fallback
 	fallback_message = (
@@ -139,6 +119,42 @@ func assign_mode(p_mode_id: String, seats: Array[int]) -> Dictionary:
 	}
 
 
+func _valid_seat_roster(seats: Array[int]) -> bool:
+	if seats.is_empty() or seats.size() > SeatManager.MAX_SEATS:
+		return false
+	for index: int in seats.size():
+		if (
+			seats[index] < 1
+			or seats[index] > SeatManager.MAX_SEATS
+			or (index > 0 and seats[index] == seats[index - 1])
+		):
+			return false
+	return true
+
+
+func _select_mode(selected_mode_id: String, seat_count: int) -> Dictionary:
+	var selected: Dictionary = content.mode_by_id(selected_mode_id)
+	if selected.is_empty():
+		return {"accepted": false, "reason": "unknown_social_mode"}
+	var used_fallback: bool = false
+	if not selected.get("supported_player_counts", []).has(seat_count):
+		selected = content.mode_by_id(selected.get("fallback_mode", ""))
+		if selected.is_empty() or not selected.get("supported_player_counts", []).has(seat_count):
+			return {"accepted": false, "reason": "unsupported_player_count"}
+		used_fallback = true
+	return {"accepted": true, "reason": "", "mode": selected, "fallback": used_fallback}
+
+
+func _build_seat_states(seats: Array[int], plan: Dictionary) -> Dictionary:
+	var states: Dictionary = {}
+	for seat: int in seats:
+		var role: Dictionary = content.role_by_id(plan.get(seat, ""))
+		if role.is_empty():
+			return {"accepted": false, "reason": "impossible_assignment_plan"}
+		states[seat] = _new_seat_state(seat, role)
+	return {"accepted": true, "reason": "", "states": states}
+
+
 static func derive_seed(seed: int, selected_mode_id: String) -> int:
 	var value: int = absi(seed) % DeterministicRng.MODULUS
 	for character: String in "%s:%s" % [ROLE_RNG_SALT, selected_mode_id]:
@@ -156,7 +172,10 @@ func acknowledge_private_role(seat_number: int) -> Dictionary:
 	_record(
 		"private_acknowledgement",
 		{"seat": seat_number},
-		"Seat %s completed a private acknowledgement." % _roman(seat_number)
+		(
+			"Seat %s completed a private acknowledgement."
+			% SocialContent.SessionData.roman(seat_number, SEAT_NUMERALS)
+		)
 	)
 	private_state_changed.emit(seat_number, seat_private_view(seat_number))
 	return _accept()
@@ -174,7 +193,10 @@ func set_seat_connected(seat_number: int, connected: bool) -> Dictionary:
 		{"seat": seat_number, "connected": connected},
 		(
 			"Seat %s %s; stable secret ownership is reserved."
-			% [_roman(seat_number), "reconnected" if connected else "disconnected"]
+			% [
+				SocialContent.SessionData.roman(seat_number, SEAT_NUMERALS),
+				"reconnected" if connected else "disconnected",
+			]
 		)
 	)
 	public_state_changed.emit(public_view())
@@ -338,7 +360,9 @@ func perform_action(
 				else "A private social state changed."
 			)
 		)
-	var public_message: String = "A seat completed a private action; only its authored public consequence is shown."
+	var public_message: String = (
+		"A seat completed a private action; only its authored public consequence " + "is shown."
+	)
 	for payload: Dictionary in host_payloads:
 		if payload.visibility == "public":
 			public_message = payload.message
@@ -382,364 +406,34 @@ func perform_action_by_tag(
 	return _reject("action_not_available")
 
 
-func public_view() -> Dictionary:
-	var selected_mode: Dictionary = content.mode_by_id(mode_id)
-	var seats: Array[Dictionary] = []
-	for seat_number: int in _sorted_seats():
-		seats.append(_public_seat_view(seat_number))
-	var view: Dictionary = {
-		"view_version": VIEW_VERSION,
-		"view_kind": "public_shared_screen",
-		"scenario_label": "Lantern House Social Horror Lab",
-		"mode_label": selected_mode.get("label", "Unavailable"),
-		"revision": revision,
-		"fallback_active": fallback_applied,
-		"fallback_message": fallback_message,
-		"privacy_notice": "PUBLIC TV VIEW — no panel on this screen is private.",
-		"afterlife_notice":
-		(
-			"Afterlife enabled: defeat preserves meaningful legal participation."
-			if selected_mode.get("afterlife_enabled", true)
-			else "WARNING BEFORE PLAY: afterlife is disabled by this authored mode."
-		),
-		"seats": seats,
-		"public_history": public_history.duplicate(true),
-		"host_payloads": last_host_payloads.duplicate(true),
-		"outcome": resolved_outcome.get("public", {}).duplicate(true),
-	}
-	return _json_copy(view)
-
-
-func seat_private_view(seat_number: int) -> Dictionary:
-	if not seat_states.has(seat_number):
-		return {"accepted": false, "reason": "seat_not_authorized", "view_kind": "seat_private"}
-	var state: Dictionary = seat_states[seat_number]
-	var role: Dictionary = content.role_by_id(state.form_id)
-	var faction: Dictionary = content.faction_by_id(state.faction_id)
-	var private_objectives: Array[Dictionary] = []
-	for objective_id: String in state.objective_refs:
-		var objective: Dictionary = content.objective_by_id(objective_id)
-		private_objectives.append(
-			{
-				"objective_id": objective.id,
-				"label": objective.label,
-				"description": objective.description,
-				"visibility": objective.visibility
-			}
-		)
-	var private_actions: Array[Dictionary] = []
-	for action_id: String in role.get("action_refs", []):
-		var action: Dictionary = content.action_by_id(action_id)
-		private_actions.append(
-			{
-				"action_id": action.id,
-				"label": action.label,
-				"description": action.description,
-				"symbol": action.symbol,
-				"uses": state.uses.get(action.id, 0)
-			}
-		)
-	return _json_copy(
-		{
-			"accepted": true,
-			"view_version": VIEW_VERSION,
-			"view_kind": "seat_private",
-			"authorized_seat": seat_number,
-			"shared_screen_warning":
-			(
-				"OBSCURE THE SHARED SCREEN. Authorize only Seat %s. Companion views use the same stable-seat privacy boundary."
-				% _roman(seat_number)
-			),
-			"public": public_view(),
-			"private":
-			{
-				"role_id": role.id,
-				"role_label": role.label,
-				"role_description": role.description,
-				"form_id": state.form_id,
-				"faction_id": faction.id,
-				"faction_label": faction.label,
-				"objectives": private_objectives,
-				"actions": private_actions,
-				"acknowledged": state.acknowledged,
-				"pending_prompts": state.pending_private_prompts.duplicate(true),
-			},
-		}
+func _projection() -> RoleDiagnostics.SessionProjection:
+	return RoleDiagnostics.SessionProjection.new(
+		self, VIEW_VERSION, SEAT_NUMERALS, SEAT_SHAPES, UNKNOWN_LABEL
 	)
 
 
-func faction_private_view(requester_seat: int) -> Dictionary:
-	if not seat_states.has(requester_seat):
-		return {"accepted": false, "reason": "seat_not_authorized", "view_kind": "faction_private"}
-	var requester: Dictionary = seat_states[requester_seat]
-	var faction: Dictionary = content.faction_by_id(requester.faction_id)
-	if not faction.get("communication_allowed", false):
-		return {
-			"accepted": false,
-			"reason": "faction_view_not_authorized",
-			"view_kind": "faction_private"
-		}
-	var members: Array[Dictionary] = []
-	for seat_number: int in _sorted_seats():
-		var state: Dictionary = seat_states[seat_number]
-		if state.faction_id != requester.faction_id:
-			continue
-		var role: Dictionary = content.role_by_id(state.form_id)
-		members.append(
-			{
-				"seat": seat_number,
-				"role_id": role.id,
-				"role_label": role.label,
-				"lifecycle": state.lifecycle
-			}
-		)
-	return _json_copy(
-		{
-			"accepted": true,
-			"view_version": VIEW_VERSION,
-			"view_kind": "faction_private",
-			"authorized_seat": requester_seat,
-			"faction_id": faction.id,
-			"faction_label": faction.label,
-			"members": members,
-			"policy": "Authored faction communication only; no unrelated seats are included.",
-		}
-	)
+func _contract_public_view() -> Dictionary:
+	return _projection().public_view()
 
 
-func diagnostics_view(spoilers_enabled: bool = false) -> Dictionary:
-	if not spoilers_enabled:
-		return {
-			"accepted": false, "reason": "spoiler_diagnostics_disabled", "view_kind": "diagnostics"
-		}
-	var private_previews: Array[Dictionary] = []
-	var transition_eligibility: Array[Dictionary] = []
-	for seat_number: int in _sorted_seats():
-		private_previews.append({"seat": seat_number, "preview": seat_private_view(seat_number)})
-		var available: Array[Dictionary] = []
-		var state: Dictionary = seat_states[seat_number]
-		var role: Dictionary = content.role_by_id(state.form_id)
-		for transition_id: String in role.get("transition_refs", []):
-			var transition: Dictionary = content.transition_by_id(transition_id)
-			var eligibility: Dictionary = _validate_transition_request(
-				seat_number, transition_id, transition.trigger, seat_states
-			)
-			available.append(
-				{
-					"transition_id": transition.id,
-					"label": transition.label,
-					"trigger": transition.trigger,
-					"eligible": eligibility.accepted,
-					"reason": eligibility.get("reason", "")
-				}
-			)
-		transition_eligibility.append(
-			{
-				"seat": seat_number,
-				"transitions": available,
-				"legal_actions": legal_actions(seat_number)
-			}
-		)
-	return _json_copy(
-		{
-			"accepted": true,
-			"view_version": VIEW_VERSION,
-			"view_kind": "spoiler_diagnostics",
-			"warning": "SPOILER DIAGNOSTICS — NEVER PLAYER-FACING",
-			"scenario_id": content.scenario_id,
-			"scenario_version": content.scenario_version,
-			"requested_mode_id": requested_mode_id,
-			"mode_id": mode_id,
-			"revision": revision,
-			"assignment_count": assignment_count,
-			"rng": rng.to_snapshot(),
-			"seat_states": _seat_state_rows(),
-			"transition_counts": _transition_counts,
-			"action_step": _action_step,
-			"audit_history": audit_history,
-			"last_rejection": last_rejection,
-			"public_preview": public_view(),
-			"seat_private_previews": private_previews,
-			"transition_eligibility": transition_eligibility,
-			"privacy_evaluation": privacy_report(),
-			"director_safe_signals": director_safe_signals(),
-			"resolved_outcome": resolved_outcome,
-		}
-	)
+func _contract_seat_private_view(seat_number: int) -> Dictionary:
+	return _projection().seat_private_view(seat_number)
 
 
-func director_safe_signals() -> Dictionary:
-	var mode: Dictionary = content.mode_by_id(mode_id)
-	var allowlist: Array = mode.get("director_signal_allowlist", [])
-	var revealed_factions: Dictionary = {}
-	var revealed_counts: Dictionary = {}
-	var revealed_total: int = 0
-	var defeated_count: int = 0
-	var restless_count: int = 0
-	var conversion_count: int = 0
-	var afterlife_support: int = 0
-	for seat_number: int in _sorted_seats():
-		var state: Dictionary = seat_states[seat_number]
-		var role: Dictionary = content.role_by_id(state.form_id)
-		if state.revealed:
-			revealed_factions[state.faction_id] = true
-			revealed_counts[state.faction_id] = revealed_counts.get(state.faction_id, 0) + 1
-			revealed_total += 1
-		if state.defeated:
-			defeated_count += 1
-		if role.get("tags", []).has("afterlife"):
-			restless_count += 1
-			if state.connected:
-				for action_id: String in role.get("action_refs", []):
-					if content.action_by_id(action_id).get("tags", []).has("afterlife_support"):
-						afterlife_support += 1
-		if state.revealed and state.transformed:
-			conversion_count += 1
-	var imbalance: int = 0
-	if not revealed_counts.is_empty():
-		var counts: Array = revealed_counts.values()
-		imbalance = counts.max() - counts.min()
-	var candidates: Dictionary = {
-		"revealed_faction_count": revealed_factions.size(),
-		"public_hostility": clampi(maxi(0, revealed_factions.size() - 1) * 20, 0, 100),
-		"defeated_count": defeated_count,
-		"restless_count": restless_count,
-		"public_conversion_pressure": _normalized_percentage(conversion_count, seat_states.size()),
-		"revealed_imbalance": _normalized_percentage(imbalance, revealed_total),
-		"social_choice_pressure": 0,
-		"afterlife_support_available": afterlife_support,
-	}
-	var result: Dictionary = {}
-	for signal_name: String in allowlist:
-		if candidates.has(signal_name):
-			result[signal_name] = clampi(int(candidates[signal_name]), 0, 100)
-	return _json_copy(result)
+func _contract_faction_private_view(requester_seat: int) -> Dictionary:
+	return _projection().faction_private_view(requester_seat)
 
 
-func _normalized_percentage(numerator: int, denominator: int) -> int:
-	if denominator <= 0:
-		return 0
-	return clampi(roundi(float(numerator) / float(denominator) * 100.0), 0, 100)
+func _contract_diagnostics_view(spoilers_enabled: bool = false) -> Dictionary:
+	return _projection().diagnostics_view(spoilers_enabled)
+
+
+func _contract_director_safe_signals() -> Dictionary:
+	return _projection().director_safe_signals()
 
 
 func evaluate_outcomes(rules: RulesSession = null, board: BoardState = null) -> Dictionary:
-	var seat_results: Array[Dictionary] = []
-	var public_seats: Array[Dictionary] = []
-	var faction_buckets: Dictionary = {}
-	for seat_number: int in _sorted_seats():
-		var state: Dictionary = seat_states[seat_number]
-		var evaluations: Array[Dictionary] = []
-		for objective_id: String in state.objective_refs:
-			var objective: Dictionary = content.objective_by_id(objective_id)
-			var complete: bool = _conditions_match(
-				objective.get("conditions", []), seat_number, state.faction_id, rules, board
-			)
-			var partial: bool = (
-				not complete
-				and not objective.get("partial_conditions", []).is_empty()
-				and _conditions_match(
-					objective.partial_conditions, seat_number, state.faction_id, rules, board
-				)
-			)
-			evaluations.append(
-				{
-					"objective_id": objective.id,
-					"label": objective.label,
-					"visibility": objective.visibility,
-					"complete": complete,
-					"partial": partial,
-					"result": objective.result,
-					"priority": objective.priority,
-					"reveal_at_end": objective.reveal_at_end,
-					"epilogue_tags": objective.epilogue_tags
-				}
-			)
-		var result: String = "defeat"
-		var winning_priority: int = -1
-		for evaluation: Dictionary in evaluations:
-			if evaluation.complete and evaluation.priority > winning_priority:
-				result = evaluation.result
-				winning_priority = evaluation.priority
-			elif evaluation.partial and winning_priority < 0:
-				result = "partial"
-		var seat_record: Dictionary = {
-			"seat": seat_number,
-			"faction_id": state.faction_id,
-			"form_id": state.form_id,
-			"result": result,
-			"objectives": evaluations
-		}
-		seat_results.append(seat_record)
-		var public_objectives: Array[String] = []
-		for evaluation: Dictionary in evaluations:
-			if evaluation.visibility == "public" or evaluation.reveal_at_end:
-				public_objectives.append(
-					(
-						"%s: %s"
-						% [
-							evaluation.label,
-							(
-								"complete"
-								if evaluation.complete
-								else "partial" if evaluation.partial else "incomplete"
-							)
-						]
-					)
-				)
-		public_seats.append(
-			{
-				"seat": seat_number,
-				"numeral": _roman(seat_number),
-				"result": result,
-				"objectives": public_objectives
-			}
-		)
-		if not faction_buckets.has(state.faction_id):
-			faction_buckets[state.faction_id] = []
-		faction_buckets[state.faction_id].append(result)
-	var faction_results: Array[Dictionary] = []
-	var public_factions: Array[Dictionary] = []
-	for faction_id: String in faction_buckets:
-		var faction: Dictionary = content.faction_by_id(faction_id)
-		var values: Array = faction_buckets[faction_id]
-		var winners: int = (
-			values.count("victory")
-			+ values.count("changed")
-			+ values.count("restless")
-			+ values.count("escaped")
-		)
-		var result: String = (
-			"victory" if winners > 0 else "partial" if values.has("partial") else "defeat"
-		)
-		faction_results.append(
-			{
-				"faction_id": faction_id,
-				"label": faction.label,
-				"result": result,
-				"seat_results": values
-			}
-		)
-		public_factions.append(
-			{
-				"label": faction.label,
-				"symbol": faction.symbol,
-				"pattern": faction.pattern,
-				"result": result
-			}
-		)
-	return _json_copy(
-		{
-			"outcome_version": 1,
-			"policy": content.mode_by_id(mode_id).get("terminal_policy", {}),
-			"private": {"seats": seat_results, "factions": faction_results},
-			"public":
-			{
-				"summary": "Multiple faction and individual results resolved deterministically.",
-				"seats": public_seats,
-				"factions": public_factions
-			},
-		}
-	)
+	return _projection().evaluate_outcomes(rules, board)
 
 
 func resolve_outcomes(rules: RulesSession, board: BoardState = null) -> Dictionary:
@@ -773,41 +467,12 @@ func resolve_outcomes(rules: RulesSession, board: BoardState = null) -> Dictiona
 	}
 
 
-func privacy_report() -> Dictionary:
-	var public_json: String = JSON.stringify(public_view())
-	var director_json: String = JSON.stringify(director_safe_signals())
-	var leaked: Array[String] = []
-	var unauthorized_private_leaks: Array[String] = []
-	for owner_seat: int in _sorted_seats():
-		var state: Dictionary = seat_states[owner_seat]
-		if state.revealed:
-			continue
-		var role: Dictionary = content.role_by_id(state.form_id)
-		var faction: Dictionary = content.faction_by_id(state.faction_id)
-		var secrets: Array[String] = [role.id, state.form_id, faction.id, role.description]
-		for objective_id: String in state.objective_refs:
-			var objective: Dictionary = content.objective_by_id(objective_id)
-			if objective.visibility != "public":
-				secrets.append(objective.id)
-				secrets.append(objective.description)
-		for secret: String in secrets:
-			if not secret.is_empty() and (secret in public_json or secret in director_json):
-				leaked.append(secret)
-			for viewer_seat: int in _sorted_seats():
-				if viewer_seat == owner_seat:
-					continue
-				var viewer_json: String = JSON.stringify(seat_private_view(viewer_seat))
-				if not secret.is_empty() and secret in viewer_json:
-					unauthorized_private_leaks.append("seat_%d:%s" % [viewer_seat, secret])
-	return {
-		"passed": leaked.is_empty() and unauthorized_private_leaks.is_empty(),
-		"public_or_director_leaks": leaked,
-		"unauthorized_seat_leaks": unauthorized_private_leaks
-	}
+func _contract_privacy_report() -> Dictionary:
+	return _projection().privacy_report()
 
 
 func seat_with_tag(tag: String, excluded: Array[int] = []) -> int:
-	for seat_number: int in _sorted_seats():
+	for seat_number: int in SocialContent.SessionData.sorted_seats(seat_states):
 		if excluded.has(seat_number):
 			continue
 		var role: Dictionary = content.role_by_id(seat_states[seat_number].form_id)
@@ -883,7 +548,7 @@ func _action_target_candidates(actor_seat: int, action: Dictionary) -> Array[int
 	var target_scope: String = action.get("target_scope", "none")
 	if target_scope == "none":
 		return candidates
-	for candidate_seat: int in _sorted_seats():
+	for candidate_seat: int in SocialContent.SessionData.sorted_seats(seat_states):
 		var candidate_state: Dictionary = seat_states[candidate_seat]
 		if not candidate_state.get("connected", false):
 			continue
@@ -942,35 +607,41 @@ func _search_action_target_combinations(
 
 
 func to_snapshot() -> Dictionary:
-	return _json_copy(
-		{
-			"snapshot_version": SNAPSHOT_VERSION,
-			"scenario_id": content.scenario_id,
-			"scenario_version": content.scenario_version,
-			"requested_mode_id": requested_mode_id,
-			"mode_id": mode_id,
-			"session_seed": session_seed,
-			"rng": rng.to_snapshot(),
-			"revision": revision,
-			"assignment_count": assignment_count,
-			"seat_states": _seat_state_rows(),
-			"pending_late_seats": pending_late_seats,
-			"audit_history": audit_history,
-			"public_history": public_history,
-			"audit_sequence": _audit_sequence,
-			"action_step": _action_step,
-			"transition_counts": _transition_counts,
-			"fallback_applied": fallback_applied,
-			"fallback_message": fallback_message,
-			"resolved_outcome": resolved_outcome,
-			"last_host_payloads": last_host_payloads,
-		}
+	return (
+		SocialContent
+		. SessionData
+		. json_copy(
+			{
+				"snapshot_version": SNAPSHOT_VERSION,
+				"scenario_id": content.scenario_id,
+				"scenario_version": content.scenario_version,
+				"requested_mode_id": requested_mode_id,
+				"mode_id": mode_id,
+				"session_seed": session_seed,
+				"rng": rng.to_snapshot(),
+				"revision": revision,
+				"assignment_count": assignment_count,
+				"seat_states": SocialContent.SessionData.seat_state_rows(seat_states),
+				"pending_late_seats": pending_late_seats,
+				"audit_history": audit_history,
+				"public_history": public_history,
+				"audit_sequence": _audit_sequence,
+				"action_step": _action_step,
+				"transition_counts": _transition_counts,
+				"fallback_applied": fallback_applied,
+				"fallback_message": fallback_message,
+				"resolved_outcome": resolved_outcome,
+				"last_host_payloads": last_host_payloads,
+			}
+		)
 	)
 
 
 func restore_snapshot(snapshot: Dictionary) -> Dictionary:
-	snapshot = _normalize_json_numbers(snapshot)
-	var validation: Dictionary = _validate_snapshot(snapshot)
+	snapshot = SocialContent.SessionData.json_copy(snapshot)
+	var validation: Dictionary = SocialContent.SessionData.validate_snapshot(
+		snapshot, content, SNAPSHOT_VERSION
+	)
 	if not validation.accepted:
 		return _reject(validation.reason)
 	var rng_probe := DeterministicRng.new(1)
@@ -986,16 +657,16 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 	revision = snapshot.revision
 	assignment_count = snapshot.assignment_count
 	seat_states = next_states
-	pending_late_seats = _int_array(snapshot.pending_late_seats)
-	audit_history = _dict_array(snapshot.audit_history)
-	public_history = _dict_array(snapshot.public_history)
+	pending_late_seats = SocialContent.SessionData.int_array(snapshot.pending_late_seats)
+	audit_history = SocialContent.SessionData.dict_array(snapshot.audit_history)
+	public_history = SocialContent.SessionData.dict_array(snapshot.public_history)
 	_audit_sequence = snapshot.audit_sequence
 	_action_step = snapshot.action_step
 	_transition_counts = snapshot.transition_counts.duplicate(true)
 	fallback_applied = snapshot.fallback_applied
 	fallback_message = snapshot.fallback_message
 	resolved_outcome = snapshot.resolved_outcome.duplicate(true)
-	last_host_payloads = _dict_array(snapshot.last_host_payloads)
+	last_host_payloads = SocialContent.SessionData.dict_array(snapshot.last_host_payloads)
 	last_rejection = "—"
 	public_state_changed.emit(public_view())
 	return _accept()
@@ -1014,22 +685,11 @@ func _build_assignment_plan(
 		plan[seat] = assignment.role_id
 		available.erase(seat)
 	if mode.get("assignment_policy", "") == "random_pool":
-		var required: int = 0
-		for pool: Dictionary in mode.get("assignment_pool", []):
-			required += pool.count
-		if required > available.size():
-			return {"accepted": false, "reason": "impossible_assignment_plan"}
-		for pool: Dictionary in mode.get("assignment_pool", []):
-			var role: Dictionary = content.role_by_id(pool.role_id)
-			if seats.size() < role.minimum_players or seats.size() > role.maximum_players:
-				return {"accepted": false, "reason": "impossible_assignment_plan"}
-			for _index: int in pool.count:
-				if available.is_empty():
-					return {"accepted": false, "reason": "impossible_assignment_plan"}
-				var selected_index: int = probe.draw_range(0, available.size() - 1)
-				var selected_seat: int = available[selected_index]
-				plan[selected_seat] = pool.role_id
-				available.remove_at(selected_index)
+		var random_result: Dictionary = _fill_random_assignment_plan(
+			mode, seats.size(), available, plan, probe
+		)
+		if not random_result.accepted:
+			return random_result
 	var default_role: Dictionary = content.role_by_id(mode.get("default_role_id", ""))
 	if (
 		default_role.is_empty()
@@ -1042,6 +702,32 @@ func _build_assignment_plan(
 	if plan.size() != seats.size():
 		return {"accepted": false, "reason": "impossible_assignment_plan"}
 	return {"accepted": true, "reason": "", "plan": plan, "rng_before": rng_before}
+
+
+func _fill_random_assignment_plan(
+	mode: Dictionary,
+	seat_count: int,
+	available: Array[int],
+	plan: Dictionary,
+	probe: DeterministicRng
+) -> Dictionary:
+	var required: int = 0
+	for pool: Dictionary in mode.get("assignment_pool", []):
+		required += pool.count
+	if required > available.size():
+		return {"accepted": false, "reason": "impossible_assignment_plan"}
+	for pool: Dictionary in mode.get("assignment_pool", []):
+		var role: Dictionary = content.role_by_id(pool.role_id)
+		if seat_count < role.minimum_players or seat_count > role.maximum_players:
+			return {"accepted": false, "reason": "impossible_assignment_plan"}
+		for _index: int in pool.count:
+			if available.is_empty():
+				return {"accepted": false, "reason": "impossible_assignment_plan"}
+			var selected_index: int = probe.draw_range(0, available.size() - 1)
+			var selected_seat: int = available[selected_index]
+			plan[selected_seat] = pool.role_id
+			available.remove_at(selected_index)
+	return _accept()
 
 
 func _new_seat_state(seat_number: int, role: Dictionary) -> Dictionary:
@@ -1068,34 +754,37 @@ func _new_seat_state(seat_number: int, role: Dictionary) -> Dictionary:
 func _validate_transition_request(
 	seat_number: int, transition_id: String, trigger: String, states: Dictionary
 ) -> Dictionary:
-	if not states.has(seat_number):
-		return {"accepted": false, "reason": "seat_not_participating"}
-	var state: Dictionary = states[seat_number]
-	var role: Dictionary = content.role_by_id(state.form_id)
-	if not role.get("transition_refs", []).has(transition_id):
-		return {"accepted": false, "reason": "transition_not_available"}
+	var reason: String = ""
+	var state: Dictionary = states.get(seat_number, {})
+	var role: Dictionary = content.role_by_id(state.get("form_id", ""))
 	var definition: Dictionary = content.transition_by_id(transition_id)
-	if (
+	var target_role: Dictionary = content.role_by_id(definition.get("target_form", ""))
+	var count_key: String = "%d:%s" % [seat_number, transition_id]
+	if state.is_empty():
+		reason = "seat_not_participating"
+	elif not role.get("transition_refs", []).has(transition_id):
+		reason = "transition_not_available"
+	elif (
 		definition.is_empty()
-		or definition.trigger != trigger
+		or definition.get("trigger", "") != trigger
 		or not definition.get("source_forms", []).has(state.form_id)
 	):
-		return {"accepted": false, "reason": "transition_source_mismatch"}
-	var count_key: String = "%d:%s" % [seat_number, transition_id]
-	if _transition_counts.get(count_key, 0) >= definition.max_chain:
-		return {"accepted": false, "reason": "transition_chain_limit"}
-	var target_role: Dictionary = content.role_by_id(definition.target_form)
-	if (
+		reason = "transition_source_mismatch"
+	elif _transition_counts.get(count_key, 0) >= definition.max_chain:
+		reason = "transition_chain_limit"
+	elif (
 		target_role.get("tags", []).has("afterlife")
 		and not content.mode_by_id(mode_id).get("afterlife_enabled", true)
 	):
-		return {"accepted": false, "reason": "afterlife_disabled_by_mode"}
-	if (
+		reason = "afterlife_disabled_by_mode"
+	elif (
 		target_role.is_empty()
 		or target_role.get("objective_refs", []).is_empty()
 		or target_role.get("action_refs", []).is_empty()
 	):
-		return {"accepted": false, "reason": "transition_would_strand_seat"}
+		reason = "transition_would_strand_seat"
+	if not reason.is_empty():
+		return {"accepted": false, "reason": reason}
 	return {"accepted": true, "reason": "", "definition": definition}
 
 
@@ -1118,54 +807,75 @@ func _apply_transition_state(seat_number: int, definition: Dictionary) -> void:
 func _validate_action_request(
 	actor_seat: int, action_id: String, targets: Array[int], rules: RulesSession
 ) -> Dictionary:
-	if not seat_states.has(actor_seat):
-		return {"accepted": false, "reason": "seat_not_participating"}
-	var state: Dictionary = seat_states[actor_seat]
-	if not state.get("connected", false):
-		return {"accepted": false, "reason": "action_actor_disconnected"}
-	var role: Dictionary = content.role_by_id(state.form_id)
-	if not role.get("action_refs", []).has(action_id):
-		return {"accepted": false, "reason": "action_not_available"}
+	var state: Dictionary = seat_states.get(actor_seat, {})
+	var role: Dictionary = content.role_by_id(state.get("form_id", ""))
 	var action: Dictionary = content.action_by_id(action_id)
-	if not action.get("allowed_lifecycles", []).has(state.lifecycle):
-		return {"accepted": false, "reason": "action_lifecycle_mismatch"}
-	if targets.size() < action.minimum_targets or targets.size() > action.maximum_targets:
-		return {"accepted": false, "reason": "invalid_action_targets"}
-	var unique_targets: Dictionary = {}
-	for target: int in targets:
-		if not seat_states.has(target) or unique_targets.has(target):
-			return {"accepted": false, "reason": "invalid_action_targets"}
-		unique_targets[target] = true
-		if not seat_states[target].get("connected", false):
-			return {"accepted": false, "reason": "action_target_disconnected"}
-		match action.target_scope:
-			"none":
-				return {"accepted": false, "reason": "invalid_action_targets"}
-			"self":
-				if target != actor_seat:
-					return {"accepted": false, "reason": "invalid_action_targets"}
-			"other":
-				if target == actor_seat:
-					return {"accepted": false, "reason": "invalid_action_targets"}
-			"faction_other":
-				if target == actor_seat or seat_states[target].faction_id != state.faction_id:
-					return {"accepted": false, "reason": "invalid_action_targets"}
+	var reason: String = ""
+	if state.is_empty():
+		reason = "seat_not_participating"
+	elif not state.get("connected", false):
+		reason = "action_actor_disconnected"
+	elif not role.get("action_refs", []).has(action_id):
+		reason = "action_not_available"
+	elif not action.get("allowed_lifecycles", []).has(state.lifecycle):
+		reason = "action_lifecycle_mismatch"
+	elif targets.size() < action.minimum_targets or targets.size() > action.maximum_targets:
+		reason = "invalid_action_targets"
+	else:
+		reason = _action_target_rejection(actor_seat, state, action, targets)
 	var use_limit: int = action.get("use_limit", 0)
-	if use_limit > 0 and state.uses.get(action_id, 0) >= use_limit:
-		return {"accepted": false, "reason": "action_use_limit"}
 	var round_number: int = rules.round_number if rules != null else _action_step + 1
-	var last_round: int = state.last_used_round.get(action_id, -999)
-	if action.get("per_round_limit", 0) > 0 and last_round == round_number:
-		return {"accepted": false, "reason": "action_round_limit"}
-	if action.get("cooldown", 0) > 0 and round_number < last_round + action.cooldown:
-		return {"accepted": false, "reason": "action_cooldown"}
-	if (
-		rules != null
+	var last_round: int = state.get("last_used_round", {}).get(action_id, -999)
+	if reason.is_empty() and use_limit > 0 and state.get("uses", {}).get(action_id, 0) >= use_limit:
+		reason = "action_use_limit"
+	elif reason.is_empty() and action.get("per_round_limit", 0) > 0 and last_round == round_number:
+		reason = "action_round_limit"
+	elif (
+		reason.is_empty()
+		and action.get("cooldown", 0) > 0
+		and round_number < last_round + action.cooldown
+	):
+		reason = "action_cooldown"
+	elif (
+		reason.is_empty()
+		and rules != null
 		and not action.get("allowed_phases", []).is_empty()
 		and not action.allowed_phases.has(rules.current_phase())
 	):
-		return {"accepted": false, "reason": "action_phase_mismatch"}
+		reason = "action_phase_mismatch"
+	if not reason.is_empty():
+		return {"accepted": false, "reason": reason}
 	return {"accepted": true, "reason": "", "action": action}
+
+
+func _action_target_rejection(
+	actor_seat: int, actor_state: Dictionary, action: Dictionary, targets: Array[int]
+) -> String:
+	var reason: String = ""
+	var unique_targets: Dictionary = {}
+	for target: int in targets:
+		if not seat_states.has(target) or unique_targets.has(target):
+			reason = "invalid_action_targets"
+		else:
+			unique_targets[target] = true
+			if not seat_states[target].get("connected", false):
+				reason = "action_target_disconnected"
+			elif action.target_scope == "none":
+				reason = "invalid_action_targets"
+			elif action.target_scope == "self" and target != actor_seat:
+				reason = "invalid_action_targets"
+			elif action.target_scope == "other" and target == actor_seat:
+				reason = "invalid_action_targets"
+			elif (
+				action.target_scope == "faction_other"
+				and (
+					target == actor_seat or seat_states[target].faction_id != actor_state.faction_id
+				)
+			):
+				reason = "invalid_action_targets"
+		if not reason.is_empty():
+			break
+	return reason
 
 
 func _preflight_effects(
@@ -1212,16 +922,17 @@ func _commit_effects(effects: Array, actor_seat: int, rules: RulesSession) -> Di
 func _conditions_match(
 	conditions: Array, seat_number: int, faction_id: String, rules: RulesSession, board: BoardState
 ) -> bool:
+	var matches: bool = true
 	for condition: Dictionary in conditions:
 		match condition.type:
 			"always":
 				pass
 			"rules_flag":
 				if rules == null or rules.flags.get(condition.flag_id) != condition.value:
-					return false
+					matches = false
 			"rules_counter_at_least":
 				if rules == null or rules.counters.get(condition.counter_id, 0) < condition.value:
-					return false
+					matches = false
 			"board_feature":
 				if (
 					board == null
@@ -1229,17 +940,17 @@ func _conditions_match(
 						condition.feature_id
 					)
 				):
-					return false
+					matches = false
 			"faction_count_at_least":
 				var count: int = 0
 				for state: Dictionary in seat_states.values():
 					if state.faction_id == faction_id:
 						count += 1
 				if count < condition.value:
-					return false
+					matches = false
 			"seat_state":
 				if seat_states[seat_number].get(condition.key) != condition.value:
-					return false
+					matches = false
 			"action_used":
 				var used: bool = false
 				for action_id: String in seat_states[seat_number].uses:
@@ -1251,83 +962,12 @@ func _conditions_match(
 					):
 						used = true
 				if not used:
-					return false
+					matches = false
 			"objective_complete":
-				return false
-	return true
-
-
-func _public_seat_view(seat_number: int) -> Dictionary:
-	var state: Dictionary = seat_states[seat_number]
-	var role: Dictionary = content.role_by_id(state.form_id)
-	var faction: Dictionary = content.faction_by_id(state.faction_id)
-	var identity: Dictionary = {
-		"label": role.label,
-		"symbol": role.symbol,
-		"pattern": role.pattern,
-		"description": role.description
-	}
-	if not state.revealed:
-		identity = (
-			role
-			. get(
-				"public_cover",
-				{
-					"label": "Unknown",
-					"symbol": "?",
-					"pattern": "closed crosshatch",
-					"description": "Unknown"
-				}
-			)
-			. duplicate(true)
-		)
-	var faction_public: bool = (
-		state.revealed or faction.get("membership_policy", "hidden") == "public"
-	)
-	var objectives: Array[String] = []
-	for objective_id: String in state.objective_refs:
-		var objective: Dictionary = content.objective_by_id(objective_id)
-		if objective.visibility == "public":
-			objectives.append(objective.label)
-	var actions: Array[String] = []
-	for action: Dictionary in legal_actions(seat_number):
-		if action.visibility == "public":
-			actions.append("%s %s" % [action.symbol, action.label])
-	return {
-		"seat": seat_number,
-		"numeral": _roman(seat_number),
-		"shape": SEAT_SHAPES[seat_number - 1],
-		"count_pattern": "mark x%d" % seat_number,
-		"connection": "CONNECTED" if state.connected else "DISCONNECTED — RESERVED",
-		"connection_symbol": "●" if state.connected else "×",
-		"identity_label": identity.label,
-		"identity_symbol": identity.symbol,
-		"identity_pattern": identity.pattern,
-		"faction_label": faction.label if faction_public else UNKNOWN_LABEL,
-		"faction_symbol": faction.symbol if faction_public else "?",
-		"lifecycle": state.lifecycle.capitalize(),
-		"status": _public_status(state),
-		"objectives": objectives,
-		"legal_actions": actions,
-	}
-
-
-func _public_status(state: Dictionary) -> String:
-	if not state.connected:
-		return "DISCONNECTED / RESERVED"
-	if state.lifecycle == "afterlife":
-		return "RESTLESS / ACTIVE AFTERLIFE"
-	if state.lifecycle == "defeated" or state.defeated:
-		return "DEFEATED"
-	if state.lifecycle == "transformed" or state.transformed:
-		return "TRANSFORMED"
-	if state.lifecycle == "replacement":
-		return "REPLACEMENT"
-	if state.lifecycle == "escaped" or state.escaped:
-		return "ESCAPED"
-	if state.revealed:
-		return "REVEALED"
-	return "UNKNOWN / HIDDEN"
+				matches = false
+		if not matches:
+			break
+	return matches
 
 
 func _record(type: String, private_payload: Dictionary, public_message: String) -> void:
@@ -1338,14 +978,14 @@ func _record(type: String, private_payload: Dictionary, public_message: String) 
 		"type": type,
 		"private": private_payload.duplicate(true)
 	}
-	audit_history.append(_json_copy(entry))
+	audit_history.append(SocialContent.SessionData.json_copy(entry))
 	if audit_history.size() > AUDIT_LIMIT:
 		audit_history.pop_front()
 	public_history.append(
 		{
 			"sequence": _audit_sequence,
 			"revision": revision,
-			"type": _public_history_type(type),
+			"type": RoleDiagnostics.SessionProjection.public_history_type(type),
 			"message": public_message
 		}
 	)
@@ -1354,158 +994,7 @@ func _record(type: String, private_payload: Dictionary, public_message: String) 
 	last_rejection = "—"
 
 
-func _public_history_type(type: String) -> String:
-	match type:
-		"assignment":
-			return "roles_prepared"
-		"private_acknowledgement":
-			return "private_step_complete"
-		"connection":
-			return "seat_connection"
-		"transition":
-			return "social_transition"
-		"action":
-			return "social_action"
-		"outcome":
-			return "outcome_resolved"
-		_:
-			return "social_update"
-
-
-func _validate_snapshot(snapshot: Dictionary) -> Dictionary:
-	if snapshot.get("snapshot_version", -1) != SNAPSHOT_VERSION:
-		return {"accepted": false, "reason": "unsupported_snapshot_version"}
-	if (
-		snapshot.get("scenario_id", "") != content.scenario_id
-		or snapshot.get("scenario_version", -1) != content.scenario_version
-	):
-		return {"accepted": false, "reason": "snapshot_content_mismatch"}
-	if (
-		content.mode_by_id(snapshot.get("mode_id", "")).is_empty()
-		or content.mode_by_id(snapshot.get("requested_mode_id", "")).is_empty()
-	):
-		return {"accepted": false, "reason": "unknown_snapshot_content"}
-	for key: String in [
-		"session_seed", "revision", "assignment_count", "audit_sequence", "action_step"
-	]:
-		if not snapshot.get(key) is int or snapshot.get(key, -1) < 0:
-			return {"accepted": false, "reason": "malformed_snapshot"}
-	if not snapshot.get("rng") is Dictionary or not snapshot.get("seat_states") is Array:
-		return {"accepted": false, "reason": "malformed_snapshot"}
-	var seats: Dictionary = {}
-	for row: Variant in snapshot.seat_states:
-		if (
-			not row is Dictionary
-			or not row.get("seat") is int
-			or not row.get("state") is Dictionary
-			or seats.has(row.seat)
-		):
-			return {"accepted": false, "reason": "malformed_snapshot"}
-		var state: Dictionary = row.state
-		var form: Dictionary = content.role_by_id(state.get("form_id", ""))
-		if (
-			row.seat < 1
-			or row.seat > SeatManager.MAX_SEATS
-			or form.is_empty()
-			or content.role_by_id(state.get("assigned_role_id", "")).is_empty()
-			or content.faction_by_id(state.get("faction_id", "")).is_empty()
-		):
-			return {"accepted": false, "reason": "unknown_snapshot_content"}
-		if not form.get("allowed_factions", []).has(state.get("faction_id", "")):
-			return {"accepted": false, "reason": "impossible_snapshot_combination"}
-		if (
-			not SocialContent.VALID_LIFECYCLES.has(state.get("lifecycle", ""))
-			or not state.get("objective_refs") is Array
-		):
-			return {"accepted": false, "reason": "malformed_snapshot"}
-		for objective_id: Variant in state.objective_refs:
-			if not objective_id is String or content.objective_by_id(objective_id).is_empty():
-				return {"accepted": false, "reason": "unknown_snapshot_content"}
-		for action_id: Variant in state.get("uses", {}).keys():
-			if (
-				not action_id is String
-				or content.action_by_id(action_id).is_empty()
-				or not state.uses[action_id] is int
-				or state.uses[action_id] < 0
-			):
-				return {"accepted": false, "reason": "unknown_snapshot_content"}
-		seats[row.seat] = true
-	var selected_mode: Dictionary = content.mode_by_id(snapshot.mode_id)
-	if not selected_mode.get("supported_player_counts", []).has(seats.size()):
-		return {"accepted": false, "reason": "impossible_snapshot_combination"}
-	for array_key: String in [
-		"pending_late_seats", "audit_history", "public_history", "last_host_payloads"
-	]:
-		if not snapshot.get(array_key) is Array:
-			return {"accepted": false, "reason": "malformed_snapshot"}
-	if (
-		not snapshot.get("transition_counts") is Dictionary
-		or not snapshot.get("fallback_applied") is bool
-		or not snapshot.get("fallback_message") is String
-		or not snapshot.get("resolved_outcome") is Dictionary
-	):
-		return {"accepted": false, "reason": "malformed_snapshot"}
-	return {"accepted": true, "reason": ""}
-
-
-func _seat_state_rows() -> Array[Dictionary]:
-	var rows: Array[Dictionary] = []
-	for seat_number: int in _sorted_seats():
-		rows.append({"seat": seat_number, "state": seat_states[seat_number].duplicate(true)})
-	return rows
-
-
-func _sorted_seats() -> Array[int]:
-	var result: Array[int] = []
-	for key: Variant in seat_states.keys():
-		result.append(int(key))
-	result.sort()
-	return result
-
-
-func _roman(seat_number: int) -> String:
-	return SEAT_NUMERALS[clampi(seat_number - 1, 0, SEAT_NUMERALS.size() - 1)]
-
-
 func _reject(reason: String) -> Dictionary:
 	last_rejection = reason
 	request_rejected.emit(reason)
 	return {"accepted": false, "reason": reason}
-
-
-func _accept() -> Dictionary:
-	return {"accepted": true, "reason": ""}
-
-
-func _json_copy(value: Variant) -> Variant:
-	return _normalize_json_numbers(JSON.parse_string(JSON.stringify(value)))
-
-
-func _normalize_json_numbers(value: Variant) -> Variant:
-	if value is float and is_equal_approx(value, round(value)):
-		return int(value)
-	if value is Array:
-		var array: Array = []
-		for item: Variant in value:
-			array.append(_normalize_json_numbers(item))
-		return array
-	if value is Dictionary:
-		var dictionary: Dictionary = {}
-		for key: Variant in value:
-			dictionary[key] = _normalize_json_numbers(value[key])
-		return dictionary
-	return value
-
-
-func _int_array(values: Array) -> Array[int]:
-	var result: Array[int] = []
-	for value: Variant in values:
-		result.append(int(value))
-	return result
-
-
-func _dict_array(values: Array) -> Array[Dictionary]:
-	var result: Array[Dictionary] = []
-	for value: Variant in values:
-		result.append(value.duplicate(true))
-	return result

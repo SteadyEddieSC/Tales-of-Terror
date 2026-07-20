@@ -96,7 +96,10 @@ func rendered_text() -> String:
 			lines
 			. append(
 				(
-					"progress=%d failure=%d resources=%d hazards=%d spread=%d stalled=%d latency=%d pass=%d imbalance=%d rejected=%d"
+					(
+						"progress=%d failure=%d resources=%d hazards=%d spread=%d stalled=%d "
+						+ "latency=%d pass=%d imbalance=%d rejected=%d"
+					)
 					% [
 						_telemetry.progress,
 						_telemetry.failure_pressure,
