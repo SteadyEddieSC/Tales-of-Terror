@@ -44,39 +44,25 @@ jobs:
             -not -path 'game/addons/gut/*' \
             -not -path 'game/.godot/*' \
             -print | sort > artifacts/gdscript-quality/first-party-files.txt
-      - name: GDScript lint baseline (informational)
+      - name: Enforce zero-finding GDScript lint gate
         shell: bash
         run: |
-          set -uo pipefail
+          set -euo pipefail
           mapfile -t gd_files < artifacts/gdscript-quality/first-party-files.txt
-          set +e
-          gdlint "${gd_files[@]}" > artifacts/gdscript-quality/gdlint.txt 2>&1
-          status=$?
-          set -e
-          printf '\nexit_code=%s\n' "$status" >> artifacts/gdscript-quality/gdlint.txt
-          cat artifacts/gdscript-quality/gdlint.txt
-          if [ "$status" -ne 0 ]; then
-            echo '::warning::gdlint baseline is informational in issue #26; v0.1.0 remains blocked on a bounded follow-up.'
-          fi
-      - name: GDScript format baseline (informational, check only)
+          gdlint "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdlint.txt
+          printf '\nexit_code=0\n' >> artifacts/gdscript-quality/gdlint.txt
+      - name: Enforce canonical GDScript format gate (check only)
         shell: bash
         run: |
-          set -uo pipefail
+          set -euo pipefail
           mapfile -t gd_files < artifacts/gdscript-quality/first-party-files.txt
-          set +e
-          gdformat --check "${gd_files[@]}" > artifacts/gdscript-quality/gdformat.txt 2>&1
-          status=$?
-          set -e
-          printf '\nexit_code=%s\n' "$status" >> artifacts/gdscript-quality/gdformat.txt
-          cat artifacts/gdscript-quality/gdformat.txt
-          if [ "$status" -ne 0 ]; then
-            echo '::warning::gdformat baseline is informational in issue #26; v0.1.0 remains blocked on a bounded follow-up.'
-          fi
-      - name: Upload GDScript quality baselines
+          gdformat --check "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdformat.txt
+          printf '\nexit_code=0\n' >> artifacts/gdscript-quality/gdformat.txt
+      - name: Upload enforced GDScript quality evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: gdscript-quality-baselines
+          name: gdscript-quality
           path: artifacts/gdscript-quality
           if-no-files-found: error
           retention-days: 14

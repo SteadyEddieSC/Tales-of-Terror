@@ -59,6 +59,17 @@ def _logical_requirements(path: Path) -> list[str]:
     return entries
 
 
+def _workflow_step(workflow: str, name: str) -> str:
+    marker = f"      - name: {name}\n"
+    start = workflow.find(marker)
+    if start < 0:
+        return ""
+    end = workflow.find("\n      - name:", start + len(marker))
+    if end < 0:
+        end = len(workflow)
+    return workflow[start:end]
+
+
 def _validate_python_lock(failures: list[str]) -> None:
     if not REQUIREMENTS_INPUT.is_file() or not REQUIREMENTS_LOCK.is_file():
         return
@@ -131,16 +142,23 @@ def main() -> int:
         "python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt",
         "python -m pip check",
         "python -m pip freeze --all",
-        "gdlint",
-        "gdformat --check",
+        "name: Enforce zero-finding GDScript lint gate",
+        'gdlint "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdlint.txt',
+        "name: Enforce canonical GDScript format gate (check only)",
+        'gdformat --check "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdformat.txt',
         "-not -path 'game/addons/gut/*'",
+        "-not -path 'game/.godot/*'",
+        "name: Upload enforced GDScript quality evidence",
+        "name: gdscript-quality",
+        "path: artifacts/gdscript-quality",
         "res://addons/gut/gut_cmdln.gd",
         "gut-junit.xml",
         "if: always()",
     ]
     for expected in workflow_expectations:
         _contains(GODOT_WORKFLOW, expected, failures)
-    workflow_text = GODOT_WORKFLOW.read_text(encoding="utf-8").lower()
+    workflow_source = GODOT_WORKFLOW.read_text(encoding="utf-8")
+    workflow_text = workflow_source.lower()
     rewriting_format_command = any(
         line.strip().startswith("gdformat ")
         and not line.strip().startswith("gdformat --check ")
@@ -148,6 +166,68 @@ def main() -> int:
     )
     if "godot-ci" in workflow_text or rewriting_format_command:
         failures.append("workflow must not add godot-ci or a source-rewriting gdformat command")
+
+    inventory_step = _workflow_step(workflow_source, "Inventory first-party GDScript")
+    expected_inventory_fragments = [
+        "mkdir -p artifacts/gdscript-quality",
+        "find game -type f -name '*.gd' \\",
+        "-not -path 'game/addons/gut/*' \\",
+        "-not -path 'game/.godot/*' \\",
+        "-print | sort > artifacts/gdscript-quality/first-party-files.txt",
+    ]
+    if (
+        not inventory_step
+        or any(fragment not in inventory_step for fragment in expected_inventory_fragments)
+        or inventory_step.count("-not -path") != 2
+    ):
+        failures.append(
+            "workflow first-party GDScript inventory construction or reviewed exclusions changed"
+        )
+
+    lint_step = _workflow_step(
+        workflow_source, "Enforce zero-finding GDScript lint gate"
+    )
+    format_step = _workflow_step(
+        workflow_source, "Enforce canonical GDScript format gate (check only)"
+    )
+    masked_gate_tokens = [
+        "set +e",
+        "continue-on-error",
+        "::warning::",
+        "informational",
+        "|| true",
+        "; true",
+        "status=$?",
+        "exit 0",
+    ]
+    for gate_name, gate_step, command in [
+        (
+            "gdlint",
+            lint_step,
+            'gdlint "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdlint.txt',
+        ),
+        (
+            "gdformat",
+            format_step,
+            'gdformat --check "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdformat.txt',
+        ),
+    ]:
+        lowered_step = gate_step.lower()
+        if (
+            not gate_step
+            or "set -euo pipefail" not in gate_step
+            or command not in gate_step
+            or any(token in lowered_step for token in masked_gate_tokens)
+        ):
+            failures.append(
+                f"workflow {gate_name} gate must fail closed without informational or masked execution"
+            )
+    if workflow_source.count('gdlint "${gd_files[@]}"') != 1:
+        failures.append("workflow must execute gdlint exactly once against the reviewed inventory")
+    if workflow_source.count('gdformat --check "${gd_files[@]}"') != 1:
+        failures.append(
+            "workflow must execute gdformat --check exactly once against the reviewed inventory"
+        )
 
     repository_workflow_expectations = [
         "fetch-depth: 0",
