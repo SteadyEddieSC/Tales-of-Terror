@@ -5,7 +5,7 @@
 - Issue/version: #33, v0.1.1 — Playtest Readiness & Guided Session UX
 - Required starting protected main: `d9a5727d64f83e2c2804a1c7e461ae5a57e54cc2`
 - Branch: `agent/issue-33-playtest-readiness`
-- Tested implementation head: recorded after the first evidence commit in this matrix and the commit-linked draft-PR evidence comment.
+- Tested implementation head: `d808abac70f0cd766b1aa256ce7e946f94baabfa`
 - Final draft-PR head: recorded in the commit-linked draft-PR evidence comment because a Git commit cannot contain its own hash.
 - PR #32 was not modified, merged, closed, rebased, or included.
 
@@ -120,7 +120,20 @@ No scenario, authored operation, board/rules/Director/role/pawn/companion author
 
 ## Exact-head CI and artifacts
 
-Exact-head workflow URLs, artifact IDs, artifact digests, reruns, and final PR head are added here after the first pushed evidence run and repeated in a fresh commit-linked draft-PR evidence comment.
+All three workflows passed without reruns at implementation head `d808abac70f0cd766b1aa256ce7e946f94baabfa`:
+
+| Workflow | Run/result |
+| --- | --- |
+| Repository checks | [run 29786745070](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29786745070), success |
+| Companion service and browser tests | [run 29786745078](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29786745078), success |
+| Godot 4.7 tests | [run 29786745133](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29786745133), success |
+
+| Artifact | ID | GitHub artifact digest |
+| --- | --- | --- |
+| `gdscript-quality` | `8478731857` | `sha256:33f40e6f99e9513804e9174eecf817a20cbca020819279f221e5ef4117ebada6` |
+| `gut-junit-results` | `8478743685` | `sha256:18b41ec7282599371e11e66f6b157f81a9187a871ed14d7327ccd2dfc3a62aed` |
+
+The evidence-only follow-up commit changes this matrix but no runtime, test, workflow, dependency, or vendor file. Its final exact-head workflow runs and artifact IDs/digests are repeated in the commit-linked draft-PR evidence comment.
 
 ## Deferred and unclaimed
 
