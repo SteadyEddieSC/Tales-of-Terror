@@ -28,6 +28,11 @@ jobs:
           test -f docs/art/Visual_Language_Guide.md
           test -f docs/technical/Asset_Pipeline.md
           test -f docs/technical/Toolchain_and_Testing.md
+          test -f docs/technical/Playtest_Readiness.md
+          test -f docs/technical/Playtest_Report_Privacy.md
+          test -f docs/playtests/v0.1.1-facilitator-guide.md
+          test -f docs/playtests/Playtest_Readiness_Evidence.md
+          test -f docs/releases/v0.1.1-playtest-readiness-guided-session-ux.md
           test -f game/addons/gut/LICENSE.md
           test -f requirements-dev.in
           test -f requirements-dev.txt
@@ -70,6 +75,8 @@ jobs:
         run: python tools/validate_assets.py
       - name: Validate companion privacy and repository policy
         run: python tools/validate_companion.py
+      - name: Validate guided session report privacy and export policy
+        run: python tools/validate_playtest_readiness.py
       - name: Validate pinned toolchain and test policy
         run: python tools/validate_toolchain.py
       - name: Reject whitespace errors in committed range

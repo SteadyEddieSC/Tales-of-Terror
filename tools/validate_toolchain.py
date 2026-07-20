@@ -153,6 +153,7 @@ def main() -> int:
         "path: artifacts/gdscript-quality",
         "res://addons/gut/gut_cmdln.gd",
         "res://tests/vertical_slice_test.gd",
+        "res://tests/playtest_readiness_test.gd",
         "res://tests/vertical_slice_simulation_test.gd",
         "gut-junit.xml",
         "if: always()",
@@ -266,6 +267,7 @@ def main() -> int:
         "companion_simulation_test.gd",
         "companion_live_host_test.gd",
         "vertical_slice_test.gd",
+        "playtest_readiness_test.gd",
         "vertical_slice_simulation_test.gd",
     ]
     for filename in legacy_tests:

@@ -34,6 +34,10 @@ Only the manifest's default and fallback modes are selectable. The default is us
 
 Controllers remain primary; keyboard actions mirror join, confirm, cancel, movement, interaction, and diagnostics. The normal route requires no mouse or companion. The diagnostics action exposes the previous input/display lab outside active play and the inherited exploration/board/rules/Director/social diagnostics during the tale.
 
+v0.1.1 adds a presentation-only guided layer. The compact tale banner and lifecycle surfaces read only `public_state()` plus public stable-seat state. X on a controller or H on a keyboard opens a four-page help surface; the input router blocks gameplay input and clears presentation movement strengths for that event, while the sandbox presentation is temporarily stopped. Opening, paging, exporting, or closing help never calls a coordinator, rules, board, Director, role, pawn, seat, or companion mutation method. Closing resumes the sandbox only when the coordinator is not paused. Protected reset still owns destructive cleanup and also closes the presentation overlay.
+
+The local playtest observer receives a deliberately reduced seat projection containing only stable seat number, public connection state, and `controller`/`keyboard` class. Companion observation is only `room_open` and aggregate connected count. The observer never receives companion identities, claims, tokens, join codes, request bodies, network information, authority snapshots, or private social/rules projections. See [Playtest Readiness and Local Reports](Playtest_Readiness.md) and [Playtest Report Privacy](Playtest_Report_Privacy.md).
+
 ## Companion boundary
 
 `CompanionBridge` is optional. Room creation, host-approved stable-seat claims, reconnect, filtered projections, revision checks, request IDs, and exactly-once acknowledgements are unchanged. Closing a room clears identifiers, pending clients, claims, connected-client records, client sequences, acknowledgement cache/order, room sequence/history, counters, and stored revision bookkeeping before replacement. Closing or omitting the room cannot block native play.
