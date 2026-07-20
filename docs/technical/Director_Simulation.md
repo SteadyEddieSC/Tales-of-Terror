@@ -3,8 +3,8 @@
 Run the focused suites from the repository root:
 
 ```powershell
-Godot_v4.7-stable_win64_console.exe --headless --path game --script res://tests/dread_director_test.gd
-Godot_v4.7-stable_win64_console.exe --headless --path game --script res://tests/director_simulation_test.gd
+Godot_v4.7.1-stable_win64_console.exe --headless --path game --script res://tests/dread_director_test.gd
+Godot_v4.7.1-stable_win64_console.exe --headless --path game --script res://tests/director_simulation_test.gd
 ```
 
 The simulation runs 90 short sequences: ten seeds × three authored adaptive profiles × struggling, cruising, and stalled trajectories. Each sequence replays identical inputs, applies decisions through the authority adapter, advances several bounded decisions, and checks RNG isolation, nonmutation during evaluation, appropriate trajectory response, nonnegative budgets, per-seat targeting caps, bounded history, audit completeness, and safe no-op under exhausted budgets.

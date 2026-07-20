@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.0.9.1 - Toolchain & Test Infrastructure Hardening
+
+- Upgraded local Windows and Linux CI validation to checksum-pinned official Godot 4.7.1-stable while preserving the Compatibility renderer, 960×540 logical viewport, typed GDScript, and native gameplay authority.
+- Vendored GUT 9.7.1 with its licenses and provenance, added five focused typed smoke/protocol/atomicity/privacy tests, retained every standalone test and deterministic simulation, and added JUnit artifact upload with failure propagation.
+- Selected `gdtoolkit==4.5.0` in `requirements-dev.in` and committed its complete Python 3.11.9 dependency graph with exact versions and distribution hashes. CI installs with `--require-hashes`, runs `pip check`, and publishes `pip freeze --all`; the large pre-existing lint/format baseline remains informational and blocks v0.1.0 pending separately bounded cleanup.
+- Corrected repository whitespace validation to inspect committed pull-request and main-push ranges while exempting only vendored GUT, and published losslessly optimized 720p, 1080p, and virtual/off-screen 4K review captures in the repository.
+
 ## v0.0.9 - Companion Room Prototype
 
 - Added a typed transport-neutral Godot companion bridge, filtered public/seat/faction views, bounded versioned protocol, fake and WebSocket transports, stable-seat claims/reconnect, exactly-once authority routing, sanitized diagnostics, and deterministic 1–8-client privacy/authority simulations.

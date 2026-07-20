@@ -33,7 +33,7 @@ npm ci
 npm run typecheck
 npm run test:service
 npm run dev:service
-# With GODOT_BIN set to the pinned Godot 4.7 console executable:
+# With GODOT_BIN set to the pinned Godot 4.7.1 console executable:
 npm run test:e2e:local
 ```
 

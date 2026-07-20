@@ -1,5 +1,5 @@
 ; Engine configuration file.
-; Working-title foundation for Godot 4.7 stable.
+; Working-title foundation for Godot 4.7.1 stable.
 config_version=5
 
 [application]
@@ -14,6 +14,9 @@ size/window_width_override=1920
 size/window_height_override=1080
 stretch/mode="canvas_items"
 stretch/aspect="keep"
+
+[editor_plugins]
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [input]
 

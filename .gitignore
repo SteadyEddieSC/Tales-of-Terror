@@ -3,6 +3,8 @@
 /game/.import/
 *.tmp
 *.log
+__pycache__/
+*.pyc
 
 # Builds
 /builds/
@@ -21,6 +23,8 @@ node_modules/
 /web/companion/dist/
 /output/
 /.playwright-cli/
+/game/test-results/
+/.venv/
 
 # OS / editors
 .DS_Store

@@ -17,7 +17,7 @@ The repository name remains temporary until the Terror Turn name receives a care
 ## Stack
 
 - Public GitHub monorepo, `main` plus short-lived branches, squash merges.
-- Godot 4.7 stable, 960×540, Compatibility renderer, typed GDScript.
+- Official Godot 4.7.1-stable, 960×540, Compatibility renderer, typed GDScript.
 - Cloudflare companion services later: Workers/Pages, Durable Objects, D1, R2, optional KV/config, Turnstile.
 - Native host authority first; companion and hidden-information rooms before full remote game clients.
 

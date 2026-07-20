@@ -3,8 +3,8 @@
 Run from the repository root:
 
 ```powershell
-Godot_v4.7-stable_win64_console.exe --headless --path game --script res://tests/role_session_test.gd
-Godot_v4.7-stable_win64_console.exe --headless --path game --script res://tests/social_simulation_test.gd
+Godot_v4.7.1-stable_win64_console.exe --headless --path game --script res://tests/role_session_test.gd
+Godot_v4.7.1-stable_win64_console.exe --headless --path game --script res://tests/social_simulation_test.gd
 ```
 
 The unit suite covers schema failures, deterministic/fixed assignment, RNG isolation, fallback, stable-seat reconnect, all four view contracts, recursive leak checks, Director blindness, reveal/Horror/Changed/cure/defeat/Restless/guardian/replacement/escape paths, action authorization/bounds, downstream atomicity, mixed outcomes, snapshots, HUD/private-reveal behavior, safe frames, paging, and literal-ID branch guards.

@@ -6,14 +6,15 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 
 ## Current priorities
 
-1. Preserve the Godot 4.7 controller/display, visual, exploration, Living Board, rules, Director, social-role, and companion authority foundations.
-2. Use the v0.0.9 fake transport, local Worker emulation, and browser lab to keep stable-seat privacy and exactly-once intent boundaries regression-tested.
-3. Build the v0.1.0 first vertical slice without moving gameplay authority into the relay or browser.
-4. Defer production Cloudflare deployment, accounts, matchmaking, persistence, full remote play, and security certification until their own reviewed gates.
+1. Preserve the Godot 4.7.1 controller/display, visual, exploration, Living Board, rules, Director, social-role, and companion authority foundations.
+2. Run every legacy regression and deterministic simulation plus the focused GUT 9.7.1 boundary suite under the pinned engine patch.
+3. Resolve the published first-party lint/format baseline in separately bounded work before beginning v0.1.0; do not mix mass formatting with gameplay.
+4. Keep stable-seat privacy and exactly-once intent boundaries regression-tested through the fake transport, local Worker emulation, browser lab, and native-authority E2E.
+5. Defer production Cloudflare deployment, accounts, matchmaking, persistence, full remote play, and security certification until their own reviewed gates.
 
 ## Foundation decisions
 
-- Godot 4.7 stable, typed GDScript, Compatibility renderer.
+- Official Godot 4.7.1-stable, typed GDScript, Compatibility renderer.
 - 960×540 logical world viewport, 16:9 output, scalable high-resolution UI.
 - Windows and Linux first; Batocera validation through Linux builds.
 - Shared camera by default; split screen only for specific modes or mini-games.
@@ -29,6 +30,13 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 - `art/` and `audio/` — source and exports
 - `web/companion/` — accessible browser companion prototype
 - `services/room-service/` — ephemeral Cloudflare-compatible room coordinator
+- `game/addons/gut/` — vendored GUT 9.7.1 framework, excluded from first-party style checks
+- `requirements-dev.in` — reviewed direct GDScript Toolkit selection
+- `requirements-dev.txt` — fully resolved, exact, hash-locked Python development environment
+
+## Validation layers
+
+GitHub Actions keeps the established `Godot 4.7 headless validation`, companion, and foundation check identities. The Godot job verifies the official Linux archive checksum, runs all standalone tests and simulations, runs the focused GUT suite, uploads GUT JUnit output, and publishes informational first-party `gdlint`/`gdformat --check` baselines. See `docs/technical/Toolchain_and_Testing.md` for equivalent Windows commands and the current cleanup gate.
 
 ## Documentation rule
 

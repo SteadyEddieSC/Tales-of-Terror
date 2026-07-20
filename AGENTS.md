@@ -6,7 +6,7 @@ These instructions apply to the entire repository.
 
 ## Project conventions
 
-- Target Godot 4.7 with standard, typed GDScript and the Compatibility renderer.
+- Target official Godot 4.7.1-stable with standard, typed GDScript and the Compatibility renderer. The project feature marker remains the Godot 4.7 family marker.
 - Preserve the 960×540 logical viewport unless an ADR explicitly changes it.
 - Keep device discovery, player/seat state, and UI presentation in separate components.
 - Prefer semantic input actions over device-specific input checks in presentation code.
@@ -34,6 +34,9 @@ These instructions apply to the entire repository.
 - Keep native Godot as the only gameplay authority; companion services relay ephemeral communication and browsers submit bounded intents through public authority methods.
 - Keep companion public, stable-seat private, authored faction-private, and sanitized diagnostics projections explicit and independently generated; never forward authoritative snapshots, RNG, raw audits, capabilities, or another seat's secrets.
 - Keep transient browser/client identity separate from stable-seat ownership. Companion claims require host approval, reconnect is scoped to the same room/client/seat, and invalid network work must consume no gameplay RNG or partially mutate gameplay.
+- Preserve standalone SceneTree regression tests and deterministic simulations alongside focused GUT tests; adopt GUT incrementally rather than rewriting proven harnesses.
+- Pin third-party addons and development tools to reviewed releases, retain their licenses and provenance, and exclude vendored code from first-party lint and formatting checks.
+- Run `gdlint` and `gdformat --check` against first-party GDScript only. CI must never auto-format source, and repository-wide formatting belongs in a separately bounded change.
 
 ## Validation
 
