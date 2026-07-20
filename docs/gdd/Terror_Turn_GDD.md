@@ -1,6 +1,6 @@
 # Terror Turn — Living Game Design Document
 
-**Version:** 0.5
+**Version:** 0.6
 **Date:** July 13, 2026
 **Status:** Pre-production; preferred working title not legally cleared
 
@@ -144,3 +144,11 @@ The v0.0.9 host creates one ephemeral room for up to eight optional browser comp
 The room coordinator relays already-filtered views and intents; it does not run the board, rules, roles, Director, pawns, controllers, seats, RNG, cards, inventory, or outcomes. Wrong-seat, stale, duplicate, malformed, tampered, expired, rate-limited, and unsupported work fails closed. Invalid network work consumes no gameplay randomness and creates no partial gameplay mutation. Room loss disconnects companions safely while native play continues.
 
 The native host adapter now proves the real local loop through the ephemeral service and back to the browser's authoritative acknowledgement. Wire naming is converted explicitly at the transport boundary, relay time windows survive Durable Object reload without relying on test-only steps, client traffic cannot mask host loss, and unrevealed authored board spaces are absent from every public companion projection.
+
+## First vertical slice
+
+The v0.1.0 Lantern House tale is the first coherent player route through the reviewed foundations. A clean launch moves through title, local stable-seat lobby, scenario and social-mode confirmation, public briefing, active tale stages, deterministic terminal resolution, public ending, and clean rematch or return to title. Hidden Betrayer is the default for three to eight seats; one or two seats receive the authored cooperative fallback.
+
+The tale opens the iron threshold, reveals the archive, resolves a public route vote and deterministic courage check, grants and plays a card, permits one bounded Director decision, and gives a defeated investigator a Restless action before mixed outcomes resolve. These are modest authored fixtures for integration review, not balance or fun certification.
+
+`VerticalSliceCoordinator` owns session-scoped references to the existing authorities and routes only bounded manifest operations through their public methods. The JSON manifest cannot name scripts or callbacks. Complete content and snapshot validation happens before mutation, a failed stage restores every authority snapshot, the Director sees only normalized public social signals, and optional browsers remain filtered input surfaces rather than authorities.

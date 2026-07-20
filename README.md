@@ -8,9 +8,11 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 
 1. Preserve the Godot 4.7.1 controller/display, visual, exploration, Living Board, rules, Director, social-role, and companion authority foundations.
 2. Run every legacy regression and deterministic simulation plus the focused GUT 9.7.1 boundary suite under the pinned engine patch.
-3. Keep the enforced zero-finding first-party `gdlint` and `gdformat --check` gates green; v0.1.0 remains blocked pending independent acceptance of the bounded cleanup.
+3. Integrate the reviewed authorities through the versioned Lantern House v0.1.0 scenario manifest and native session coordinator while keeping zero-finding `gdlint` and `gdformat --check` gates green.
 4. Keep stable-seat privacy and exactly-once intent boundaries regression-tested through the fake transport, local Worker emulation, browser lab, and native-authority E2E.
 5. Defer production Cloudflare deployment, accounts, matchmaking, persistence, full remote play, and security certification until their own reviewed gates.
+
+The normal player route now begins at the title, accepts 1–8 stable seats, confirms the authored mode or safe cooperative fallback, presents a public briefing, runs the Lantern House tale, publishes a privacy-safe ending, and supports a clean rematch. Controllers are primary, keyboard remains a development fallback, and phones remain optional.
 
 ## Foundation decisions
 
