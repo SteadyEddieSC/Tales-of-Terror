@@ -29,16 +29,18 @@ jobs:
         run: |
           set -euo pipefail
           base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
-          curl -fsSL -o godot.zip "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
-          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | sha512sum --check -
-          curl -fsSL -o export-templates.tpz "$base/Godot_v4.7.1-stable_export_templates.tpz"
-          echo "$GODOT_TEMPLATE_SHA256  export-templates.tpz" | sha256sum --check -
-          unzip -q godot.zip -d .godot-bin
-          chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
+          tool_root="$RUNNER_TEMP/godot-4.7.1"
+          mkdir -p "$tool_root"
+          curl -fsSL -o "$tool_root/godot.zip" "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | (cd "$tool_root" && sha512sum --check -)
+          curl -fsSL -o "$tool_root/export-templates.tpz" "$base/Godot_v4.7.1-stable_export_templates.tpz"
+          echo "$GODOT_TEMPLATE_SHA256  export-templates.tpz" | (cd "$tool_root" && sha256sum --check -)
+          unzip -q "$tool_root/godot.zip" -d "$tool_root/godot-bin"
+          chmod +x "$tool_root/godot-bin/Godot_v4.7.1-stable_linux.x86_64"
           mkdir -p "$HOME/.local/share/godot/export_templates/4.7.1.stable"
-          unzip -q export-templates.tpz -d .export-template-staging
-          cp -a .export-template-staging/templates/. "$HOME/.local/share/godot/export_templates/4.7.1.stable/"
-          echo "$PWD/.godot-bin" >> "$GITHUB_PATH"
+          unzip -q "$tool_root/export-templates.tpz" -d "$tool_root/export-template-staging"
+          cp -a "$tool_root/export-template-staging/templates/." "$HOME/.local/share/godot/export_templates/4.7.1.stable/"
+          echo "$tool_root/godot-bin" >> "$GITHUB_PATH"
       - name: Validate reviewed export and bundle policy
         run: |
           python tools/portable_bundle.py validate-repository
@@ -103,6 +105,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git status --short
           test -z "$(git status --porcelain=v1)"
           if git ls-files | grep -E '\.(exe|pck|tpz|x86_64|zip)$'; then
             echo 'Generated binary or archive is tracked'
