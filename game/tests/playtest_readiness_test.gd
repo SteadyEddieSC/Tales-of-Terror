@@ -427,7 +427,7 @@ func _initialized_coordinator(seat_count: int, seed: int) -> VerticalSliceCoordi
 		coordinator.seat_manager.join_device(index, "fixture-pad-%d" % index, "Fixture Pad")
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
-	coordinator.initialize_session(coordinator.MANIFEST_PATH, seed)
+	coordinator.initialize_session(coordinator.TALE_PACKAGE_PATH, seed)
 	coordinator.begin_tale()
 	return coordinator
 

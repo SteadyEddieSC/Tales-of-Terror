@@ -52,7 +52,7 @@ func _new_session(seat_count: int, seed: int) -> VerticalSliceCoordinator:
 		coordinator.seat_manager.join_device(index, "sim-%d" % index, "Simulation Pad")
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
-	coordinator.initialize_session(VerticalSliceCoordinator.MANIFEST_PATH, seed)
+	coordinator.initialize_session(VerticalSliceCoordinator.TALE_PACKAGE_PATH, seed)
 	coordinator.begin_tale()
 	return coordinator
 

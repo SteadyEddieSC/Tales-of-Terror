@@ -1,6 +1,6 @@
 # Vertical Slice Scenario Manifest
 
-The v1 manifest is `game/data/scenarios/lantern_house_vertical_slice_v1.json`. `VerticalSliceManifest` normalizes JSON numbers, rejects unknown top-level and stage keys, validates all authority references against instantiated reviewed content, and accepts only a fixed operation allowlist.
+The v1 manifest is `game/data/scenarios/lantern_house_vertical_slice_v1.json`. As of v0.1.4 it is reached only through `game/data/tales/lantern_house/tale_package_v1.json`. `VerticalSliceManifest` still normalizes JSON numbers, rejects unknown top-level and stage keys, validates all authority references against instantiated reviewed content, and accepts only a fixed operation allowlist.
 
 ## Required identity and composition
 

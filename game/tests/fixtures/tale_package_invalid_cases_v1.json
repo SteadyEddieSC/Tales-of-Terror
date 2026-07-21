@@ -1,0 +1,191 @@
+{
+  "fixture_kind": "synthetic_invalid_tale_package_cases_not_shipped_content",
+  "schema_version": 1,
+  "base_package": "game/data/tales/lantern_house/tale_package_v1.json",
+  "cases": [
+    {
+      "id": "synthetic_unsupported_schema",
+      "expected_code": "unsupported_schema",
+      "mutation": {
+        "operation": "set",
+        "path": "/schema_version",
+        "value": 99
+      }
+    },
+    {
+      "id": "synthetic_malformed_package_kind",
+      "expected_code": "unsupported_schema",
+      "mutation": {
+        "operation": "set",
+        "path": "/package_kind",
+        "value": 42
+      }
+    },
+    {
+      "id": "synthetic_missing_required_field",
+      "expected_code": "missing_required_field",
+      "mutation": {
+        "operation": "delete",
+        "path": "/content"
+      }
+    },
+    {
+      "id": "synthetic_duplicate_id",
+      "expected_code": "duplicate_id",
+      "mutation": {
+        "operation": "append",
+        "path": "/inventory/cards",
+        "value": "steady_flame"
+      }
+    },
+    {
+      "id": "synthetic_unresolved_reference",
+      "expected_code": "unresolved_reference",
+      "mutation": {
+        "operation": "set",
+        "path": "/content/board_reference",
+        "value": "synthetic_missing_board"
+      }
+    },
+    {
+      "id": "synthetic_invalid_transition",
+      "expected_code": "invalid_transition",
+      "mutation": {
+        "operation": "set",
+        "path": "/stage_graph/transitions/0/to",
+        "value": "synthetic_missing_stage"
+      }
+    },
+    {
+      "id": "synthetic_unreachable_stage",
+      "expected_code": "unreachable_stage",
+      "mutation": {
+        "operation": "delete",
+        "path": "/stage_graph/transitions/3"
+      }
+    },
+    {
+      "id": "synthetic_unsupported_player_count",
+      "expected_code": "unsupported_player_count",
+      "mutation": {
+        "operation": "set",
+        "path": "/compatibility/minimum_seats",
+        "value": 0
+      }
+    },
+    {
+      "id": "synthetic_incompatible_social_declaration",
+      "expected_code": "incompatible_social_declaration",
+      "mutation": {
+        "operation": "set",
+        "path": "/social_compatibility/afterlife_roles",
+        "value": []
+      }
+    },
+    {
+      "id": "synthetic_missing_fallback",
+      "expected_code": "missing_fallback",
+      "mutation": {
+        "operation": "delete",
+        "path": "/fallbacks/no_phone"
+      }
+    },
+    {
+      "id": "synthetic_orphaned_record",
+      "expected_code": "orphaned_record",
+      "mutation": {
+        "operation": "append",
+        "path": "/source_ledger",
+        "value": {
+          "path": "game/src/session/vertical_slice_manifest.gd",
+          "reference": "synthetic_unused_reference",
+          "role": "synthetic_unused_source"
+        }
+      }
+    },
+    {
+      "id": "synthetic_invalid_privacy",
+      "expected_code": "invalid_privacy",
+      "mutation": {
+        "operation": "set",
+        "path": "/privacy/0/classification",
+        "value": "synthetic_everyone_private"
+      }
+    },
+    {
+      "id": "synthetic_unresolved_localization",
+      "expected_code": "unresolved_localization",
+      "mutation": {
+        "operation": "set",
+        "path": "/localization/briefing_key",
+        "value": "tale.synthetic.missing"
+      }
+    },
+    {
+      "id": "synthetic_absolute_private_path",
+      "expected_code": "prohibited_path",
+      "mutation": {
+        "operation": "set",
+        "path": "/source_ledger/0/path",
+        "value": "C:/Users/Synthetic/private.json"
+      }
+    },
+    {
+      "id": "synthetic_repository_private_path",
+      "expected_code": "generated_reference",
+      "mutation": {
+        "operation": "set",
+        "path": "/source_ledger/0/path",
+        "value": ".evidence/private.json"
+      }
+    },
+    {
+      "id": "synthetic_network_url",
+      "expected_code": "network_url",
+      "mutation": {
+        "operation": "set",
+        "path": "/localization/catalog",
+        "value": "https://invalid.example/synthetic.json"
+      }
+    },
+    {
+      "id": "synthetic_secret",
+      "expected_code": "secret",
+      "mutation": {
+        "operation": "set",
+        "path": "/display/api_token",
+        "value": "synthetic-not-a-real-secret"
+      }
+    },
+    {
+      "id": "synthetic_generated_reference",
+      "expected_code": "generated_reference",
+      "mutation": {
+        "operation": "set",
+        "path": "/source_ledger/0/path",
+        "value": "builds/generated/package.json"
+      }
+    },
+    {
+      "id": "synthetic_unstable_ordering",
+      "expected_code": "unstable_ordering",
+      "mutation": {
+        "operation": "swap",
+        "path": "/inventory/cards",
+        "indices": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "synthetic_unstable_identity",
+      "expected_code": "unstable_identity",
+      "mutation": {
+        "operation": "set",
+        "path": "/identity_policy/canonicalization",
+        "value": "synthetic_platform_dictionary_order"
+      }
+    }
+  ]
+}

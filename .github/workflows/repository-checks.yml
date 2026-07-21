@@ -43,6 +43,13 @@ jobs:
           test -f docs/playtests/v0.1.3-findings-register-blank.json
           test -f docs/playtests/v0.1.3-pilot-ready-evidence.md
           test -f docs/releases/v0.1.3-pilot-framework-candidate-build.md
+          test -f docs/releases/v0.1.4-reusable-tale-package-authoring-validator.md
+          test -f docs/technical/Tale_Package_Contract.md
+          test -f docs/technical/Tale_Authoring_Guide.md
+          test -f docs/decisions/ADR-0022-versioned-tale-package.md
+          test -f docs/playtests/v0.1.4-tale-package-evidence.md
+          test -f game/data/tales/lantern_house/tale_package_v1.json
+          test -f game/data/tales/lantern_house/localization_en.json
           test -f packaging/pilot/pilot_session_schema.json
           test -f packaging/pilot/findings_register_schema.json
           test -f game/export_presets.cfg
@@ -96,6 +103,8 @@ jobs:
         run: python tools/validate_toolchain.py
       - name: Validate portable export and session-bundle policy
         run: |
+          python tools/tale_package.py validate
+          python tools/test_tale_package.py
           python tools/portable_bundle.py validate-repository
           python tools/test_portable_bundle.py
           python tools/pilot_evidence.py validate-templates

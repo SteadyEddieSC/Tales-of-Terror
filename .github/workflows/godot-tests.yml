@@ -94,6 +94,10 @@ jobs:
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/companion_simulation_test.gd
       - name: First vertical slice lifecycle and authority tests
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/vertical_slice_test.gd
+      - name: Tale package identity, inventory, and runtime fail-closed tests
+        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_package_test.gd
+      - name: Tale package replay-equivalence matrix
+        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_replay_equivalence_test.gd
       - name: Guided session and local playtest report tests
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/playtest_readiness_test.gd
       - name: Main-route controller, guidance, and report integration tests
