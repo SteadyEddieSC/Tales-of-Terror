@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.5 - Tale Catalog, Selection & Runtime Provider Boundary
+
+- Added one closed `tale_catalog` schema-v1 production catalog containing only the exact accepted Lantern House package and governed display/provider/source identities.
+- Added static reviewed provider construction and bounded pre-session stable-ID selection; the generic coordinator no longer names Lantern House classes or package paths.
+- Added deterministic offline catalog identity/validation, complete negative diagnostics, and export-excluded synthetic two-entry selection/provider/package/atomic-failure fixtures.
+- Preserved all Lantern House replay digests, stable IDs, saves, schema-v2 reports, snapshots, RNG, companions, no-phone behavior, reset/rematch, dependencies, tools, and provisional branding.
+
 ## v0.1.4 - Reusable Tale Package & Authoring Validator
 
 - Routed the accepted Lantern House vertical slice through one closed, versioned `tale` schema-v1 package that references the existing authority data without semantic expansion.

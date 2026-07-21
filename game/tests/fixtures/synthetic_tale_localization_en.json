@@ -1,0 +1,5 @@
+{
+  "tale.synthetic_fixture.briefing": "Synthetic briefing used only to prove deterministic pre-session selection.",
+  "tale.synthetic_fixture.display_name": "Synthetic Test Tale — Not Shipped",
+  "tale.synthetic_fixture.objective": "Prove selection boundaries without adding playable production content."
+}

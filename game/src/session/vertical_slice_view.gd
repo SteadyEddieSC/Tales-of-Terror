@@ -54,12 +54,13 @@ func present(state: Dictionary, seats: Array[Dictionary], developer_lab: bool = 
 		return
 	visible = true
 	var seat_count: int = _joined_seat_count(seats)
+	var tale_name: String = state.get("tale_display_name", "Lantern House")
 	_set_compact(state.lifecycle == "active_tale" and not state.get("paused", false))
 	match state.lifecycle:
 		"boot_title":
 			_title.text = "TERROR TURN"
 			_body.text = (
-				"FIRST VERTICAL SLICE  •  LANTERN HOUSE\n\n"
+				"FIRST VERTICAL SLICE  •  %s\n\n" % tale_name.to_upper()
 				+ "A controller-first shared-screen tale for 1–8 stable seats. "
 				+ "Companion phones are optional; native Godot remains authoritative."
 			)
@@ -75,14 +76,14 @@ func present(state: Dictionary, seats: Array[Dictionary], developer_lab: bool = 
 				+ "B / ESC: LEAVE  •  X / H: HELP"
 			)
 		"confirmation":
-			_title.text = "LANTERN HOUSE  •  MODE CONFIRMATION"
+			_title.text = "%s  •  MODE CONFIRMATION" % tale_name.to_upper()
 			_body.text = (
 				"Hidden Betrayer is selected for 3–8 seats. One or two seats use the "
 				+ "authored no-secret cooperative fallback. No phone is required."
 			)
 			_footer.text = "A / ENTER / SPACE: PREPARE  •  B / ESC: RETURN TO LOBBY"
 		"briefing":
-			_title.text = "THE LANTERN HOUSE WAKES"
+			_title.text = "THE %s WAKES" % tale_name.to_upper()
 			_body.text = "%s\n\nOBJECTIVE\n%s" % [state.briefing, state.public_objective]
 			_footer.text = "A / ENTER / SPACE: BEGIN  •  MOVE: STICK / WASD  •  INTERACT: A / E"
 		"active_tale":

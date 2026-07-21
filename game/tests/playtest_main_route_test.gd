@@ -203,7 +203,7 @@ func _test_rendered_guidance_and_action_map() -> void:
 	var message: Label = sandbox.get("_message_label")
 	var reset: Label = sandbox.get("_reset_label")
 	_expect(
-		PlaytestReport.release_id() in title.text, "sandbox uses the single v0.1.4 release source"
+		PlaytestReport.release_id() in title.text, "sandbox uses the single v0.1.5 release source"
 	)
 	_expect("HELP: X / H" in message.text, "sandbox renders X as Help")
 	_expect("DIAGNOSTICS: T" in message.text, "sandbox renders T-only diagnostics")

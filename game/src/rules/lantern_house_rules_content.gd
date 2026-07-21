@@ -210,3 +210,7 @@ func courage_check() -> Dictionary:
 		"modifier_counter": "resolve",
 		"bands": {"critical": 12, "success": 8, "partial": 5}
 	}
+
+
+func check_definition(check_id: String) -> Dictionary:
+	return courage_check() if check_id == "courage" else {}

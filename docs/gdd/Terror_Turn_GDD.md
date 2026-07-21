@@ -158,3 +158,9 @@ The tale opens the iron threshold, reveals the archive, resolves a public route 
 The v0.1.4 Lantern House route is selected through one versioned repository-authored Tale package. It references the accepted manifest and existing authority content, declares seat/mode/fallback/privacy/afterlife compatibility, publishes a deterministic inventory and source ledger, and has a canonical SHA-256 identity. It does not add content or become gameplay authority.
 
 Only reviewed allowlisted identities load. Unknown schema fields, broken references or reachability, unsafe paths/URLs/secrets, unresolved governed text, incompatible social declarations, unstable ordering, and source-hash changes fail closed before authority construction. Package provenance remains outside saves, reports, gameplay RNG, and outcome decisions. This repository contract is not a public modding SDK.
+
+## Tale catalog and provider boundary
+
+v0.1.5 discovers the unchanged Lantern House package through one closed repository Tale catalog. Stable-ID selection happens only before session authority initialization; invalid selection retains the prior valid entry and consumes no gameplay RNG. The current setup presentation reads governed catalog display, briefing, and objective keys without adding a multi-Tale storefront or carousel.
+
+One static reviewed provider registry owns native content constructors. JSON cannot name classes, scripts, callbacks, reflection targets, executables, or remote code. The generic coordinator contains no Lantern House provider/package choice and commits a complete candidate only after catalog, provider, package, manifest, content, mode, and session validation. Production still contains one Tale; synthetic multi-entry proof is export-excluded test data.

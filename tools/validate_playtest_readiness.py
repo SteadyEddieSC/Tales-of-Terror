@@ -45,6 +45,11 @@ FORBIDDEN_REPORT_FIELDS = {
     "os_username",
     "device_id",
     "repository_path",
+    "tale_package_digest",
+    "tale_catalog_digest",
+    "provider_id",
+    "package_sha256",
+    "catalog_sha256",
 }
 
 
@@ -107,8 +112,8 @@ def main() -> int:
         report = json.loads(FIXTURE.read_text(encoding="utf-8"))
         if set(report) != REPORT_KEYS:
             failures.append("playtest report fixture root schema keys changed")
-        if report.get("schema_version") != 2 or report.get("release") != "v0.1.4":
-            failures.append("playtest report fixture version is not v0.1.4 schema 2")
+        if report.get("schema_version") != 2 or report.get("release") != "v0.1.5":
+            failures.append("playtest report fixture version is not v0.1.5 schema 2")
         serialized = json.dumps(report).lower()
         for field in sorted(FORBIDDEN_REPORT_FIELDS):
             if f'"{field}"' in serialized:
@@ -135,8 +140,8 @@ def main() -> int:
     if "VerticalSliceView.new()" in capture_source:
         failures.append("capture fixture must not instantiate the isolated view directly")
     project = (ROOT / "game" / "project.godot").read_text(encoding="utf-8")
-    if 'config/version="v0.1.4"' not in project:
-        failures.append("project must provide the single v0.1.4 release identity")
+    if 'config/version="v0.1.5"' not in project:
+        failures.append("project must provide the single v0.1.5 release identity")
     repository_workflow = (
         ROOT / ".github" / "workflows" / "repository-checks.yml"
     ).read_text(encoding="utf-8")

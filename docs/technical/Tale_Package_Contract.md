@@ -2,7 +2,7 @@
 
 ## Supported contract
 
-v0.1.4 supports one repository-authored package kind, `tale`, at schema version `1`. The reviewed package is `game/data/tales/lantern_house/tale_package_v1.json`; its stable Tale ID remains `lantern_house_vertical_slice`, its authored package version is `1`, and its canonical SHA-256 is `abb39d6bfbdf8d7de108379f08180c13efb99bbffa3e53f30eaaa8de7f459dee`.
+The repository supports one package kind, `tale`, at schema version `1`. The reviewed package is `game/data/tales/lantern_house/tale_package_v1.json`; its stable Tale ID remains `lantern_house_vertical_slice`, its authored package version is `1`, and its canonical SHA-256 is `abb39d6bfbdf8d7de108379f08180c13efb99bbffa3e53f30eaaa8de7f459dee`.
 
 Schema v1 is closed: every object governed by the validator uses an exact field set and unknown fields reject. A future schema or package identity requires review, tests, and an updated runtime allowlist. There is no best-effort forward compatibility, arbitrary script field, remote package, dynamic code generation, or untrusted-package execution.
 
@@ -20,6 +20,6 @@ The package digest is provenance/presentation metadata. It is deliberately absen
 
 ## Runtime boundary
 
-`TalePackage.load_validated` accepts only the allowlisted Lantern House identity, verifies referenced JSON hashes, re-runs the existing manifest/authority validation, and compares the declared inventory with instantiated reviewed content. The coordinator constructs no authority until this succeeds. A legacy direct-manifest path, missing or mutated package, mismatched source hash, unsupported identity, or inventory mismatch fails closed with a developer-facing code, source path, and message without partial session mutation.
+`TalePackage.load_validated` accepts the exact identity supplied by a validated catalog/provider entry, verifies referenced JSON hashes, re-runs the existing manifest/authority validation, and compares the declared inventory with instantiated reviewed content. The production catalog still supplies only the accepted Lantern House identity. The coordinator constructs no authority until this succeeds. A missing or mutated package, mismatched source hash, unsupported identity, or inventory mismatch fails closed with a developer-facing code, source path, and message without partial session mutation.
 
 The package does not affect stable IDs, RNG streams, event/card behavior, roles/factions/afterlife, endings, reports, companions, reset, rematch, or the no-phone path.

@@ -5,8 +5,6 @@ signal lifecycle_changed(public_state: Dictionary)
 signal session_rejected(reason: String)
 
 const SNAPSHOT_VERSION: int = 2
-const MANIFEST_PATH: String = "res://data/scenarios/lantern_house_vertical_slice_v1.json"
-const TALE_PACKAGE_PATH: String = "res://data/tales/lantern_house/tale_package_v1.json"
 const DEFAULT_SEED: int = 4706
 const DEFAULT_MODE: String = "hidden_betrayer"
 const LIFECYCLES: PackedStringArray = [
@@ -34,7 +32,6 @@ const SNAPSHOT_KEYS: PackedStringArray = [
 	"director",
 	"roles",
 ]
-const TRANSACTION_VERSION: int = 1
 const TRANSACTION_KEYS: PackedStringArray = [
 	"transaction_version",
 	"stage_index",
@@ -75,6 +72,36 @@ var last_director_application: Dictionary = {}
 var last_rejection: String = ""
 var paused: bool = false
 var _stage_checkpoint: Dictionary = {}
+var _selection: TaleSelectionState
+
+
+func _init(
+	p_catalog_path: String = TaleCatalog.PRODUCTION_PATH,
+	p_provider_registry: TaleProviderRegistry = null,
+	p_expected_catalog_digest: String = TaleCatalog.PRODUCTION_DIGEST,
+) -> void:
+	var registry: TaleProviderRegistry = (
+		p_provider_registry if p_provider_registry != null else TaleProviderRegistry.new()
+	)
+	_selection = TaleSelectionState.new(p_catalog_path, registry, p_expected_catalog_digest)
+	var result: Dictionary = _selection.load_default()
+	if not result.get("accepted", false):
+		last_rejection = "invalid_tale_catalog:%s" % result.get("reason", "rejected")
+
+
+func select_tale(tale_id: String) -> Dictionary:
+	if lifecycle not in ["boot_title", "lobby", "confirmation"] or not tale_package.is_empty():
+		return _reject("tale_selection_not_available")
+	var selected: Dictionary = _selection.select(tale_id)
+	if not selected.get("accepted", false):
+		return _reject(selected.get("reason", "tale_selection_rejected"))
+	last_rejection = ""
+	_emit_state()
+	return {
+		"accepted": true,
+		"selected_tale_id": _selection.selected_tale_id(),
+		"catalog_digest": _selection.catalog_digest,
+	}
 
 
 func enter_lobby() -> Dictionary:
@@ -102,7 +129,6 @@ func cancel_setup() -> Dictionary:
 
 
 func initialize_session(
-	p_package_path: String = TALE_PACKAGE_PATH,
 	p_seed: int = DEFAULT_SEED,
 	p_requested_mode: String = DEFAULT_MODE,
 ) -> Dictionary:
@@ -111,7 +137,9 @@ func initialize_session(
 	var roster: Array[int] = active_seats()
 	if roster.is_empty():
 		return _reject("empty_roster")
-	var build: Dictionary = _build_authorities(p_package_path, p_seed, p_requested_mode, roster)
+	if _selection.entry.is_empty():
+		return _reject("no_valid_tale_selection")
+	var build: Dictionary = _build_authorities(_selection.entry, p_seed, p_requested_mode, roster)
 	if not build.accepted:
 		return _reject(build.reason)
 	_commit_authorities(build, p_seed, p_requested_mode)
@@ -119,28 +147,19 @@ func initialize_session(
 
 
 func _build_authorities(
-	p_package_path: String, p_seed: int, p_requested_mode: String, roster: Array[int]
+	entry: Dictionary, p_seed: int, p_requested_mode: String, roster: Array[int]
 ) -> Dictionary:
-	var candidate_board := LanternHouseBoardDefinition.new()
-	var candidate_rules := LanternHouseRulesContent.new()
-	var candidate_director := LanternHouseDirectorContent.new()
-	var candidate_social := LanternHouseSocialContent.new()
-	var package_result: Dictionary = (
-		TalePackage
-		. load_validated(
-			p_package_path,
-			candidate_board,
-			candidate_rules,
-			candidate_director,
-			candidate_social,
-		)
-	)
-	if not package_result.accepted:
+	var provider_result: Dictionary = _selection.registry.build_candidate(entry)
+	if not provider_result.get("accepted", false):
 		return {
 			"accepted": false,
-			"reason": "invalid_tale_package:%s" % package_result.get("reason", "rejected"),
+			"reason": "invalid_tale_provider:%s" % provider_result.get("reason", "rejected"),
 		}
-	var candidate_manifest: Dictionary = package_result.manifest
+	var candidate_board: BoardDefinition = provider_result.board_definition
+	var candidate_rules: RulesContent = provider_result.rules_content
+	var candidate_director: DirectorContent = provider_result.director_content
+	var candidate_social: SocialContent = provider_result.social_content
+	var candidate_manifest: Dictionary = provider_result.manifest
 	var failures: PackedStringArray = (
 		VerticalSliceManifest
 		. validate(
@@ -201,8 +220,8 @@ func _build_authorities(
 	candidate_board_state.sync_occupancy(candidate_pawns.get_pawns())
 	return {
 		"accepted": true,
-		"tale_package": package_result.package,
-		"tale_package_digest": package_result.digest,
+		"tale_package": provider_result.package,
+		"tale_package_digest": provider_result.package_digest,
 		"manifest": candidate_manifest,
 		"board_definition": candidate_board,
 		"board_state": candidate_board_state,
@@ -272,7 +291,7 @@ func advance_player_stage() -> Dictionary:
 func _execute_stage(automated: bool) -> Dictionary:
 	var stage: Dictionary = manifest.stages[stage_index]
 	if _stage_checkpoint.is_empty():
-		_stage_checkpoint = _transaction_snapshot()
+		_stage_checkpoint = VerticalSliceSnapshotPolicy.transaction_snapshot(self)
 	while operation_index < stage.operations.size():
 		var operation: Dictionary = stage.operations[operation_index]
 		if not automated and operation.type in ["submit_prompt", "submit_vote"]:
@@ -290,7 +309,7 @@ func _execute_stage(automated: bool) -> Dictionary:
 			return {"accepted": true, "waiting_for_players": true, "stage_id": stage.id}
 		var result: Dictionary = _apply_operation(operation)
 		if not result.get("accepted", false):
-			_rollback_stage_transaction()
+			VerticalSliceSnapshotPolicy.rollback_stage_transaction(self)
 			return _reject(
 				(
 					"stage_operation_failed:%s:%s:%s"
@@ -314,14 +333,10 @@ func toggle_pause() -> Dictionary:
 
 
 func rematch() -> Dictionary:
-	return rematch_with_manifest(TALE_PACKAGE_PATH)
-
-
-func rematch_with_manifest(p_manifest_path: String) -> Dictionary:
 	if lifecycle != "ending":
 		return _reject("invalid_lifecycle_transition")
 	var roster: Array[int] = active_seats()
-	var build: Dictionary = _build_authorities(p_manifest_path, seed, requested_mode, roster)
+	var build: Dictionary = _build_authorities(_selection.entry, seed, requested_mode, roster)
 	if not build.accepted:
 		return _reject(build.reason)
 	_close_companion_room()
@@ -346,6 +361,9 @@ func protected_reset_to_title() -> Dictionary:
 	requested_mode = DEFAULT_MODE
 	last_rejection = ""
 	seat_manager.reset_all()
+	var selected: Dictionary = _selection.select(_selection.catalog.get("default_tale_id", ""))
+	if not selected.get("accepted", false):
+		last_rejection = selected.get("reason", "default_tale_selection_failed")
 	_emit_state()
 	return {"accepted": true, "lifecycle": lifecycle}
 
@@ -364,8 +382,10 @@ func public_state() -> Dictionary:
 		stage = manifest.stages[stage_index].duplicate(true)
 	return {
 		"view_version": 1,
-		"scenario_id": manifest.get("scenario_id", "lantern_house_vertical_slice"),
+		"scenario_id": manifest.get("scenario_id", _selection.selected_tale_id()),
 		"scenario_version": manifest.get("scenario_version", 0),
+		"selected_tale_id": _selection.selected_tale_id(),
+		"tale_display_name": _selection.metadata.get("display_name", ""),
 		"lifecycle": lifecycle,
 		"stage_index": stage_index,
 		"operation_index": operation_index,
@@ -373,8 +393,9 @@ func public_state() -> Dictionary:
 		"seat_count": active_seats().size(),
 		"mode": role_session.mode_id if role_session != null else requested_mode,
 		"fallback_applied": role_session.fallback_applied if role_session != null else false,
-		"briefing": manifest.get("briefing", ""),
-		"public_objective": manifest.get("public_objective", ""),
+		"briefing": manifest.get("briefing", _selection.metadata.get("briefing", "")),
+		"public_objective":
+		manifest.get("public_objective", _selection.metadata.get("public_objective", "")),
 		"rules": rules_session.companion_public_view() if rules_session != null else {},
 		"roles": role_session.public_view() if role_session != null else {},
 		"director": director_runtime.companion_public_view() if director_runtime != null else {},
@@ -422,6 +443,7 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 
 func _adopt_candidate(candidate: VerticalSliceCoordinator) -> void:
 	seat_manager = candidate.seat_manager
+	_selection = candidate._selection
 	tale_package = candidate.tale_package
 	tale_package_digest = candidate.tale_package_digest
 	manifest = candidate.manifest
@@ -475,9 +497,7 @@ func _apply_operation(operation: Dictionary) -> Dictionary:
 		"resolve_prompt":
 			result = rules_session.resolve_prompt()
 		"open_vote":
-			result = rules_session.open_vote(
-				(rules_content as LanternHouseRulesContent).vote_definition(), active_seats()
-			)
+			result = rules_session.open_vote(rules_content.vote_definition(), active_seats())
 		"submit_vote":
 			result = _submit_fixture_votes(operation)
 		"resolve_vote":
@@ -486,7 +506,7 @@ func _apply_operation(operation: Dictionary) -> Dictionary:
 			result = (
 				rules_session
 				. resolve_check(
-					(rules_content as LanternHouseRulesContent).courage_check(),
+					rules_content.check_definition(operation.check_id),
 					active_seats()[0],
 					operation.check_id,
 				)
@@ -620,7 +640,9 @@ func _restore_authorities(snapshot: Dictionary) -> bool:
 func _build_restore_candidate(snapshot: Dictionary) -> Dictionary:
 	if not _snapshot_header_is_valid(snapshot):
 		return {"accepted": false, "reason": "malformed_snapshot"}
-	var candidate := VerticalSliceCoordinator.new()
+	var candidate := VerticalSliceCoordinator.new(
+		_selection.catalog_path, _selection.registry, _selection.expected_catalog_digest
+	)
 	if not candidate.seat_manager.restore_snapshot(snapshot.seat_manager).accepted:
 		return {"accepted": false, "reason": "malformed_seat_snapshot"}
 	if not VerticalSliceSnapshotPolicy.stable_seat_snapshot_is_coherent(candidate.seat_manager):
@@ -674,8 +696,11 @@ func _build_session_restore_candidate(
 		reason = "empty_snapshot_roster"
 	if reason.is_empty():
 		candidate.lifecycle = "confirmation"
+		if not candidate.select_tale(snapshot.scenario_id).accepted:
+			reason = "snapshot_tale_selection_rejected"
+	if reason.is_empty():
 		var initialized: Dictionary = candidate.initialize_session(
-			TALE_PACKAGE_PATH, snapshot.seed, snapshot.requested_mode
+			snapshot.seed, snapshot.requested_mode
 		)
 		if not initialized.accepted:
 			reason = initialized.get("reason", "restore_failed")
@@ -815,7 +840,7 @@ func _validate_active_stage_transaction(
 	if (
 		reason.is_empty()
 		and (
-			transaction.transaction_version != TRANSACTION_VERSION
+			transaction.transaction_version != VerticalSliceSnapshotPolicy.TRANSACTION_VERSION
 			or transaction.stage_index != snapshot.stage_index
 			or transaction.operation_index != 0
 			or transaction.stage_history != snapshot.stage_history
@@ -824,7 +849,9 @@ func _validate_active_stage_transaction(
 		)
 	):
 		reason = "incoherent_stage_transaction"
-	var checkpoint := VerticalSliceCoordinator.new()
+	var checkpoint := VerticalSliceCoordinator.new(
+		_selection.catalog_path, _selection.registry, _selection.expected_catalog_digest
+	)
 	if (
 		reason.is_empty()
 		and not checkpoint.seat_manager.restore_snapshot(transaction.seat_manager).accepted
@@ -834,8 +861,11 @@ func _validate_active_stage_transaction(
 		reason = "transaction_roster_mismatch"
 	if reason.is_empty():
 		checkpoint.lifecycle = "confirmation"
+		if not checkpoint.select_tale(snapshot.scenario_id).accepted:
+			reason = "transaction_tale_selection_rejected"
+	if reason.is_empty():
 		var initialized: Dictionary = checkpoint.initialize_session(
-			TALE_PACKAGE_PATH, snapshot.seed, snapshot.requested_mode
+			snapshot.seed, snapshot.requested_mode
 		)
 		if (
 			not initialized.accepted
@@ -950,36 +980,6 @@ func _finish_stage(stage: Dictionary) -> Dictionary:
 		_transition("active_tale", "terminal")
 	_emit_state()
 	return {"accepted": true, "stage_id": stage.id, "lifecycle": lifecycle}
-
-
-func _transaction_snapshot() -> Dictionary:
-	return {
-		"transaction_version": TRANSACTION_VERSION,
-		"stage_index": stage_index,
-		"operation_index": operation_index,
-		"stage_history": stage_history.duplicate(true),
-		"last_director_decision": last_director_decision.duplicate(true),
-		"last_director_application": last_director_application.duplicate(true),
-		"seat_manager": seat_manager.to_snapshot(),
-		"pawns": pawn_registry.to_snapshot(),
-		"board": board_state.to_snapshot(),
-		"rules": rules_session.to_snapshot(),
-		"director": director_runtime.to_snapshot(),
-		"roles": role_session.to_snapshot(),
-	}
-
-
-func _rollback_stage_transaction() -> void:
-	if _stage_checkpoint.is_empty():
-		return
-	var checkpoint: Dictionary = _stage_checkpoint.duplicate(true)
-	_restore_authorities(checkpoint)
-	stage_index = checkpoint.stage_index
-	operation_index = checkpoint.operation_index
-	stage_history = RulesContent.SessionData.dict_array(checkpoint.stage_history)
-	last_director_decision = checkpoint.last_director_decision.duplicate(true)
-	last_director_application = checkpoint.last_director_application.duplicate(true)
-	_stage_checkpoint.clear()
 
 
 func _pending_responses_complete() -> bool:

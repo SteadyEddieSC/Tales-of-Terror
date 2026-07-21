@@ -1,0 +1,106 @@
+{
+  "catalog_kind": "tale_catalog",
+  "schema_version": 1,
+  "catalog_version": 1,
+  "default_tale_id": "lantern_house_vertical_slice",
+  "entries": [
+    {
+      "tale_id": "lantern_house_vertical_slice",
+      "package_path": "res://data/tales/lantern_house/tale_package_v1.json",
+      "package_kind": "tale",
+      "package_schema_version": 1,
+      "package_version": 1,
+      "package_sha256": "abb39d6bfbdf8d7de108379f08180c13efb99bbffa3e53f30eaaa8de7f459dee",
+      "display": {
+        "catalog_path": "res://data/tales/lantern_house/localization_en.json",
+        "catalog_sha256": "0b971871b052beff4b751443d3ef1d0a1312d2631f965004269631bb2ca3c1a3",
+        "display_key": "tale.lantern_house.display_name",
+        "briefing_key": "tale.lantern_house.briefing",
+        "objective_key": "tale.lantern_house.objective"
+      },
+      "provider": {
+        "provider_id": "lantern_house_authorities_v1",
+        "provider_version": 1,
+        "board_reference": "lantern_house",
+        "rules_reference": "lantern_house_rules_sandbox",
+        "director_reference": "lantern_house_director",
+        "social_reference": "lantern_house_social_lab"
+      }
+    },
+    {
+      "tale_id": "synthetic_fixture_tale",
+      "package_path": "res://tests/fixtures/synthetic_tale_package_v1.json",
+      "package_kind": "tale",
+      "package_schema_version": 1,
+      "package_version": 1,
+      "package_sha256": "f2fd9156e4ecdde2396aacd647caff5d64107ee47a911eca19dc67eb06f08e01",
+      "display": {
+        "catalog_path": "res://tests/fixtures/synthetic_tale_localization_en.json",
+        "catalog_sha256": "ee5ca58de9b244d955b39d7e63433c2034f03b00a8ab7ddcea39eed2829cf885",
+        "display_key": "tale.synthetic_fixture.display_name",
+        "briefing_key": "tale.synthetic_fixture.briefing",
+        "objective_key": "tale.synthetic_fixture.objective"
+      },
+      "provider": {
+        "provider_id": "synthetic_fixture_authorities_v1",
+        "provider_version": 1,
+        "board_reference": "synthetic_fixture_board",
+        "rules_reference": "synthetic_fixture_rules",
+        "director_reference": "synthetic_fixture_director",
+        "social_reference": "synthetic_fixture_social"
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "tale_id": "lantern_house_vertical_slice",
+      "role": "governed_display",
+      "path": "game/data/tales/lantern_house/localization_en.json",
+      "reference": "0b971871b052beff4b751443d3ef1d0a1312d2631f965004269631bb2ca3c1a3"
+    },
+    {
+      "tale_id": "lantern_house_vertical_slice",
+      "role": "provider_registry",
+      "path": "game/src/session/tale_provider_registry.gd",
+      "reference": "lantern_house_authorities_v1"
+    },
+    {
+      "tale_id": "lantern_house_vertical_slice",
+      "role": "tale_package",
+      "path": "game/data/tales/lantern_house/tale_package_v1.json",
+      "reference": "abb39d6bfbdf8d7de108379f08180c13efb99bbffa3e53f30eaaa8de7f459dee"
+    },
+    {
+      "tale_id": "synthetic_fixture_tale",
+      "role": "governed_display",
+      "path": "game/tests/fixtures/synthetic_tale_localization_en.json",
+      "reference": "ee5ca58de9b244d955b39d7e63433c2034f03b00a8ab7ddcea39eed2829cf885"
+    },
+    {
+      "tale_id": "synthetic_fixture_tale",
+      "role": "provider_registry",
+      "path": "game/tests/support/synthetic_tale_provider_registry.gd",
+      "reference": "synthetic_fixture_authorities_v1"
+    },
+    {
+      "tale_id": "synthetic_fixture_tale",
+      "role": "tale_package",
+      "path": "game/tests/fixtures/synthetic_tale_package_v1.json",
+      "reference": "f2fd9156e4ecdde2396aacd647caff5d64107ee47a911eca19dc67eb06f08e01"
+    }
+  ],
+  "compatibility": {
+    "engine": "godot_4_7",
+    "minimum_seats": 1,
+    "maximum_seats": 8,
+    "package_kind": "tale",
+    "package_schema_version": 1,
+    "unknown_field_policy": "reject",
+    "provider_policy": "static_repository_reviewed_allowlist"
+  },
+  "identity_policy": {
+    "algorithm": "sha256",
+    "canonicalization": "utf8_json_sorted_object_keys_compact_arrays_preserved",
+    "non_authoritative_metadata_excluded": []
+  }
+}
