@@ -343,7 +343,10 @@ static func _validate_repository_path(
 	var resource_path: String = value
 	if value.begins_with("game/"):
 		resource_path = "res://" + value.trim_prefix("game/")
-	if not FileAccess.file_exists(resource_path):
+	var exists: bool = FileAccess.file_exists(resource_path)
+	if allow_script_source and normalized.ends_with(".gd"):
+		exists = ResourceLoader.exists(resource_path)
+	if not exists:
 		return _rejected("unresolved_catalog_reference", path, "catalog source does not resolve")
 	if not allow_script_source and normalized.ends_with(".gd"):
 		return _rejected(
