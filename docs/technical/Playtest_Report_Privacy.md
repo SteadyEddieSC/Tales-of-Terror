@@ -33,6 +33,12 @@ Production export remains fixed to `user://playtest_exports`. The UI and bundle 
 
 `Terror Turn` is the exact current `application/config/name` project folder and remains provisional. Nothing is uploaded automatically. A facilitator chooses whether to inspect or share the two files after the session. Automated fixtures contain synthetic values only.
 
+## Pilot evidence intake
+
+The v0.1.3 pilot record is separate from schema-v2 runtime reports. A facilitator may record reviewed report SHA-256 hashes but must not ingest or commit report content. Offline intake accepts exactly one `PILOT_SESSION_RECORD.json`, rejects unknown files, links, traversal, oversized input, direct identifiers, usernames, absolute/repository paths, secrets, tokens, room codes, IP/network details, device IDs, and ambiguous evidence classes, and retains only normalized bounded values plus the input-file SHA-256. Automated and synthetic evidence cannot be promoted to human/physical evidence.
+
+The committed pilot record is intentionally blank: manual checks are `not_tested`, route fields are `not_observed`, counts are zero, strings/arrays are empty, and human declarations are false. The blank findings register contains no actual findings. No human session occurred in v0.1.3. Human evidence belongs to issue #39 and must be reviewed before that future issue records or proposes any finding.
+
 ## Build manifest separation
 
-The v0.1.2 portable `build_manifest.json` is a separate non-authoritative build record, not a playtest report. Its exact schema contains only release/source/target identity, reviewed engine/scenario constants, build-time classification, and bundle file sizes and SHA-256 values. It cannot contain report payloads or filenames, usernames, machine names, repository paths, tokens, room secrets, IP addresses, or device identities. The in-game support page similarly shows only bounded build identity and the user-relative platform location above. Neither manifest nor support presentation mutates or serializes gameplay authority.
+The v0.1.3 portable `build_manifest.json` is a separate non-authoritative build record, not a playtest report. Its exact schema contains only release/source/target identity, reviewed engine/scenario constants, build-time classification, and bundle file sizes and SHA-256 values. It cannot contain report payloads or filenames, usernames, machine names, repository paths, tokens, room secrets, IP addresses, or device identities. The in-game support page similarly shows only bounded build identity and the user-relative platform location above. Neither manifest nor support presentation mutates or serializes gameplay authority.

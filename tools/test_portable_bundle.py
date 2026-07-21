@@ -20,11 +20,13 @@ SOURCE_COMMIT = "a" * 40
 
 
 class PortableBundleTests(unittest.TestCase):
-    def test_repository_and_manual_defaults_validate(self) -> None:
+    def test_repository_and_pilot_defaults_validate(self) -> None:
         portable.validate_repository()
-        record = portable.validate_manual_record()
-        self.assertTrue(all(item["status"] == "not_tested" for item in record["checks"]))
-        self.assertTrue(all(item["evidence_class"] == "not_tested" for item in record["checks"]))
+        record = portable.validate_pilot_record()
+        self.assertTrue(all(item["status"] == "not_tested" for item in record["manual_checks"]))
+        self.assertTrue(all(item["evidence_class"] == "not_tested" for item in record["manual_checks"]))
+        self.assertEqual(record["observations"], [])
+        self.assertEqual(record["questionnaire"], [])
 
     def test_repeated_assembly_has_stable_content_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -63,7 +65,7 @@ class PortableBundleTests(unittest.TestCase):
                         value,
                         {
                             "schema_version": 1,
-                            "release": "v0.1.2",
+                            "release": "v0.1.3",
                             "source_commit": SOURCE_COMMIT,
                             "platform": platform,
                             "architecture": "x86_64",
@@ -97,6 +99,33 @@ class PortableBundleTests(unittest.TestCase):
                 self.assertIsNone(
                     re.search(r"(?:room_secret|token|device_id|ip_address)\s*=", text), name
                 )
+
+    def test_bundle_contains_only_bounded_blank_pilot_materials(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            binary = root / "fixture.bin"
+            binary.write_bytes(b"fixture\n")
+            bundle, _, _ = portable.assemble(
+                "linux", SOURCE_COMMIT, "2026-07-21T18:00:00Z", root / "output", binary
+            )
+            expected = {
+                "FACILITATOR_GUIDE.md",
+                "OBSERVATION_SHEET.md",
+                "POST_SESSION_QUESTIONNAIRE.md",
+                "PILOT_SESSION_SCHEMA.json",
+                "PILOT_SESSION_RECORD.json",
+                "FINDINGS_REGISTER_SCHEMA.json",
+                "FINDINGS_REGISTER.json",
+            }
+            self.assertTrue(expected <= portable.expected_files("linux"))
+            record = json.loads((bundle / "PILOT_SESSION_RECORD.json").read_text(encoding="utf-8"))
+            self.assertEqual(record["observations"], [])
+            self.assertEqual(record["questionnaire"], [])
+            self.assertTrue(all(item["status"] == "not_tested" for item in record["manual_checks"]))
+            findings = json.loads((bundle / "FINDINGS_REGISTER.json").read_text(encoding="utf-8"))
+            self.assertEqual(findings["findings"], [])
+            actual = {path.relative_to(bundle).as_posix() for path in bundle.rglob("*") if path.is_file()}
+            self.assertEqual(actual, portable.expected_files("linux"))
 
     def test_versioned_output_never_overwrites(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

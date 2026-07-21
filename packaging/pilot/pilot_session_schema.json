@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tales-of-terror:pilot-session:v1",
+  "title": "v0.1.3 privacy-safe pilot session record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "release", "record_classification", "candidate", "session", "route", "durations", "counts", "manual_checks", "observations", "questionnaire", "declarations", "provenance"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "release": {"const": "v0.1.3"},
+    "record_classification": {"const": "pilot_evidence_non_authoritative"},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_sha", "platform", "architecture", "artifact_name", "archive_sha256", "native_sha256", "runtime_digest", "bundle_digest", "build_timestamp_utc", "classification"],
+      "properties": {
+        "source_sha": {"type": "string", "pattern": "^$|^[0-9a-f]{40}$"},
+        "platform": {"enum": ["not_tested", "windows", "linux"]},
+        "architecture": {"enum": ["", "x86_64"]},
+        "artifact_name": {"type": "string", "maxLength": 160},
+        "archive_sha256": {"type": "string", "pattern": "^$|^[0-9a-f]{64}$"},
+        "native_sha256": {"type": "string", "pattern": "^$|^[0-9a-f]{64}$"},
+        "runtime_digest": {"type": "string", "pattern": "^$|^[0-9a-f]{64}$"},
+        "bundle_digest": {"type": "string", "pattern": "^$|^[0-9a-f]{64}$"},
+        "build_timestamp_utc": {"type": "string", "maxLength": 40},
+        "classification": {"enum": ["not_tested", "internal_playtest"]}
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["session_id", "session_date_utc", "mode", "facilitator_evidence_class", "participant_count", "stable_seat_count", "participant_grouping", "controller_count", "controller_categories", "phone_path", "display_class", "resolution_category"],
+      "properties": {
+        "session_id": {"type": "string", "pattern": "^$|^PILOT-[A-Z0-9]{8}$"},
+        "session_date_utc": {"type": "string", "pattern": "^$|^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "mode": {"enum": ["not_tested", "household_in_room", "remote_observed"]},
+        "facilitator_evidence_class": {"enum": ["not_tested", "remote_observed", "physical_in_room"]},
+        "participant_count": {"type": "integer", "minimum": 0, "maximum": 8},
+        "stable_seat_count": {"type": "integer", "minimum": 0, "maximum": 8},
+        "participant_grouping": {"type": "array", "maxItems": 2, "uniqueItems": true, "items": {"enum": ["adult", "youth_with_guardian"]}},
+        "controller_count": {"type": "integer", "minimum": 0, "maximum": 8},
+        "controller_categories": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"enum": ["xinput_style", "playstation_style", "switch_style", "generic_gamepad", "keyboard_fallback"]}},
+        "phone_path": {"enum": ["not_tested", "none", "optional_used", "unavailable"]},
+        "display_class": {"enum": ["not_tested", "monitor", "television", "projector", "remote_stream"]},
+        "resolution_category": {"enum": ["not_tested", "720p", "1080p", "1440p", "native_4k", "other_bounded"]}
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completion_state", "ending_disposition", "reset", "reconnect", "rematch", "report_export", "report_hashes"],
+      "properties": {
+        "completion_state": {"enum": ["not_observed", "not_started", "partial", "ending_reached", "completed_with_rematch", "completed_return_to_title"]},
+        "ending_disposition": {"enum": ["not_observed", "rematch", "return_to_title", "reset"]},
+        "reset": {"enum": ["not_observed", "pass", "fail", "deferred", "blocked"]},
+        "reconnect": {"enum": ["not_observed", "pass", "fail", "deferred", "blocked"]},
+        "rematch": {"enum": ["not_observed", "pass", "fail", "deferred", "blocked"]},
+        "report_export": {"enum": ["not_observed", "pass", "fail", "deferred", "blocked"]},
+        "report_hashes": {"type": "array", "maxItems": 2, "items": {"type": "object", "additionalProperties": false, "required": ["format", "sha256"], "properties": {"format": {"enum": ["json", "markdown"]}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}}
+      }
+    },
+    "durations": {"type": "array", "maxItems": 8, "items": {"type": "object", "additionalProperties": false, "required": ["stage", "minutes"], "properties": {"stage": {"type": "string", "pattern": "^[a-z0-9_]{1,40}$"}, "minutes": {"type": "integer", "minimum": 0, "maximum": 240}}}},
+    "counts": {"type": "object", "additionalProperties": false, "required": ["interruptions", "assistance"], "properties": {"interruptions": {"type": "integer", "minimum": 0, "maximum": 99}, "assistance": {"type": "integer", "minimum": 0, "maximum": 99}}},
+    "manual_checks": {"type": "array", "minItems": 10, "maxItems": 10, "items": {"type": "object", "additionalProperties": false, "required": ["id", "status", "evidence_class", "notes"], "properties": {"id": {"type": "string"}, "status": {"enum": ["not_tested", "pass", "fail", "deferred", "blocked"]}, "evidence_class": {"enum": ["not_tested", "automated_ci", "virtual_offscreen", "remote_observed", "physical_in_room"]}, "notes": {"type": "string", "maxLength": 500}}}},
+    "observations": {"type": "array", "maxItems": 64, "items": {"type": "object", "additionalProperties": false, "required": ["source_type", "evidence_class", "category", "stage", "note"], "properties": {"source_type": {"enum": ["observed", "participant_reported", "automated"]}, "evidence_class": {"enum": ["automated_ci", "virtual_offscreen", "remote_observed", "physical_in_room"]}, "category": {"type": "string", "maxLength": 40}, "stage": {"type": "string", "maxLength": 40}, "note": {"type": "string", "maxLength": 500}}}},
+    "questionnaire": {"type": "array", "maxItems": 20, "items": {"type": "object", "additionalProperties": false, "required": ["question_id", "evidence_class", "rating", "response"], "properties": {"question_id": {"type": "string", "pattern": "^Q[0-9]{1,2}$"}, "evidence_class": {"enum": ["remote_observed", "physical_in_room"]}, "rating": {"type": "integer", "minimum": 0, "maximum": 5}, "response": {"type": "string", "maxLength": 500}}}},
+    "declarations": {"type": "object", "additionalProperties": false, "required": ["voluntary_participation_confirmed", "stop_at_any_time_explained", "direct_identifiers_excluded", "human_observation_entered", "non_authoritative", "single_pilot_not_certification", "automated_evidence_is_physical"], "properties": {"voluntary_participation_confirmed": {"type": "boolean"}, "stop_at_any_time_explained": {"type": "boolean"}, "direct_identifiers_excluded": {"type": "boolean"}, "human_observation_entered": {"type": "boolean"}, "non_authoritative": {"const": true}, "single_pilot_not_certification": {"const": true}, "automated_evidence_is_physical": {"const": false}}},
+    "provenance": {"type": "array", "maxItems": 4, "items": {"type": "object", "additionalProperties": false, "required": ["source_file", "sha256", "normalization"], "properties": {"source_file": {"enum": ["PILOT_SESSION_RECORD.json"]}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "normalization": {"const": "offline_exact_schema_v1"}}}}
+  }
+}

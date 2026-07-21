@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "release": "v0.1.2",
+  "release": "v0.1.3",
   "bundle_prefix": "lantern-house-internal-playtest",
   "platforms": {
     "windows": {
@@ -22,10 +22,14 @@
   },
   "common_files": {
     "START_HERE.md": "packaging/portable/START_HERE.md",
-    "FACILITATOR_GUIDE.md": "docs/playtests/v0.1.2-facilitator-guide.md",
-    "POST_SESSION_QUESTIONNAIRE.md": "docs/playtests/v0.1.2-post-session-questionnaire.md",
+    "FACILITATOR_GUIDE.md": "docs/playtests/v0.1.3-pilot-guide.md",
+    "OBSERVATION_SHEET.md": "docs/playtests/v0.1.3-observation-sheet.md",
+    "POST_SESSION_QUESTIONNAIRE.md": "docs/playtests/v0.1.3-post-session-questionnaire.md",
     "PRIVACY_AND_LIMITATIONS.md": "packaging/portable/PRIVACY_AND_LIMITATIONS.md",
-    "MANUAL_VALIDATION_RECORD.json": "docs/playtests/v0.1.2-manual-hardware-validation.json",
+    "PILOT_SESSION_SCHEMA.json": "packaging/pilot/pilot_session_schema.json",
+    "PILOT_SESSION_RECORD.json": "docs/playtests/v0.1.3-pilot-session-blank.json",
+    "FINDINGS_REGISTER_SCHEMA.json": "packaging/pilot/findings_register_schema.json",
+    "FINDINGS_REGISTER.json": "docs/playtests/v0.1.3-findings-register-blank.json",
     "THIRD_PARTY_NOTICES.md": "packaging/portable/THIRD_PARTY_NOTICES.md",
     "LICENSES/GODOT_ENGINE_LICENSE.txt": "packaging/portable/GODOT_ENGINE_LICENSE.txt"
   },
