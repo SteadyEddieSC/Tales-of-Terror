@@ -268,6 +268,7 @@ def main() -> int:
         "companion_live_host_test.gd",
         "vertical_slice_test.gd",
         "playtest_readiness_test.gd",
+        "playtest_main_route_test.gd",
         "vertical_slice_simulation_test.gd",
     ]
     for filename in legacy_tests:

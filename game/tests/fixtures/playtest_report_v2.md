@@ -1,6 +1,6 @@
 # Terror Turn local playtest report
 
-- Schema: 1
+- Schema: 2
 - Release: v0.1.1
 - Scenario: lantern_house_vertical_slice v1
 - Seed: 4706
@@ -10,7 +10,8 @@
 - Optional companion used: false
 - Started: 2026-07-20T20:00:00Z
 - Ended: 2026-07-20T20:20:00Z
-- Finalization: ending
+- Completion: ending
+- Post-ending disposition: pending
 
 ## Public outcome
 

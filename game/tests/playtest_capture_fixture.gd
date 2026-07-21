@@ -1,6 +1,9 @@
 extends SceneTree
 
-var _coordinator := VerticalSliceCoordinator.new()
+const MAIN_SCENE: PackedScene = preload("res://src/main/Main.tscn")
+const BUTTON_A: int = 0
+const BUTTON_X: int = 2
+const DPAD_RIGHT: int = 14
 
 
 func _initialize() -> void:
@@ -13,41 +16,103 @@ func _configure() -> void:
 		push_error("Unsupported playtest capture state")
 		quit(2)
 		return
-	for index: int in 3:
-		_coordinator.seat_manager.join_device(
-			index, "synthetic-capture-pad-%d" % index, "Fixture Controller %d" % (index + 1)
-		)
-	_coordinator.enter_lobby()
-	if capture_state != "lobby":
-		_coordinator.confirm_roster()
-		_coordinator.initialize_session(_coordinator.MANIFEST_PATH, 4706)
-		_coordinator.begin_tale()
-	if capture_state in ["prompt", "help"]:
-		_coordinator.advance_player_stage()
-	elif capture_state == "ending_export":
-		while _coordinator.lifecycle == "active_tale":
-			_coordinator.run_current_stage()
-		_coordinator.review_ending()
-	var view := VerticalSliceView.new()
-	root.add_child(view)
+	var width: int = OS.get_environment("PLAYTEST_CAPTURE_WIDTH").to_int()
+	var height: int = OS.get_environment("PLAYTEST_CAPTURE_HEIGHT").to_int()
+	if width <= 0 or height <= 0:
+		push_error("Capture dimensions must be positive")
+		quit(2)
+		return
+	root.size = Vector2i(width, height)
+	var main: Control = MAIN_SCENE.instantiate()
+	root.add_child(main)
 	await process_frame
-	view.present(_coordinator.public_state(), _coordinator.seat_manager.get_seats())
-	if capture_state in ["help", "ending_export"]:
-		var help := GuidedSessionHelp.new()
-		root.add_child(help)
-		await process_frame
-		(
-			help
-			. open_help(
-				_coordinator.public_state(),
-				_coordinator.seat_manager.get_seats(),
-				{"room_open": false, "connected_count": 0},
-				capture_state == "ending_export",
+	var device_count: int = 8 if capture_state == "prompt" else 3
+	var registry: DeviceRegistry = main.get("_devices")
+	var devices: Dictionary = {}
+	for device_id: int in device_count:
+		devices[device_id] = {
+			"device_id": device_id,
+			"name": "Synthetic Controller %d" % (device_id + 1),
+			"guid": "synthetic-guid-%d" % device_id,
+			"identity": "synthetic-identity-%d" % device_id,
+		}
+	registry.set("_devices", devices)
+	registry.devices_changed.emit(registry.get_devices())
+	for device_id: int in device_count:
+		await _press_button(main, device_id, BUTTON_A)
+	if capture_state != "lobby":
+		await _press_button(main, 0, BUTTON_A)
+		await _press_button(main, 0, BUTTON_A)
+		await _press_button(main, 0, BUTTON_A)
+		if not is_instance_valid(main.get("_sandbox")):
+			push_error("Full-route capture did not compose ExplorationSandbox")
+			quit(4)
+			return
+	if capture_state == "prompt":
+		var coordinator: VerticalSliceCoordinator = main.get("_coordinator")
+		var pending: Dictionary = coordinator.rules_session.pending_prompt
+		for seat_number: int in pending.eligible_seats:
+			coordinator.rules_session.submit_response(
+				seat_number, [pending.options[0].id], pending.revision
 			)
+		coordinator.run_current_stage()
+		coordinator.advance_player_stage()
+		await process_frame
+	elif capture_state == "help":
+		await _press_button(main, 0, BUTTON_X)
+	elif capture_state == "ending_export":
+		var coordinator: VerticalSliceCoordinator = main.get("_coordinator")
+		var guard: int = 0
+		while coordinator.lifecycle == "active_tale" and guard < 8:
+			var pending: Dictionary = coordinator.rules_session.pending_prompt
+			if not pending.is_empty():
+				for seat_number: int in pending.eligible_seats:
+					coordinator.rules_session.submit_response(
+						seat_number, [pending.options[0].id], pending.revision
+					)
+			var result: Dictionary = coordinator.run_current_stage()
+			if not result.accepted:
+				push_error("Could not advance capture route: %s" % result.get("reason", ""))
+				quit(4)
+				return
+			guard += 1
+			await process_frame
+		await _press_button(main, 0, BUTTON_A)
+		main.set("_report_writer", PlaytestMemoryWriter.new())
+		await _press_button(main, 0, BUTTON_X)
+		for _page: int in 3:
+			await _press_button(main, 0, DPAD_RIGHT)
+		await _press_button(main, 0, BUTTON_A)
+	await create_timer(0.75).timeout
+	await process_frame
+	var image: Image = root.get_viewport().get_texture().get_image()
+	if image.get_width() != width or image.get_height() != height:
+		image.resize(width, height, Image.INTERPOLATE_NEAREST)
+	var output_path: String = OS.get_environment("PLAYTEST_CAPTURE_OUTPUT")
+	var error: Error = image.save_png(output_path)
+	if error != OK:
+		push_error("Could not save playtest capture: %s" % error_string(error))
+		quit(3)
+		return
+	print(
+		(
+			"PLAYTEST_CAPTURE state=%s dimensions=%dx%d output=%s"
+			% [capture_state, image.get_width(), image.get_height(), output_path]
 		)
-		if capture_state == "ending_export":
-			for _index: int in 3:
-				help.handle_action("ui_navigate_right")
-			help.present_export_result({"accepted": true})
-	await create_timer(1.0).timeout
+	)
 	quit()
+
+
+func _press_button(main: Control, device_id: int, button_index: int) -> void:
+	var pressed := InputEventJoypadButton.new()
+	pressed.device = device_id
+	pressed.button_index = button_index
+	pressed.pressed = true
+	main._input(pressed)
+	await process_frame
+	var released := InputEventJoypadButton.new()
+	released.device = device_id
+	released.button_index = button_index
+	released.pressed = false
+	main._input(released)
+	await process_frame

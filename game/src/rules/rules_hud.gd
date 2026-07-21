@@ -109,7 +109,7 @@ func get_view_model() -> Dictionary:
 		"check": {},
 		"cards": {},
 		"result_label": friendly_label(_session.terminal_reason),
-		"continuation_label": "ⓘ More details: Diagnostics (X / T)",
+		"continuation_label": "ⓘ Help: X / H  •  Diagnostics: T",
 		"continuation_visible": true,
 	}
 	if not _last_presenter.is_empty():

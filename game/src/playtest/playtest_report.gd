@@ -1,8 +1,7 @@
 class_name PlaytestReport
 extends RefCounted
 
-const SCHEMA_VERSION: int = 1
-const RELEASE_ID: String = "v0.1.1"
+const SCHEMA_VERSION: int = 2
 const MAX_LIFECYCLE_EVENTS: int = 64
 const MAX_SEAT_EVENTS: int = 64
 const MAX_RECOVERY_EVENTS: int = 64
@@ -33,13 +32,17 @@ const SESSION_KEYS: PackedStringArray = [
 	"companion_used",
 	"started_at_utc",
 	"ended_at_utc",
-	"finalization_reason",
+	"completion_reason",
+	"post_ending_disposition",
 ]
 const OUTCOME_KEYS: PackedStringArray = [
 	"terminal_reason", "authority_digest", "public_history_digest"
 ]
 const FEEDBACK_KEYS: PackedStringArray = ["rating", "notes"]
-const FINALIZATION_REASONS: PackedStringArray = ["ending", "reset", "return_to_title", "rematch"]
+const COMPLETION_REASONS: PackedStringArray = ["ending", "reset"]
+const POST_ENDING_DISPOSITIONS: PackedStringArray = [
+	"pending", "rematch", "return_to_title", "reset", "not_applicable"
+]
 const LIFECYCLES: PackedStringArray = [
 	"boot_title", "lobby", "confirmation", "briefing", "active_tale", "terminal", "ending"
 ]
@@ -65,7 +68,7 @@ func begin(
 ) -> void:
 	_report = {
 		"schema_version": SCHEMA_VERSION,
-		"release": RELEASE_ID,
+		"release": release_id(),
 		"scenario":
 		{
 			"id": _bounded(public_state.get("scenario_id", "unknown"), 80),
@@ -80,7 +83,8 @@ func begin(
 			"companion_used": false,
 			"started_at_utc": _bounded(started_at_utc, 40),
 			"ended_at_utc": "",
-			"finalization_reason": "",
+			"completion_reason": "",
+			"post_ending_disposition": "",
 		},
 		"lifecycle_events": [],
 		"seat_events": [],
@@ -167,7 +171,7 @@ func set_tester_feedback(rating: int, notes: String) -> Dictionary:
 
 
 func finalize(
-	reason: String,
+	completion_reason: String,
 	public_state: Dictionary,
 	ended_at_utc: String,
 	elapsed_seconds: int,
@@ -176,12 +180,15 @@ func finalize(
 ) -> Dictionary:
 	if _report.is_empty() or _finalized:
 		return {"accepted": false, "reason": "report_not_active"}
-	if not FINALIZATION_REASONS.has(reason):
-		return {"accepted": false, "reason": "invalid_finalization_reason"}
+	if not COMPLETION_REASONS.has(completion_reason):
+		return {"accepted": false, "reason": "invalid_completion_reason"}
 	observe(public_state, [], {}, elapsed_seconds)
 	_close_stage(elapsed_seconds)
 	_report.session.ended_at_utc = _bounded(ended_at_utc, 40)
-	_report.session.finalization_reason = reason
+	_report.session.completion_reason = completion_reason
+	_report.session.post_ending_disposition = (
+		"pending" if completion_reason == "ending" else "not_applicable"
+	)
 	var ending: Dictionary = public_state.get("ending", {})
 	_report.outcome = {
 		"terminal_reason": _bounded(ending.get("terminal_reason", ""), 120),
@@ -189,6 +196,19 @@ func finalize(
 		"public_history_digest": _digest_or_empty(public_history_digest),
 	}
 	_finalized = true
+	return {"accepted": true, "reason": ""}
+
+
+func record_post_ending_disposition(disposition: String) -> Dictionary:
+	if not _finalized or _report.is_empty():
+		return {"accepted": false, "reason": "report_not_finalized"}
+	if _report.session.completion_reason != "ending":
+		return {"accepted": false, "reason": "disposition_not_applicable"}
+	if not disposition in ["rematch", "return_to_title", "reset"]:
+		return {"accepted": false, "reason": "invalid_post_ending_disposition"}
+	if _report.session.post_ending_disposition != "pending":
+		return {"accepted": false, "reason": "disposition_already_recorded"}
+	_report.session.post_ending_disposition = disposition
 	return {"accepted": true, "reason": ""}
 
 
@@ -227,7 +247,8 @@ func to_markdown() -> String:
 			"- Optional companion used: %s" % session.get("companion_used", false),
 			"- Started: %s" % session.get("started_at_utc", ""),
 			"- Ended: %s" % session.get("ended_at_utc", ""),
-			"- Finalization: %s" % session.get("finalization_reason", ""),
+			"- Completion: %s" % session.get("completion_reason", ""),
+			"- Post-ending disposition: %s" % session.get("post_ending_disposition", ""),
 			"",
 			"## Public outcome",
 			"",
@@ -260,7 +281,7 @@ func export_with(writer: PlaytestReportWriter, basename: String) -> Dictionary:
 static func validate_schema(value: Dictionary) -> Dictionary:
 	if not _has_exact_keys(value, REPORT_KEYS):
 		return {"accepted": false, "reason": "invalid_report_keys"}
-	if value.get("schema_version") != SCHEMA_VERSION or value.get("release") != RELEASE_ID:
+	if value.get("schema_version") != SCHEMA_VERSION or value.get("release") != release_id():
 		return {"accepted": false, "reason": "unsupported_report_version"}
 	if not _has_exact_keys(value.get("scenario", {}), SCENARIO_KEYS):
 		return {"accepted": false, "reason": "invalid_scenario"}
@@ -345,7 +366,18 @@ static func _valid_scalar_sections(value: Dictionary) -> bool:
 		and session.companion_used is bool
 		and _valid_bounded_string(session.started_at_utc, 40)
 		and _valid_bounded_string(session.ended_at_utc, 40)
-		and session.finalization_reason in FINALIZATION_REASONS
+		and session.completion_reason in COMPLETION_REASONS
+		and session.post_ending_disposition in POST_ENDING_DISPOSITIONS
+		and (
+			(
+				session.completion_reason == "ending"
+				and session.post_ending_disposition != "not_applicable"
+			)
+			or (
+				session.completion_reason == "reset"
+				and session.post_ending_disposition == "not_applicable"
+			)
+		)
 		and _valid_bounded_string(outcome.terminal_reason, 120)
 		and _valid_digest(outcome.authority_digest)
 		and _valid_digest(outcome.public_history_digest)
@@ -598,3 +630,7 @@ static func _wait_kind(public_state: Dictionary) -> String:
 	if operation_index <= 0 or operation_index > operations.size():
 		return "prompt"
 	return "vote" if operations[operation_index - 1].get("type") == "submit_vote" else "prompt"
+
+
+static func release_id() -> String:
+	return str(ProjectSettings.get_setting("application/config/version"))

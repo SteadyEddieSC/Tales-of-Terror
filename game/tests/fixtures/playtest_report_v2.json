@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "release": "v0.1.1",
   "scenario": {
     "id": "lantern_house_vertical_slice",
@@ -13,7 +13,8 @@
     "companion_used": false,
     "started_at_utc": "2026-07-20T20:00:00Z",
     "ended_at_utc": "2026-07-20T20:20:00Z",
-    "finalization_reason": "ending"
+    "completion_reason": "ending",
+    "post_ending_disposition": "pending"
   },
   "lifecycle_events": [
     {

@@ -227,7 +227,11 @@ func _test_hud_view_model() -> void:
 		"keeps eight-seat actionable state within the explicit essential-content budget"
 	)
 	_expect(
-		"More details: Diagnostics" in player_text and "RECENT HISTORY" not in player_text,
+		(
+			"Help: X / H" in player_text
+			and "Diagnostics: T" in player_text
+			and "RECENT HISTORY" not in player_text
+		),
 		"uses an explicit continuation policy instead of silently clipping history"
 	)
 	_expect(

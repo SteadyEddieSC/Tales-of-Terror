@@ -117,7 +117,7 @@ func _build_ui() -> void:
 	_devices_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	device_stack.add_child(_devices_label)
 	var key_hint := Label.new()
-	key_hint.text = "A / J  JOIN\nX / T  TEST SIGNAL"
+	key_hint.text = "A / J  JOIN\nX / H  HELP  •  T  TEST SIGNAL"
 	key_hint.theme_type_variation = "SeatDetail"
 	device_stack.add_child(key_hint)
 	_build_footer(root)

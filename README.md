@@ -13,7 +13,7 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 5. Keep stable-seat privacy and exactly-once intent boundaries regression-tested through the fake transport, local Worker emulation, browser lab, and native-authority E2E.
 6. Defer production Cloudflare deployment, accounts, matchmaking, persistence, full remote play, and security certification until their own reviewed gates.
 
-The normal player route now begins at the title, accepts 1–8 stable seats, confirms the authored mode or safe cooperative fallback, presents a public briefing, runs the Lantern House tale, publishes a privacy-safe ending, and supports a clean rematch. Contextual guidance identifies stage and waiting progress, X/H opens controller-accessible help, and a finalized report can be explicitly exported as local JSON and Markdown. Controllers are primary, keyboard remains a development fallback, and phones remain optional.
+The normal player route now begins at the title, accepts 1–8 stable seats, confirms the authored mode or safe cooperative fallback, presents a public briefing, runs the Lantern House tale, publishes a privacy-safe ending, and supports a clean rematch. Unowned controller A/keyboard Enter claims a seat without double-advancing; a later owned A/Enter or Space confirms the roster. Contextual guidance identifies stage and waiting progress, X/H opens controller-accessible help, and a finalized report can be explicitly exported as local JSON and Markdown. Controllers are primary, keyboard remains a development fallback, and phones remain optional.
 
 ## Foundation decisions
 

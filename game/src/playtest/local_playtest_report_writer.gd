@@ -14,6 +14,8 @@ func write_report(basename: String, json_text: String, markdown_text: String) ->
 		return {"accepted": false, "reason": "export_folder_unavailable"}
 	var json_path: String = "%s/%s.json" % [EXPORT_FOLDER, basename]
 	var markdown_path: String = "%s/%s.md" % [EXPORT_FOLDER, basename]
+	if FileAccess.file_exists(json_path) or FileAccess.file_exists(markdown_path):
+		return {"accepted": false, "reason": "export_already_exists"}
 	var json_result: Dictionary = _write_file(json_path, json_text)
 	if not json_result.accepted:
 		return json_result

@@ -49,7 +49,7 @@ func _test_guidance_every_lifecycle() -> void:
 		1, confirmation, [], {}, false
 	)
 	_expect(
-		"Cancel returns to lobby" in confirmation_help.body,
+		"B / Esc returns to lobby" in confirmation_help.body,
 		"describes the coherent confirmation recovery route",
 	)
 	var ending: Dictionary = coordinator.public_state()
@@ -184,7 +184,7 @@ func _test_report_schema_privacy_bounds_and_order() -> void:
 		report.record_rejection("invalid_input_%d" % index, index + 2)
 	report.finalize("ending", state, "2026-07-20T20:20:00Z", 1200, "a".repeat(64), "b".repeat(64))
 	var value: Dictionary = report.to_report()
-	_expect(PlaytestReport.validate_schema(value).accepted, "produces the exact version-1 schema")
+	_expect(PlaytestReport.validate_schema(value).accepted, "produces the exact version-2 schema")
 	_expect(value.scenario.version == 1, "records the initialized exact scenario version")
 	_expect(value.rejections.size() == PlaytestReport.MAX_REJECTIONS, "bounds rejection events")
 	var ordered: bool = true
@@ -205,10 +205,36 @@ func _test_report_schema_privacy_bounds_and_order() -> void:
 
 
 func _test_export_seam_and_finalization() -> void:
-	for reason: String in PlaytestReport.FINALIZATION_REASONS:
-		var report := _finalized_report(reason)
-		_expect(report.is_finalized(), "finalizes a report for %s" % reason)
-		_expect(report.to_report().session.finalization_reason == reason, "records %s" % reason)
+	for completion_reason: String in PlaytestReport.COMPLETION_REASONS:
+		var report := _finalized_report(completion_reason)
+		_expect(report.is_finalized(), "finalizes a report for %s" % completion_reason)
+		_expect(
+			report.to_report().session.completion_reason == completion_reason,
+			"records %s completion" % completion_reason,
+		)
+	var reset_report := _finalized_report("reset")
+	_expect(
+		reset_report.to_report().session.post_ending_disposition == "not_applicable",
+		"keeps pre-ending reset separate from post-ending disposition",
+	)
+	_expect(
+		not reset_report.record_post_ending_disposition("rematch").accepted,
+		"rejects disposition updates when the tale did not reach ending",
+	)
+	for disposition: String in ["rematch", "return_to_title", "reset"]:
+		var disposed := _finalized_report("ending")
+		_expect(
+			disposed.record_post_ending_disposition(disposition).accepted,
+			"records bounded %s disposition" % disposition,
+		)
+		_expect(
+			disposed.to_report().session.post_ending_disposition == disposition,
+			"retains exact %s disposition" % disposition,
+		)
+		_expect(
+			not disposed.record_post_ending_disposition("reset").accepted,
+			"never silently overwrites an existing disposition",
+		)
 	var exported := _finalized_report("ending")
 	var writer := PlaytestMemoryWriter.new()
 	var success: Dictionary = exported.export_with(writer, "fixture_report")
@@ -225,10 +251,10 @@ func _test_export_seam_and_finalization() -> void:
 		"keeps JSON and Markdown outcome evidence consistent",
 	)
 	var fixture_json: Variant = JSON.parse_string(
-		FileAccess.get_file_as_string("res://tests/fixtures/playtest_report_v1.json")
+		FileAccess.get_file_as_string("res://tests/fixtures/playtest_report_v2.json")
 	)
 	var fixture_markdown: String = FileAccess.get_file_as_string(
-		"res://tests/fixtures/playtest_report_v1.md"
+		"res://tests/fixtures/playtest_report_v2.md"
 	)
 	_expect(
 		fixture_json == JSON.parse_string(exported.to_json()),
@@ -243,6 +269,10 @@ func _test_export_seam_and_finalization() -> void:
 	var local_writer := LocalPlaytestReportWriter.new()
 	var local_result: Dictionary = exported.export_with(local_writer, "automated_fixture_report")
 	_expect(local_result.accepted, "writes explicitly to the approved local user-data folder")
+	_expect(
+		not exported.export_with(local_writer, "automated_fixture_report").accepted,
+		"rejects an existing export basename instead of silently overwriting it",
+	)
 	_expect(
 		not exported.export_with(local_writer, "../arbitrary_path").accepted,
 		"rejects arbitrary or traversing export paths",

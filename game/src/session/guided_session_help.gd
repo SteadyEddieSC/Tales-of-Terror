@@ -252,26 +252,35 @@ static func guidance_for_state(state: Dictionary, seats: Array[Dictionary]) -> S
 		"boot_title":
 			return "Press A / Enter to claim the first stable seat. H / X opens help."
 		"lobby":
-			return "Join or leave seats, then Confirm to lock the %d-seat roster." % _joined(seats)
+			return (
+				"Unassigned A / Enter joins; an owned A / Enter or Space locks the %d-seat roster."
+				% _joined(seats)
+			)
 		"confirmation":
-			return "Review mode and fallback. Confirm prepares the tale; Cancel returns to lobby."
+			return (
+				"Review mode and fallback. A / Enter / Space prepares the tale; "
+				+ "B / Esc returns to lobby."
+			)
 		"briefing":
-			return "Read the public objective together, then Confirm to begin exploration."
+			return "Read the public objective together, then A / Enter / Space begins exploration."
 		"active_tale":
 			if state.get("paused", false):
 				return "Paused. Menu / P resumes; help and protected reset remain available."
 			return _active_guidance(state, seats)
 		"terminal":
-			return "The outcome is fixed. Confirm opens the privacy-safe ending."
+			return "The outcome is fixed. A / Enter / Space opens the privacy-safe ending."
 		"ending":
-			return "Export the report from help, then Confirm rematches or Cancel returns to title."
+			return "Export from help; A / Enter / Space rematches or B / Esc returns to title."
 	return "Please wait for the public session state."
 
 
 static func _active_guidance(state: Dictionary, seats: Array[Dictionary]) -> String:
 	var prompt: Dictionary = state.get("rules", {}).get("prompt", {})
 	if prompt.is_empty():
-		var base: String = "Explore together. The active seat uses A / E; Confirm advances when ready."
+		var base: String = (
+			"Explore together. A / E interacts; A / Enter / Space advances when the "
+			+ "step is ready."
+		)
 		var reserved: int = _reserved_count(seats)
 		if reserved > 0:
 			base += (

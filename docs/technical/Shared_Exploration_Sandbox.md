@@ -44,5 +44,5 @@ Interaction and status messages occupy a dedicated panel to the left of the prot
 - Interact: controller A or keyboard E.
 - Diagnostics: controller X or keyboard T.
 - Join: controller A or keyboard J.
-- Protected reset/return to lab: hold controller Y or keyboard R for 1.5 seconds.
+- Protected reset/return to title: hold controller Y or keyboard R for 1.5 seconds.
 - Safe frame: controller LB/RB or keyboard -/+.

@@ -5,7 +5,7 @@
 | Section | Permitted fields |
 | --- | --- |
 | Build/scenario | schema version, release, scenario ID/version |
-| Session | deterministic seed, seat count, public mode, fallback flag, aggregate companion-used flag, explicit UTC start/end, finalization reason |
+| Session | deterministic seed, seat count, public mode, fallback flag, aggregate companion-used flag, explicit UTC start/end, completion reason, bounded post-ending disposition |
 | Lifecycle | sequence, elapsed seconds, public lifecycle |
 | Seats | sequence, elapsed seconds, stable seat number, join/disconnect/reconnect/leave category, controller/keyboard class |
 | Recovery | sequence, elapsed seconds, pause/resume/aggregate companion-connected category |

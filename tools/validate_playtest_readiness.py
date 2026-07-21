@@ -4,12 +4,13 @@
 from __future__ import annotations
 
 import json
+import struct
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAYTEST_ROOT = ROOT / "game" / "src" / "playtest"
-FIXTURE = ROOT / "game" / "tests" / "fixtures" / "playtest_report_v1.json"
+FIXTURE = ROOT / "game" / "tests" / "fixtures" / "playtest_report_v2.json"
 REPORT_KEYS = {
     "schema_version",
     "release",
@@ -54,9 +55,10 @@ def main() -> int:
         PLAYTEST_ROOT / "playtest_report_writer.gd",
         PLAYTEST_ROOT / "local_playtest_report_writer.gd",
         FIXTURE,
-        ROOT / "game" / "tests" / "fixtures" / "playtest_report_v1.md",
+        ROOT / "game" / "tests" / "fixtures" / "playtest_report_v2.md",
         ROOT / "game" / "src" / "session" / "guided_session_help.gd",
         ROOT / "game" / "tests" / "playtest_readiness_test.gd",
+        ROOT / "game" / "tests" / "playtest_main_route_test.gd",
         ROOT / "game" / "tests" / "playtest_capture_fixture.gd",
         ROOT / "game" / "tests" / "gut" / "test_playtest_readiness.gd",
         ROOT / "docs" / "playtests" / "Playtest_Readiness_Evidence.md",
@@ -72,6 +74,16 @@ def main() -> int:
             capture = evidence_root / f"{state}_{resolution}_virtual_offscreen.png"
             if not capture.is_file():
                 failures.append(f"missing review capture: {capture.relative_to(ROOT)}")
+                continue
+            expected = tuple(int(value) for value in resolution.split("x"))
+            with capture.open("rb") as stream:
+                header = stream.read(24)
+            if len(header) != 24 or header[:8] != b"\x89PNG\r\n\x1a\n":
+                failures.append(f"review capture is not PNG: {capture.relative_to(ROOT)}")
+            elif struct.unpack(">II", header[16:24]) != expected:
+                failures.append(
+                    f"review capture dimensions changed: {capture.relative_to(ROOT)}"
+                )
 
     sources = "\n".join(
         path.read_text(encoding="utf-8") for path in PLAYTEST_ROOT.glob("*.gd")
@@ -95,8 +107,8 @@ def main() -> int:
         report = json.loads(FIXTURE.read_text(encoding="utf-8"))
         if set(report) != REPORT_KEYS:
             failures.append("playtest report fixture root schema keys changed")
-        if report.get("schema_version") != 1 or report.get("release") != "v0.1.1":
-            failures.append("playtest report fixture version is not v0.1.1 schema 1")
+        if report.get("schema_version") != 2 or report.get("release") != "v0.1.1":
+            failures.append("playtest report fixture version is not v0.1.1 schema 2")
         serialized = json.dumps(report).lower()
         for field in sorted(FORBIDDEN_REPORT_FIELDS):
             if f'"{field}"' in serialized:
@@ -107,6 +119,24 @@ def main() -> int:
     )
     if "res://tests/playtest_readiness_test.gd" not in workflow:
         failures.append("Godot workflow must run the playtest-readiness standalone suite")
+    if "res://tests/playtest_main_route_test.gd" not in workflow:
+        failures.append("Godot workflow must run the main-route input integration suite")
+    capture_source = (
+        ROOT / "game" / "tests" / "playtest_capture_fixture.gd"
+    ).read_text(encoding="utf-8")
+    for expected in (
+        "res://src/main/Main.tscn",
+        "InputEventJoypadButton",
+        "_input",
+        "_sandbox",
+    ):
+        if expected not in capture_source:
+            failures.append(f"normal-route capture fixture is missing: {expected}")
+    if "VerticalSliceView.new()" in capture_source:
+        failures.append("capture fixture must not instantiate the isolated view directly")
+    project = (ROOT / "game" / "project.godot").read_text(encoding="utf-8")
+    if 'config/version="v0.1.1"' not in project:
+        failures.append("project must provide the single v0.1.1 release identity")
     repository_workflow = (
         ROOT / ".github" / "workflows" / "repository-checks.yml"
     ).read_text(encoding="utf-8")

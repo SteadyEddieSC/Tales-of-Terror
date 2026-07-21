@@ -7,7 +7,7 @@ The v0.1.1 presentation remains a consumer of `VerticalSliceCoordinator.public_s
 | State | Public guidance | Recovery guidance |
 | --- | --- | --- |
 | Title | Join the first stable seat; open help | Protected reset consequences in help |
-| Lobby | Join/leave and roster count | Reserved-seat reconnect and empty-lobby return |
+| Lobby | Unowned A/Enter joins; owned A/Enter or Space locks the roster | Reserved-seat reconnect and empty-lobby return |
 | Confirmation | Selected mode and 1–2-seat cooperative fallback | Cancel returns to the retained roster |
 | Briefing | Public story and objective hierarchy | Confirm begins; no phone required |
 | Active | Stage title, controls, prompt/vote submitted and eligible counts | Pause, help, reserved-seat reconnect, protected reset |
@@ -20,9 +20,9 @@ The help surface has four bounded pages: controls, current session, privacy/reco
 
 `PlaytestReport` is a `RefCounted` observer. It accepts public view dictionaries, reduced seat rows, companion aggregates, explicit elapsed seconds, and explicit timestamps. It does not hold authority references and cannot submit prompt/vote responses. `PlaytestReportWriter` is the replaceable writer seam; production uses `LocalPlaytestReportWriter`, whose destination is fixed to `user://playtest_exports` and whose basename validator rejects traversal or arbitrary paths.
 
-Schema version 1 has exact root and nested keys. Bounded arrays retain ordered lifecycle, seat, recovery, prompt/vote progress, rejection-category, and stage-duration observations. Strings and tester feedback are bounded. Finalization reasons are exactly `ending`, `reset`, `return_to_title`, or `rematch`. Export is deliberate: open help after a report is finalized, go to page 4, then press A/Enter. JSON and Markdown are written together or the operation reports failure.
+Schema version 2 has exact root and nested keys. Bounded arrays retain ordered lifecycle, seat, recovery, prompt/vote progress, rejection-category, and stage-duration observations. Strings and tester feedback are bounded. `completion_reason` is `ending` or `reset`. An ending snapshot begins with `post_ending_disposition=pending` and accepts exactly one bounded update to `rematch`, `return_to_title`, or `reset`; a pre-ending reset uses `not_applicable`. This keeps export available at ending without relabeling or replacing the completed report. Export is deliberate: open help after a report is finalized, go to page 4, then press A/Enter. JSON and Markdown are written together or the operation reports failure. Existing basenames reject instead of being silently overwritten.
 
-The report is finalized before destructive reset. A clean report begins after reset or successful rematch. The previous finalized report remains exportable from the title or ending help page. Reporting never writes in the background and has no HTTP, WebSocket, UDP, TCP, analytics, crash-reporting, or cloud path.
+The report is finalized before destructive reset. Normal ending finalizes an immutable gameplay/outcome snapshot before export; rematch, return-to-title, or an ending reset updates only its bounded disposition. A clean report begins after reset, return-to-title, or successful rematch. The previous finalized report remains exportable from the title, briefing, or ending help page. Reporting never writes in the background and has no HTTP, WebSocket, UDP, TCP, analytics, crash-reporting, or cloud path.
 
 ## Recovery behavior
 
@@ -31,7 +31,9 @@ The report is finalized before destructive reset. A clean report begins after re
 - Pause remains coordinator-owned. Help does not toggle it.
 - Protected reset from help, pause, prompt, vote, or developer lab closes the companion room, clears all authority/session state, closes presentation overlays, and returns to a fresh title.
 - Rematch retains only the authored stable roster and constructs clean authorities through the accepted candidate-first path.
+- Joypad actions are device-agnostic in the action map. During title/lobby, an unowned A claims one stable seat and consumes that lifecycle event; a later A from an owned seat advances. Unowned devices cannot confirm a locked roster or later lifecycle state. Enter follows the same keyboard ownership rule, while Space remains the explicit confirmation fallback.
+- The exploration HUD is canvas layer 10, compact lifecycle guidance is layer 20, and help is layer 30. The 960×540 layout keeps compact guidance clear of the top HUD, bottom controls/reset, and the 1–8-seat prompt/vote panel.
 
 ## Test seams
 
-`PlaytestMemoryWriter` provides deterministic success/failure coverage without writing outside approved test locations. The standalone suite also exercises the production writer under the Godot user-data folder and deletes its two generated probe files. Committed synthetic JSON and Markdown fixtures live under `game/tests/fixtures/` and contain no personal, desktop, account, token, network, or machine data.
+`PlaytestMemoryWriter` provides deterministic success/failure coverage without writing outside approved test locations. The main-scene integration suite drives controller button-0, X, D-pad, B, Y, Enter, and Space events through `Main.tscn`; it covers two-controller joining, every non-active lifecycle transition, export, reset, return-to-title, rematch, report availability, schema contents, JSON/Markdown consistency, and preserved completed-session digests. The standalone suite also exercises the production writer under the Godot user-data folder and deletes its two generated probe files. Committed synthetic schema-v2 JSON and Markdown fixtures live under `game/tests/fixtures/` and contain no personal, desktop, account, token, network, or machine data.
