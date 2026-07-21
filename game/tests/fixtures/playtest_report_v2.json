@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "release": "v0.1.1",
+  "scenario": {
+    "id": "lantern_house_vertical_slice",
+    "version": 1
+  },
+  "session": {
+    "seed": 4706,
+    "seat_count": 1,
+    "mode": "cooperative",
+    "fallback_applied": true,
+    "companion_used": false,
+    "started_at_utc": "2026-07-20T20:00:00Z",
+    "ended_at_utc": "2026-07-20T20:20:00Z",
+    "completion_reason": "ending",
+    "post_ending_disposition": "pending"
+  },
+  "lifecycle_events": [
+    {
+      "sequence": 1,
+      "elapsed_seconds": 0,
+      "lifecycle": "active_tale"
+    }
+  ],
+  "seat_events": [],
+  "recovery_events": [],
+  "wait_progress": [
+    {
+      "sequence": 2,
+      "elapsed_seconds": 0,
+      "kind": "prompt",
+      "eligible_count": 1,
+      "submitted_count": 0,
+      "complete": false
+    }
+  ],
+  "rejections": [],
+  "stage_durations": [
+    {
+      "stage_id": "threshold",
+      "elapsed_seconds": 1200
+    }
+  ],
+  "outcome": {
+    "terminal_reason": "lantern_house_secured",
+    "authority_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "public_history_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "tester_feedback": {
+    "rating": 0,
+    "notes": ""
+  }
+}

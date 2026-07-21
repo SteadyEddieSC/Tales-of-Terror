@@ -71,7 +71,7 @@ func rendered_player_text() -> String:
 	var proposal: Dictionary = _decision.get("proposal", {})
 	if proposal.get("type", "") == "presentation":
 		lines.append("HOST ◉ %s" % proposal.get("message", "The house offers an omen."))
-	lines.append("ⓘ Scoring and raw telemetry: Diagnostics (X / T)")
+	lines.append("ⓘ Help: X / H  •  Scoring and raw telemetry diagnostics: T")
 	return "\n".join(lines.slice(0, MAX_PLAYER_LINES))
 
 

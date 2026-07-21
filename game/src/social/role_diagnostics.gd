@@ -788,7 +788,7 @@ func _privacy_page(diagnostics: Dictionary) -> String:
 func _refresh() -> void:
 	_title.text = "SPOILER DIAGNOSTICS — NOT PLAYER HUD  •  PAGE %d/%d" % [_page + 1, PAGE_COUNT]
 	_body.text = _pages[_page]
-	_footer.text = "DETERMINISTIC PAGING  •  LEFT/RIGHT CHANGE PAGE  •  X/T CLOSE"
+	_footer.text = "DETERMINISTIC PAGING  •  LEFT/RIGHT CHANGE PAGE  •  T CLOSE"
 
 
 func _layout() -> void:

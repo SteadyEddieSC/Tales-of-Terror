@@ -111,7 +111,7 @@ func _test_confirmation_cancel_player_flow() -> void:
 	view.present(coordinator.public_state(), coordinator.seat_manager.get_seats())
 	var footer: Label = view.get("_footer")
 	_expect(
-		footer.text.ends_with("CANCEL: RETURN TO LOBBY"),
+		footer.text.ends_with("B / ESC: RETURN TO LOBBY"),
 		"advertises the implemented confirmation Cancel destination",
 	)
 	var retained_roster: Dictionary = coordinator.seat_manager.to_snapshot()

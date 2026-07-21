@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.1 - Playtest Readiness & Guided Session UX
+
+- Added controller-first lifecycle guidance and a high-contrast, paged help/accessibility surface covering controls, current objective, prompt/vote progress, stable-seat reconnect, no-phone reveal, optional companions, protected reset, ending, and report export.
+- Added an exact version-2, bounded, local-only playtest report with privacy-filtered public/aggregate observations, separate completion/disposition semantics, explicit non-overwriting JSON/Markdown export through a replaceable writer, and a fixed `user://playtest_exports` destination.
+- Added interruption, privacy-negative, export, no-network, report-ordering, no-phone, optional-companion, and deterministic-invariance regressions plus a facilitator checklist, questionnaire, technical/privacy guides, and review evidence.
+
 ## v0.1.0 - First Vertical Slice
 
 - Added a strict version-1 Lantern House scenario manifest and typed native coordinator that composes existing seat, exploration, board, rules, Director, social-role, and optional companion authorities without duplicating their mutable state.

@@ -7,9 +7,12 @@ signal rules_navigation_requested(device_id: int, direction: int, confirm: bool,
 
 const MOVEMENT_ACTIONS: PackedStringArray = ["move_left", "move_right", "move_up", "move_down"]
 var _strengths: Dictionary = {}
+var _presentation_input_blocked: bool = false
 
 
 func _input(event: InputEvent) -> void:
+	if _presentation_input_blocked:
+		return
 	var device_id: int = SeatManager.KEYBOARD_DEVICE_ID if event is InputEventKey else event.device
 	for action: String in MOVEMENT_ACTIONS:
 		if event.is_action(action):
@@ -44,3 +47,9 @@ func get_movement_vector(device_id: int) -> Vector2:
 
 func clear_device(device_id: int) -> void:
 	_strengths.erase(device_id)
+
+
+func set_presentation_input_blocked(value: bool) -> void:
+	_presentation_input_blocked = value
+	if value:
+		_strengths.clear()

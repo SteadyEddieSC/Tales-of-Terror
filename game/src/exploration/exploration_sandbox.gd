@@ -4,10 +4,13 @@ extends Node2D
 const TOKENS: VisualTokens = preload("res://assets/theme/visual_tokens.tres")
 const LAB_THEME: Theme = preload("res://assets/theme/terror_lab_theme.tres")
 const HUD_EDGE_INSET: float = 10.0
-const HUD_REGION_HEIGHT: float = 52.0
+const HUD_REGION_HEIGHT: float = 64.0
 const HUD_REGION_GAP: float = 16.0
 const RESET_REGION_WIDTH: float = 324.0
 const HUD_CANVAS_LAYER: int = 10
+const ACTIVE_CONTROLS_TEXT: String = (
+	"MOVE: STICK / WASD  •  INTERACT: A / E\n" + "HELP: X / H  •  DIAGNOSTICS: T"
+)
 
 var pawn_registry := PawnRegistry.new()
 var _pawn_nodes: Dictionary = {}
@@ -173,9 +176,9 @@ func set_safe_margin(value: int) -> void:
 
 func present_reset_progress(progress: float) -> void:
 	_reset_label.text = (
-		"HOLD Y / R 1.5s TO RETURN TO LAB"
+		"HOLD Y / R 1.5s TO RETURN TO TITLE"
 		if progress <= 0.0
-		else "RETURNING TO LAB… %d%%" % roundi(progress * 100.0)
+		else "RETURNING TO TITLE… %d%%" % roundi(progress * 100.0)
 	)
 
 
@@ -256,7 +259,10 @@ func _build_hud() -> void:
 	layer.add_child(root)
 	_hud_root = root
 	_title_label = Label.new()
-	_title_label.text = "LANTERN HOUSE  •  FIRST VERTICAL SLICE  •  v0.1.0"
+	_title_label.text = (
+		"LANTERN HOUSE  •  FIRST VERTICAL SLICE  •  %s"
+		% ProjectSettings.get_setting("application/config/version")
+	)
 	_title_label.theme_type_variation = "SectionTitle"
 	_title_label.size = Vector2(540, 30)
 	root.add_child(_title_label)
@@ -271,7 +277,7 @@ func _build_hud() -> void:
 	_status_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(_status_panel)
 	_message_label = Label.new()
-	_message_label.text = "MOVE: LEFT STICK / WASD  •  INTERACT: A / E  •  DIAGNOSTICS: X / T"
+	_message_label.text = ACTIVE_CONTROLS_TEXT
 	_message_label.position = Vector2(12, 4)
 	_message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_message_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS

@@ -343,6 +343,7 @@ func public_state() -> Dictionary:
 	return {
 		"view_version": 1,
 		"scenario_id": manifest.get("scenario_id", "lantern_house_vertical_slice"),
+		"scenario_version": manifest.get("scenario_version", 0),
 		"lifecycle": lifecycle,
 		"stage_index": stage_index,
 		"operation_index": operation_index,

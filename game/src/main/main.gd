@@ -1,7 +1,8 @@
 extends Control
 
-const LAB_VERSION: String = "v0.1.0"
 const RESET_HOLD_SECONDS: float = 1.5
+const SLICE_CANVAS_LAYER: int = 20
+const HELP_CANVAS_LAYER: int = 30
 const SEMANTIC_ACTIONS: PackedStringArray = [
 	"ui_navigate_up",
 	"ui_navigate_down",
@@ -11,6 +12,7 @@ const SEMANTIC_ACTIONS: PackedStringArray = [
 	"ui_cancel_action",
 	"player_join",
 	"pause_options",
+	"help_accessibility",
 	"diagnostic_test",
 	"interact",
 ]
@@ -19,12 +21,20 @@ var _devices: DeviceRegistry
 var _coordinator := VerticalSliceCoordinator.new()
 var _seats: SeatManager
 var _ui: InputDisplayLab
+var _slice_layer: CanvasLayer
 var _slice_view: VerticalSliceView
+var _help_layer: CanvasLayer
+var _help: GuidedSessionHelp
 var _input_router: PlayerInputRouter
 var _sandbox: ExplorationSandbox
 var _reset_held: float = 0.0
 var _safe_margin: int = 24
 var _developer_lab: bool = false
+var _active_report: PlaytestReport
+var _last_report: PlaytestReport
+var _report_writer: PlaytestReportWriter = LocalPlaytestReportWriter.new()
+var _report_started_msec: int = 0
+var _last_observed_rejection: String = ""
 
 
 func _ready() -> void:
@@ -39,9 +49,20 @@ func _ready() -> void:
 	_ui = InputDisplayLab.new()
 	add_child(_ui)
 	_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_slice_layer = CanvasLayer.new()
+	_slice_layer.layer = SLICE_CANVAS_LAYER
+	add_child(_slice_layer)
 	_slice_view = VerticalSliceView.new()
-	add_child(_slice_view)
+	_slice_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_slice_layer.add_child(_slice_view)
 	_slice_view.set_safe_margin(_safe_margin)
+	_help_layer = CanvasLayer.new()
+	_help_layer.layer = HELP_CANVAS_LAYER
+	add_child(_help_layer)
+	_help = GuidedSessionHelp.new()
+	_help_layer.add_child(_help)
+	_help.set_safe_margin(_safe_margin)
+	_help.export_requested.connect(_on_report_export_requested)
 	_coordinator.lifecycle_changed.connect(_on_lifecycle_changed)
 	_devices.devices_changed.connect(_on_devices_changed)
 	_devices.device_connected.connect(_on_device_connected)
@@ -49,11 +70,12 @@ func _ready() -> void:
 	_seats.seats_changed.connect(_on_seats_changed)
 	_on_seats_changed(_seats.get_seats())
 	_on_devices_changed(_devices.get_devices())
+	_start_report()
 	_refresh_slice_view()
 	print(
 		ProjectSettings.get_setting("application/config/name"),
 		" vertical slice loaded: ",
-		LAB_VERSION
+		ProjectSettings.get_setting("application/config/version")
 	)
 
 
@@ -78,19 +100,44 @@ func _input(event: InputEvent) -> void:
 	if not event.is_pressed() or event.is_echo():
 		return
 	var device_id: int = event.device
-	var joined_this_event: bool = false
+	var claimed_seat_this_event: bool = false
 	if event is InputEventKey:
 		device_id = SeatManager.KEYBOARD_DEVICE_ID
-	if event.is_action_pressed("player_join"):
+	if is_instance_valid(_help) and _help.visible:
+		for help_action: String in [
+			"help_accessibility",
+			"ui_cancel_action",
+			"ui_navigate_left",
+			"ui_navigate_right",
+			"ui_confirm",
+		]:
+			if event.is_action_pressed(help_action):
+				_help.handle_action(help_action)
+				if not _help.visible:
+					call_deferred("_release_help_input_block")
+				get_viewport().set_input_as_handled()
+				return
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("help_accessibility"):
+		_open_help()
+		get_viewport().set_input_as_handled()
+		return
+	var owns_active_seat: bool = _seats.find_seat_by_device(device_id) >= 0
+	var join_lifecycle: bool = _coordinator.lifecycle in ["boot_title", "lobby"]
+	if event.is_action_pressed("player_join") and join_lifecycle and not owns_active_seat:
+		var joined_index: int = -1
 		if device_id == SeatManager.KEYBOARD_DEVICE_ID:
-			_seats.join_device(device_id, SeatManager.KEYBOARD_IDENTITY, "Keyboard (development)")
+			joined_index = _seats.join_device(
+				device_id, SeatManager.KEYBOARD_IDENTITY, "Keyboard (development)"
+			)
 		elif _devices.has_device(device_id):
-			_seats.join_device(
+			joined_index = _seats.join_device(
 				device_id, _devices.get_identity(device_id), _devices.get_display_name(device_id)
 			)
-		if _coordinator.lifecycle == "boot_title" and not _coordinator.active_seats().is_empty():
+		claimed_seat_this_event = joined_index >= 0
+		if claimed_seat_this_event and _coordinator.lifecycle == "boot_title":
 			_coordinator.enter_lobby()
-		joined_this_event = true
 	for action: String in SEMANTIC_ACTIONS:
 		if event.is_action_pressed(action):
 			_seats.record_action(device_id, action)
@@ -99,7 +146,11 @@ func _input(event: InputEvent) -> void:
 		_adjust_safe_margin(-1)
 	elif event.is_action_pressed("safe_area_increase"):
 		_adjust_safe_margin(1)
-	if event.is_action_pressed("ui_confirm") and not joined_this_event:
+	if (
+		event.is_action_pressed("ui_confirm")
+		and not claimed_seat_this_event
+		and _event_can_confirm(event, device_id)
+	):
 		_advance_player_flow()
 	elif event.is_action_pressed("pause_options") and _coordinator.lifecycle == "active_tale":
 		var pause_result: Dictionary = _coordinator.toggle_pause()
@@ -115,6 +166,7 @@ func _ensure_sandbox() -> void:
 	if is_instance_valid(_sandbox):
 		return
 	_sandbox = ExplorationSandbox.new()
+	_sandbox.z_index = 10
 	_sandbox.setup(_input_router, _coordinator if _coordinator.board_state != null else null)
 	add_child(_sandbox)
 	_sandbox.set_safe_margin(_safe_margin)
@@ -134,6 +186,8 @@ func _adjust_safe_margin(direction: int) -> void:
 	_safe_margin = clampi(_safe_margin + direction * 8, 0, 48)
 	_ui.set_safe_margin(_safe_margin)
 	_slice_view.set_safe_margin(_safe_margin)
+	if is_instance_valid(_help):
+		_help.set_safe_margin(_safe_margin)
 	if is_instance_valid(_sandbox):
 		_sandbox.set_safe_margin(_safe_margin)
 
@@ -182,6 +236,7 @@ func _on_seats_changed(seats: Array[Dictionary]) -> void:
 	else:
 		_destroy_sandbox()
 	_refresh_slice_view()
+	_observe_report()
 
 
 func _advance_player_flow() -> void:
@@ -203,7 +258,9 @@ func _advance_player_flow() -> void:
 			_coordinator.review_ending()
 		"ending":
 			if _coordinator.rematch().accepted:
+				_record_report_disposition("rematch")
 				_destroy_sandbox()
+				_start_report()
 	_refresh_slice_view()
 
 
@@ -216,12 +273,22 @@ func _cancel_player_flow(device_id: int) -> void:
 			if _coordinator.active_seats().is_empty():
 				_coordinator.cancel_setup()
 		"ending":
-			_coordinator.return_to_title()
+			if _coordinator.return_to_title().accepted:
+				_record_report_disposition("return_to_title")
+				_start_report()
 	_refresh_slice_view()
 
 
 func _perform_protected_reset() -> void:
+	if _active_report != null:
+		_finalize_report("reset")
+	else:
+		_record_report_disposition("reset")
 	_developer_lab = false
+	if is_instance_valid(_help):
+		_help.close_help()
+	if is_instance_valid(_input_router):
+		_input_router.set_presentation_input_blocked(false)
 	_ui.visible = false
 	_coordinator.protected_reset_to_title()
 	_reset_held = 0.0
@@ -230,10 +297,17 @@ func _perform_protected_reset() -> void:
 		_destroy_sandbox()
 	else:
 		_refresh_slice_view()
+	_start_report()
 
 
-func _on_lifecycle_changed(_state: Dictionary) -> void:
+func _on_lifecycle_changed(state: Dictionary) -> void:
+	var lifecycle: String = state.get("lifecycle", "")
+	if lifecycle == "ending":
+		_finalize_report("ending")
+	if lifecycle in ["terminal", "ending"] and is_instance_valid(_sandbox):
+		_destroy_sandbox()
 	_refresh_slice_view()
+	_observe_report()
 
 
 func _refresh_slice_view() -> void:
@@ -242,6 +316,16 @@ func _refresh_slice_view() -> void:
 	_slice_view.present(_coordinator.public_state(), _seats.get_seats(), _developer_lab)
 	if not is_instance_valid(_sandbox):
 		_ui.visible = _developer_lab
+	if is_instance_valid(_help):
+		(
+			_help
+			. update_context(
+				_coordinator.public_state(),
+				_seats.get_seats(),
+				_companion_status(),
+				_last_report != null and _last_report.is_finalized(),
+			)
+		)
 
 
 func _seat_supports_pawn(seat: Dictionary) -> bool:
@@ -253,3 +337,128 @@ func _seat_supports_pawn(seat: Dictionary) -> bool:
 			SeatManager.SeatState.DISCONNECTED,
 		]
 	)
+
+
+func _open_help() -> void:
+	_input_router.set_presentation_input_blocked(true)
+	if is_instance_valid(_sandbox):
+		_sandbox.process_mode = Node.PROCESS_MODE_DISABLED
+	(
+		_help
+		. open_help(
+			_coordinator.public_state(),
+			_seats.get_seats(),
+			_companion_status(),
+			_last_report != null and _last_report.is_finalized(),
+		)
+	)
+
+
+func _release_help_input_block() -> void:
+	if is_instance_valid(_input_router) and (not is_instance_valid(_help) or not _help.visible):
+		_input_router.set_presentation_input_blocked(false)
+		if is_instance_valid(_sandbox) and not _coordinator.paused:
+			_sandbox.process_mode = Node.PROCESS_MODE_INHERIT
+
+
+func _start_report() -> void:
+	_active_report = PlaytestReport.new()
+	_report_started_msec = Time.get_ticks_msec()
+	_last_observed_rejection = ""
+	(
+		_active_report
+		. begin(
+			_coordinator.public_state(),
+			_coordinator.seed,
+			Time.get_datetime_string_from_system(true, true),
+			0,
+		)
+	)
+	_observe_report()
+
+
+func _observe_report() -> void:
+	if _active_report == null or _active_report.is_finalized():
+		return
+	var state: Dictionary = _coordinator.public_state()
+	_active_report.observe(
+		state, _public_seat_observations(), _companion_status(), _report_elapsed()
+	)
+	var rejection: String = state.get("last_rejection", "")
+	if not rejection.is_empty() and rejection != _last_observed_rejection:
+		_active_report.record_rejection(rejection, _report_elapsed())
+	_last_observed_rejection = rejection
+
+
+func _finalize_report(completion_reason: String) -> void:
+	if _active_report == null or _active_report.is_finalized():
+		return
+	_observe_report()
+	var finalized: Dictionary = (
+		_active_report
+		. finalize(
+			completion_reason,
+			_coordinator.public_state(),
+			Time.get_datetime_string_from_system(true, true),
+			_report_elapsed(),
+			_coordinator.authority_digest(),
+			_coordinator.public_history_digest(),
+		)
+	)
+	if finalized.accepted:
+		_last_report = _active_report
+		_active_report = null
+
+
+func _record_report_disposition(disposition: String) -> void:
+	if _last_report == null or not _last_report.is_finalized():
+		return
+	_last_report.record_post_ending_disposition(disposition)
+
+
+func _on_report_export_requested() -> void:
+	if _last_report == null or not _last_report.is_finalized():
+		_help.present_export_result({"accepted": false, "reason": "report_not_finalized"})
+		return
+	var basename: String = "terror_turn_v0_1_1_%d" % int(Time.get_unix_time_from_system())
+	_help.present_export_result(_last_report.export_with(_report_writer, basename))
+
+
+func _companion_status() -> Dictionary:
+	var bridge: CompanionBridge = _coordinator.companion_bridge
+	return {
+		"available": bridge != null,
+		"room_open": bridge != null and bridge.room_open,
+		"connected_count": bridge.connected_client_count() if bridge != null else 0,
+	}
+
+
+func _public_seat_observations() -> Array[Dictionary]:
+	var observations: Array[Dictionary] = []
+	for seat: Dictionary in _seats.get_seats():
+		(
+			observations
+			. append(
+				{
+					"seat_number": seat.seat_number,
+					"state": seat.state,
+					"input_kind":
+					(
+						"keyboard"
+						if seat.device_id == SeatManager.KEYBOARD_DEVICE_ID
+						else "controller"
+					),
+				}
+			)
+		)
+	return observations
+
+
+func _report_elapsed() -> int:
+	return maxi((Time.get_ticks_msec() - _report_started_msec) / 1000, 0)
+
+
+func _event_can_confirm(event: InputEvent, device_id: int) -> bool:
+	if event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_SPACE:
+		return true
+	return _seats.find_seat_by_device(device_id) >= 0
