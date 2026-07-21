@@ -25,8 +25,14 @@ Tester notes are optional local input. Facilitators must not enter another playe
 
 ## Storage and sharing
 
-Production export is fixed to `user://playtest_exports`. The UI shows only relative user-data paths, not the host username or absolute path. Nothing is uploaded automatically. A facilitator chooses whether to inspect or share the two files after the session. Automated fixtures contain synthetic values only.
+Production export remains fixed to `user://playtest_exports`. The UI and bundle documents resolve it with user-relative guidance, never a concrete host username or absolute build path:
+
+- Windows: `%APPDATA%\Godot\app_userdata\Terror Turn\playtest_exports`
+- Linux: `$XDG_DATA_HOME/godot/app_userdata/Terror Turn/playtest_exports`
+- Linux default when `XDG_DATA_HOME` is unset: `~/.local/share/godot/app_userdata/Terror Turn/playtest_exports`
+
+`Terror Turn` is the exact current `application/config/name` project folder and remains provisional. Nothing is uploaded automatically. A facilitator chooses whether to inspect or share the two files after the session. Automated fixtures contain synthetic values only.
 
 ## Build manifest separation
 
-The v0.1.2 portable `build_manifest.json` is a separate non-authoritative build record, not a playtest report. Its exact schema contains only release/source/target identity, reviewed engine/scenario constants, build-time classification, and bundle file sizes and SHA-256 values. It cannot contain report payloads or filenames, usernames, machine names, repository paths, tokens, room secrets, IP addresses, or device identities. The in-game support page similarly shows only bounded build identity and a generic user-data report location. Neither manifest nor support presentation mutates or serializes gameplay authority.
+The v0.1.2 portable `build_manifest.json` is a separate non-authoritative build record, not a playtest report. Its exact schema contains only release/source/target identity, reviewed engine/scenario constants, build-time classification, and bundle file sizes and SHA-256 values. It cannot contain report payloads or filenames, usernames, machine names, repository paths, tokens, room secrets, IP addresses, or device identities. The in-game support page similarly shows only bounded build identity and the user-relative platform location above. Neither manifest nor support presentation mutates or serializes gameplay authority.

@@ -80,10 +80,23 @@ jobs:
           set -euo pipefail
           bundle=builds/bundles/lantern-house-internal-playtest-v0.1.2-linux-x86_64
           "$bundle/lantern_house_internal.x86_64" --headless --audio-driver Dummy -- --portable-build-smoke | tee builds/linux-direct-smoke.txt
-          grep -F 'PORTABLE_BUILD_SMOKE:' builds/linux-direct-smoke.txt
-          grep -F '"accepted":true' builds/linux-direct-smoke.txt
           "$bundle/launch.sh" --headless --audio-driver Dummy -- --portable-build-smoke | tee builds/linux-launcher-smoke.txt
-          grep -F '"accepted":true' builds/linux-launcher-smoke.txt
+          for smoke in builds/linux-direct-smoke.txt builds/linux-launcher-smoke.txt; do
+            grep -F 'PORTABLE_BUILD_SMOKE:' "$smoke"
+            grep -F '"accepted":true' "$smoke"
+            grep -F "\"source_commit\":\"$SOURCE_SHA\"" "$smoke"
+            grep -F '"platform":"linux"' "$smoke"
+            grep -F '"architecture":"x86_64"' "$smoke"
+            grep -F '"classification":"internal_playtest"' "$smoke"
+            grep -F '"classification_rendered":true' "$smoke"
+            grep -F '"report_location_guidance":true' "$smoke"
+            grep -F '"authority_unchanged":true' "$smoke"
+            grep -F '"authority_digest_unchanged":true' "$smoke"
+            grep -F '"public_history_digest_unchanged":true' "$smoke"
+            grep -F '"report_unchanged":true' "$smoke"
+            grep -F '"rng_backed_state_unchanged":true' "$smoke"
+            grep -F '"companion_projection_unchanged":true' "$smoke"
+          done
       - name: Prove launcher missing-file failures
         shell: bash
         run: |

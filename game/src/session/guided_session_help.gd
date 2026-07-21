@@ -197,8 +197,10 @@ static func page_content(
 					+ "identities, device IDs, network data, or machine details.\n\n"
 					+ (
 						(
-							"Press A / Enter to export JSON and Markdown under the local user-data "
-							+ "playtest_exports folder."
+							"Press A / Enter to export JSON and Markdown locally.\n"
+							+ InternalBuildIdentity.report_location_text(
+								InternalBuildIdentity.read_identity().platform
+							)
 						)
 						if report_available
 						else "Finish or leave the tale before exporting its finalized report."

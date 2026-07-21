@@ -56,6 +56,16 @@ NETWORK_TOKENS = (
     "powershell",
     "start-process",
 )
+REPORT_LOCATION_TOKENS = (
+    r"%APPDATA%\Godot\app_userdata\Terror Turn\playtest_exports",
+    "$XDG_DATA_HOME/godot/app_userdata/Terror Turn/playtest_exports",
+    "~/.local/share/godot/app_userdata/Terror Turn/playtest_exports",
+)
+CONCRETE_PRIVATE_PATH_PATTERNS = (
+    re.compile(r"[A-Za-z]:[\\/]Users[\\/][^<%\\/\s]+[\\/]", re.IGNORECASE),
+    re.compile(r"/(?:home|Users)/[^<$/~\s]+/"),
+    re.compile(r"Documents[\\/]Codex[\\/]Tales-of-Terror", re.IGNORECASE),
+)
 MANUAL_IDS = (
     "one_physical_controller",
     "multiple_physical_controllers",
@@ -418,6 +428,47 @@ def validate_repository() -> None:
                 raise BundleError(f"{platform} launcher contains forbidden token: {token.strip()}")
         if target["native_executable"].lower() not in launcher:
             raise BundleError(f"{platform} launcher does not use the expected relative executable")
+    for destination in ("START_HERE.md", "FACILITATOR_GUIDE.md", "PRIVACY_AND_LIMITATIONS.md"):
+        source = ROOT / spec["common_files"][destination]
+        text = source.read_text(encoding="utf-8")
+        for token in REPORT_LOCATION_TOKENS:
+            if token not in text:
+                raise BundleError(f"{destination} lacks actionable report location: {token}")
+        for pattern in CONCRETE_PRIVATE_PATH_PATTERNS:
+            if pattern.search(text):
+                raise BundleError(f"{destination} contains a concrete private path")
+    project = (ROOT / "game/project.godot").read_text(encoding="utf-8")
+    if 'config/name="Terror Turn"' not in project:
+        raise BundleError("report guidance no longer matches the exact Godot project folder")
+    identity_source = (ROOT / "game/src/build/internal_build_identity.gd").read_text(
+        encoding="utf-8"
+    )
+    required_identity_fragments = (
+        'const RELEASE: String = "v0.1.2"',
+        '"INTERNAL PLAYTEST"',
+        '"SOURCE CHECKOUT"',
+        '"INVALID EXPORTED IDENTITY"',
+        'value.platform not in ["windows", "linux"]',
+        'value.architecture != "x86_64"',
+        'value.classification == "internal_playtest"',
+        'OS.has_feature("editor")',
+        "WINDOWS_REPORT_LOCATION",
+        "LINUX_REPORT_LOCATION",
+        "LINUX_REPORT_FALLBACK",
+    )
+    for fragment in required_identity_fragments:
+        if fragment not in identity_source:
+            raise BundleError(f"internal identity policy fragment missing: {fragment}")
+    workflow = (ROOT / ".github/workflows/portable-builds.yml").read_text(encoding="utf-8")
+    for fragment in (
+        r'grep -F "\"source_commit\":\"$SOURCE_SHA\""',
+        '"platform":"linux"',
+        '"classification":"internal_playtest"',
+        '"rng_backed_state_unchanged":true',
+        '"companion_projection_unchanged":true',
+    ):
+        if fragment not in workflow:
+            raise BundleError(f"portable smoke exact-output assertion missing: {fragment}")
     validate_manual_record()
 
 

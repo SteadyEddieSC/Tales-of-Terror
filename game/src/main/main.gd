@@ -471,24 +471,35 @@ func _event_can_confirm(event: InputEvent, device_id: int) -> bool:
 
 
 func _run_portable_build_smoke() -> void:
-	var before: String = JSON.stringify(_coordinator.to_snapshot())
+	var snapshot_before: Dictionary = _coordinator.to_snapshot()
+	var before: String = JSON.stringify(snapshot_before)
 	var authority_before: String = _coordinator.authority_digest()
 	var history_before: String = _coordinator.public_history_digest()
 	var report_before: String = _active_report.to_json()
 	var companion_before: String = JSON.stringify(_companion_status())
+	var rng_before: String = JSON.stringify(_rng_backed_state(snapshot_before))
 	_open_help()
 	for _page: int in 3:
 		_help.handle_action("ui_navigate_right")
 	var support: String = _help.page_text()
 	var identity: Dictionary = InternalBuildIdentity.read_identity()
+	var identity_valid: bool = InternalBuildIdentity.validate_identity(identity, false).accepted
+	var report_guidance: String = InternalBuildIdentity.report_location_text(identity.platform)
 	var passed: bool = (
 		_help.visible
 		and _help.page_index() == 3
+		and identity_valid
+		and identity.classification == "internal_playtest"
+		and "INTERNAL PLAYTEST (internal_playtest)" in support
 		and str(identity.release) in support
-		and InternalBuildIdentity.REPORT_LOCATION in support
+		and str(identity.source_commit).substr(0, 12) in support
+		and report_guidance in support
 		and before == JSON.stringify(_coordinator.to_snapshot())
+		and authority_before == _coordinator.authority_digest()
+		and history_before == _coordinator.public_history_digest()
 		and report_before == _active_report.to_json()
 		and companion_before == JSON.stringify(_companion_status())
+		and rng_before == JSON.stringify(_rng_backed_state(_coordinator.to_snapshot()))
 	)
 	print(
 		"PORTABLE_BUILD_SMOKE:",
@@ -501,14 +512,19 @@ func _run_portable_build_smoke() -> void:
 					"release": identity.release,
 					"source_commit": identity.source_commit,
 					"platform": identity.platform,
+					"architecture": identity.architecture,
+					"classification": identity.classification,
 					"help_page": _help.page_index() + 1,
-					"report_location_guidance": true,
+					"classification_rendered": "INTERNAL PLAYTEST (internal_playtest)" in support,
+					"report_location_guidance": report_guidance in support,
 					"authority_unchanged": before == JSON.stringify(_coordinator.to_snapshot()),
 					"authority_digest_unchanged":
 					authority_before == _coordinator.authority_digest(),
 					"public_history_digest_unchanged":
 					history_before == _coordinator.public_history_digest(),
 					"report_unchanged": report_before == _active_report.to_json(),
+					"rng_backed_state_unchanged":
+					rng_before == JSON.stringify(_rng_backed_state(_coordinator.to_snapshot())),
 					"companion_projection_unchanged":
 					companion_before == JSON.stringify(_companion_status()),
 				}
@@ -516,3 +532,14 @@ func _run_portable_build_smoke() -> void:
 		)
 	)
 	get_tree().quit(0 if passed else 1)
+
+
+func _rng_backed_state(snapshot: Dictionary) -> Dictionary:
+	var rules: Dictionary = snapshot.get("rules", {})
+	var director: Dictionary = snapshot.get("director", {})
+	var roles: Dictionary = snapshot.get("roles", {})
+	return {
+		"rules": rules.get("rng", {}),
+		"director": director.get("rng", {}),
+		"roles": roles.get("rng", {}),
+	}

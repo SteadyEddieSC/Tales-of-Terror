@@ -5,11 +5,13 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import portable_bundle as portable
 
@@ -49,6 +51,52 @@ class PortableBundleTests(unittest.TestCase):
                 first_manifest["build_timestamp_utc"], second_manifest["build_timestamp_utc"]
             )
             self.assertNotEqual(portable._sha256(first_archive), portable._sha256(second_archive))
+
+    def test_generated_identity_is_exact_internal_artifact_schema(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            identity_path = Path(temporary) / "build_identity.generated.json"
+            with mock.patch.object(portable, "BUILD_IDENTITY_PATH", identity_path):
+                for platform in ("windows", "linux"):
+                    portable.write_build_identity(platform, SOURCE_COMMIT)
+                    value = json.loads(identity_path.read_text(encoding="utf-8"))
+                    self.assertEqual(
+                        value,
+                        {
+                            "schema_version": 1,
+                            "release": "v0.1.2",
+                            "source_commit": SOURCE_COMMIT,
+                            "platform": platform,
+                            "architecture": "x86_64",
+                            "classification": "internal_playtest",
+                        },
+                    )
+                for invalid_source in ("a" * 39, "A" * 40, "g" * 40):
+                    with self.assertRaises(portable.BundleError):
+                        portable.write_build_identity("windows", invalid_source)
+
+    def test_bundle_documents_have_actionable_private_report_guidance(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            binary = root / "fixture.bin"
+            binary.write_bytes(b"fixture\n")
+            bundle, _, _ = portable.assemble(
+                "windows", SOURCE_COMMIT, None, root / "output", binary
+            )
+            document_names = (
+                "START_HERE.md",
+                "FACILITATOR_GUIDE.md",
+                "PRIVACY_AND_LIMITATIONS.md",
+            )
+            for name in document_names:
+                text = (bundle / name).read_text(encoding="utf-8")
+                for location in portable.REPORT_LOCATION_TOKENS:
+                    self.assertIn(location, text, name)
+                self.assertIn("provisional", text.lower(), name)
+                for pattern in portable.CONCRETE_PRIVATE_PATH_PATTERNS:
+                    self.assertIsNone(pattern.search(text), name)
+                self.assertIsNone(
+                    re.search(r"(?:room_secret|token|device_id|ip_address)\s*=", text), name
+                )
 
     def test_versioned_output_never_overwrites(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

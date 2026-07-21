@@ -15,6 +15,12 @@ Connect controllers before starting. Press A to claim a stable seat; an owned co
 
 ## Reports and facilitation
 
-At the ending, open Help, move to the Playtest Report page, and press A/Enter. JSON and Markdown are stored only in Godot's local user-data `playtest_exports` folder. Open `FACILITATOR_GUIDE.md`, `POST_SESSION_QUESTIONNAIRE.md`, and `PRIVACY_AND_LIMITATIONS.md` before observing a session.
+At the ending, open Help, move to the Playtest Report page, and press A/Enter. JSON and Markdown are stored only in the exported build's local Godot user-data folder:
 
-For launch/runtime support, open Help → Build & Support and report the visible release, short build ID, platform, and exact error. Do not send report contents, room secrets, player identities, network details, or device information.
+- Windows: `%APPDATA%\Godot\app_userdata\Terror Turn\playtest_exports`
+- Linux: `$XDG_DATA_HOME/godot/app_userdata/Terror Turn/playtest_exports`
+- Linux default when `XDG_DATA_HOME` is unset: `~/.local/share/godot/app_userdata/Terror Turn/playtest_exports`
+
+`Terror Turn` is the exact current Godot project-folder name and remains a provisional working title. These user-relative forms do not reveal a tester or build-host username. Open `FACILITATOR_GUIDE.md`, `POST_SESSION_QUESTIONNAIRE.md`, and `PRIVACY_AND_LIMITATIONS.md` before observing a session.
+
+For launch/runtime support, open Help -> Build & Support and report the visible release, short build ID, platform, architecture, build classification, and exact error. Do not send report contents, room secrets, player identities, network details, or device information.
