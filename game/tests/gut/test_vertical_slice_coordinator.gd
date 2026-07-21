@@ -3,6 +3,17 @@ extends GutTest
 const MAIN_SCRIPT: Script = preload("res://src/main/main.gd")
 
 
+func test_catalog_default_and_unknown_selection_are_atomic() -> void:
+	var coordinator := VerticalSliceCoordinator.new()
+	assert_eq(coordinator._selection.selected_tale_id(), TalePackage.LANTERN_HOUSE_ID)
+	assert_eq(coordinator._selection.catalog_digest, TaleCatalog.PRODUCTION_DIGEST)
+	var snapshot: Dictionary = coordinator.to_snapshot()
+	var entry: Dictionary = coordinator._selection.entry.duplicate(true)
+	assert_false(coordinator.select_tale("synthetic_unknown_tale").accepted)
+	assert_eq(coordinator._selection.entry, entry)
+	assert_eq(coordinator.to_snapshot(), snapshot)
+
+
 func test_coordinator_rejects_out_of_order_lifecycle_without_mutation() -> void:
 	var coordinator := VerticalSliceCoordinator.new()
 	var before: Dictionary = coordinator.to_snapshot()
@@ -34,9 +45,7 @@ func test_undeclared_existing_mode_is_rejected_atomically() -> void:
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
 	var before: Dictionary = coordinator.to_snapshot()
-	assert_false(
-		coordinator.initialize_session(coordinator.TALE_PACKAGE_PATH, 4706, "hunted").accepted
-	)
+	assert_false(coordinator.initialize_session(4706, "hunted").accepted)
 	assert_eq(coordinator.to_snapshot(), before)
 
 
@@ -162,7 +171,7 @@ func test_resumable_prompt_requires_exact_authored_content() -> void:
 
 func test_manifest_v1_rejects_valid_but_wrong_operation_data() -> void:
 	var manifest: Dictionary = VerticalSliceManifest.load_file(
-		VerticalSliceCoordinator.MANIFEST_PATH
+		"res://data/scenarios/lantern_house_vertical_slice_v1.json"
 	)
 	manifest.stages[0].operations[0].event_id = "gallery_council"
 	var failures: PackedStringArray = (

@@ -6,7 +6,7 @@ const SCHEMA_VERSION: int = 1
 const EXACT_KEYS: PackedStringArray = [
 	"schema_version", "release", "source_commit", "platform", "architecture", "classification"
 ]
-const RELEASE: String = "v0.1.4"
+const RELEASE: String = "v0.1.5"
 const PROJECT_FOLDER: String = "Terror Turn"
 const REPORT_LOCATION: String = "user://playtest_exports"
 const WINDOWS_REPORT_LOCATION: String = (

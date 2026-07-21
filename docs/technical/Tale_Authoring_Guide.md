@@ -1,6 +1,6 @@
 # Tale Authoring Guide
 
-This guide covers the reviewed repository-authored Tale schema v1. It is not a public modding SDK and does not authorize downloaded packages, arbitrary scripts, callbacks, remote content, or untrusted execution.
+This guide covers the reviewed repository-authored Tale package and catalog schema v1 contracts. It is not a public modding SDK and does not authorize downloaded packages, arbitrary scripts, callbacks, remote content, or untrusted execution.
 
 ## Layout and versioning
 
@@ -18,7 +18,7 @@ Lantern House declares exactly 1–8 stable seats. Hidden Betrayer remains the d
 
 ## Privacy, text, and ordering
 
-Classify governed values as `public`, `controlled_reveal_private`, `seat_private`, or `faction_private`. Every governed localization or narration key must resolve; extra catalog records are rejected as orphans. The catalog mirrors accepted player-visible text while the existing manifest remains runtime presentation input in v0.1.4.
+Classify governed values as `public`, `controlled_reveal_private`, `seat_private`, or `faction_private`. Every governed localization or narration key must resolve; extra localization records are rejected as orphans. The v0.1.5 repository Tale catalog repeats the exact governed display, briefing, and objective references needed for pre-session presentation and must match the package.
 
 Sort inventory IDs, source-ledger paths, privacy keys, compatibility lists, and graph edges. Preserve explicit authored order only where order is semantic, such as `stage_order`. The validator canonicalizes object keys and preserves arrays.
 
@@ -28,14 +28,18 @@ Run:
 python tools/tale_package.py validate
 python tools/tale_package.py identity
 python tools/test_tale_package.py
+python tools/tale_catalog.py validate
+python tools/tale_catalog.py identity
+python tools/test_tale_catalog.py
 Godot_v4.7.1-stable --headless --path game --script res://tests/tale_package_test.gd
+Godot_v4.7.1-stable --headless --path game --script res://tests/tale_catalog_test.gd
 Godot_v4.7.1-stable --headless --path game --script res://tests/tale_replay_equivalence_test.gd
 ```
 
 Diagnostics contain `code`, JSON/source `path`, and a correction-oriented message. Codes cover unsupported schema, missing fields, duplicates, unresolved references/text, invalid or unreachable transitions, player counts, social compatibility, fallbacks, orphans, privacy, unsafe paths/URLs/secrets/generated references, ordering, and identity.
 
-The synthetic fixture at `game/tests/fixtures/tale_package_invalid_cases_v1.json` is test input only and is explicitly not shipped Tale content.
+Synthetic package/catalog/provider fixtures below `game/tests/` are test input only, explicitly not shipped Tale content, and excluded by both portable export presets.
 
 ## Future Tales
 
-Open a bounded design issue describing vocabulary reuse, new authority needs, stable IDs, source provenance, privacy, seat/mode/fallback policy, replay evidence, and semantic changes. Do not copy Lantern House or add literal content-ID branches to generic runtime code.
+Open a separately reviewed design/content issue describing vocabulary reuse, new authority needs, stable IDs, source provenance, privacy, seat/mode/fallback policy, replay evidence, and semantic changes. After that review, add a validated package, a static provider registration, governed display references, sorted catalog/source records, a new catalog digest, and full compatibility evidence. Editing the catalog alone never authorizes a future Tale. Do not copy Lantern House or add literal content-ID branches to generic runtime code.

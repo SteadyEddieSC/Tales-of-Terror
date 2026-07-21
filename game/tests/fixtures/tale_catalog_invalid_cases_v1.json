@@ -1,0 +1,136 @@
+{
+  "fixture_kind": "synthetic_invalid_tale_catalog_cases_not_shipped_content",
+  "cases": [
+    {
+      "id": "unsupported_kind",
+      "expected_code": "unsupported_catalog_schema",
+      "mutation": {"operation": "set", "path": "/catalog_kind", "value": "remote_catalog"}
+    },
+    {
+      "id": "unsupported_schema",
+      "expected_code": "unsupported_catalog_schema",
+      "mutation": {"operation": "set", "path": "/schema_version", "value": 2}
+    },
+    {
+      "id": "missing_required_field",
+      "expected_code": "missing_required_field",
+      "mutation": {"operation": "delete", "path": "/compatibility"}
+    },
+    {
+      "id": "unknown_field",
+      "expected_code": "unsupported_catalog_schema",
+      "mutation": {"operation": "set", "path": "/marketing_copy", "value": "not allowed"}
+    },
+    {
+      "id": "duplicate_tale_id",
+      "expected_code": "duplicate_tale_id",
+      "mutation": {"operation": "append_copy", "path": "/entries", "source_path": "/entries/0"}
+    },
+    {
+      "id": "invalid_default",
+      "expected_code": "invalid_default_tale",
+      "mutation": {"operation": "set", "path": "/default_tale_id", "value": "synthetic_missing_tale"}
+    },
+    {
+      "id": "unstable_entry_order",
+      "expected_code": "unstable_catalog_ordering",
+      "mutation": {
+        "operation": "append_copy_with_set",
+        "path": "/entries",
+        "source_path": "/entries/0",
+        "set_path": "/tale_id",
+        "value": "aaa_synthetic_fixture"
+      }
+    },
+    {
+      "id": "absolute_private_path",
+      "expected_code": "prohibited_catalog_path",
+      "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "C:\\Users\\Private\\tale.json"}
+    },
+    {
+      "id": "test_path",
+      "expected_code": "prohibited_catalog_path",
+      "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "res://tests/fixtures/not_shipped.json"}
+    },
+    {
+      "id": "network_url",
+      "expected_code": "network_url",
+      "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "https://example.invalid/tale.json"}
+    },
+    {
+      "id": "unresolved_path",
+      "expected_code": "unresolved_catalog_reference",
+      "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "res://data/tales/missing.json"}
+    },
+    {
+      "id": "package_kind_mismatch",
+      "expected_code": "package_kind_mismatch",
+      "mutation": {"operation": "set", "path": "/entries/0/package_kind", "value": "story"}
+    },
+    {
+      "id": "package_schema_mismatch",
+      "expected_code": "package_schema_mismatch",
+      "mutation": {"operation": "set", "path": "/entries/0/package_schema_version", "value": 2}
+    },
+    {
+      "id": "package_version_mismatch",
+      "expected_code": "package_version_mismatch",
+      "mutation": {"operation": "set", "path": "/entries/0/package_version", "value": 2}
+    },
+    {
+      "id": "package_identity_mismatch",
+      "expected_code": "package_identity_mismatch",
+      "mutation": {"operation": "set", "path": "/entries/0/package_sha256", "value": "0000000000000000000000000000000000000000000000000000000000000000"}
+    },
+    {
+      "id": "entry_tale_id_mismatch",
+      "expected_code": "entry_tale_id_mismatch",
+      "mutation": {"operation": "set", "path": "/entries/0/tale_id", "value": "synthetic_fixture_tale"}
+    },
+    {
+      "id": "unresolved_display_key",
+      "expected_code": "unresolved_catalog_display",
+      "mutation": {"operation": "set", "path": "/entries/0/display/display_key", "value": "tale.synthetic.missing"}
+    },
+    {
+      "id": "unknown_provider",
+      "expected_code": "unknown_provider",
+      "mutation": {"operation": "set", "path": "/entries/0/provider/provider_id", "value": "synthetic_unknown_provider"}
+    },
+    {
+      "id": "provider_reference_mismatch",
+      "expected_code": "provider_reference_mismatch",
+      "mutation": {"operation": "set", "path": "/entries/0/provider/board_reference", "value": "synthetic_board"}
+    },
+    {
+      "id": "duplicate_source_role",
+      "expected_code": "duplicate_source_role",
+      "mutation": {"operation": "append_copy", "path": "/source_ledger", "source_path": "/source_ledger/0"}
+    },
+    {
+      "id": "incomplete_source_ledger",
+      "expected_code": "incomplete_source_ledger",
+      "mutation": {"operation": "delete", "path": "/source_ledger/2"}
+    },
+    {
+      "id": "secret_field",
+      "expected_code": "secret",
+      "mutation": {"operation": "set", "path": "/access_token", "value": "synthetic-secret"}
+    },
+    {
+      "id": "runtime_script_field",
+      "expected_code": "prohibited_runtime_reference",
+      "mutation": {"operation": "set", "path": "/entries/0/script_path", "value": "res://synthetic.gd"}
+    },
+    {
+      "id": "unstable_tale_identity",
+      "expected_code": "unstable_catalog_identity",
+      "mutation": {"operation": "set", "path": "/entries/0/tale_id", "value": "SyntheticTale"}
+    },
+    {
+      "id": "unstable_identity_policy",
+      "expected_code": "unstable_catalog_identity",
+      "mutation": {"operation": "set", "path": "/identity_policy/canonicalization", "value": "implementation_defined"}
+    }
+  ]
+}

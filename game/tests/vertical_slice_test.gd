@@ -1,7 +1,6 @@
 extends SceneTree
 
 const MANIFEST_PATH: String = "res://data/scenarios/lantern_house_vertical_slice_v1.json"
-const TALE_PACKAGE_PATH: String = "res://data/tales/lantern_house/tale_package_v1.json"
 const MAIN_SCRIPT: Script = preload("res://src/main/main.gd")
 
 var _failures: int = 0
@@ -72,14 +71,14 @@ func _test_lifecycle_and_atomic_initialization() -> void:
 	_expect(coordinator.confirm_roster().accepted, "confirms a non-empty roster")
 	var before_invalid: Dictionary = coordinator.to_snapshot()
 	_expect(
-		not coordinator.initialize_session("res://missing_manifest.json").accepted,
-		"rejects a missing manifest",
+		not coordinator.select_tale("synthetic_missing_tale").accepted,
+		"rejects an unknown pre-session Tale",
 	)
 	_expect(
 		coordinator.to_snapshot() == before_invalid,
 		"keeps failed initialization atomic",
 	)
-	var initialized: Dictionary = coordinator.initialize_session(TALE_PACKAGE_PATH, 4706)
+	var initialized: Dictionary = coordinator.initialize_session(4706)
 	if not initialized.accepted:
 		print("INITIALIZATION FAILURE: ", initialized)
 	_expect(initialized.accepted, "builds authorities")
@@ -205,7 +204,7 @@ func _test_manifest_reference_and_policy_negatives() -> void:
 	coordinator.confirm_roster()
 	var before: Dictionary = coordinator.to_snapshot()
 	_expect(
-		not coordinator.initialize_session(TALE_PACKAGE_PATH, 4706, "hunted").accepted,
+		not coordinator.initialize_session(4706, "hunted").accepted,
 		"rejects an existing but undeclared social mode",
 	)
 	_expect(
@@ -779,14 +778,17 @@ func _test_atomic_rematch_and_restore_room_cleanup() -> void:
 	old_transport.send_intent("claimed_client", "private_reveal_ack", "cached_ack", {}, 1)
 	old_transport.connect_client("pending_client")
 	var before_failed: Dictionary = coordinator.to_snapshot()
+	var accepted_entry: Dictionary = coordinator._selection.entry.duplicate(true)
+	coordinator._selection.entry.package_sha256 = "0".repeat(64)
 	_expect(
-		not coordinator.rematch_with_manifest("res://missing_rematch_manifest.json").accepted,
+		not coordinator.rematch().accepted,
 		"rejects a failed rematch candidate",
 	)
 	_expect(
 		coordinator.to_snapshot() == before_failed and old_bridge.room_open,
 		"leaves the ending session and open room untouched after failed rematch",
 	)
+	coordinator._selection.entry = accepted_entry
 	var retained_seats: Dictionary = coordinator.seat_manager.to_snapshot()
 	_expect(coordinator.rematch().accepted, "commits a fully validated rematch candidate")
 	_expect(not old_bridge.room_open, "closes the former companion room before replacement")
@@ -933,7 +935,7 @@ func _initialized_coordinator(seat_count: int, seed: int) -> VerticalSliceCoordi
 	var coordinator := _coordinator_with_seats(seat_count)
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
-	coordinator.initialize_session(TALE_PACKAGE_PATH, seed)
+	coordinator.initialize_session(seed)
 	coordinator.begin_tale()
 	return coordinator
 

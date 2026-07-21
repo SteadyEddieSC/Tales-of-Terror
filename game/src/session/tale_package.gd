@@ -16,7 +16,11 @@ static func load_validated(
 	rules: RulesContent,
 	director: DirectorContent,
 	social: SocialContent,
+	expected: Dictionary = {},
 ) -> Dictionary:
+	var expected_identity: Dictionary = expected.duplicate(true)
+	if expected_identity.is_empty():
+		expected_identity = lantern_house_identity()
 	if not FileAccess.file_exists(path):
 		return _rejected("unresolved_package", path, "Tale package file does not exist")
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -25,17 +29,17 @@ static func load_validated(
 		return _rejected("unsupported_schema", path, "Tale package root must be an object")
 	var package: Dictionary = package_value
 	var digest: String = package_digest(package)
-	if digest != LANTERN_HOUSE_DIGEST:
+	if digest != expected_identity.get("sha256", ""):
 		return _rejected(
 			"unsupported_package_identity",
 			path,
-			"package SHA-256 is not the reviewed Lantern House identity",
+			"package SHA-256 does not match the reviewed catalog identity",
 		)
 	if (
-		package.get("package_kind") != PACKAGE_KIND
-		or package.get("schema_version") != SCHEMA_VERSION
-		or package.get("tale_id") != LANTERN_HOUSE_ID
-		or package.get("package_version") != LANTERN_HOUSE_VERSION
+		package.get("package_kind") != expected_identity.get("package_kind")
+		or package.get("schema_version") != expected_identity.get("schema_version")
+		or package.get("tale_id") != expected_identity.get("tale_id")
+		or package.get("package_version") != expected_identity.get("package_version")
 	):
 		return _rejected(
 			"unsupported_schema", path, "package kind, schema, Tale ID, or version is unsupported"
@@ -63,6 +67,12 @@ static func load_validated(
 			"localization catalog is missing or differs from the reviewed source",
 		)
 	var manifest: Dictionary = VerticalSliceManifest.load_file(manifest_path)
+	if package.get("tale_id") != manifest.get("scenario_id"):
+		return _rejected(
+			"unresolved_reference",
+			"%s#/tale_id" % path,
+			"package Tale ID does not match the scenario manifest",
+		)
 	var manifest_failures: PackedStringArray = VerticalSliceManifest.validate(
 		manifest, board, rules, director, social
 	)
@@ -90,6 +100,16 @@ static func load_validated(
 		"inventory": actual_inventory,
 		"source_ledger": package.get("source_ledger", []).duplicate(true),
 		"compatibility": package.get("compatibility", {}).duplicate(true),
+	}
+
+
+static func lantern_house_identity() -> Dictionary:
+	return {
+		"package_kind": PACKAGE_KIND,
+		"schema_version": SCHEMA_VERSION,
+		"tale_id": LANTERN_HOUSE_ID,
+		"package_version": LANTERN_HOUSE_VERSION,
+		"sha256": LANTERN_HOUSE_DIGEST,
 	}
 
 

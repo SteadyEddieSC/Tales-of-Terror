@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble and validate bounded v0.1.4 internal playtest bundles."""
+"""Assemble and validate bounded v0.1.5 internal playtest bundles."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 import tale_package
+import tale_catalog
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,6 +35,7 @@ MANIFEST_KEYS = {
     "renderer",
     "logical_viewport",
     "scenario",
+    "tale_catalog",
     "tale_package",
     "report_schema_version",
     "build_timestamp_utc",
@@ -140,7 +142,7 @@ def _spec() -> dict[str, Any]:
         "forbidden_extensions",
     }:
         raise BundleError("bundle specification keys changed")
-    if spec["schema_version"] != 1 or spec["release"] != "v0.1.4":
+    if spec["schema_version"] != 1 or spec["release"] != "v0.1.5":
         raise BundleError("unsupported bundle specification")
     if set(spec["platforms"]) != {"windows", "linux"}:
         raise BundleError("bundle platforms must be exactly Windows and Linux")
@@ -177,6 +179,20 @@ def _tale_package_identity() -> dict[str, Any]:
         "id": package["tale_id"],
         "version": package["package_version"],
         "sha256": tale_package.package_digest(package),
+    }
+
+
+def _tale_catalog_identity() -> dict[str, Any]:
+    catalog, diagnostics = tale_catalog.validate_file(tale_catalog.DEFAULT_CATALOG)
+    if diagnostics:
+        raise BundleError(f"Tale catalog is invalid: {diagnostics[0]}")
+    return {
+        "kind": catalog["catalog_kind"],
+        "schema_version": catalog["schema_version"],
+        "version": catalog["catalog_version"],
+        "default_tale_id": catalog["default_tale_id"],
+        "entry_count": len(catalog["entries"]),
+        "sha256": tale_catalog.catalog_digest(catalog),
     }
 
 
@@ -252,6 +268,7 @@ def assemble(
         "renderer": "gl_compatibility",
         "logical_viewport": {"width": 960, "height": 540},
         "scenario": {"id": "lantern_house_vertical_slice", "version": 1},
+        "tale_catalog": _tale_catalog_identity(),
         "tale_package": _tale_package_identity(),
         "report_schema_version": 2,
         "build_timestamp_utc": _iso_timestamp(timestamp),
@@ -291,7 +308,7 @@ def assemble(
 def validate_manifest(manifest: dict[str, Any], bundle_dir: Path) -> None:
     if set(manifest) != MANIFEST_KEYS:
         raise BundleError("build manifest exact root keys changed")
-    if manifest["schema_version"] != 1 or manifest["release"] != "v0.1.4":
+    if manifest["schema_version"] != 1 or manifest["release"] != "v0.1.5":
         raise BundleError("unsupported build manifest version")
     _validate_source_commit(manifest["source_commit"])
     if manifest["platform"] not in {"windows", "linux"}:
@@ -304,6 +321,8 @@ def validate_manifest(manifest: dict[str, Any], bundle_dir: Path) -> None:
         raise BundleError("manifest logical viewport changed")
     if manifest["scenario"] != {"id": "lantern_house_vertical_slice", "version": 1}:
         raise BundleError("manifest scenario changed")
+    if manifest["tale_catalog"] != _tale_catalog_identity():
+        raise BundleError("manifest Tale catalog identity changed")
     if manifest["tale_package"] != _tale_package_identity():
         raise BundleError("manifest Tale package identity changed")
     if manifest["report_schema_version"] != 2:
@@ -438,7 +457,7 @@ def validate_repository() -> None:
         encoding="utf-8"
     )
     required_identity_fragments = (
-        'const RELEASE: String = "v0.1.4"',
+        'const RELEASE: String = "v0.1.5"',
         '"INTERNAL PLAYTEST"',
         '"SOURCE CHECKOUT"',
         '"INVALID EXPORTED IDENTITY"',
@@ -460,6 +479,7 @@ def validate_repository() -> None:
         '"classification":"internal_playtest"',
         '"rng_backed_state_unchanged":true',
         '"companion_projection_unchanged":true',
+        '"catalog_digest":"2b478fd0d11fa075c2050409193aa06e6b9ca4dcf6efd4e4c550a9f3a5ff9db6"',
     ):
         if fragment not in workflow:
             raise BundleError(f"portable smoke exact-output assertion missing: {fragment}")

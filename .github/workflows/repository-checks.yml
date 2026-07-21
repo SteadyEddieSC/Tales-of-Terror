@@ -48,8 +48,14 @@ jobs:
           test -f docs/technical/Tale_Authoring_Guide.md
           test -f docs/decisions/ADR-0022-versioned-tale-package.md
           test -f docs/playtests/v0.1.4-tale-package-evidence.md
+          test -f docs/releases/v0.1.5-tale-catalog-selection-provider-boundary.md
+          test -f docs/technical/Tale_Catalog_Contract.md
+          test -f docs/technical/Tale_Runtime_Providers.md
+          test -f docs/decisions/ADR-0023-tale-catalog-provider-selection.md
+          test -f docs/playtests/v0.1.5-tale-catalog-evidence.md
           test -f game/data/tales/lantern_house/tale_package_v1.json
           test -f game/data/tales/lantern_house/localization_en.json
+          test -f game/data/tales/tale_catalog_v1.json
           test -f packaging/pilot/pilot_session_schema.json
           test -f packaging/pilot/findings_register_schema.json
           test -f game/export_presets.cfg
@@ -105,6 +111,8 @@ jobs:
         run: |
           python tools/tale_package.py validate
           python tools/test_tale_package.py
+          python tools/tale_catalog.py validate
+          python tools/test_tale_catalog.py
           python tools/portable_bundle.py validate-repository
           python tools/test_portable_bundle.py
           python tools/pilot_evidence.py validate-templates

@@ -485,14 +485,13 @@ func _run_portable_build_smoke() -> void:
 	var identity: Dictionary = InternalBuildIdentity.read_identity()
 	var identity_valid: bool = InternalBuildIdentity.validate_identity(identity, false).accepted
 	var report_guidance: String = InternalBuildIdentity.report_location_text(identity.platform)
-	var package_result: Dictionary = (
-		TalePackage
-		. load_validated(
-			VerticalSliceCoordinator.TALE_PACKAGE_PATH,
-			LanternHouseBoardDefinition.new(),
-			LanternHouseRulesContent.new(),
-			LanternHouseDirectorContent.new(),
-			LanternHouseSocialContent.new(),
+	var registry := TaleProviderRegistry.new()
+	var catalog_result: Dictionary = TaleCatalog.load_validated(
+		TaleCatalog.PRODUCTION_PATH, registry, TaleCatalog.PRODUCTION_DIGEST
+	)
+	var package_result: Dictionary = registry.build_candidate(
+		TaleCatalog.entry_by_id(
+			catalog_result.get("catalog", {}), catalog_result.get("default_tale_id", "")
 		)
 	)
 	var passed: bool = (
@@ -500,7 +499,8 @@ func _run_portable_build_smoke() -> void:
 		and _help.page_index() == 3
 		and identity_valid
 		and identity.classification == "internal_playtest"
-		and package_result.get("digest", "") == TalePackage.LANTERN_HOUSE_DIGEST
+		and catalog_result.get("digest", "") == TaleCatalog.PRODUCTION_DIGEST
+		and package_result.get("package_digest", "") == TalePackage.LANTERN_HOUSE_DIGEST
 		and "INTERNAL PLAYTEST (internal_playtest)" in support
 		and str(identity.release) in support
 		and str(identity.source_commit).substr(0, 12) in support
@@ -525,10 +525,14 @@ func _run_portable_build_smoke() -> void:
 					"platform": identity.platform,
 					"architecture": identity.architecture,
 					"classification": identity.classification,
+					"catalog_kind": catalog_result.get("catalog", {}).get("catalog_kind", ""),
+					"catalog_schema": catalog_result.get("catalog", {}).get("schema_version", 0),
+					"catalog_digest": catalog_result.get("digest", ""),
+					"selected_tale_id": catalog_result.get("default_tale_id", ""),
 					"tale_package_kind": package_result.get("package", {}).get("package_kind", ""),
 					"tale_package_schema":
 					package_result.get("package", {}).get("schema_version", 0),
-					"tale_package_digest": package_result.get("digest", ""),
+					"tale_package_digest": package_result.get("package_digest", ""),
 					"help_page": _help.page_index() + 1,
 					"classification_rendered": "INTERNAL PLAYTEST (internal_playtest)" in support,
 					"report_location_guidance": report_guidance in support,

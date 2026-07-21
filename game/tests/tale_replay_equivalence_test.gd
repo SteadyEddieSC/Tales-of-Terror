@@ -99,10 +99,18 @@ func _test_report_boundary(coordinator: VerticalSliceCoordinator) -> void:
 		not TalePackage.LANTERN_HOUSE_DIGEST in serialized,
 		"report excludes package provenance identity"
 	)
+	_expect(
+		not TaleCatalog.PRODUCTION_DIGEST in serialized,
+		"report excludes catalog provenance identity",
+	)
 	_expect(not "seat_private" in serialized, "report remains privacy-safe")
 	_expect(
 		not coordinator.to_snapshot().has("tale_package_digest"),
 		"save snapshot excludes presentation provenance"
+	)
+	_expect(
+		not coordinator.to_snapshot().has("tale_catalog_digest"),
+		"save snapshot excludes catalog provenance",
 	)
 
 
@@ -131,7 +139,7 @@ func _new_session(seat_count: int, seed: int, requested_mode: String) -> Vertica
 		coordinator.seat_manager.join_device(index, "sim-%d" % index, "Simulation Pad")
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
-	coordinator.initialize_session(VerticalSliceCoordinator.TALE_PACKAGE_PATH, seed, requested_mode)
+	coordinator.initialize_session(seed, requested_mode)
 	coordinator.begin_tale()
 	return coordinator
 

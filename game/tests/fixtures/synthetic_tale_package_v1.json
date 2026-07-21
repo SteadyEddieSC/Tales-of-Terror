@@ -1,0 +1,14 @@
+{
+  "fixture_kind": "synthetic_tale_package_not_shipped_content",
+  "package_kind": "tale",
+  "schema_version": 1,
+  "tale_id": "synthetic_fixture_tale",
+  "package_version": 1,
+  "localization": {
+    "catalog": "res://tests/fixtures/synthetic_tale_localization_en.json",
+    "catalog_sha256": "ee5ca58de9b244d955b39d7e63433c2034f03b00a8ab7ddcea39eed2829cf885",
+    "briefing_key": "tale.synthetic_fixture.briefing",
+    "display_key": "tale.synthetic_fixture.display_name",
+    "objective_key": "tale.synthetic_fixture.objective"
+  }
+}

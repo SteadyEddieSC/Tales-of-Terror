@@ -51,27 +51,20 @@ func _test_runtime_fails_closed_atomically() -> void:
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
 	var stable: Dictionary = coordinator.to_snapshot()
-	var legacy: Dictionary = coordinator.initialize_session(VerticalSliceCoordinator.MANIFEST_PATH)
-	_expect(not legacy.accepted, "rejects a legacy manifest that bypasses the Tale package")
-	_expect(coordinator.to_snapshot() == stable, "keeps legacy-path rejection atomic")
-	var package: Dictionary = VerticalSliceManifest.load_file(PACKAGE_PATH)
-	package.package_version = 2
-	var temporary_path: String = "user://synthetic_invalid_tale_package.json"
-	var file := FileAccess.open(temporary_path, FileAccess.WRITE)
-	if file == null:
-		_expect(false, "creates the synthetic unsupported-identity probe")
-		return
-	file.store_string(JSON.stringify(package))
-	file.close()
-	var unsupported: Dictionary = coordinator.initialize_session(temporary_path)
+	var unknown: Dictionary = coordinator.select_tale("synthetic_unknown_tale")
+	_expect(not unknown.accepted, "rejects an unknown Tale selection")
+	_expect(coordinator.to_snapshot() == stable, "keeps unknown selection atomic")
+	var accepted_entry: Dictionary = coordinator._selection.entry.duplicate(true)
+	coordinator._selection.entry.package_sha256 = "0".repeat(64)
+	var unsupported: Dictionary = coordinator.initialize_session(4706)
 	_expect(not unsupported.accepted, "rejects a non-allowlisted package identity")
 	_expect(
 		"unsupported_package_identity" in unsupported.get("reason", ""),
 		"returns an actionable unsupported-identity diagnostic",
 	)
 	_expect(coordinator.to_snapshot() == stable, "keeps unsupported-package rejection atomic")
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(temporary_path))
-	var initialized: Dictionary = coordinator.initialize_session(PACKAGE_PATH, 4706)
+	coordinator._selection.entry = accepted_entry
+	var initialized: Dictionary = coordinator.initialize_session(4706)
 	_expect(initialized.accepted, "accepts the reviewed package after prior rejections")
 	_expect(
 		coordinator.tale_package_digest == EXPECTED_DIGEST,

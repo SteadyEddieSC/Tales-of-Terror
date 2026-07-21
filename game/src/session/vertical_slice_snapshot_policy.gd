@@ -1,6 +1,8 @@
 class_name VerticalSliceSnapshotPolicy
 extends RefCounted
 
+const TRANSACTION_VERSION: int = 1
+
 const HISTORY_KEYS: PackedStringArray = ["index", "stage_id", "authority_digest"]
 
 
@@ -195,11 +197,7 @@ static func _expected_pending(
 
 static func _wait_definition(boundary: Dictionary, session: RulesSession) -> Dictionary:
 	if boundary.kind == "vote":
-		return (
-			(session.content as LanternHouseRulesContent).vote_definition()
-			if session.content is LanternHouseRulesContent
-			else {}
-		)
+		return session.content.vote_definition()
 	for event: Dictionary in session.content.events:
 		if event.get("id", "") != boundary.source_id:
 			continue
@@ -309,3 +307,33 @@ static func _has_exact_keys(value: Dictionary, expected: PackedStringArray) -> b
 		if not key is String or not expected.has(key):
 			return false
 	return true
+
+
+static func transaction_snapshot(coordinator: VerticalSliceCoordinator) -> Dictionary:
+	return {
+		"transaction_version": TRANSACTION_VERSION,
+		"stage_index": coordinator.stage_index,
+		"operation_index": coordinator.operation_index,
+		"stage_history": coordinator.stage_history.duplicate(true),
+		"last_director_decision": coordinator.last_director_decision.duplicate(true),
+		"last_director_application": coordinator.last_director_application.duplicate(true),
+		"seat_manager": coordinator.seat_manager.to_snapshot(),
+		"pawns": coordinator.pawn_registry.to_snapshot(),
+		"board": coordinator.board_state.to_snapshot(),
+		"rules": coordinator.rules_session.to_snapshot(),
+		"director": coordinator.director_runtime.to_snapshot(),
+		"roles": coordinator.role_session.to_snapshot(),
+	}
+
+
+static func rollback_stage_transaction(coordinator: VerticalSliceCoordinator) -> void:
+	if coordinator._stage_checkpoint.is_empty():
+		return
+	var checkpoint: Dictionary = coordinator._stage_checkpoint.duplicate(true)
+	coordinator._restore_authorities(checkpoint)
+	coordinator.stage_index = checkpoint.stage_index
+	coordinator.operation_index = checkpoint.operation_index
+	coordinator.stage_history = RulesContent.SessionData.dict_array(checkpoint.stage_history)
+	coordinator.last_director_decision = checkpoint.last_director_decision.duplicate(true)
+	coordinator.last_director_application = checkpoint.last_director_application.duplicate(true)
+	coordinator._stage_checkpoint.clear()

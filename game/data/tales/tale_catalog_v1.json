@@ -1,0 +1,65 @@
+{
+  "catalog_kind": "tale_catalog",
+  "schema_version": 1,
+  "catalog_version": 1,
+  "default_tale_id": "lantern_house_vertical_slice",
+  "entries": [
+    {
+      "tale_id": "lantern_house_vertical_slice",
+      "package_path": "res://data/tales/lantern_house/tale_package_v1.json",
+      "package_kind": "tale",
+      "package_schema_version": 1,
+      "package_version": 1,
+      "package_sha256": "abb39d6bfbdf8d7de108379f08180c13efb99bbffa3e53f30eaaa8de7f459dee",
+      "display": {
+        "catalog_path": "res://data/tales/lantern_house/localization_en.json",
+        "catalog_sha256": "0b971871b052beff4b751443d3ef1d0a1312d2631f965004269631bb2ca3c1a3",
+        "display_key": "tale.lantern_house.display_name",
+        "briefing_key": "tale.lantern_house.briefing",
+        "objective_key": "tale.lantern_house.objective"
+      },
+      "provider": {
+        "provider_id": "lantern_house_authorities_v1",
+        "provider_version": 1,
+        "board_reference": "lantern_house",
+        "rules_reference": "lantern_house_rules_sandbox",
+        "director_reference": "lantern_house_director",
+        "social_reference": "lantern_house_social_lab"
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "tale_id": "lantern_house_vertical_slice",
+      "role": "governed_display",
+      "path": "game/data/tales/lantern_house/localization_en.json",
+      "reference": "0b971871b052beff4b751443d3ef1d0a1312d2631f965004269631bb2ca3c1a3"
+    },
+    {
+      "tale_id": "lantern_house_vertical_slice",
+      "role": "provider_registry",
+      "path": "game/src/session/tale_provider_registry.gd",
+      "reference": "lantern_house_authorities_v1"
+    },
+    {
+      "tale_id": "lantern_house_vertical_slice",
+      "role": "tale_package",
+      "path": "game/data/tales/lantern_house/tale_package_v1.json",
+      "reference": "abb39d6bfbdf8d7de108379f08180c13efb99bbffa3e53f30eaaa8de7f459dee"
+    }
+  ],
+  "compatibility": {
+    "engine": "godot_4_7",
+    "minimum_seats": 1,
+    "maximum_seats": 8,
+    "package_kind": "tale",
+    "package_schema_version": 1,
+    "unknown_field_policy": "reject",
+    "provider_policy": "static_repository_reviewed_allowlist"
+  },
+  "identity_policy": {
+    "algorithm": "sha256",
+    "canonicalization": "utf8_json_sorted_object_keys_compact_arrays_preserved",
+    "non_authoritative_metadata_excluded": []
+  }
+}

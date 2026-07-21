@@ -251,6 +251,14 @@ func has_item(item_id: String) -> bool:
 	return items.any(func(item: Dictionary) -> bool: return item.get("id", "") == item_id)
 
 
+func vote_definition() -> Dictionary:
+	return {}
+
+
+func check_definition(_check_id: String) -> Dictionary:
+	return {}
+
+
 func _validate_definition_identity(
 	definition: Dictionary, seen: Dictionary, kind: String, failures: PackedStringArray
 ) -> void:

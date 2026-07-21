@@ -332,8 +332,7 @@ static func _validate_operations(
 			type == "resolve_check"
 			and (
 				not CHECK_IDS.has(operation.get("check_id", ""))
-				or not rules is LanternHouseRulesContent
-				or (rules as LanternHouseRulesContent).courage_check().is_empty()
+				or rules.check_definition(operation.get("check_id", "")).is_empty()
 			)
 		):
 			failures.append("operation references unknown check")
@@ -505,10 +504,8 @@ static func _rules_prompt_option_exists(rules: RulesContent, option_id: String) 
 
 
 static func _vote_options_exist(rules: RulesContent, operation: Dictionary) -> bool:
-	if not rules is LanternHouseRulesContent:
-		return false
 	var known: PackedStringArray = []
-	for option: Dictionary in (rules as LanternHouseRulesContent).vote_definition().options:
+	for option: Dictionary in rules.vote_definition().get("options", []):
 		known.append(option.get("id", ""))
 	return (
 		known.has(operation.get("odd_option", "")) and known.has(operation.get("even_option", ""))
