@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.3 - First Household/Remote Playtest Pilot & Findings Triage (Stage 1)
+
+- Bumped the single internal release source to v0.1.3 without changing gameplay, balance, content, authority, companions, dependencies, toolchains, or provisional branding.
+- Added a consent-based pilot kit with exact artifact verification, controller-first/no-phone setup, voluntary stop language, privacy rules, observation/recovery sheets, questionnaire, report-hash guidance, and evidence-return instructions.
+- Added exact versioned pilot-session and findings-register schemas with committed blank defaults: all manual checks remain `not_tested`, route fields remain `not_observed`, human declarations remain false, and the findings register contains zero findings.
+- Added offline exact-file evidence validation, frozen-candidate matching, traversal/unknown/private-data rejection, evidence-class integrity, deterministic normalization with source-file SHA-256 provenance, and deterministic human-judgment finding IDs/sorting.
+- Expanded the strict Windows/Linux bundle allowlists only for bounded blank pilot materials and schemas; raw reports, private evidence, source tests, caches, and unrelated development files remain excluded.
+- Stage 1 does not claim a household, remote-observed, physical-controller, display, phone, router, accessibility, duration, balance, fun, privacy, or security result. A real session must use the separately identified frozen candidate before Stage 2.
+
 ## v0.1.2 - Portable Playtest Build & Session Bundle
 
 - Added checksum-pinned Godot 4.7.1 Windows and Linux export presets and CI-only portable archives with exact allowlist/denylist validation, deterministic runtime and bundle-content identities, and privacy-bounded versioned manifests.

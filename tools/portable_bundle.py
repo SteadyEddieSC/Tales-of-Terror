@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble and validate bounded v0.1.2 internal playtest bundles."""
+"""Assemble and validate bounded v0.1.3 internal playtest bundles."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC_PATH = ROOT / "packaging" / "portable" / "bundle_spec.json"
-MANUAL_PATH = ROOT / "docs" / "playtests" / "v0.1.2-manual-hardware-validation.json"
+PILOT_RECORD_PATH = ROOT / "docs" / "playtests" / "v0.1.3-pilot-session-blank.json"
 EXPORT_PRESETS = ROOT / "game" / "export_presets.cfg"
 BUILD_IDENTITY_PATH = ROOT / "game" / "build_identity.generated.json"
 MANIFEST_KEYS = {
@@ -137,7 +137,7 @@ def _spec() -> dict[str, Any]:
         "forbidden_extensions",
     }:
         raise BundleError("bundle specification keys changed")
-    if spec["schema_version"] != 1 or spec["release"] != "v0.1.2":
+    if spec["schema_version"] != 1 or spec["release"] != "v0.1.3":
         raise BundleError("unsupported bundle specification")
     if set(spec["platforms"]) != {"windows", "linux"}:
         raise BundleError("bundle platforms must be exactly Windows and Linux")
@@ -274,7 +274,7 @@ def assemble(
 def validate_manifest(manifest: dict[str, Any], bundle_dir: Path) -> None:
     if set(manifest) != MANIFEST_KEYS:
         raise BundleError("build manifest exact root keys changed")
-    if manifest["schema_version"] != 1 or manifest["release"] != "v0.1.2":
+    if manifest["schema_version"] != 1 or manifest["release"] != "v0.1.3":
         raise BundleError("unsupported build manifest version")
     _validate_source_commit(manifest["source_commit"])
     if manifest["platform"] not in {"windows", "linux"}:
@@ -364,49 +364,24 @@ def validate_archive(archive: Path, bundle_dir: Path) -> None:
             raise BundleError(f"archive CRC validation failed: {bad}")
 
 
-def validate_manual_record(path: Path = MANUAL_PATH, require_defaults: bool = True) -> dict[str, Any]:
+def validate_pilot_record(path: Path = PILOT_RECORD_PATH) -> dict[str, Any]:
+    from pilot_evidence import validate_pilot_record as validate
+
     value = _read_json(path)
-    if set(value) != {
-        "schema_version",
-        "release",
-        "record_classification",
-        "session_id",
-        "recorded_at_utc",
-        "observer",
-        "checks",
-        "declarations",
-    }:
-        raise BundleError("manual validation record exact keys changed")
-    if value["schema_version"] != 1 or value["release"] != "v0.1.2":
-        raise BundleError("manual validation record version changed")
-    if value["record_classification"] != "manual_non_authoritative":
-        raise BundleError("manual validation record classification changed")
-    if any(len(value[key]) > limit for key, limit in (("session_id", 80), ("recorded_at_utc", 40), ("observer", 80))):
-        raise BundleError("manual validation record metadata is unbounded")
-    checks = value["checks"]
-    if len(checks) != len(MANUAL_IDS) or tuple(item.get("id") for item in checks) != MANUAL_IDS:
-        raise BundleError("manual validation check identities changed")
-    for item in checks:
-        if set(item) != {"id", "status", "evidence_class", "notes"}:
-            raise BundleError("manual validation check keys changed")
-        if item["status"] not in {"not_tested", "deferred", "pass", "fail", "blocked"}:
-            raise BundleError("manual validation status is invalid")
-        if item["evidence_class"] not in {"not_tested", "automated_ci", "virtual_offscreen", "remote_observed", "physical_in_room"}:
-            raise BundleError("manual validation evidence class is invalid")
-        if len(item["notes"]) > 500:
-            raise BundleError("manual validation notes are unbounded")
-        if require_defaults and (item["status"] != "not_tested" or item["evidence_class"] != "not_tested" or item["notes"]):
-            raise BundleError("committed manual validation must default to not_tested")
-    if value["declarations"] != {
-        "automated_evidence_is_physical": False,
-        "explicit_human_entry_required": True,
-    }:
-        raise BundleError("manual validation declarations changed")
+    try:
+        validate(value, allow_blank=True)
+    except RuntimeError as exc:
+        raise BundleError(f"committed pilot record is invalid: {exc}") from exc
+    if tuple(item.get("id") for item in value["manual_checks"]) != MANUAL_IDS:
+        raise BundleError("pilot manual validation check identities changed")
     return value
 
 
 def validate_repository() -> None:
     spec = _spec()
+    from pilot_evidence import validate_templates
+
+    validate_templates()
     presets = EXPORT_PRESETS.read_text(encoding="utf-8")
     required_preset_fragments = (
         'name="Internal Windows x86_64"',
@@ -444,7 +419,7 @@ def validate_repository() -> None:
         encoding="utf-8"
     )
     required_identity_fragments = (
-        'const RELEASE: String = "v0.1.2"',
+        'const RELEASE: String = "v0.1.3"',
         '"INTERNAL PLAYTEST"',
         '"SOURCE CHECKOUT"',
         '"INVALID EXPORTED IDENTITY"',
@@ -469,7 +444,15 @@ def validate_repository() -> None:
     ):
         if fragment not in workflow:
             raise BundleError(f"portable smoke exact-output assertion missing: {fragment}")
-    validate_manual_record()
+    for required in (
+        ROOT / "tools" / "pilot_evidence.py",
+        ROOT / "tools" / "test_pilot_evidence.py",
+        ROOT / "packaging" / "pilot" / "pilot_session_schema.json",
+        ROOT / "packaging" / "pilot" / "findings_register_schema.json",
+    ):
+        if not required.is_file():
+            raise BundleError(f"pilot evidence surface is missing: {required.relative_to(ROOT)}")
+    validate_pilot_record()
 
 
 def _main() -> int:
@@ -487,7 +470,7 @@ def _main() -> int:
     validation = subparsers.add_parser("validate-bundle")
     validation.add_argument("bundle_dir", type=Path)
     subparsers.add_parser("validate-repository")
-    subparsers.add_parser("validate-manual-record")
+    subparsers.add_parser("validate-pilot-record")
     args = parser.parse_args()
     try:
         if args.command == "write-build-identity":
@@ -519,8 +502,8 @@ def _main() -> int:
             validate_repository()
             print("Portable bundle repository validation passed")
         else:
-            validate_manual_record()
-            print("Manual hardware-validation record passed with all checks not_tested")
+            validate_pilot_record()
+            print("Blank pilot record passed with all human checks not_tested")
     except (BundleError, OSError, json.JSONDecodeError, zipfile.BadZipFile) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

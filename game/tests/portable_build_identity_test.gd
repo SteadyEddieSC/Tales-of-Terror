@@ -38,7 +38,7 @@ func _test_identity_and_support_page() -> void:
 	var report_before: String = report.to_json()
 	var companion_before: String = JSON.stringify(companion_projection)
 	var identity: Dictionary = InternalBuildIdentity.read_identity()
-	_expect(identity.release == "v0.1.2", "uses the v0.1.2 project release identity")
+	_expect(identity.release == "v0.1.3", "uses the v0.1.3 project release identity")
 	_expect(
 		(
 			InternalBuildIdentity
@@ -62,7 +62,7 @@ func _test_identity_and_support_page() -> void:
 		help.handle_action("ui_navigate_right")
 	var support: String = help.page_text()
 	_expect(help.page_index() == 3, "opens the bounded Build & Support page")
-	_expect("RELEASE   v0.1.2" in support, "renders the exact release")
+	_expect("RELEASE   v0.1.3" in support, "renders the exact release")
 	_expect(
 		"BUILD ID   %s" % str(identity.source_commit).substr(0, 12) in support,
 		"renders the short build ID",
@@ -137,12 +137,12 @@ func _test_identity_validation() -> void:
 	var valid: Dictionary = _valid_internal_identity("windows")
 	_expect(
 		InternalBuildIdentity.validate_identity(valid).accepted,
-		"accepts the exact v0.1.2 internal Windows identity",
+		"accepts the exact v0.1.3 internal Windows identity",
 	)
 	var valid_linux: Dictionary = _valid_internal_identity("linux")
 	_expect(
 		InternalBuildIdentity.validate_identity(valid_linux).accepted,
-		"accepts the exact v0.1.2 internal Linux identity",
+		"accepts the exact v0.1.3 internal Linux identity",
 	)
 	var invalid_cases: Array[Dictionary] = []
 	var invalid_source: Dictionary = valid.duplicate(true)
@@ -152,7 +152,7 @@ func _test_identity_validation() -> void:
 	short_source.source_commit = "a".repeat(39)
 	invalid_cases.append({"identity": short_source, "name": "short source SHA"})
 	var invalid_release: Dictionary = valid.duplicate(true)
-	invalid_release.release = "v0.1.3"
+	invalid_release.release = "v0.1.2"
 	invalid_cases.append({"identity": invalid_release, "name": "release"})
 	var invalid_platform: Dictionary = valid.duplicate(true)
 	invalid_platform.platform = "macos"
@@ -173,7 +173,7 @@ func _test_identity_validation() -> void:
 		)
 	var source_checkout: Dictionary = {
 		"schema_version": 1,
-		"release": "v0.1.2",
+		"release": "v0.1.3",
 		"source_commit": "source-checkout",
 		"platform": OS.get_name().to_lower(),
 		"architecture": "development",
@@ -229,7 +229,7 @@ func _test_platform_report_guidance() -> void:
 func _valid_internal_identity(platform: String) -> Dictionary:
 	return {
 		"schema_version": 1,
-		"release": "v0.1.2",
+		"release": "v0.1.3",
 		"source_commit": "a".repeat(40),
 		"platform": platform,
 		"architecture": "x86_64",

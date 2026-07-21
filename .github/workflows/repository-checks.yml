@@ -36,6 +36,15 @@ jobs:
           test -f docs/playtests/Portable_Playtest_Bundle_Evidence.md
           test -f docs/technical/Portable_Playtest_Bundles.md
           test -f docs/releases/v0.1.2-portable-playtest-build-session-bundle.md
+          test -f docs/playtests/v0.1.3-pilot-guide.md
+          test -f docs/playtests/v0.1.3-observation-sheet.md
+          test -f docs/playtests/v0.1.3-post-session-questionnaire.md
+          test -f docs/playtests/v0.1.3-pilot-session-blank.json
+          test -f docs/playtests/v0.1.3-findings-register-blank.json
+          test -f docs/playtests/v0.1.3-pilot-ready-evidence.md
+          test -f docs/releases/v0.1.3-first-household-remote-playtest-pilot.md
+          test -f packaging/pilot/pilot_session_schema.json
+          test -f packaging/pilot/findings_register_schema.json
           test -f game/export_presets.cfg
           test -f packaging/portable/bundle_spec.json
           test -f docs/releases/v0.1.1-playtest-readiness-guided-session-ux.md
@@ -89,6 +98,8 @@ jobs:
         run: |
           python tools/portable_bundle.py validate-repository
           python tools/test_portable_bundle.py
+          python tools/pilot_evidence.py validate-templates
+          python tools/test_pilot_evidence.py
       - name: Reject whitespace errors in committed range
         shell: bash
         env:

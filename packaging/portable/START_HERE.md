@@ -1,4 +1,4 @@
-# Lantern House v0.1.2 Internal Playtest
+# Lantern House v0.1.3 Pilot-ready Internal Playtest
 
 This extracted folder is an internal evaluation build. The working title is provisional; this is not a public demo or storefront release.
 
@@ -21,6 +21,6 @@ At the ending, open Help, move to the Playtest Report page, and press A/Enter. J
 - Linux: `$XDG_DATA_HOME/godot/app_userdata/Terror Turn/playtest_exports`
 - Linux default when `XDG_DATA_HOME` is unset: `~/.local/share/godot/app_userdata/Terror Turn/playtest_exports`
 
-`Terror Turn` is the exact current Godot project-folder name and remains a provisional working title. These user-relative forms do not reveal a tester or build-host username. Open `FACILITATOR_GUIDE.md`, `POST_SESSION_QUESTIONNAIRE.md`, and `PRIVACY_AND_LIMITATIONS.md` before observing a session.
+`Terror Turn` is the exact current Godot project-folder name and remains a provisional working title. These user-relative forms do not reveal a tester or build-host username. Before observing a session, open `FACILITATOR_GUIDE.md`, `OBSERVATION_SHEET.md`, `POST_SESSION_QUESTIONNAIRE.md`, and `PRIVACY_AND_LIMITATIONS.md`. `PILOT_SESSION_RECORD.json` and `FINDINGS_REGISTER.json` are intentionally blank; no human pilot or manual pass is pre-populated.
 
 For launch/runtime support, open Help -> Build & Support and report the visible release, short build ID, platform, architecture, build classification, and exact error. Do not send report contents, room secrets, player identities, network details, or device information.

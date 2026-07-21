@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tales-of-terror:findings-register:v1",
+  "title": "v0.1.3 deterministic pilot findings register",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "release", "candidate_source_sha", "generated_from_session_id", "findings", "declarations"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "release": {"const": "v0.1.3"},
+    "candidate_source_sha": {"type": "string", "pattern": "^$|^[0-9a-f]{40}$"},
+    "generated_from_session_id": {"type": "string", "pattern": "^$|^PILOT-[A-Z0-9]{8}$"},
+    "findings": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "category", "evidence_source", "session_id", "classification", "severity", "reproducibility", "confidence", "evidence_limits", "affected_platform", "seat_count", "stage", "steps", "expected_result", "observed_result", "notes", "disposition", "proposed_issue_title", "certification_limit"],
+        "properties": {
+          "finding_id": {"type": "string", "pattern": "^FND-[0-9A-F]{12}$"},
+          "category": {"enum": ["launch", "controller_input", "lifecycle_recovery", "usability_guidance", "readability", "privacy_reveal", "companion_no_phone", "performance_stability", "content_clarity", "balance_pacing", "accessibility", "reporting_evidence", "other"]},
+          "evidence_source": {"enum": ["observed", "participant_reported"]},
+          "session_id": {"type": "string", "pattern": "^PILOT-[A-Z0-9]{8}$"},
+          "classification": {"enum": ["remote_observed", "physical_in_room"]},
+          "severity": {"enum": ["P0_blocker", "P1_major", "P2_moderate", "P3_minor", "observation_only"]},
+          "reproducibility": {"enum": ["confirmed", "repeated_in_session", "single_occurrence", "unable_to_reproduce", "not_applicable"]},
+          "confidence": {"enum": ["low", "medium", "high"]},
+          "evidence_limits": {"type": "string", "minLength": 1, "maxLength": 300},
+          "affected_platform": {"enum": ["windows", "linux", "both", "not_applicable"]},
+          "seat_count": {"type": "integer", "minimum": 0, "maximum": 8},
+          "stage": {"type": "string", "minLength": 1, "maxLength": 40},
+          "steps": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "string", "minLength": 1, "maxLength": 200}},
+          "expected_result": {"type": "string", "maxLength": 500},
+          "observed_result": {"type": "string", "minLength": 1, "maxLength": 500},
+          "notes": {"type": "string", "maxLength": 500},
+          "disposition": {"enum": ["open_issue_required", "research_required", "defer", "duplicate", "not_actionable", "accepted_limitation"]},
+          "proposed_issue_title": {"type": "string", "maxLength": 120},
+          "certification_limit": {"const": "one_pilot_does_not_certify_balance_fun_accessibility_duration_privacy_or_security"}
+        }
+      }
+    },
+    "declarations": {"type": "object", "additionalProperties": false, "required": ["single_pilot_not_certification", "no_inferred_participant_intent", "human_judgment_required"], "properties": {"single_pilot_not_certification": {"const": true}, "no_inferred_participant_intent": {"const": true}, "human_judgment_required": {"const": true}}}
+  }
+}

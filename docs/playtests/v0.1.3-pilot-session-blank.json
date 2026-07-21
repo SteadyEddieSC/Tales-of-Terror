@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "release": "v0.1.3",
+  "record_classification": "pilot_evidence_non_authoritative",
+  "candidate": {
+    "source_sha": "",
+    "platform": "not_tested",
+    "architecture": "",
+    "artifact_name": "",
+    "archive_sha256": "",
+    "native_sha256": "",
+    "runtime_digest": "",
+    "bundle_digest": "",
+    "build_timestamp_utc": "",
+    "classification": "not_tested"
+  },
+  "session": {
+    "session_id": "",
+    "session_date_utc": "",
+    "mode": "not_tested",
+    "facilitator_evidence_class": "not_tested",
+    "participant_count": 0,
+    "stable_seat_count": 0,
+    "participant_grouping": [],
+    "controller_count": 0,
+    "controller_categories": [],
+    "phone_path": "not_tested",
+    "display_class": "not_tested",
+    "resolution_category": "not_tested"
+  },
+  "route": {
+    "completion_state": "not_observed",
+    "ending_disposition": "not_observed",
+    "reset": "not_observed",
+    "reconnect": "not_observed",
+    "rematch": "not_observed",
+    "report_export": "not_observed",
+    "report_hashes": []
+  },
+  "durations": [],
+  "counts": {"interruptions": 0, "assistance": 0},
+  "manual_checks": [
+    {"id": "one_physical_controller", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "multiple_physical_controllers", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "disconnect_reconnect_ownership", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "keyboard_fallback", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "tv_distance_readability", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "safe_margins_720p_1080p_native_4k", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "physical_phones_and_no_phone_path", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "household_wifi_router_firewall", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "long_session_stability", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "accessibility_assistive_technology", "status": "not_tested", "evidence_class": "not_tested", "notes": ""}
+  ],
+  "observations": [],
+  "questionnaire": [],
+  "declarations": {
+    "voluntary_participation_confirmed": false,
+    "stop_at_any_time_explained": false,
+    "direct_identifiers_excluded": false,
+    "human_observation_entered": false,
+    "non_authoritative": true,
+    "single_pilot_not_certification": true,
+    "automated_evidence_is_physical": false
+  },
+  "provenance": []
+}
