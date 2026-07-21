@@ -6,7 +6,8 @@
 - Starting protected main: `8f0b18b5137072ddcc9af7fc95e1a8a31e5112db`.
 - Branch: `agent/issue-35-portable-playtest-bundle`.
 - Validated implementation SHA: `159bd863ef39c6369f0460b1d8980d5577cab886`.
-- Final draft PR head: to be recorded after exact-head evidence synchronization.
+- Validated CI artifact source SHA: `d6323e0dfea62665ead3029c600f177de17a9dbe`.
+- Final draft PR head: the self-referential final value is recorded in draft PR #36 and the main-chat handoff after evidence synchronization.
 - Engine: official Godot 4.7.1-stable, Compatibility renderer, 960×540 logical viewport.
 - Templates: official `Godot_v4.7.1-stable_export_templates.tpz`, SHA-256 `86409db6200b6f8fd3230989c2d2002851f3dd18acf11d7bdbafddf5a0dd0f72`.
 - Distribution: internal playtest workflow artifacts; no installer, signature, notarization, updater, storefront, public demo, or production deployment.
@@ -15,10 +16,10 @@
 
 | Surface | Identity / classification | Result |
 | --- | --- | --- |
-| Windows preset | `Internal Windows x86_64`; embedded PCK | PASS at validated implementation SHA |
-| Linux preset | `Internal Linux x86_64`; embedded PCK | Pending final exact-head build |
+| Windows preset | `Internal Windows x86_64`; embedded PCK | PASS locally and in CI artifact-source run |
+| Linux preset | `Internal Linux x86_64`; embedded PCK | PASS in Ubuntu CI artifact-source run |
 | Windows execution | Local Windows native/headless direct executable and optional launcher | PASS; both exit 0 and report `accepted=true` |
-| Linux execution | Ubuntu CI native/headless direct executable and optional launcher | Pending final exact-head workflow |
+| Linux execution | Ubuntu CI native/headless direct executable and optional launcher | PASS; both exit 0 and report `accepted=true` |
 | Physical controllers | Human physical validation only | `not_tested` |
 | TV/native display/readability | Human physical validation only | `not_tested` |
 | Household/phone/router/long-session/accessibility | Human physical validation only | `not_tested` |
@@ -42,7 +43,7 @@ The exact manifest schema, privacy exclusions, per-file bounds/hashes, canonical
 | Python/toolchain | Python 3.11.9, exact/hash-locked install, `pip check`, zero-finding gdlint/gdformat | PASS; 85-file first-party inventory |
 | Companion | `npm ci`, audit, strict TypeScript, service 26/26, browser 10/10, builds/smoke | PASS; zero vulnerabilities; Worker/browser build and local service health/room smoke pass |
 | Repository | asset/provenance, privacy, no-network, toolchain, JSON/YAML, secret, size, title, LFS, whitespace | PASS |
-| Export/bundles | preset, allow/deny, manifest, repeated build, Windows/Linux archive validation | Windows PASS locally; Linux pending exact-head CI |
+| Export/bundles | preset, allow/deny, manifest, repeated build, Windows/Linux archive validation | PASS locally and in CI for both platform archives |
 
 ## Local Windows artifact evidence
 
@@ -62,8 +63,19 @@ The implementation-head export used the official local Windows Godot 4.7.1 conso
 
 | Workflow run | Artifact ID | Artifact name | GitHub size | GitHub digest | Inner archive SHA-256 | Runtime / bundle content digests |
 | --- | ---: | --- | ---: | --- | --- | --- |
-| Pending | Pending | Windows internal bundle | Pending | Pending | Pending | Pending |
-| Pending | Pending | Linux internal bundle | Pending | Pending | Pending | Pending |
+| [29794377746](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377746) | 8481488168 | `lantern-house-internal-playtest-v0.1.2-windows-x86_64` | 38,155,659 | `sha256:913a1c80e3651df12b1d12af15bda2f534dce55a8d79d153dc299fac2d6a31a2` | `c7c18b9bb88232d81a4ded11f5686f41db2ddf734082aa24f549fc2733c4b371` (38,293,814 bytes) | runtime `8bffc0a40c927fbc0e452228f983048437dd9510dfca98296bdf1f2442bc2cd6`; bundle `cebb557eed52d65f6be4a228e15de824d2309228643869ed7c8ba6356a06b328` |
+| [29794377746](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377746) | 8481488836 | `lantern-house-internal-playtest-v0.1.2-linux-x86_64` | 28,739,457 | `sha256:83aaf0322bb6b5b2a82e67b0c48eaaeb2490c1f6fae6f6649d469a9d05f3c848` | `102c80471dacbc967628bdc2889894a98873ffdea75533e86130526c2907ba69` (28,771,748 bytes) | runtime `c3098d8fb6d17cdea561156bd61743773289611e1f36c9c19ba370ae8ced3658`; bundle `8ed147a95ecedcdb401816ab82ba485aede9b7125d030c9ab6c0fc55aa3e0594` |
+| [29794377684](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377684) | 8481474523 | `gdscript-quality` | 1,206 | `sha256:4a533849f25e8870dde80180b818fa148f29411ffc52dcde36f0bff02c9978d2` | Not applicable | 85-file inventory, lint 0, format differences 0 |
+| [29794377684](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377684) | 8481486257 | `gut-junit-results` | 1,146 | `sha256:5725bed4a730780ecd5d589bccc79a75c62a2f8007045601d06349c35e17ff5a` | Not applicable | 20/20 tests, 91 assertions |
+
+Both portable artifacts were downloaded. Their sibling checksum files matched the inner archives, archive CRC/content checks passed, exact bundle allowlists and every manifest file size/SHA-256 revalidated, and both manifests recorded source `d6323e0dfea62665ead3029c600f177de17a9dbe`. The Windows native file was 109,594,184 bytes with SHA-256 `02b45cd9e93bf8e9c626d97bdf122ac2713380e36fa7fedaf5747be2cd46cdb6`; Linux was 73,993,080 bytes with SHA-256 `a86b8930d552b69015079b6f1109c5a73f50ebd83086d2e9cc4af2d4c1d1cbe2`.
+
+## Exact-head workflow links
+
+- [Godot 4.7 tests run 29794377684](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377684): success.
+- [Companion service and browser tests run 29794377688](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377688): success.
+- [Repository checks run 29794377714](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377714): success.
+- [Portable internal playtest builds run 29794377746](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377746): success; Linux direct and launcher smoke logs both record exact source and every invariance flag true.
 
 ## Failures, corrections, warnings, and reruns
 
