@@ -59,6 +59,93 @@ The implementation-head export used the official local Windows Godot 4.7.1 conso
 - Manifest build timestamp: `2026-07-21T01:55:00Z`, explicitly non-deterministic metadata.
 - Bundle inventory: 10 files including `build_manifest.json`; all nine pre-manifest payload records matched exact size/SHA-256 values and the archive CRC/content check passed.
 
+## Exact build and validation commands
+
+The local Windows implementation-head build used these commands from repository root (the absolute ignored output root is abbreviated as `<repo>/builds/local-windows-159bd86` only to avoid committing a user path):
+
+```text
+python tools/portable_bundle.py write-build-identity --platform windows --source-commit 159bd863ef39c6369f0460b1d8980d5577cab886
+Godot_v4.7.1-stable_win64_console.exe --headless --path game --export-release "Internal Windows x86_64" <repo>/builds/local-windows-159bd86/export/lantern_house_internal.exe
+python tools/portable_bundle.py assemble --platform windows --source-commit 159bd863ef39c6369f0460b1d8980d5577cab886 --timestamp 2026-07-21T01:55:00Z --output-root <repo>/builds/local-windows-159bd86 --exported-binary <repo>/builds/local-windows-159bd86/export/lantern_house_internal.exe
+python tools/portable_bundle.py validate-bundle <repo>/builds/local-windows-159bd86/bundles/lantern-house-internal-playtest-v0.1.2-windows-x86_64
+lantern_house_internal.exe --headless --audio-driver Dummy -- --portable-build-smoke
+launch.cmd --headless --audio-driver Dummy -- --portable-build-smoke
+```
+
+The exact CI equivalents are committed in `.github/workflows/portable-builds.yml`: the verified Linux editor writes a platform identity, invokes `--export-release` for each named preset, assembles each platform through `tools/portable_bundle.py`, revalidates both output directories, executes the Linux native file and launcher, checks missing-file exit behavior, and uploads the two versioned artifacts. Local source/repository validation used the workflow-listed Godot scripts plus:
+
+```text
+python tools/portable_bundle.py validate-repository
+python tools/portable_bundle.py validate-manual-record
+python tools/test_portable_bundle.py
+python tools/validate_assets.py
+python tools/validate_companion.py
+python tools/validate_playtest_readiness.py
+python tools/validate_toolchain.py
+python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+python -m pip check
+gdlint <85-file-first-party-inventory>
+gdformat --check <85-file-first-party-inventory>
+npm ci
+npm audit --audit-level=moderate
+npm run typecheck
+npm run test:service
+npm run test:browser
+npm run build
+npm run test:e2e:local
+```
+
+The repeated-assembly test used identical fixture bytes/source SHA and timestamps `2026-07-21T01:00:00Z` and `2026-07-21T02:00:00Z`. Both runtime identities were `b02eaf648d4374cdffd1fc5accc02975b9a3389f12066e58f45f0c35389e756f`; both bundle identities were `2fff03bf9262db37ca1c9aaa40dc07008afb107e02d99c82cbf90f6f400d420b`. The archives intentionally differed (`d89d7a870a7819ac9cdba167589e77492ccfee8c6e57deb624356298593a254e` versus `08968a4b7ad2ba8b28a318c28ac2f89a62c50e523011531cebaaf92a11507c95`) because their manifest timestamps differ.
+
+## Changed-file manifest
+
+Relative to starting main `8f0b18b5137072ddcc9af7fc95e1a8a31e5112db`, the bounded branch changes exactly these paths (`A` added, `M` modified):
+
+```text
+M .github/workflows/godot-tests.yml
+A .github/workflows/portable-builds.yml
+M .github/workflows/repository-checks.yml
+M .gitignore
+M CHANGELOG.md
+M README.md
+A docs/playtests/Portable_Playtest_Bundle_Evidence.md
+A docs/playtests/v0.1.2-facilitator-guide.md
+A docs/playtests/v0.1.2-manual-hardware-validation.json
+A docs/playtests/v0.1.2-post-session-questionnaire.md
+A docs/releases/v0.1.2-portable-playtest-build-session-bundle.md
+M docs/technical/First_Vertical_Slice.md
+M docs/technical/Playtest_Readiness.md
+M docs/technical/Playtest_Report_Privacy.md
+A docs/technical/Portable_Playtest_Bundles.md
+M docs/technical/Toolchain_and_Testing.md
+A game/export_presets.cfg
+M game/project.godot
+A game/src/build/internal_build_identity.gd
+A game/src/build/internal_build_identity.gd.uid
+M game/src/main/main.gd
+M game/src/session/guided_session_help.gd
+M game/tests/fixtures/playtest_report_v2.json
+M game/tests/fixtures/playtest_report_v2.md
+M game/tests/playtest_capture_fixture.gd
+M game/tests/playtest_main_route_test.gd
+A game/tests/portable_build_identity_test.gd
+A game/tests/portable_build_identity_test.gd.uid
+A packaging/manual_validation_schema.json
+A packaging/portable/GODOT_ENGINE_LICENSE.txt
+A packaging/portable/PRIVACY_AND_LIMITATIONS.md
+A packaging/portable/START_HERE.md
+A packaging/portable/THIRD_PARTY_NOTICES.md
+A packaging/portable/bundle_spec.json
+A packaging/portable/launch_linux.sh
+A packaging/portable/launch_windows.cmd
+A tools/portable_bundle.py
+A tools/test_portable_bundle.py
+M tools/validate_playtest_readiness.py
+M tools/validate_toolchain.py
+```
+
+No dependency manifest/lock, vendored GUT file, generated executable/archive, PR #32 file, or issue #7 naming decision is included.
+
 ## Artifact ledger
 
 | Workflow run | Artifact ID | Artifact name | GitHub size | GitHub digest | Inner archive SHA-256 | Runtime / bundle content digests |
