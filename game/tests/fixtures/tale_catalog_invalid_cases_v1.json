@@ -32,6 +32,11 @@
       "mutation": {"operation": "set", "path": "/default_tale_id", "value": "synthetic_missing_tale"}
     },
     {
+      "id": "missing_default",
+      "expected_code": "missing_required_field",
+      "mutation": {"operation": "delete", "path": "/default_tale_id"}
+    },
+    {
       "id": "unstable_entry_order",
       "expected_code": "unstable_catalog_ordering",
       "mutation": {
@@ -51,6 +56,26 @@
       "id": "test_path",
       "expected_code": "prohibited_catalog_path",
       "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "res://tests/fixtures/not_shipped.json"}
+    },
+    {
+      "id": "generated_path",
+      "expected_code": "prohibited_catalog_path",
+      "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "res://.godot/generated/tale.json"}
+    },
+    {
+      "id": "cache_path",
+      "expected_code": "prohibited_catalog_path",
+      "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "res://cache/tale.json"}
+    },
+    {
+      "id": "build_path",
+      "expected_code": "prohibited_catalog_path",
+      "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "res://builds/tale.json"}
+    },
+    {
+      "id": "private_evidence_path",
+      "expected_code": "prohibited_catalog_path",
+      "mutation": {"operation": "set", "path": "/entries/0/package_path", "value": "res://private-evidence/tale.json"}
     },
     {
       "id": "network_url",
@@ -121,6 +146,11 @@
       "id": "runtime_script_field",
       "expected_code": "prohibited_runtime_reference",
       "mutation": {"operation": "set", "path": "/entries/0/script_path", "value": "res://synthetic.gd"}
+    },
+    {
+      "id": "runtime_executable_field",
+      "expected_code": "prohibited_runtime_reference",
+      "mutation": {"operation": "set", "path": "/entries/0/executable", "value": "synthetic_fixture.exe"}
     },
     {
       "id": "unstable_tale_identity",

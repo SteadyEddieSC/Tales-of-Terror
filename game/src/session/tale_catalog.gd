@@ -331,6 +331,10 @@ static func _validate_repository_path(
 			or "/.godot/" in normalized
 			or "/builds/" in normalized
 			or "/cache/" in normalized
+			or "/dist/" in normalized
+			or "/node_modules/" in normalized
+			or "/output/" in normalized
+			or "/private-evidence/" in normalized
 			or "/test-results/" in normalized
 		)
 		and not registry.allows_test_fixtures()

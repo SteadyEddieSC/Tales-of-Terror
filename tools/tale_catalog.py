@@ -96,6 +96,7 @@ PROHIBITED_PARTS = {
     "dist",
     "node_modules",
     "output",
+    "private-evidence",
     "test-results",
 }
 
