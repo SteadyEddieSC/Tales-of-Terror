@@ -6,7 +6,7 @@
 - Required starting protected main: `d9a5727d64f83e2c2804a1c7e461ae5a57e54cc2`
 - Branch: `agent/issue-33-playtest-readiness`
 - Reviewed pre-correction head: `aa9ae664c0b80a4ed398b47134fb02425285b643`
-- Correction implementation head: recorded after the correction commit is created.
+- Correction implementation head: `79f8fc68c3757754b843db2ec3b3b47f480a50f0`.
 - Final draft-PR head: recorded in the commit-linked draft-PR evidence comment because a Git commit cannot contain its own hash.
 - PR #32 was not modified, merged, closed, rebased, or included.
 
@@ -126,18 +126,18 @@ No scenario, authored operation, board/rules/Director/role/pawn/companion author
 
 ## Exact-head CI and artifacts
 
-The pre-correction workflow links and artifact claims are superseded. Correction-head runs are recorded after push and the final exact-head results are kept in the draft PR body.
+The pre-correction workflow links and artifact claims are superseded. The correction implementation head passed all three workflows without reruns. The final evidence-only head results are kept in the draft PR body because a commit cannot contain its own hash or resulting run IDs.
 
 | Workflow | Run/result |
 | --- | --- |
-| Repository checks | Pending correction-head push |
-| Companion service and browser tests | Pending correction-head push |
-| Godot 4.7 tests | Pending correction-head push |
+| Repository checks | PASS: [run 29790518724](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29790518724) |
+| Companion service and browser tests | PASS: [run 29790518746](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29790518746) |
+| Godot 4.7 tests | PASS: [run 29790518727](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29790518727) |
 
 | Artifact | ID | GitHub artifact digest |
 | --- | --- | --- |
-| `gdscript-quality` | Pending correction-head push | Pending correction-head push |
-| `gut-junit-results` | Pending correction-head push | Pending correction-head push |
+| `gdscript-quality` | `8480070136` | `sha256:0db39265604c866cb278675aeab054a50b55af02fa72cc3f74e93ce36f9f1b1c` |
+| `gut-junit-results` | `8480083516` | `sha256:73ff631c879dcf5105a6dbf61b8f2f731b7226856c0de854ed99fd9060a24d60` |
 
 The evidence-only follow-up commit changes this matrix but no runtime, test, workflow, dependency, or vendor file. Its final exact-head workflow runs and artifact IDs/digests are repeated in the commit-linked draft-PR evidence comment.
 
