@@ -1,181 +1,138 @@
 # v0.1.2 Portable Playtest Bundle Evidence
 
-## Provenance and classification
+## Provenance and head classification
 
 - Issue: #35, including authoritative branch-correction comment 5029019162.
+- Formal change request: review 4740733256 against original reviewed head `b038ab75a490337038d000e12368acc77540d8c5`.
 - Starting protected main: `8f0b18b5137072ddcc9af7fc95e1a8a31e5112db`.
 - Branch: `agent/issue-35-portable-playtest-bundle`.
-- Validated implementation SHA: `159bd863ef39c6369f0460b1d8980d5577cab886`.
-- Validated CI artifact source SHA: `d6323e0dfea62665ead3029c600f177de17a9dbe`.
-- Final draft PR head: the self-referential final value is recorded in draft PR #36 and the main-chat handoff after evidence synchronization.
-- Engine: official Godot 4.7.1-stable, Compatibility renderer, 960×540 logical viewport.
-- Templates: official `Godot_v4.7.1-stable_export_templates.tpz`, SHA-256 `86409db6200b6f8fd3230989c2d2002851f3dd18acf11d7bdbafddf5a0dd0f72`.
+- Correction implementation head: `b92c1d6d21a6eed10624a9d20b4c89d6db491d27`.
+- Correction artifact-source head: `b92c1d6d21a6eed10624a9d20b4c89d6db491d27`.
+- Local Windows execution head: `b92c1d6d21a6eed10624a9d20b4c89d6db491d27`.
+- Final evidence-only PR head: a commit cannot contain its own resulting SHA; the resulting final SHA is recorded in draft PR #36 and a commit-linked top-level PR evidence comment.
+- Final exact-head workflows and artifact IDs/digests: recorded only in draft PR #36 and that final commit-linked evidence comment after all final-head runs and artifacts exist.
+- Engine: official Godot 4.7.1-stable, Compatibility renderer, 960x540 logical viewport.
+- Templates: official `Godot_v4.7.1-stable_export_templates.tpz`, 1,280,486,955 bytes, SHA-256 `86409db6200b6f8fd3230989c2d2002851f3dd18acf11d7bdbafddf5a0dd0f72`.
 - Distribution: internal playtest workflow artifacts; no installer, signature, notarization, updater, storefront, public demo, or production deployment.
 
-## Export and bundle evidence
+The correction artifact-source runs below are not labeled final exact-head evidence. They validate the committed functional correction that this evidence-only commit describes. The final self-referential synchronization is deliberately external to the commit.
 
-| Surface | Identity / classification | Result |
-| --- | --- | --- |
-| Windows preset | `Internal Windows x86_64`; embedded PCK | PASS locally and in CI artifact-source run |
-| Linux preset | `Internal Linux x86_64`; embedded PCK | PASS in Ubuntu CI artifact-source run |
-| Windows execution | Local Windows native/headless direct executable and optional launcher | PASS; both exit 0 and report `accepted=true` |
-| Linux execution | Ubuntu CI native/headless direct executable and optional launcher | PASS; both exit 0 and report `accepted=true` |
-| Physical controllers | Human physical validation only | `not_tested` |
-| TV/native display/readability | Human physical validation only | `not_tested` |
-| Household/phone/router/long-session/accessibility | Human physical validation only | `not_tested` |
+## Execution and validation classification
 
-Bundle layouts are the exact platform executable and launcher plus `START_HERE.md`, `FACILITATOR_GUIDE.md`, `POST_SESSION_QUESTIONNAIRE.md`, `PRIVACY_AND_LIMITATIONS.md`, `MANUAL_VALIDATION_RECORD.json`, `THIRD_PARTY_NOTICES.md`, `LICENSES/GODOT_ENGINE_LICENSE.txt`, and `build_manifest.json`. Generated archives also carry separate SHA-256 files outside the bundle. The validator rejects every missing/extra entry and denylisted source, test, secret, report, screenshot, log, key, or environment path.
+| Surface | Source / artifact | Classification | Result |
+| --- | --- | --- | --- |
+| Original independent review | `b038ab75a490337038d000e12368acc77540d8c5` | Original reviewed head, superseded by bounded corrections | Sound baseline; three blockers recorded in review 4740733256 |
+| Correction implementation | `b92c1d6d21a6eed10624a9d20b4c89d6db491d27` | Functional/test/document correction head | Complete local source validation and four successful CI workflows |
+| Local Windows build | Locally exported archive from `b92c1d6...` | Actually executed correction implementation artifact | Native executable and `launch.cmd` both exited 0 with exact SHA, `internal_playtest`, and all invariance flags true |
+| Correction CI Windows artifact | Artifact 8482450708 from `b92c1d6...` | Structural, cryptographic, manifest, privacy, and archive validation only | PASS; this specific CI-produced Windows native file was not executed |
+| Correction CI Linux artifact | Artifact 8482451229 from `b92c1d6...` | Actually executed correction artifact-source artifact | CI native and `launch.sh` both exited 0; downloaded logs revalidated exact SHA/classification/all invariance flags |
+| Final evidence-only Windows and Linux artifacts | Resulting final PR head | External final exact-head evidence | IDs, digests, execution classification, and run links are recorded in PR #36 plus the final commit-linked evidence comment |
+| Physical controllers and displays | Human physical validation only | Manual | `not_tested` |
+| Household, phone/router, long-session, accessibility | Human physical validation only | Manual | `not_tested` |
 
-The exact manifest schema, privacy exclusions, per-file bounds/hashes, canonical content-digest rules, timestamp separation, overwrite refusal, repeated-build behavior, launcher success, and launcher missing-file paths are executable tests in `tools/test_portable_bundle.py`. The build-support Help regression is `game/tests/portable_build_identity_test.gd` and compares real coordinator snapshots and authority/public-history digests.
+Synthetic/headless input is process and integration evidence, not a physical-controller test.
 
-## Validation matrix
+## Corrected build identity and support surface
 
-| Layer | Command / required result | Final result |
-| --- | --- | --- |
-| Portable policy | `python tools/portable_bundle.py validate-repository` | PASS |
-| Portable tests | `python tools/test_portable_bundle.py` (6 tests) | PASS 6/6 |
-| Manual schema/defaults | `python tools/portable_bundle.py validate-manual-record` | PASS; 10/10 remain `not_tested` |
-| Godot import/main | official 4.7.1 typed import and main-scene smoke | PASS |
-| Standalone suites | every workflow-listed standalone suite, including readiness/main route/build identity | PASS 16/16 suites |
-| Deterministic simulations | Director 90/90; social 157/157; companion 40/40; vertical slice 24/24 | PASS at exact totals |
-| Native-authority E2E | browser → service → native Godot → browser ACK exactly once | PASS; reconnect Seat 1, history delta 1 |
-| GUT/JUnit | full passing suite plus intentional failure-propagation probe and clean rerun | PASS 20/20, 91 assertions; probe exit 1 and JUnit 1 failure; residue removed; restored 20/20 |
-| Python/toolchain | Python 3.11.9, exact/hash-locked install, `pip check`, zero-finding gdlint/gdformat | PASS; 85-file first-party inventory |
-| Companion | `npm ci`, audit, strict TypeScript, service 26/26, browser 10/10, builds/smoke | PASS; zero vulnerabilities; Worker/browser build and local service health/room smoke pass |
-| Repository | asset/provenance, privacy, no-network, toolchain, JSON/YAML, secret, size, title, LFS, whitespace | PASS |
-| Export/bundles | preset, allow/deny, manifest, repeated build, Windows/Linux archive validation | PASS locally and in CI for both platform archives |
+The generated identity retains exactly `schema_version`, `release`, `source_commit`, `platform`, `architecture`, and `classification`. An internal artifact accepts only:
 
-## Local Windows artifact evidence
+- release `v0.1.2`;
+- a source commit of exactly 40 lowercase hexadecimal characters;
+- platform `windows` or `linux`;
+- architecture `x86_64`;
+- classification `internal_playtest`;
+- no extra keys.
 
-The implementation-head export used the official local Windows Godot 4.7.1 console editor and the verified official templates. The direct native executable and `launch.cmd` each ran `--headless --audio-driver Dummy -- --portable-build-smoke`, exited 0, loaded the real `Main.tscn`, opened Help page 4, and returned `accepted=true`. The payload recorded the exact implementation SHA and true values for unchanged snapshot, authority digest, public-history digest, active report, and companion projection. This exercises actual exported Windows process startup and the integrated support route; the CLI flag is synthetic automation and not a physical-controller test.
+Help page 4 visibly renders release, short build ID, platform, architecture, `INTERNAL PLAYTEST (internal_playtest)` or the distinctly labeled source-checkout state, scenario `lantern_house_vertical_slice v1`, report schema v2, the provisional project folder, protected reset guidance, actionable report location, and bounded support-reporting guidance. A source checkout is accepted only through the editor-bearing fallback context. A missing or malformed exported identity is visibly invalid and fails exported smoke rather than masquerading as an internal artifact.
+
+Opening and paging Help preserves the complete coordinator snapshot, authority digest, public-history digest, active report, RNG-backed Rules/Director/Role state, and companion projection.
+
+## Actionable local report locations
+
+Production export remains fixed to `user://playtest_exports`; destination authority, privacy schema, and non-network behavior are unchanged. The exact current Godot project folder is `Terror Turn`, and its title remains provisional pending issue #7.
+
+- Windows: `%APPDATA%\Godot\app_userdata\Terror Turn\playtest_exports`
+- Linux: `$XDG_DATA_HOME/godot/app_userdata/Terror Turn/playtest_exports`
+- Linux default when `XDG_DATA_HOME` is unset: `~/.local/share/godot/app_userdata/Terror Turn/playtest_exports`
+
+The corrected text is included in `START_HERE.md`, `FACILITATOR_GUIDE.md`, and `PRIVACY_AND_LIMITATIONS.md`, and is consistent with the technical privacy/bundle guidance. Tests reject concrete usernames, home directories, repository paths, machine/room/token/IP/device identity, and report contents.
+
+## Complete local validation at correction implementation head
+
+| Gate | Result |
+| --- | --- |
+| Official Godot 4.7.1 typed import and main smoke | PASS |
+| Standalone SceneTree suites | PASS 16/16 |
+| Director / social / companion / vertical simulations | PASS 90/90, 157/157, 40/40, 24/24 |
+| Controller-first main route and report integration | PASS |
+| Portable identity/support regression | PASS, including exact negatives and Help presentation invariance |
+| Portable repository/manual/bundle policy | PASS; 8/8 Python tests; 10/10 manual checks remain `not_tested` |
+| GUT/JUnit baseline | PASS 20/20, 91 assertions, zero failures |
+| Intentional GUT failure-propagation probe | PASS as a gate: process exit 1; JUnit 21 tests, 92 assertions, 1 failure; probe source/XML removed |
+| Restored GUT/JUnit | PASS 20/20, 91 assertions, zero failures |
+| Python toolchain | PASS Python 3.11.9, hash-locked install, `pip check` |
+| First-party GDScript quality | PASS 85-file inventory; gdlint zero findings; gdformat check zero differences |
+| Companion dependency/audit/typecheck | PASS Node 24.18.0, npm 11.16.0, clean `npm ci`, zero vulnerabilities, strict TypeScript |
+| Companion service/browser | PASS 26/26 and 10/10 |
+| Worker/browser builds and local Worker smoke | PASS |
+| Browser -> service -> native Godot -> browser ACK exactly once | PASS; reconnect retained Seat 1; history delta 1 |
+| Asset/provenance, privacy, no-network, toolchain | PASS |
+| Tracked JSON/YAML, secrets, size, obsolete-title, LFS, whitespace | PASS |
+| Export preset, manifest, launcher, repeated build, manual schema/defaults | PASS |
+
+No dependency manifest/lock or vendored GUT file changed. No executable, PCK, TPZ, ZIP, report, cache, or generated identity is committed.
+
+## Local Windows correction implementation artifact
+
+The local build used the exact correction implementation SHA and the official Windows Godot 4.7.1 console editor/templates. Both native and launcher smokes loaded the real main scene and Build & Support page, exited zero, and printed `accepted=true`, exact source `b92c1d6d21a6eed10624a9d20b4c89d6db491d27`, platform `windows`, architecture `x86_64`, classification `internal_playtest`, visible classification/report guidance, and true snapshot/digest/history/report/RNG/companion invariance flags.
 
 - Archive: `lantern-house-internal-playtest-v0.1.2-windows-x86_64.zip`.
-- Archive size: 38,293,526 bytes.
-- Archive SHA-256: `437e58322922bf7e1923af36406c7690c19d7c1d69d5aa5a9c5db7273b04698f`.
-- Native executable size: 109,594,200 bytes.
-- Native executable SHA-256: `cd09918156608f9f47025676401a174bc8b568ae228ae33ee03806031e0adc64`.
-- Deterministic runtime-content digest: `467cef18b1c05bfef3668fa0d339df81a02e4ff1ab7934b7adf18105f512f0cb`.
-- Deterministic bundle-content digest: `b3125030ab0a87bbadd81729ef762e17c04d860c29df9aa65370f78095c54956`.
-- Manifest build timestamp: `2026-07-21T01:55:00Z`, explicitly non-deterministic metadata.
-- Bundle inventory: 10 files including `build_manifest.json`; all nine pre-manifest payload records matched exact size/SHA-256 values and the archive CRC/content check passed.
+- Archive size: 38,297,224 bytes.
+- Archive SHA-256: `87d5c38d5340fa91d4bc1586021efad62d323d172f86784a2c2e26feaa19bcc4`.
+- Native executable size: 109,597,128 bytes.
+- Native executable SHA-256: `4452dcb27cf743a4c3aa6c838b20a65e7bfb43a34bbcdfeee2a1276db31db282`.
+- Runtime-content digest: `78a7cfcffd996035c6d9b1494f7e5323eb7c54ceb750f43b2f4e86f3b9e5eefb`.
+- Bundle-content digest: `3c83adc3ef4655e630ee7c9c72265c1e12bc94bb657d4787125a2cd55e63a343`.
+- Manifest timestamp: `2026-07-21T02:59:02Z`, labeled non-deterministic metadata excluded from content identity.
+- Inner sidecar, CRC, 10-file exact bundle inventory, 9 manifest payload records, every size/SHA-256, allowlist, denylist, and privacy check: PASS.
 
-## Exact build and validation commands
+## Correction artifact-source workflow ledger
 
-The local Windows implementation-head build used these commands from repository root (the absolute ignored output root is abbreviated as `<repo>/builds/local-windows-159bd86` only to avoid committing a user path):
+All four workflows ran against `b92c1d6d21a6eed10624a9d20b4c89d6db491d27` and succeeded:
 
-```text
-python tools/portable_bundle.py write-build-identity --platform windows --source-commit 159bd863ef39c6369f0460b1d8980d5577cab886
-Godot_v4.7.1-stable_win64_console.exe --headless --path game --export-release "Internal Windows x86_64" <repo>/builds/local-windows-159bd86/export/lantern_house_internal.exe
-python tools/portable_bundle.py assemble --platform windows --source-commit 159bd863ef39c6369f0460b1d8980d5577cab886 --timestamp 2026-07-21T01:55:00Z --output-root <repo>/builds/local-windows-159bd86 --exported-binary <repo>/builds/local-windows-159bd86/export/lantern_house_internal.exe
-python tools/portable_bundle.py validate-bundle <repo>/builds/local-windows-159bd86/bundles/lantern-house-internal-playtest-v0.1.2-windows-x86_64
-lantern_house_internal.exe --headless --audio-driver Dummy -- --portable-build-smoke
-launch.cmd --headless --audio-driver Dummy -- --portable-build-smoke
-```
+- [Godot 4.7 tests 29797302900](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29797302900)
+- [Companion service and browser tests 29797302903](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29797302903)
+- [Repository checks 29797302906](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29797302906)
+- [Portable internal playtest builds 29797302919](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29797302919)
 
-The exact CI equivalents are committed in `.github/workflows/portable-builds.yml`: the verified Linux editor writes a platform identity, invokes `--export-release` for each named preset, assembles each platform through `tools/portable_bundle.py`, revalidates both output directories, executes the Linux native file and launcher, checks missing-file exit behavior, and uploads the two versioned artifacts. Local source/repository validation used the workflow-listed Godot scripts plus:
+| Artifact | GitHub outer evidence | Inner ZIP | Native executable | Content digests |
+| --- | --- | --- | --- | --- |
+| Windows 8482450708, `lantern-house-internal-playtest-v0.1.2-windows-x86_64` | 38,159,491 bytes; `sha256:df0bd170299c64b75132def183a5c811410a288b316dd7c20dd9494e357ecebe` | 38,297,383 bytes; `f85e1034464d2ef356111ac73550185430a6467d26c71773461428eefa5ff571` | 109,597,112 bytes; `e7547918f639cdfd1213dba0d1d05f66485ef55ba46f9c9020bff7622b4d9ce1` | runtime `0ca3cf58aed7e4bd039f6e208d1868eb3b04cb20aec47c6cc11a5ed3dcaf1b98`; bundle `17e26185e452ab4ade8d87c1ad441d3845eb01aec6f8fc2444ef73c9ad10aead` |
+| Linux 8482451229, `lantern-house-internal-playtest-v0.1.2-linux-x86_64` | 28,743,103 bytes; `sha256:0773a9884ea2f82ef4c889c4a3b6d538ada25bcc2ec7ce1eeb706120842fd825` | 28,775,187 bytes; `41bfbcdba9bda52b831eeff3581e67cd256d18c32c9ac1bc9c006f9fedcf55f6` | 73,996,008 bytes; `d1ee57cf08d3ca32aa67778c2ec40a380071f7eee308d49a44e28718b1d36f44` | runtime `99360f2e92510bd0557ea766921cd236d351b080afeb598115fdcbf740c05da8`; bundle `8f6a0103f5e68e58f43b25e97e8589bf8911e4b61edb269f4f765b8e9c24d7fb` |
+| GDScript quality 8482439578 | 1,206 bytes; `sha256:51981c175e08d1862a6bfcd932a2ac5b94b2d0779395c9d0fb7b5eb7cb643555` | Not applicable | 85-file inventory | gdlint 0; format differences 0 |
+| GUT JUnit 8482452444 | 1,147 bytes; `sha256:f053f1ef65089353bfa24549ccedc5b3691f5a8ea11d96217e9c57ad3482a4cb` | Not applicable | 20 tests | 91 assertions; zero failures |
 
-```text
-python tools/portable_bundle.py validate-repository
-python tools/portable_bundle.py validate-manual-record
-python tools/test_portable_bundle.py
-python tools/validate_assets.py
-python tools/validate_companion.py
-python tools/validate_playtest_readiness.py
-python tools/validate_toolchain.py
-python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
-python -m pip check
-gdlint <85-file-first-party-inventory>
-gdformat --check <85-file-first-party-inventory>
-npm ci
-npm audit --audit-level=moderate
-npm run typecheck
-npm run test:service
-npm run test:browser
-npm run build
-npm run test:e2e:local
-```
+Both portable artifacts were downloaded as the original GitHub outer ZIP. Their downloaded byte sizes and SHA-256 values exactly matched the GitHub artifact API. Outer and inner ZIP CRC tests passed. Inner sidecars matched. Extracted inventories matched the exact platform allowlists and denylists. Every manifest file size/SHA-256, source SHA, release, platform, architecture, scenario/report versions, provisional-title status, timestamp classification, native hash, runtime digest, and bundle digest revalidated.
 
-The repeated-assembly test used identical fixture bytes/source SHA and timestamps `2026-07-21T01:00:00Z` and `2026-07-21T02:00:00Z`. Both runtime identities were `b02eaf648d4374cdffd1fc5accc02975b9a3389f12066e58f45f0c35389e756f`; both bundle identities were `2fff03bf9262db37ca1c9aaa40dc07008afb107e02d99c82cbf90f6f400d420b`. The archives intentionally differed (`d89d7a870a7819ac9cdba167589e77492ccfee8c6e57deb624356298593a254e` versus `08968a4b7ad2ba8b28a318c28ac2f89a62c50e523011531cebaaf92a11507c95`) because their manifest timestamps differ.
+The Linux outer artifact correctly preserves the inner ZIP and sidecar under `artifacts/` because the upload also includes root smoke logs. Both downloaded Linux smoke logs contain the exact correction source SHA, Linux/x86_64 target, `internal_playtest`, `accepted=true`, visible classification/report guidance, and every invariance flag true.
 
-## Changed-file manifest
+## Failures, fixes, warnings, retries, and reruns
 
-Relative to starting main `8f0b18b5137072ddcc9af7fc95e1a8a31e5112db`, the bounded branch changes exactly these paths (`A` added, `M` modified):
-
-```text
-M .github/workflows/godot-tests.yml
-A .github/workflows/portable-builds.yml
-M .github/workflows/repository-checks.yml
-M .gitignore
-M CHANGELOG.md
-M README.md
-A docs/playtests/Portable_Playtest_Bundle_Evidence.md
-A docs/playtests/v0.1.2-facilitator-guide.md
-A docs/playtests/v0.1.2-manual-hardware-validation.json
-A docs/playtests/v0.1.2-post-session-questionnaire.md
-A docs/releases/v0.1.2-portable-playtest-build-session-bundle.md
-M docs/technical/First_Vertical_Slice.md
-M docs/technical/Playtest_Readiness.md
-M docs/technical/Playtest_Report_Privacy.md
-A docs/technical/Portable_Playtest_Bundles.md
-M docs/technical/Toolchain_and_Testing.md
-A game/export_presets.cfg
-M game/project.godot
-A game/src/build/internal_build_identity.gd
-A game/src/build/internal_build_identity.gd.uid
-M game/src/main/main.gd
-M game/src/session/guided_session_help.gd
-M game/tests/fixtures/playtest_report_v2.json
-M game/tests/fixtures/playtest_report_v2.md
-M game/tests/playtest_capture_fixture.gd
-M game/tests/playtest_main_route_test.gd
-A game/tests/portable_build_identity_test.gd
-A game/tests/portable_build_identity_test.gd.uid
-A packaging/manual_validation_schema.json
-A packaging/portable/GODOT_ENGINE_LICENSE.txt
-A packaging/portable/PRIVACY_AND_LIMITATIONS.md
-A packaging/portable/START_HERE.md
-A packaging/portable/THIRD_PARTY_NOTICES.md
-A packaging/portable/bundle_spec.json
-A packaging/portable/launch_linux.sh
-A packaging/portable/launch_windows.cmd
-A tools/portable_bundle.py
-A tools/test_portable_bundle.py
-M tools/validate_playtest_readiness.py
-M tools/validate_toolchain.py
-```
-
-No dependency manifest/lock, vendored GUT file, generated executable/archive, PR #32 file, or issue #7 naming decision is included.
-
-## Artifact ledger
-
-| Workflow run | Artifact ID | Artifact name | GitHub size | GitHub digest | Inner archive SHA-256 | Runtime / bundle content digests |
-| --- | ---: | --- | ---: | --- | --- | --- |
-| [29794377746](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377746) | 8481488168 | `lantern-house-internal-playtest-v0.1.2-windows-x86_64` | 38,155,659 | `sha256:913a1c80e3651df12b1d12af15bda2f534dce55a8d79d153dc299fac2d6a31a2` | `c7c18b9bb88232d81a4ded11f5686f41db2ddf734082aa24f549fc2733c4b371` (38,293,814 bytes) | runtime `8bffc0a40c927fbc0e452228f983048437dd9510dfca98296bdf1f2442bc2cd6`; bundle `cebb557eed52d65f6be4a228e15de824d2309228643869ed7c8ba6356a06b328` |
-| [29794377746](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377746) | 8481488836 | `lantern-house-internal-playtest-v0.1.2-linux-x86_64` | 28,739,457 | `sha256:83aaf0322bb6b5b2a82e67b0c48eaaeb2490c1f6fae6f6649d469a9d05f3c848` | `102c80471dacbc967628bdc2889894a98873ffdea75533e86130526c2907ba69` (28,771,748 bytes) | runtime `c3098d8fb6d17cdea561156bd61743773289611e1f36c9c19ba370ae8ced3658`; bundle `8ed147a95ecedcdb401816ab82ba485aede9b7125d030c9ab6c0fc55aa3e0594` |
-| [29794377684](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377684) | 8481474523 | `gdscript-quality` | 1,206 | `sha256:4a533849f25e8870dde80180b818fa148f29411ffc52dcde36f0bff02c9978d2` | Not applicable | 85-file inventory, lint 0, format differences 0 |
-| [29794377684](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377684) | 8481486257 | `gut-junit-results` | 1,146 | `sha256:5725bed4a730780ecd5d589bccc79a75c62a2f8007045601d06349c35e17ff5a` | Not applicable | 20/20 tests, 91 assertions |
-
-Both portable artifacts were downloaded. Their sibling checksum files matched the inner archives, archive CRC/content checks passed, exact bundle allowlists and every manifest file size/SHA-256 revalidated, and both manifests recorded source `d6323e0dfea62665ead3029c600f177de17a9dbe`. The Windows native file was 109,594,184 bytes with SHA-256 `02b45cd9e93bf8e9c626d97bdf122ac2713380e36fa7fedaf5747be2cd46cdb6`; Linux was 73,993,080 bytes with SHA-256 `a86b8930d552b69015079b6f1109c5a73f50ebd83086d2e9cc4af2d4c1d1cbe2`.
-
-## Exact-head workflow links
-
-- [Godot 4.7 tests run 29794377684](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377684): success.
-- [Companion service and browser tests run 29794377688](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377688): success.
-- [Repository checks run 29794377714](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377714): success.
-- [Portable internal playtest builds run 29794377746](https://github.com/SteadyEddieSC/Tales-of-Terror/actions/runs/29794377746): success; Linux direct and launcher smoke logs both record exact source and every invariance flag true.
-
-## Failures, corrections, warnings, and reruns
-
-- The first preset import lacked Godot's required `export_files` property. Both presets were corrected and re-imported successfully.
-- A first build-identity privacy assertion confused safe instructional wording with an actual secret value. The test now rejects concrete private-value patterns and still verifies that the support page warns users not to share secrets.
-- A resources-only export could not resolve script-class dependencies from `Main.tscn`; a selected-resources fallback also admitted unintended content. The reviewed preset now uses all runtime resources with explicit exclusions for tests, vendored GUT, `.gutconfig.json`, and the unused exploration showcase. The resulting native executable reached the integrated smoke successfully.
-- A denylist probe initially treated Godot's generated `.godot/exported` transforms and class/UID caches inside the embedded pack as outer bundle files. Godot 4.7.1 always emits these runtime internals and export filters do not remove them. The false-positive rule was narrowed to actual test/GUT/showcase resources; the outer bundle still rejects any `.godot` path.
-- An initial PowerShell variable capture did not retain the Windows console-wrapper marker even though the native process printed it and exited zero. Final Windows evidence uses process exit results plus an explicit output log/marker check and records the rerun.
-- The first Node command lacked the portable Node directory on PATH; the next explicit invocation exposed stale prior Wrangler smoke processes locking `node_modules`. Those exact repository-scoped processes were stopped. A second invocation needed the Node directory available to lifecycle scripts, and a third selected `npm.ps1` under the host execution policy. The final explicit `npm.cmd` invocation with the pinned Node directory prepended passed the full matrix. No manifest or lock changed.
-- A first inline Node service-smoke command lost JavaScript quotes through PowerShell argument parsing. The here-string/stdin rerun passed health and room creation and stopped the local worker cleanly.
-- Exact-head portable CI run 29794247789 passed template verification, both exports/assemblies, Linux direct and launcher smoke, and missing-launcher checks, then failed its cleanliness assertion because the downloaded editor/template archives and staging directories were placed at checkout root. No bundle upload occurred. The workflow was corrected to keep all tool downloads/staging under `RUNNER_TEMP` and to print any future dirty paths before failing; the complete workflow was rerun at the corrected head.
-- Exported smoke is synthetic/headless input only. It is not physical-controller or household evidence.
+- The formal review identified three blockers: missing visible classification, non-actionable report locations, and a superseded-run ledger labeled as exact-head. All three are corrected here.
+- The first Python source-text policy probe compared rendered Windows backslashes with escaped GDScript source. It was corrected to assert the constant/policy structure while document and runtime tests assert the rendered exact path.
+- Initial edited GDScript exceeded the 100-column gate and differed from canonical formatting. Only the three edited GDScript files were formatted; line lengths were wrapped; full 85-file lint/format checks then passed.
+- A first over-broad local JSON probe inspected an ignored historical `.evidence` file with a BOM. The repository-equivalent tracked inventory passed JSON/YAML validation.
+- The first tracked-structured-data retry used an invalid PowerShell here-string pipeline and never executed a gate. Python then obtained `git ls-files` directly and the gate passed.
+- GUT passed 20/20 and printed 91 assertions, but the first parser looked for assertions on suite nodes. It was corrected to sum testcase assertions, and both intentional-failure and restored JUnit totals were verified.
+- Node was not on the host PATH. The first Node command did not start; the pinned Node 24.18.0 directory was explicitly prepended and the full matrix passed. Dependency manifests/locks did not change.
+- A Windows process-enumeration local Worker harness was rejected by command safety before launch. A bounded inline Node harness started and terminated only the pinned Wrangler child; health and room creation passed.
+- The first downloaded Linux artifact validator assumed the inner ZIP was at the outer root. GitHub preserved it under `artifacts/` because smoke logs are uploaded from another path. The corrected exact-layout validator passed; no artifact content failed.
+- Exported smoke remains synthetic/headless automation and is not classified as physical-controller or household evidence.
 
 ## Deferred physical validation
 
-The committed manual record deliberately leaves one/multiple physical controllers, disconnect/reconnect, keyboard fallback observation, TV-distance readability, 720p/1080p/native-4K safe margins, physical phones and no-phone route, household router/firewall behavior, long-session stability, and assistive technology at `not_tested`. No automation or virtual/offscreen evidence is reclassified as physical.
+The committed manual record leaves one/multiple physical controllers, disconnect/reconnect, keyboard fallback observation, TV-distance readability, 720p/1080p/native-4K safe margins, physical phones and no-phone route, household router/firewall behavior, long-session stability, and assistive technology at `not_tested`. No automation or virtual/offscreen evidence is reclassified as physical.
+
+## Protected scope
+
+PR #32 remains open and separate. Issue #7 remains open. Repository naming/final branding, dependency manifests/locks, and vendored GUT remain untouched. The PR stays draft and is not merged or marked ready.
