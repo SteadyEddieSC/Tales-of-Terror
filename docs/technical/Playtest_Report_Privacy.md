@@ -26,3 +26,7 @@ Tester notes are optional local input. Facilitators must not enter another playe
 ## Storage and sharing
 
 Production export is fixed to `user://playtest_exports`. The UI shows only relative user-data paths, not the host username or absolute path. Nothing is uploaded automatically. A facilitator chooses whether to inspect or share the two files after the session. Automated fixtures contain synthetic values only.
+
+## Build manifest separation
+
+The v0.1.2 portable `build_manifest.json` is a separate non-authoritative build record, not a playtest report. Its exact schema contains only release/source/target identity, reviewed engine/scenario constants, build-time classification, and bundle file sizes and SHA-256 values. It cannot contain report payloads or filenames, usernames, machine names, repository paths, tokens, room secrets, IP addresses, or device identities. The in-game support page similarly shows only bounded build identity and a generic user-data report location. Neither manifest nor support presentation mutates or serializes gameplay authority.

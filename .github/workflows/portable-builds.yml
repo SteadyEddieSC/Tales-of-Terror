@@ -1,0 +1,125 @@
+name: Portable internal playtest builds
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  portable:
+    name: Windows and Linux portable bundle validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      GODOT_TEMPLATE_SHA256: 86409db6200b6f8fd3230989c2d2002851f3dd18acf11d7bdbafddf5a0dd0f72
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+      - name: Download checksum-pinned Godot 4.7.1 editor and export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
+          curl -fsSL -o godot.zip "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | sha512sum --check -
+          curl -fsSL -o export-templates.tpz "$base/Godot_v4.7.1-stable_export_templates.tpz"
+          echo "$GODOT_TEMPLATE_SHA256  export-templates.tpz" | sha256sum --check -
+          unzip -q godot.zip -d .godot-bin
+          chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.7.1.stable"
+          unzip -q export-templates.tpz -d .export-template-staging
+          cp -a .export-template-staging/templates/. "$HOME/.local/share/godot/export_templates/4.7.1.stable/"
+          echo "$PWD/.godot-bin" >> "$GITHUB_PATH"
+      - name: Validate reviewed export and bundle policy
+        run: |
+          python tools/portable_bundle.py validate-repository
+          python tools/test_portable_bundle.py
+      - name: Export exact-head Windows and Linux native builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p builds/export/windows builds/export/linux
+          python tools/portable_bundle.py write-build-identity --platform windows --source-commit "$SOURCE_SHA"
+          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
+            --export-release "Internal Windows x86_64" \
+            "$PWD/builds/export/windows/lantern_house_internal.exe"
+          python tools/portable_bundle.py write-build-identity --platform linux --source-commit "$SOURCE_SHA"
+          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
+            --export-release "Internal Linux x86_64" \
+            "$PWD/builds/export/linux/lantern_house_internal.x86_64"
+      - name: Assemble and validate bounded session bundles
+        shell: bash
+        run: |
+          set -euo pipefail
+          timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          python tools/portable_bundle.py assemble --platform windows --source-commit "$SOURCE_SHA" --timestamp "$timestamp"
+          python tools/portable_bundle.py assemble --platform linux --source-commit "$SOURCE_SHA" --timestamp "$timestamp"
+          python tools/portable_bundle.py validate-bundle \
+            builds/bundles/lantern-house-internal-playtest-v0.1.2-windows-x86_64
+          python tools/portable_bundle.py validate-bundle \
+            builds/bundles/lantern-house-internal-playtest-v0.1.2-linux-x86_64
+      - name: Smoke native Linux executable and optional launcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          bundle=builds/bundles/lantern-house-internal-playtest-v0.1.2-linux-x86_64
+          "$bundle/lantern_house_internal.x86_64" --headless --audio-driver Dummy -- --portable-build-smoke | tee builds/linux-direct-smoke.txt
+          grep -F 'PORTABLE_BUILD_SMOKE:' builds/linux-direct-smoke.txt
+          grep -F '"accepted":true' builds/linux-direct-smoke.txt
+          "$bundle/launch.sh" --headless --audio-driver Dummy -- --portable-build-smoke | tee builds/linux-launcher-smoke.txt
+          grep -F '"accepted":true' builds/linux-launcher-smoke.txt
+      - name: Prove launcher missing-file failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p builds/missing-linux builds/missing-windows
+          cp packaging/portable/launch_linux.sh builds/missing-linux/launch.sh
+          chmod +x builds/missing-linux/launch.sh
+          if builds/missing-linux/launch.sh >builds/linux-missing.txt 2>&1; then
+            echo 'Linux launcher unexpectedly accepted a missing executable'
+            exit 1
+          else
+            code=$?
+          fi
+          test "$code" -eq 2
+          grep -F 'Required executable is missing or not executable' builds/linux-missing.txt
+          cp packaging/portable/launch_windows.cmd builds/missing-windows/launch.cmd
+          grep -F 'Required game executable is missing' builds/missing-windows/launch.cmd
+      - name: Prove generated outputs are untracked and source tree is clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1)"
+          if git ls-files | grep -E '\.(exe|pck|tpz|x86_64|zip)$'; then
+            echo 'Generated binary or archive is tracked'
+            exit 1
+          fi
+      - name: Upload Windows internal bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lantern-house-internal-playtest-v0.1.2-windows-x86_64
+          path: |
+            builds/artifacts/lantern-house-internal-playtest-v0.1.2-windows-x86_64.zip
+            builds/artifacts/lantern-house-internal-playtest-v0.1.2-windows-x86_64.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload Linux internal bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lantern-house-internal-playtest-v0.1.2-linux-x86_64
+          path: |
+            builds/artifacts/lantern-house-internal-playtest-v0.1.2-linux-x86_64.zip
+            builds/artifacts/lantern-house-internal-playtest-v0.1.2-linux-x86_64.zip.sha256
+            builds/linux-direct-smoke.txt
+            builds/linux-launcher-smoke.txt
+          if-no-files-found: error
+          retention-days: 14

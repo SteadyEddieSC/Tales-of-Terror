@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "release": "v0.1.2",
+  "bundle_prefix": "lantern-house-internal-playtest",
+  "platforms": {
+    "windows": {
+      "architecture": "x86_64",
+      "preset": "Internal Windows x86_64",
+      "exported_binary": "builds/export/windows/lantern_house_internal.exe",
+      "native_executable": "lantern_house_internal.exe",
+      "launcher_source": "packaging/portable/launch_windows.cmd",
+      "launcher_name": "launch.cmd"
+    },
+    "linux": {
+      "architecture": "x86_64",
+      "preset": "Internal Linux x86_64",
+      "exported_binary": "builds/export/linux/lantern_house_internal.x86_64",
+      "native_executable": "lantern_house_internal.x86_64",
+      "launcher_source": "packaging/portable/launch_linux.sh",
+      "launcher_name": "launch.sh"
+    }
+  },
+  "common_files": {
+    "START_HERE.md": "packaging/portable/START_HERE.md",
+    "FACILITATOR_GUIDE.md": "docs/playtests/v0.1.2-facilitator-guide.md",
+    "POST_SESSION_QUESTIONNAIRE.md": "docs/playtests/v0.1.2-post-session-questionnaire.md",
+    "PRIVACY_AND_LIMITATIONS.md": "packaging/portable/PRIVACY_AND_LIMITATIONS.md",
+    "MANUAL_VALIDATION_RECORD.json": "docs/playtests/v0.1.2-manual-hardware-validation.json",
+    "THIRD_PARTY_NOTICES.md": "packaging/portable/THIRD_PARTY_NOTICES.md",
+    "LICENSES/GODOT_ENGINE_LICENSE.txt": "packaging/portable/GODOT_ENGINE_LICENSE.txt"
+  },
+  "forbidden_path_parts": [
+    ".git",
+    ".godot",
+    "addons",
+    "tests",
+    "node_modules",
+    "playtest_exports",
+    "screenshots"
+  ],
+  "forbidden_extensions": [
+    ".env",
+    ".jks",
+    ".key",
+    ".keystore",
+    ".log",
+    ".p12",
+    ".pem",
+    ".png",
+    ".psd"
+  ]
+}

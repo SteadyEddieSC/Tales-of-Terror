@@ -4,7 +4,7 @@ extends Control
 signal export_requested
 
 const LAB_THEME: Theme = preload("res://assets/theme/terror_lab_theme.tres")
-const PAGE_COUNT: int = 4
+const PAGE_COUNT: int = 5
 const PANEL_SIZE := Vector2(820, 440)
 
 var _page_index: int = 0
@@ -181,6 +181,12 @@ static func page_content(
 			return _session_page(state, seats)
 		2:
 			return _privacy_page(companion_status)
+		3:
+			return {
+				"title": "BUILD & SUPPORT",
+				"body": InternalBuildIdentity.support_text(),
+				"footer": "LEFT/RIGHT: PAGE  •  A/ENTER: NEXT  •  B/ESC/X/H: CLOSE",
+			}
 		_:
 			return {
 				"title": "PLAYTEST REPORT",

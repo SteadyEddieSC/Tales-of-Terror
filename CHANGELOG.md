@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.2 - Portable Playtest Build & Session Bundle
+
+- Added checksum-pinned Godot 4.7.1 Windows and Linux export presets and CI-only portable archives with exact allowlist/denylist validation, deterministic runtime and bundle-content identities, and privacy-bounded versioned manifests.
+- Added relative offline launch helpers, facilitator/session documents, a fail-closed manual hardware-validation record that defaults to `not_tested`, and direct/native plus launcher smoke coverage.
+- Added a presentation-only Help page for bounded internal build/support identity, with integrated regression proof that it leaves gameplay authority, snapshots, public history, reports, RNG, and companion boundaries unchanged.
+
 ## v0.1.1 - Playtest Readiness & Guided Session UX
 
 - Added controller-first lifecycle guidance and a high-contrast, paged help/accessibility surface covering controls, current objective, prompt/vote progress, stable-seat reconnect, no-phone reveal, optional companions, protected reset, ending, and report export.

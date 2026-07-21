@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "release": "v0.1.2",
+  "record_classification": "manual_non_authoritative",
+  "session_id": "",
+  "recorded_at_utc": "",
+  "observer": "",
+  "checks": [
+    {"id": "one_physical_controller", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "multiple_physical_controllers", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "disconnect_reconnect_ownership", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "keyboard_fallback", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "tv_distance_readability", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "safe_margins_720p_1080p_native_4k", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "physical_phones_and_no_phone_path", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "household_wifi_router_firewall", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "long_session_stability", "status": "not_tested", "evidence_class": "not_tested", "notes": ""},
+    {"id": "accessibility_assistive_technology", "status": "not_tested", "evidence_class": "not_tested", "notes": ""}
+  ],
+  "declarations": {
+    "automated_evidence_is_physical": false,
+    "explicit_human_entry_required": true
+  }
+}

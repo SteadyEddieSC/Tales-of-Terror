@@ -2,7 +2,7 @@
 
 ## Guided presentation map
 
-The v0.1.1 presentation remains a consumer of `VerticalSliceCoordinator.public_state()` and sanitized seat/companion summaries. It does not own lifecycle or gameplay decisions.
+The presentation remains a consumer of `VerticalSliceCoordinator.public_state()` and sanitized seat/companion summaries. It does not own lifecycle or gameplay decisions.
 
 | State | Public guidance | Recovery guidance |
 | --- | --- | --- |
@@ -14,13 +14,13 @@ The v0.1.1 presentation remains a consumer of `VerticalSliceCoordinator.public_s
 | Terminal | Outcome is fixed | Confirm opens the filtered ending |
 | Ending | Public outcome, report export, rematch, return | Rematch retains policy-approved stable seats; return resets |
 
-The help surface has four bounded pages: controls, current session, privacy/recovery, and report export. It uses high contrast, television-scale theme text, safe margins, text plus symbols, no flashing, and left/right pagination. X/H and B/Escape close it. The normal route requires no mouse.
+The help surface has five bounded pages: controls, current session, privacy/recovery, build/support identity, and report export. It uses high contrast, television-scale theme text, safe margins, text plus symbols, no flashing, and left/right pagination. X/H and B/Escape close it. The normal route requires no mouse.
 
 ## Observation boundary
 
 `PlaytestReport` is a `RefCounted` observer. It accepts public view dictionaries, reduced seat rows, companion aggregates, explicit elapsed seconds, and explicit timestamps. It does not hold authority references and cannot submit prompt/vote responses. `PlaytestReportWriter` is the replaceable writer seam; production uses `LocalPlaytestReportWriter`, whose destination is fixed to `user://playtest_exports` and whose basename validator rejects traversal or arbitrary paths.
 
-Schema version 2 has exact root and nested keys. Bounded arrays retain ordered lifecycle, seat, recovery, prompt/vote progress, rejection-category, and stage-duration observations. Strings and tester feedback are bounded. `completion_reason` is `ending` or `reset`. An ending snapshot begins with `post_ending_disposition=pending` and accepts exactly one bounded update to `rematch`, `return_to_title`, or `reset`; a pre-ending reset uses `not_applicable`. This keeps export available at ending without relabeling or replacing the completed report. Export is deliberate: open help after a report is finalized, go to page 4, then press A/Enter. JSON and Markdown are written together or the operation reports failure. Existing basenames reject instead of being silently overwritten.
+Schema version 2 has exact root and nested keys. Bounded arrays retain ordered lifecycle, seat, recovery, prompt/vote progress, rejection-category, and stage-duration observations. Strings and tester feedback are bounded. `completion_reason` is `ending` or `reset`. An ending snapshot begins with `post_ending_disposition=pending` and accepts exactly one bounded update to `rematch`, `return_to_title`, or `reset`; a pre-ending reset uses `not_applicable`. This keeps export available at ending without relabeling or replacing the completed report. Export is deliberate: open help after a report is finalized, go to page 5, then press A/Enter. JSON and Markdown are written together or the operation reports failure. Existing basenames reject instead of being silently overwritten.
 
 The report is finalized before destructive reset. Normal ending finalizes an immutable gameplay/outcome snapshot before export; rematch, return-to-title, or an ending reset updates only its bounded disposition. A clean report begins after reset, return-to-title, or successful rematch. The previous finalized report remains exportable from the title, briefing, or ending help page. Reporting never writes in the background and has no HTTP, WebSocket, UDP, TCP, analytics, crash-reporting, or cloud path.
 

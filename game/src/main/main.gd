@@ -77,6 +77,8 @@ func _ready() -> void:
 		" vertical slice loaded: ",
 		ProjectSettings.get_setting("application/config/version")
 	)
+	if OS.get_cmdline_user_args().has("--portable-build-smoke"):
+		call_deferred("_run_portable_build_smoke")
 
 
 func _process(delta: float) -> void:
@@ -420,7 +422,11 @@ func _on_report_export_requested() -> void:
 	if _last_report == null or not _last_report.is_finalized():
 		_help.present_export_result({"accepted": false, "reason": "report_not_finalized"})
 		return
-	var basename: String = "terror_turn_v0_1_1_%d" % int(Time.get_unix_time_from_system())
+	var release: String = str(ProjectSettings.get_setting("application/config/version"))
+	var basename: String = (
+		"lantern_house_internal_%s_%d"
+		% [release.trim_prefix("v").replace(".", "_"), int(Time.get_unix_time_from_system())]
+	)
 	_help.present_export_result(_last_report.export_with(_report_writer, basename))
 
 
@@ -462,3 +468,51 @@ func _event_can_confirm(event: InputEvent, device_id: int) -> bool:
 	if event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_SPACE:
 		return true
 	return _seats.find_seat_by_device(device_id) >= 0
+
+
+func _run_portable_build_smoke() -> void:
+	var before: String = JSON.stringify(_coordinator.to_snapshot())
+	var authority_before: String = _coordinator.authority_digest()
+	var history_before: String = _coordinator.public_history_digest()
+	var report_before: String = _active_report.to_json()
+	var companion_before: String = JSON.stringify(_companion_status())
+	_open_help()
+	for _page: int in 3:
+		_help.handle_action("ui_navigate_right")
+	var support: String = _help.page_text()
+	var identity: Dictionary = InternalBuildIdentity.read_identity()
+	var passed: bool = (
+		_help.visible
+		and _help.page_index() == 3
+		and str(identity.release) in support
+		and InternalBuildIdentity.REPORT_LOCATION in support
+		and before == JSON.stringify(_coordinator.to_snapshot())
+		and report_before == _active_report.to_json()
+		and companion_before == JSON.stringify(_companion_status())
+	)
+	print(
+		"PORTABLE_BUILD_SMOKE:",
+		(
+			JSON
+			. stringify(
+				{
+					"accepted": passed,
+					"lifecycle": _coordinator.lifecycle,
+					"release": identity.release,
+					"source_commit": identity.source_commit,
+					"platform": identity.platform,
+					"help_page": _help.page_index() + 1,
+					"report_location_guidance": true,
+					"authority_unchanged": before == JSON.stringify(_coordinator.to_snapshot()),
+					"authority_digest_unchanged":
+					authority_before == _coordinator.authority_digest(),
+					"public_history_digest_unchanged":
+					history_before == _coordinator.public_history_digest(),
+					"report_unchanged": report_before == _active_report.to_json(),
+					"companion_projection_unchanged":
+					companion_before == JSON.stringify(_companion_status()),
+				}
+			)
+		)
+	)
+	get_tree().quit(0 if passed else 1)
