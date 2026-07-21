@@ -37,7 +37,7 @@ Production export remains fixed to `user://playtest_exports`. The UI and bundle 
 
 The v0.1.3 pilot record is separate from schema-v2 runtime reports. A facilitator may record reviewed report SHA-256 hashes but must not ingest or commit report content. Offline intake accepts exactly one `PILOT_SESSION_RECORD.json`, rejects unknown files, links, traversal, oversized input, direct identifiers, usernames, absolute/repository paths, secrets, tokens, room codes, IP/network details, device IDs, and ambiguous evidence classes, and retains only normalized bounded values plus the input-file SHA-256. Automated and synthetic evidence cannot be promoted to human/physical evidence.
 
-The committed pilot record is intentionally blank: manual checks are `not_tested`, route fields are `not_observed`, counts are zero, strings/arrays are empty, and human declarations are false. The blank findings register contains no actual findings. Human evidence is reviewed before Stage 2 commits anything.
+The committed pilot record is intentionally blank: manual checks are `not_tested`, route fields are `not_observed`, counts are zero, strings/arrays are empty, and human declarations are false. The blank findings register contains no actual findings. No human session occurred in v0.1.3. Human evidence belongs to issue #39 and must be reviewed before that future issue records or proposes any finding.
 
 ## Build manifest separation
 

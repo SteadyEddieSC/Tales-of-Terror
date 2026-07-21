@@ -1,6 +1,6 @@
-# Lantern House v0.1.3 Pilot-ready Internal Playtest
+# Lantern House v0.1.3 Pilot Framework Candidate Build
 
-This extracted folder is an internal evaluation build. The working title is provisional; this is not a public demo or storefront release.
+This extracted folder is an internal framework-validation build. No human pilot or manual validation is claimed. The working title is provisional; this is not a public demo or storefront release. A future real pilot under issue #39 requires a fresh candidate from the then-current protected `main`.
 
 ## Launch
 

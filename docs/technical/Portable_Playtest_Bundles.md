@@ -2,7 +2,7 @@
 
 ## Boundary
 
-v0.1.3 produces internal, portable Windows and Linux x86_64 pilot candidates as GitHub Actions artifacts. Generated executables, archives, export templates, human evidence, and normalized outputs are ignored or externally reviewed inputs and are never committed during Stage 1. This is not an installer, storefront build, public demo, signed release, updater, platform-SDK integration, or production deployment.
+v0.1.3 produces internal, portable Windows and Linux x86_64 pilot-framework candidates as GitHub Actions artifacts. Generated executables, archives, export templates, human evidence, and normalized outputs are ignored or externally reviewed inputs and are never committed. This is not an installer, storefront build, public demo, signed release, updater, platform-SDK integration, or production deployment. No human session or manual validation occurred in v0.1.3; issue #39 must generate a fresh candidate from the then-current protected `main` for the deferred real pilot.
 
 The native executable is directly launchable. `launch.cmd` and `launch.sh` are optional convenience helpers that resolve only paths beside themselves, request no administrator access, perform no downloads or network calls, pass command-line arguments through, return the native process status, and exit with a clear code-2 error when the required executable is absent.
 

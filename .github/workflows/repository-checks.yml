@@ -42,7 +42,7 @@ jobs:
           test -f docs/playtests/v0.1.3-pilot-session-blank.json
           test -f docs/playtests/v0.1.3-findings-register-blank.json
           test -f docs/playtests/v0.1.3-pilot-ready-evidence.md
-          test -f docs/releases/v0.1.3-first-household-remote-playtest-pilot.md
+          test -f docs/releases/v0.1.3-pilot-framework-candidate-build.md
           test -f packaging/pilot/pilot_session_schema.json
           test -f packaging/pilot/findings_register_schema.json
           test -f game/export_presets.cfg
