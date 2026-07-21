@@ -56,6 +56,7 @@ The exact manifest schema, privacy exclusions, per-file bounds/hashes, canonical
 - The first preset import lacked Godot's required `export_files` property. Both presets were corrected and re-imported successfully.
 - A first build-identity privacy assertion confused safe instructional wording with an actual secret value. The test now rejects concrete private-value patterns and still verifies that the support page warns users not to share secrets.
 - A resources-only export could not resolve script-class dependencies from `Main.tscn`; a selected-resources fallback also admitted unintended content. The reviewed preset now uses all runtime resources with explicit exclusions for tests, vendored GUT, `.gutconfig.json`, and the unused exploration showcase. The resulting native executable reached the integrated smoke successfully.
+- A denylist probe initially treated Godot's generated `.godot/exported` transforms and class/UID caches inside the embedded pack as outer bundle files. Godot 4.7.1 always emits these runtime internals and export filters do not remove them. The false-positive rule was narrowed to actual test/GUT/showcase resources; the outer bundle still rejects any `.godot` path.
 - An initial PowerShell variable capture did not retain the Windows console-wrapper marker even though the native process printed it and exited zero. Final Windows evidence uses process exit results plus an explicit output log/marker check and records the rerun.
 - Exported smoke is synthetic/headless input only. It is not physical-controller or household evidence.
 

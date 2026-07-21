@@ -51,11 +51,16 @@ jobs:
           python tools/portable_bundle.py write-build-identity --platform windows --source-commit "$SOURCE_SHA"
           Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
             --export-release "Internal Windows x86_64" \
-            "$PWD/builds/export/windows/lantern_house_internal.exe"
+            "$PWD/builds/export/windows/lantern_house_internal.exe" 2>&1 | tee builds/export/windows/export.log
           python tools/portable_bundle.py write-build-identity --platform linux --source-commit "$SOURCE_SHA"
           Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
             --export-release "Internal Linux x86_64" \
-            "$PWD/builds/export/linux/lantern_house_internal.x86_64"
+            "$PWD/builds/export/linux/lantern_house_internal.x86_64" 2>&1 | tee builds/export/linux/export.log
+          if grep -E 'Storing File: res://(\.gutconfig\.json|tests/|addons/|src/exploration/ExplorationShowcase\.tscn|src/exploration/exploration_showcase\.gd)' \
+            builds/export/windows/export.log builds/export/linux/export.log; then
+            echo 'Export contained a denylisted runtime resource'
+            exit 1
+          fi
       - name: Assemble and validate bounded session bundles
         shell: bash
         run: |

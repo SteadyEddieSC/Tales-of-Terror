@@ -17,7 +17,7 @@ Both presets in `game/export_presets.cfg` target official Godot 4.7.1-stable tem
 | Windows preset | `Internal Windows x86_64` |
 | Linux preset | `Internal Linux x86_64` |
 
-The export includes all runtime resources, explicitly adds the ignored generated build identity, and excludes GUT, tests, `.gutconfig.json`, and the unused engineering-only exploration showcase. Export validation fails if these reviewed preset fragments change.
+The export includes all runtime resources, explicitly adds the ignored generated build identity, and excludes GUT, tests, `.gutconfig.json`, and the unused engineering-only exploration showcase. Export validation fails if these reviewed preset fragments change. Godot's generated `.godot/exported` transforms and class/UID caches remain engine-owned internals inside the embedded native pack; they are not outer bundle entries. The outer allowlist rejects any `.godot` path.
 
 ## Exact bundle layouts
 
