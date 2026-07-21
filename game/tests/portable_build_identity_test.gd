@@ -1,6 +1,6 @@
 extends SceneTree
 
-const MANIFEST_PATH: String = "res://data/scenarios/lantern_house_vertical_slice_v1.json"
+const TALE_PACKAGE_PATH: String = "res://data/tales/lantern_house/tale_package_v1.json"
 
 var _failures: int = 0
 
@@ -23,7 +23,7 @@ func _test_identity_and_support_page() -> void:
 	coordinator.seat_manager.join_device(0, "support-fixture-pad", "Fixture Pad")
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
-	var initialized: Dictionary = coordinator.initialize_session(MANIFEST_PATH, 4706)
+	var initialized: Dictionary = coordinator.initialize_session(TALE_PACKAGE_PATH, 4706)
 	_expect(initialized.accepted, "initializes RNG-backed authority for support invariance")
 	var companion_projection: Dictionary = {
 		"available": true, "room_open": true, "connected_count": 1
@@ -38,7 +38,7 @@ func _test_identity_and_support_page() -> void:
 	var report_before: String = report.to_json()
 	var companion_before: String = JSON.stringify(companion_projection)
 	var identity: Dictionary = InternalBuildIdentity.read_identity()
-	_expect(identity.release == "v0.1.3", "uses the v0.1.3 project release identity")
+	_expect(identity.release == "v0.1.4", "uses the v0.1.4 project release identity")
 	_expect(
 		(
 			InternalBuildIdentity
@@ -62,7 +62,7 @@ func _test_identity_and_support_page() -> void:
 		help.handle_action("ui_navigate_right")
 	var support: String = help.page_text()
 	_expect(help.page_index() == 3, "opens the bounded Build & Support page")
-	_expect("RELEASE   v0.1.3" in support, "renders the exact release")
+	_expect("RELEASE   v0.1.4" in support, "renders the exact release")
 	_expect(
 		"BUILD ID   %s" % str(identity.source_commit).substr(0, 12) in support,
 		"renders the short build ID",
@@ -137,12 +137,12 @@ func _test_identity_validation() -> void:
 	var valid: Dictionary = _valid_internal_identity("windows")
 	_expect(
 		InternalBuildIdentity.validate_identity(valid).accepted,
-		"accepts the exact v0.1.3 internal Windows identity",
+		"accepts the exact v0.1.4 internal Windows identity",
 	)
 	var valid_linux: Dictionary = _valid_internal_identity("linux")
 	_expect(
 		InternalBuildIdentity.validate_identity(valid_linux).accepted,
-		"accepts the exact v0.1.3 internal Linux identity",
+		"accepts the exact v0.1.4 internal Linux identity",
 	)
 	var invalid_cases: Array[Dictionary] = []
 	var invalid_source: Dictionary = valid.duplicate(true)
@@ -173,7 +173,7 @@ func _test_identity_validation() -> void:
 		)
 	var source_checkout: Dictionary = {
 		"schema_version": 1,
-		"release": "v0.1.3",
+		"release": "v0.1.4",
 		"source_commit": "source-checkout",
 		"platform": OS.get_name().to_lower(),
 		"architecture": "development",
@@ -229,7 +229,7 @@ func _test_platform_report_guidance() -> void:
 func _valid_internal_identity(platform: String) -> Dictionary:
 	return {
 		"schema_version": 1,
-		"release": "v0.1.3",
+		"release": "v0.1.4",
 		"source_commit": "a".repeat(40),
 		"platform": platform,
 		"architecture": "x86_64",

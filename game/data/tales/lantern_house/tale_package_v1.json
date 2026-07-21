@@ -1,0 +1,269 @@
+{
+  "package_kind": "tale",
+  "schema_version": 1,
+  "tale_id": "lantern_house_vertical_slice",
+  "package_version": 1,
+  "display": {
+    "display_key": "tale.lantern_house.display_name",
+    "tone_profile": "gothic_household_horror",
+    "content_profile": "accepted_vertical_slice"
+  },
+  "compatibility": {
+    "engine": "godot_4_7",
+    "minimum_seats": 1,
+    "maximum_seats": 8,
+    "supported_modes": [
+      "cooperative",
+      "hidden_betrayer"
+    ],
+    "unknown_field_policy": "reject",
+    "runtime_policy": "repository_authored_allowlisted_identity_only"
+  },
+  "content": {
+    "scenario_manifest": "res://data/scenarios/lantern_house_vertical_slice_v1.json",
+    "scenario_sha256": "400d5b989e880f8dcc1ecdb16e581796a2799cd3e0a6304c8a261928a38764f3",
+    "board_reference": "lantern_house",
+    "rules_reference": "lantern_house_rules_sandbox",
+    "director_reference": "lantern_house_director",
+    "social_reference": "lantern_house_social_lab"
+  },
+  "stage_graph": {
+    "entry_stage": "threshold",
+    "required_terminal_stage": "ending",
+    "stage_order": [
+      "threshold",
+      "council",
+      "reckoning",
+      "afterlife",
+      "ending"
+    ],
+    "transitions": [
+      {
+        "from": "afterlife",
+        "to": "ending"
+      },
+      {
+        "from": "council",
+        "to": "reckoning"
+      },
+      {
+        "from": "reckoning",
+        "to": "afterlife"
+      },
+      {
+        "from": "threshold",
+        "to": "council"
+      }
+    ]
+  },
+  "fallbacks": {
+    "cooperative_mode": "cooperative",
+    "no_phone": "shared_screen_controlled_reveal",
+    "optional_companion_unavailable": "continue_native_godot_authority",
+    "unsupported_optional_feature": "fail_closed_before_session"
+  },
+  "privacy": [
+    {
+      "classification": "public",
+      "key": "briefing"
+    },
+    {
+      "classification": "controlled_reveal_private",
+      "key": "ending.private_details"
+    },
+    {
+      "classification": "public",
+      "key": "public_objective"
+    }
+  ],
+  "localization": {
+    "catalog": "res://data/tales/lantern_house/localization_en.json",
+    "catalog_sha256": "0b971871b052beff4b751443d3ef1d0a1312d2631f965004269631bb2ca3c1a3",
+    "briefing_key": "tale.lantern_house.briefing",
+    "display_key": "tale.lantern_house.display_name",
+    "narration_keys": [
+      "tale.lantern_house.stage.afterlife",
+      "tale.lantern_house.stage.council",
+      "tale.lantern_house.stage.ending",
+      "tale.lantern_house.stage.reckoning",
+      "tale.lantern_house.stage.threshold"
+    ],
+    "objective_key": "tale.lantern_house.objective"
+  },
+  "inventory": {
+    "actions": [
+      "guardian_warning",
+      "investigate_clue",
+      "misdirect_route",
+      "place_restless_omen",
+      "raise_dread",
+      "replacement_search",
+      "spread_echo",
+      "witness_testimony"
+    ],
+    "cards": [
+      "chalk_mark",
+      "iron_resolve",
+      "steady_flame"
+    ],
+    "connectors": [
+      "archive_route",
+      "archive_stairs",
+      "gate_to_narrow",
+      "hall_gate",
+      "vault_lock"
+    ],
+    "director_candidates": [
+      "candles_lean_east",
+      "echoes_close_in",
+      "hold_the_breath",
+      "house_recalls_the_council",
+      "keeper_marks_the_way",
+      "mist_crosses_the_gallery",
+      "oil_in_the_larder",
+      "quiet_lantern"
+    ],
+    "director_profiles": [
+      "dread",
+      "fixed",
+      "gentle",
+      "off",
+      "standard"
+    ],
+    "events": [
+      "gallery_council",
+      "threshold_whisper",
+      "vault_reckoning"
+    ],
+    "factions": [
+      "betrayer",
+      "changed",
+      "horror",
+      "living",
+      "restless"
+    ],
+    "items": [
+      "brass_key",
+      "lantern_oil"
+    ],
+    "modes": [
+      "cooperative",
+      "faction_teams",
+      "hidden_betrayer",
+      "hunted",
+      "mixed_fixture",
+      "no_afterlife",
+      "outbreak"
+    ],
+    "objectives": [
+      "bear_witness",
+      "break_the_archive",
+      "claim_the_house",
+      "form_the_chorus",
+      "guard_the_lantern",
+      "guide_from_beyond",
+      "keep_the_token",
+      "return_to_the_light",
+      "secure_lantern_house",
+      "survive_the_tale"
+    ],
+    "roles": [
+      "echo_changed",
+      "house_horror",
+      "lantern_investigator",
+      "lantern_wraith",
+      "replacement_investigator",
+      "silent_witness",
+      "veiled_guest",
+      "watchful_guardian"
+    ],
+    "spaces": [
+      "flooded_vault",
+      "gate_passage",
+      "lantern_hall",
+      "narrow_gallery",
+      "sealed_archive"
+    ],
+    "stages": [
+      "afterlife",
+      "council",
+      "ending",
+      "reckoning",
+      "threshold"
+    ],
+    "transitions": [
+      "become_house_horror",
+      "choose_guardian_path",
+      "choose_witness_path",
+      "convert_to_changed",
+      "cure_the_changed",
+      "escape_the_house",
+      "fall_restless",
+      "receive_replacement",
+      "reveal_opposition",
+      "spread_to_changed"
+    ]
+  },
+  "social_compatibility": {
+    "afterlife_required": true,
+    "afterlife_roles": [
+      "lantern_wraith",
+      "silent_witness",
+      "watchful_guardian"
+    ],
+    "factions": [
+      "betrayer",
+      "changed",
+      "horror",
+      "living",
+      "restless"
+    ],
+    "roles": [
+      "echo_changed",
+      "house_horror",
+      "lantern_investigator",
+      "lantern_wraith",
+      "replacement_investigator",
+      "silent_witness",
+      "veiled_guest",
+      "watchful_guardian"
+    ]
+  },
+  "source_ledger": [
+    {
+      "path": "game/data/scenarios/lantern_house_vertical_slice_v1.json",
+      "reference": "lantern_house_vertical_slice",
+      "role": "scenario_manifest"
+    },
+    {
+      "path": "game/data/tales/lantern_house/localization_en.json",
+      "reference": "en",
+      "role": "localization_catalog"
+    },
+    {
+      "path": "game/src/board/lantern_house_board_definition.gd",
+      "reference": "lantern_house",
+      "role": "board_authority"
+    },
+    {
+      "path": "game/src/director/lantern_house_director_content.gd",
+      "reference": "lantern_house_director",
+      "role": "director_content"
+    },
+    {
+      "path": "game/src/rules/lantern_house_rules_content.gd",
+      "reference": "lantern_house_rules_sandbox",
+      "role": "rules_content"
+    },
+    {
+      "path": "game/src/social/lantern_house_social_content.gd",
+      "reference": "lantern_house_social_lab",
+      "role": "social_content"
+    }
+  ],
+  "identity_policy": {
+    "algorithm": "sha256",
+    "canonicalization": "utf8_json_sorted_object_keys_compact_arrays_preserved",
+    "non_authoritative_metadata_excluded": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "fixture_kind": "lantern_house_replay_equivalence",
+  "schema_version": 1,
+  "accepted_source_commit": "f455f6a0e723ca868b46c11e885c54fd250a4d43",
+  "package_path": "res://data/tales/lantern_house/tale_package_v1.json",
+  "semantic_digest": "public_history_sha256",
+  "excluded_non_authoritative_metadata": [
+    "build_timestamp_utc",
+    "evidence_presentation",
+    "tale_package_digest"
+  ],
+  "cases": [
+    {
+      "id": "normal_cooperative_route",
+      "seats": 1,
+      "seed": 4706,
+      "requested_mode": "cooperative",
+      "expected_mode": "cooperative",
+      "fallback_applied": false,
+      "expected_history_digest": "5d1707b046dcb2e225e5ee9c35ee592cd4f3d65a15bc619f6446c6edfaf56e53"
+    },
+    {
+      "id": "accepted_fallback_route",
+      "seats": 1,
+      "seed": 9017,
+      "requested_mode": "hidden_betrayer",
+      "expected_mode": "cooperative",
+      "fallback_applied": true,
+      "expected_history_digest": "88032c3153f523f5ad4753408b60612420ad8090f0ed666b719cc1ae5de55975"
+    },
+    {
+      "id": "role_afterlife_transition",
+      "seats": 3,
+      "seed": 22031,
+      "requested_mode": "hidden_betrayer",
+      "expected_mode": "hidden_betrayer",
+      "fallback_applied": false,
+      "expected_history_digest": "2759b4d201249c54cbf9b56f98f709f51fac1226402fa275cd8ce62ecaf825ae"
+    },
+    {
+      "id": "ending_resolution",
+      "seats": 4,
+      "seed": 4706,
+      "requested_mode": "hidden_betrayer",
+      "expected_mode": "hidden_betrayer",
+      "fallback_applied": false,
+      "expected_history_digest": "5074f7eb869e7abec6835be9c62a60a3c6c31f0c22a63199e735632b642bc284"
+    },
+    {
+      "id": "reset_and_rematch",
+      "seats": 2,
+      "seed": 9017,
+      "requested_mode": "hidden_betrayer",
+      "expected_mode": "cooperative",
+      "fallback_applied": true,
+      "expected_history_digest": "d49c3ba7e354260ee53fd5779a63bf9f4802e3f80774eaf7c76ad94d901c22f9"
+    },
+    {
+      "id": "report_identity_privacy",
+      "seats": 4,
+      "seed": 9017,
+      "requested_mode": "hidden_betrayer",
+      "expected_mode": "hidden_betrayer",
+      "fallback_applied": false,
+      "expected_history_digest": "1996aee3cae8894c74da542892d1589036e951862ae92ab8ca17f477806f31e3"
+    },
+    {
+      "id": "companion_no_phone_authority",
+      "seats": 3,
+      "seed": 4706,
+      "requested_mode": "hidden_betrayer",
+      "expected_mode": "hidden_betrayer",
+      "fallback_applied": false,
+      "expected_history_digest": "c5dc4fe8146b745f1bbd321fc6c6ff7f270aef65e1a2f2e2af0b0a540c9eb429"
+    }
+  ]
+}

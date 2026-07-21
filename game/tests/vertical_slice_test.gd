@@ -1,6 +1,7 @@
 extends SceneTree
 
 const MANIFEST_PATH: String = "res://data/scenarios/lantern_house_vertical_slice_v1.json"
+const TALE_PACKAGE_PATH: String = "res://data/tales/lantern_house/tale_package_v1.json"
 const MAIN_SCRIPT: Script = preload("res://src/main/main.gd")
 
 var _failures: int = 0
@@ -78,7 +79,7 @@ func _test_lifecycle_and_atomic_initialization() -> void:
 		coordinator.to_snapshot() == before_invalid,
 		"keeps failed initialization atomic",
 	)
-	var initialized: Dictionary = coordinator.initialize_session(MANIFEST_PATH, 4706)
+	var initialized: Dictionary = coordinator.initialize_session(TALE_PACKAGE_PATH, 4706)
 	if not initialized.accepted:
 		print("INITIALIZATION FAILURE: ", initialized)
 	_expect(initialized.accepted, "builds authorities")
@@ -204,7 +205,7 @@ func _test_manifest_reference_and_policy_negatives() -> void:
 	coordinator.confirm_roster()
 	var before: Dictionary = coordinator.to_snapshot()
 	_expect(
-		not coordinator.initialize_session(MANIFEST_PATH, 4706, "hunted").accepted,
+		not coordinator.initialize_session(TALE_PACKAGE_PATH, 4706, "hunted").accepted,
 		"rejects an existing but undeclared social mode",
 	)
 	_expect(
@@ -932,7 +933,7 @@ func _initialized_coordinator(seat_count: int, seed: int) -> VerticalSliceCoordi
 	var coordinator := _coordinator_with_seats(seat_count)
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
-	coordinator.initialize_session(MANIFEST_PATH, seed)
+	coordinator.initialize_session(TALE_PACKAGE_PATH, seed)
 	coordinator.begin_tale()
 	return coordinator
 

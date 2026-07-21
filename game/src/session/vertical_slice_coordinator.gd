@@ -6,6 +6,7 @@ signal session_rejected(reason: String)
 
 const SNAPSHOT_VERSION: int = 2
 const MANIFEST_PATH: String = "res://data/scenarios/lantern_house_vertical_slice_v1.json"
+const TALE_PACKAGE_PATH: String = "res://data/tales/lantern_house/tale_package_v1.json"
 const DEFAULT_SEED: int = 4706
 const DEFAULT_MODE: String = "hidden_betrayer"
 const LIFECYCLES: PackedStringArray = [
@@ -50,6 +51,8 @@ const TRANSACTION_KEYS: PackedStringArray = [
 ]
 
 var seat_manager := SeatManager.new()
+var tale_package: Dictionary = {}
+var tale_package_digest: String = ""
 var manifest: Dictionary = {}
 var board_definition: BoardDefinition
 var board_state: BoardState
@@ -99,7 +102,7 @@ func cancel_setup() -> Dictionary:
 
 
 func initialize_session(
-	p_manifest_path: String = MANIFEST_PATH,
+	p_package_path: String = TALE_PACKAGE_PATH,
 	p_seed: int = DEFAULT_SEED,
 	p_requested_mode: String = DEFAULT_MODE,
 ) -> Dictionary:
@@ -108,7 +111,7 @@ func initialize_session(
 	var roster: Array[int] = active_seats()
 	if roster.is_empty():
 		return _reject("empty_roster")
-	var build: Dictionary = _build_authorities(p_manifest_path, p_seed, p_requested_mode, roster)
+	var build: Dictionary = _build_authorities(p_package_path, p_seed, p_requested_mode, roster)
 	if not build.accepted:
 		return _reject(build.reason)
 	_commit_authorities(build, p_seed, p_requested_mode)
@@ -116,13 +119,28 @@ func initialize_session(
 
 
 func _build_authorities(
-	p_manifest_path: String, p_seed: int, p_requested_mode: String, roster: Array[int]
+	p_package_path: String, p_seed: int, p_requested_mode: String, roster: Array[int]
 ) -> Dictionary:
-	var candidate_manifest: Dictionary = VerticalSliceManifest.load_file(p_manifest_path)
 	var candidate_board := LanternHouseBoardDefinition.new()
 	var candidate_rules := LanternHouseRulesContent.new()
 	var candidate_director := LanternHouseDirectorContent.new()
 	var candidate_social := LanternHouseSocialContent.new()
+	var package_result: Dictionary = (
+		TalePackage
+		. load_validated(
+			p_package_path,
+			candidate_board,
+			candidate_rules,
+			candidate_director,
+			candidate_social,
+		)
+	)
+	if not package_result.accepted:
+		return {
+			"accepted": false,
+			"reason": "invalid_tale_package:%s" % package_result.get("reason", "rejected"),
+		}
+	var candidate_manifest: Dictionary = package_result.manifest
 	var failures: PackedStringArray = (
 		VerticalSliceManifest
 		. validate(
@@ -183,6 +201,8 @@ func _build_authorities(
 	candidate_board_state.sync_occupancy(candidate_pawns.get_pawns())
 	return {
 		"accepted": true,
+		"tale_package": package_result.package,
+		"tale_package_digest": package_result.digest,
 		"manifest": candidate_manifest,
 		"board_definition": candidate_board,
 		"board_state": candidate_board_state,
@@ -198,6 +218,8 @@ func _build_authorities(
 
 
 func _commit_authorities(build: Dictionary, p_seed: int, p_requested_mode: String) -> void:
+	tale_package = build.tale_package
+	tale_package_digest = build.tale_package_digest
 	manifest = build.manifest
 	board_definition = build.board_definition
 	board_state = build.board_state
@@ -292,7 +314,7 @@ func toggle_pause() -> Dictionary:
 
 
 func rematch() -> Dictionary:
-	return rematch_with_manifest(MANIFEST_PATH)
+	return rematch_with_manifest(TALE_PACKAGE_PATH)
 
 
 func rematch_with_manifest(p_manifest_path: String) -> Dictionary:
@@ -400,6 +422,8 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 
 func _adopt_candidate(candidate: VerticalSliceCoordinator) -> void:
 	seat_manager = candidate.seat_manager
+	tale_package = candidate.tale_package
+	tale_package_digest = candidate.tale_package_digest
 	manifest = candidate.manifest
 	board_definition = candidate.board_definition
 	board_state = candidate.board_state
@@ -424,7 +448,7 @@ func _adopt_candidate(candidate: VerticalSliceCoordinator) -> void:
 
 
 func authority_digest() -> String:
-	return JSON.stringify(_canonicalize(_authority_snapshot())).sha256_text()
+	return JSON.stringify(TalePackage.canonicalize(_authority_snapshot())).sha256_text()
 
 
 func public_history_digest() -> String:
@@ -434,23 +458,7 @@ func public_history_digest() -> String:
 	var evidence: Dictionary = {
 		"stages": stage_history, "rules": history, "ending": _public_ending()
 	}
-	return JSON.stringify(_canonicalize(evidence)).sha256_text()
-
-
-func _canonicalize(value: Variant) -> Variant:
-	if value is Array:
-		var array: Array = []
-		for item: Variant in value:
-			array.append(_canonicalize(item))
-		return array
-	if value is Dictionary:
-		var dictionary: Dictionary = {}
-		var keys: Array = value.keys()
-		keys.sort_custom(func(a: Variant, b: Variant) -> bool: return String(a) < String(b))
-		for key: Variant in keys:
-			dictionary[String(key)] = _canonicalize(value[key])
-		return dictionary
-	return value
+	return JSON.stringify(TalePackage.canonicalize(evidence)).sha256_text()
 
 
 func _apply_operation(operation: Dictionary) -> Dictionary:
@@ -667,7 +675,7 @@ func _build_session_restore_candidate(
 	if reason.is_empty():
 		candidate.lifecycle = "confirmation"
 		var initialized: Dictionary = candidate.initialize_session(
-			MANIFEST_PATH, snapshot.seed, snapshot.requested_mode
+			TALE_PACKAGE_PATH, snapshot.seed, snapshot.requested_mode
 		)
 		if not initialized.accepted:
 			reason = initialized.get("reason", "restore_failed")
@@ -827,7 +835,7 @@ func _validate_active_stage_transaction(
 	if reason.is_empty():
 		checkpoint.lifecycle = "confirmation"
 		var initialized: Dictionary = checkpoint.initialize_session(
-			MANIFEST_PATH, snapshot.seed, snapshot.requested_mode
+			TALE_PACKAGE_PATH, snapshot.seed, snapshot.requested_mode
 		)
 		if (
 			not initialized.accepted
@@ -904,6 +912,8 @@ func _transition(expected: String, next: String) -> Dictionary:
 
 
 func _clear_session_authorities() -> void:
+	tale_package.clear()
+	tale_package_digest = ""
 	manifest.clear()
 	board_definition = null
 	board_state = null

@@ -34,7 +34,9 @@ func test_undeclared_existing_mode_is_rejected_atomically() -> void:
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
 	var before: Dictionary = coordinator.to_snapshot()
-	assert_false(coordinator.initialize_session(coordinator.MANIFEST_PATH, 4706, "hunted").accepted)
+	assert_false(
+		coordinator.initialize_session(coordinator.TALE_PACKAGE_PATH, 4706, "hunted").accepted
+	)
 	assert_eq(coordinator.to_snapshot(), before)
 
 

@@ -55,6 +55,6 @@ func _coordinator() -> VerticalSliceCoordinator:
 		coordinator.seat_manager.join_device(index, "gut-pad-%d" % index, "Fixture Pad")
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
-	coordinator.initialize_session(coordinator.MANIFEST_PATH, 4706)
+	coordinator.initialize_session(coordinator.TALE_PACKAGE_PATH, 4706)
 	coordinator.begin_tale()
 	return coordinator

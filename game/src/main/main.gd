@@ -490,6 +490,7 @@ func _run_portable_build_smoke() -> void:
 		and _help.page_index() == 3
 		and identity_valid
 		and identity.classification == "internal_playtest"
+		and _coordinator.tale_package_digest == TalePackage.LANTERN_HOUSE_DIGEST
 		and "INTERNAL PLAYTEST (internal_playtest)" in support
 		and str(identity.release) in support
 		and str(identity.source_commit).substr(0, 12) in support
@@ -514,6 +515,9 @@ func _run_portable_build_smoke() -> void:
 					"platform": identity.platform,
 					"architecture": identity.architecture,
 					"classification": identity.classification,
+					"tale_package_kind": _coordinator.tale_package.get("package_kind", ""),
+					"tale_package_schema": _coordinator.tale_package.get("schema_version", 0),
+					"tale_package_digest": _coordinator.tale_package_digest,
 					"help_page": _help.page_index() + 1,
 					"classification_rendered": "INTERNAL PLAYTEST (internal_playtest)" in support,
 					"report_location_guidance": report_guidance in support,

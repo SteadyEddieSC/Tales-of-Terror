@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble and validate bounded v0.1.3 internal playtest bundles."""
+"""Assemble and validate bounded v0.1.4 internal playtest bundles."""
 
 from __future__ import annotations
 
@@ -15,6 +15,8 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
+
+import tale_package
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,6 +34,7 @@ MANIFEST_KEYS = {
     "renderer",
     "logical_viewport",
     "scenario",
+    "tale_package",
     "report_schema_version",
     "build_timestamp_utc",
     "timestamp_classification",
@@ -137,7 +140,7 @@ def _spec() -> dict[str, Any]:
         "forbidden_extensions",
     }:
         raise BundleError("bundle specification keys changed")
-    if spec["schema_version"] != 1 or spec["release"] != "v0.1.3":
+    if spec["schema_version"] != 1 or spec["release"] != "v0.1.4":
         raise BundleError("unsupported bundle specification")
     if set(spec["platforms"]) != {"windows", "linux"}:
         raise BundleError("bundle platforms must be exactly Windows and Linux")
@@ -162,6 +165,19 @@ def write_build_identity(platform: str, source_commit: str) -> Path:
         json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     return BUILD_IDENTITY_PATH
+
+
+def _tale_package_identity() -> dict[str, Any]:
+    package, diagnostics = tale_package.validate_file(tale_package.DEFAULT_PACKAGE)
+    if diagnostics:
+        raise BundleError(f"Tale package is invalid: {diagnostics[0]}")
+    return {
+        "kind": package["package_kind"],
+        "schema_version": package["schema_version"],
+        "id": package["tale_id"],
+        "version": package["package_version"],
+        "sha256": tale_package.package_digest(package),
+    }
 
 
 def expected_files(platform: str) -> set[str]:
@@ -236,6 +252,7 @@ def assemble(
         "renderer": "gl_compatibility",
         "logical_viewport": {"width": 960, "height": 540},
         "scenario": {"id": "lantern_house_vertical_slice", "version": 1},
+        "tale_package": _tale_package_identity(),
         "report_schema_version": 2,
         "build_timestamp_utc": _iso_timestamp(timestamp),
         "timestamp_classification": "non_deterministic_metadata_excluded_from_content_identity",
@@ -274,7 +291,7 @@ def assemble(
 def validate_manifest(manifest: dict[str, Any], bundle_dir: Path) -> None:
     if set(manifest) != MANIFEST_KEYS:
         raise BundleError("build manifest exact root keys changed")
-    if manifest["schema_version"] != 1 or manifest["release"] != "v0.1.3":
+    if manifest["schema_version"] != 1 or manifest["release"] != "v0.1.4":
         raise BundleError("unsupported build manifest version")
     _validate_source_commit(manifest["source_commit"])
     if manifest["platform"] not in {"windows", "linux"}:
@@ -287,6 +304,8 @@ def validate_manifest(manifest: dict[str, Any], bundle_dir: Path) -> None:
         raise BundleError("manifest logical viewport changed")
     if manifest["scenario"] != {"id": "lantern_house_vertical_slice", "version": 1}:
         raise BundleError("manifest scenario changed")
+    if manifest["tale_package"] != _tale_package_identity():
+        raise BundleError("manifest Tale package identity changed")
     if manifest["report_schema_version"] != 2:
         raise BundleError("manifest report schema changed")
     if len(manifest["build_timestamp_utc"]) > 40:
@@ -419,7 +438,7 @@ def validate_repository() -> None:
         encoding="utf-8"
     )
     required_identity_fragments = (
-        'const RELEASE: String = "v0.1.3"',
+        'const RELEASE: String = "v0.1.4"',
         '"INTERNAL PLAYTEST"',
         '"SOURCE CHECKOUT"',
         '"INVALID EXPORTED IDENTITY"',

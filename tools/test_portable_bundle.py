@@ -41,6 +41,7 @@ class PortableBundleTests(unittest.TestCase):
             )
             first_manifest = portable.validate_bundle(first)
             second_manifest = portable.validate_bundle(second)
+            self.assertEqual(first_manifest["tale_package"], portable._tale_package_identity())
             self.assertEqual(
                 first_manifest["runtime_content"]["digest"],
                 second_manifest["runtime_content"]["digest"],
@@ -65,7 +66,7 @@ class PortableBundleTests(unittest.TestCase):
                         value,
                         {
                             "schema_version": 1,
-                            "release": "v0.1.3",
+                            "release": "v0.1.4",
                             "source_commit": SOURCE_COMMIT,
                             "platform": platform,
                             "architecture": "x86_64",

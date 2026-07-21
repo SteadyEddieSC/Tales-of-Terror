@@ -152,3 +152,9 @@ The v0.1.0 Lantern House tale is the first coherent player route through the rev
 The tale opens the iron threshold, reveals the archive, resolves a public route vote and deterministic courage check, grants and plays a card, permits one bounded Director decision, and gives a defeated investigator a Restless action before mixed outcomes resolve. These are modest authored fixtures for integration review, not balance or fun certification.
 
 `VerticalSliceCoordinator` owns session-scoped references to the existing authorities and routes only bounded manifest operations through their public methods. The JSON manifest cannot name scripts or callbacks. Complete content and snapshot validation happens before mutation, a failed stage restores every authority snapshot, the Director sees only normalized public social signals, and optional browsers remain filtered input surfaces rather than authorities.
+
+## Tale package authoring boundary
+
+The v0.1.4 Lantern House route is selected through one versioned repository-authored Tale package. It references the accepted manifest and existing authority content, declares seat/mode/fallback/privacy/afterlife compatibility, publishes a deterministic inventory and source ledger, and has a canonical SHA-256 identity. It does not add content or become gameplay authority.
+
+Only reviewed allowlisted identities load. Unknown schema fields, broken references or reachability, unsafe paths/URLs/secrets, unresolved governed text, incompatible social declarations, unstable ordering, and source-hash changes fail closed before authority construction. Package provenance remains outside saves, reports, gameplay RNG, and outcome decisions. This repository contract is not a public modding SDK.

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.4 - Reusable Tale Package & Authoring Validator
+
+- Routed the accepted Lantern House vertical slice through one closed, versioned `tale` schema-v1 package that references the existing authority data without semantic expansion.
+- Added deterministic canonical SHA-256 identity, exact inventory/compatibility/source-ledger output, reviewed referenced-JSON hashes, and build/runtime provenance.
+- Added an offline source-located validator and 20 synthetic negative cases covering every required unsafe, unresolved, incompatible, orphaned, nondeterministic, and unsupported authoring class.
+- Added runtime identity allowlisting, atomic fail-closed rejection, a seven-case golden replay matrix, and exact preservation of the inherited 24-case seed/seat digests.
+- Preserved stable IDs, saves, schema-v2 reports, 1–8 seats, fallback, events, roles/factions/afterlife, endings, reset/rematch, companions, no-phone play, dependencies, tools, and provisional branding.
+
 ## v0.1.3 - Pilot Framework & Candidate Build
 
 - Bumped the single internal release source to v0.1.3 without changing gameplay, balance, content, authority, companions, dependencies, toolchains, or provisional branding.
