@@ -80,7 +80,7 @@ func _configure() -> void:
 		await _press_button(main, 0, BUTTON_A)
 		main.set("_report_writer", PlaytestMemoryWriter.new())
 		await _press_button(main, 0, BUTTON_X)
-		for _page: int in 3:
+		for _page: int in 4:
 			await _press_button(main, 0, DPAD_RIGHT)
 		await _press_button(main, 0, BUTTON_A)
 	await create_timer(0.75).timeout

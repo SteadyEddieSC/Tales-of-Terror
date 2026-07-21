@@ -24,6 +24,7 @@ node_modules/
 /output/
 /.playwright-cli/
 /game/test-results/
+/game/build_identity.generated.json
 /.venv/
 
 # OS / editors

@@ -32,6 +32,12 @@ jobs:
           test -f docs/technical/Playtest_Report_Privacy.md
           test -f docs/playtests/v0.1.1-facilitator-guide.md
           test -f docs/playtests/Playtest_Readiness_Evidence.md
+          test -f docs/playtests/v0.1.2-manual-hardware-validation.json
+          test -f docs/playtests/Portable_Playtest_Bundle_Evidence.md
+          test -f docs/technical/Portable_Playtest_Bundles.md
+          test -f docs/releases/v0.1.2-portable-playtest-build-session-bundle.md
+          test -f game/export_presets.cfg
+          test -f packaging/portable/bundle_spec.json
           test -f docs/releases/v0.1.1-playtest-readiness-guided-session-ux.md
           test -f game/addons/gut/LICENSE.md
           test -f requirements-dev.in
@@ -79,6 +85,10 @@ jobs:
         run: python tools/validate_playtest_readiness.py
       - name: Validate pinned toolchain and test policy
         run: python tools/validate_toolchain.py
+      - name: Validate portable export and session-bundle policy
+        run: |
+          python tools/portable_bundle.py validate-repository
+          python tools/test_portable_bundle.py
       - name: Reject whitespace errors in committed range
         shell: bash
         env:

@@ -68,7 +68,7 @@ func _test_controller_first_complete_route_and_rematch_report() -> void:
 	var writer := PlaytestMemoryWriter.new()
 	main.set("_report_writer", writer)
 	await _press_button(0, BUTTON_X)
-	for _page: int in 3:
+	for _page: int in 4:
 		await _press_button(0, DPAD_RIGHT)
 	await _press_button(0, BUTTON_A)
 	_expect(not writer.json_text.is_empty(), "ending exports JSON through the actual help route")
@@ -203,7 +203,7 @@ func _test_rendered_guidance_and_action_map() -> void:
 	var message: Label = sandbox.get("_message_label")
 	var reset: Label = sandbox.get("_reset_label")
 	_expect(
-		PlaytestReport.release_id() in title.text, "sandbox uses the single v0.1.1 release source"
+		PlaytestReport.release_id() in title.text, "sandbox uses the single v0.1.2 release source"
 	)
 	_expect("HELP: X / H" in message.text, "sandbox renders X as Help")
 	_expect("DIAGNOSTICS: T" in message.text, "sandbox renders T-only diagnostics")

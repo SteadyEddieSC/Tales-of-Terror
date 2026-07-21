@@ -154,6 +154,7 @@ def main() -> int:
         "res://addons/gut/gut_cmdln.gd",
         "res://tests/vertical_slice_test.gd",
         "res://tests/playtest_readiness_test.gd",
+        "res://tests/portable_build_identity_test.gd",
         "res://tests/vertical_slice_simulation_test.gd",
         "gut-junit.xml",
         "if: always()",
@@ -269,6 +270,7 @@ def main() -> int:
         "vertical_slice_test.gd",
         "playtest_readiness_test.gd",
         "playtest_main_route_test.gd",
+        "portable_build_identity_test.gd",
         "vertical_slice_simulation_test.gd",
     ]
     for filename in legacy_tests:
@@ -278,7 +280,7 @@ def main() -> int:
     tracked = subprocess.run(
         ["git", "ls-files"], cwd=ROOT, check=True, capture_output=True, text=True
     ).stdout.splitlines()
-    forbidden_suffixes = (".exe", ".tpz")
+    forbidden_suffixes = (".exe", ".pck", ".tpz", ".x86_64", ".zip")
     forbidden = [
         path
         for path in tracked

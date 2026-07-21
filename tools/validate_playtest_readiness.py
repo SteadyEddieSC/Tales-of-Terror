@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the bounded, local-only v0.1.1 playtest observation boundary."""
+"""Validate the bounded, local-only playtest observation boundary."""
 
 from __future__ import annotations
 
@@ -107,8 +107,8 @@ def main() -> int:
         report = json.loads(FIXTURE.read_text(encoding="utf-8"))
         if set(report) != REPORT_KEYS:
             failures.append("playtest report fixture root schema keys changed")
-        if report.get("schema_version") != 2 or report.get("release") != "v0.1.1":
-            failures.append("playtest report fixture version is not v0.1.1 schema 2")
+        if report.get("schema_version") != 2 or report.get("release") != "v0.1.2":
+            failures.append("playtest report fixture version is not v0.1.2 schema 2")
         serialized = json.dumps(report).lower()
         for field in sorted(FORBIDDEN_REPORT_FIELDS):
             if f'"{field}"' in serialized:
@@ -135,8 +135,8 @@ def main() -> int:
     if "VerticalSliceView.new()" in capture_source:
         failures.append("capture fixture must not instantiate the isolated view directly")
     project = (ROOT / "game" / "project.godot").read_text(encoding="utf-8")
-    if 'config/version="v0.1.1"' not in project:
-        failures.append("project must provide the single v0.1.1 release identity")
+    if 'config/version="v0.1.2"' not in project:
+        failures.append("project must provide the single v0.1.2 release identity")
     repository_workflow = (
         ROOT / ".github" / "workflows" / "repository-checks.yml"
     ).read_text(encoding="utf-8")

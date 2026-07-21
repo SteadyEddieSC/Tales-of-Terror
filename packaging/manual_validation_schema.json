@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "v0.1.2 manual hardware validation record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "release",
+    "record_classification",
+    "session_id",
+    "recorded_at_utc",
+    "observer",
+    "checks",
+    "declarations"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "release": {"const": "v0.1.2"},
+    "record_classification": {"const": "manual_non_authoritative"},
+    "session_id": {"type": "string", "maxLength": 80},
+    "recorded_at_utc": {"type": "string", "maxLength": 40},
+    "observer": {"type": "string", "maxLength": 80},
+    "checks": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "evidence_class", "notes"],
+        "properties": {
+          "id": {"type": "string", "maxLength": 64},
+          "status": {"enum": ["not_tested", "deferred", "pass", "fail", "blocked"]},
+          "evidence_class": {"enum": ["not_tested", "automated_ci", "virtual_offscreen", "remote_observed", "physical_in_room"]},
+          "notes": {"type": "string", "maxLength": 500}
+        }
+      }
+    },
+    "declarations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automated_evidence_is_physical", "explicit_human_entry_required"],
+      "properties": {
+        "automated_evidence_is_physical": {"const": false},
+        "explicit_human_entry_required": {"const": true}
+      }
+    }
+  }
+}
