@@ -14,6 +14,45 @@ func test_catalog_default_and_unknown_selection_are_atomic() -> void:
 	assert_eq(coordinator.to_snapshot(), snapshot)
 
 
+func test_tale_library_precedes_briefing_and_restores_public_setup() -> void:
+	var coordinator := VerticalSliceCoordinator.new()
+	coordinator.seat_manager.join_device(-1, SeatManager.KEYBOARD_IDENTITY, "Keyboard")
+	assert_true(coordinator.enter_lobby().accepted)
+	assert_true(coordinator.confirm_roster().accepted)
+	var roster: Dictionary = coordinator.seat_manager.to_snapshot()
+	assert_true(coordinator.navigate_tale_library("open").accepted)
+	assert_eq(coordinator.lifecycle, "tale_library")
+	assert_eq(coordinator.public_state().tale_library.available_count, 1)
+	assert_true(coordinator.initialize_session().accepted)
+	assert_eq(coordinator.lifecycle, "briefing")
+	assert_true(coordinator.navigate_tale_library("return_from_briefing").accepted)
+	assert_eq(coordinator.seat_manager.to_snapshot(), roster)
+	assert_eq(coordinator._selection.selected_tale_id(), TalePackage.LANTERN_HOUSE_ID)
+	assert_null(coordinator.rules_session)
+
+
+func test_tale_library_view_uses_bounded_governed_presentation() -> void:
+	var coordinator := VerticalSliceCoordinator.new()
+	coordinator.seat_manager.join_device(-1, SeatManager.KEYBOARD_IDENTITY, "Keyboard")
+	coordinator.enter_lobby()
+	coordinator.confirm_roster()
+	coordinator.navigate_tale_library("open")
+	var view := VerticalSliceView.new()
+	view._ready()
+	view.present(coordinator.public_state(), coordinator.seat_manager.get_seats())
+	var title: Label = view.get("_title")
+	var body: Label = view.get("_body")
+	var footer: Label = view.get("_footer")
+	var rendered: String = "%s\n%s\n%s" % [title.text, body.text, footer.text]
+	assert_true("1 TALE AVAILABLE" in rendered)
+	assert_true("LANTERN HOUSE" in rendered)
+	assert_true("D-PAD / STICK / ARROWS" in rendered)
+	assert_false("res://" in rendered)
+	assert_false("provider" in rendered.to_lower())
+	assert_false("sha256" in rendered.to_lower())
+	view.free()
+
+
 func test_coordinator_rejects_out_of_order_lifecycle_without_mutation() -> void:
 	var coordinator := VerticalSliceCoordinator.new()
 	var before: Dictionary = coordinator.to_snapshot()

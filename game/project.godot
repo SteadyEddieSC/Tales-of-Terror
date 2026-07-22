@@ -4,7 +4,7 @@ config_version=5
 
 [application]
 config/name="Terror Turn"
-config/version="v0.1.5"
+config/version="v0.1.6"
 run/main_scene="res://src/main/Main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
@@ -21,10 +21,10 @@ enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [input]
 
-ui_navigate_up={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":87), Object(InputEventKey,"physical_keycode":4194320), Object(InputEventJoypadButton,"device":-1,"button_index":11)]}
-ui_navigate_down={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":83), Object(InputEventKey,"physical_keycode":4194322), Object(InputEventJoypadButton,"device":-1,"button_index":12)]}
-ui_navigate_left={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":65), Object(InputEventKey,"physical_keycode":4194319), Object(InputEventJoypadButton,"device":-1,"button_index":13)]}
-ui_navigate_right={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":68), Object(InputEventKey,"physical_keycode":4194321), Object(InputEventJoypadButton,"device":-1,"button_index":14)]}
+ui_navigate_up={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":87), Object(InputEventKey,"physical_keycode":4194320), Object(InputEventJoypadButton,"device":-1,"button_index":11), Object(InputEventJoypadMotion,"device":-1,"axis":1,"axis_value":-1.0)]}
+ui_navigate_down={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":83), Object(InputEventKey,"physical_keycode":4194322), Object(InputEventJoypadButton,"device":-1,"button_index":12), Object(InputEventJoypadMotion,"device":-1,"axis":1,"axis_value":1.0)]}
+ui_navigate_left={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":65), Object(InputEventKey,"physical_keycode":4194319), Object(InputEventJoypadButton,"device":-1,"button_index":13), Object(InputEventJoypadMotion,"device":-1,"axis":0,"axis_value":-1.0)]}
+ui_navigate_right={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":68), Object(InputEventKey,"physical_keycode":4194321), Object(InputEventJoypadButton,"device":-1,"button_index":14), Object(InputEventJoypadMotion,"device":-1,"axis":0,"axis_value":1.0)]}
 ui_confirm={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":32), Object(InputEventKey,"physical_keycode":4194309), Object(InputEventJoypadButton,"device":-1,"button_index":0)]}
 ui_cancel_action={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":4194305), Object(InputEventJoypadButton,"device":-1,"button_index":1)]}
 player_join={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":74), Object(InputEventKey,"physical_keycode":4194309), Object(InputEventJoypadButton,"device":-1,"button_index":0)]}

@@ -98,6 +98,8 @@ jobs:
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_package_test.gd
       - name: Tale catalog, selection, and provider boundary tests
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_catalog_test.gd
+      - name: Controller-first Tale Library and selection UX tests
+        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_library_test.gd
       - name: Tale package replay-equivalence matrix
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_replay_equivalence_test.gd
       - name: Guided session and local playtest report tests

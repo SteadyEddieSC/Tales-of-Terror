@@ -164,3 +164,9 @@ Only reviewed allowlisted identities load. Unknown schema fields, broken referen
 v0.1.5 discovers the unchanged Lantern House package through one closed repository Tale catalog. Stable-ID selection happens only before session authority initialization; invalid selection retains the prior valid entry and consumes no gameplay RNG. The current setup presentation reads governed catalog display, briefing, and objective keys without adding a multi-Tale storefront or carousel.
 
 One static reviewed provider registry owns native content constructors. JSON cannot name classes, scripts, callbacks, reflection targets, executables, or remote code. The generic coordinator contains no Lantern House provider/package choice and commits a complete candidate only after catalog, provider, package, manifest, content, mode, and session validation. Production still contains one Tale; synthetic multi-entry proof is export-excluded test data.
+
+## Controller-first Tale Library
+
+v0.1.6 places a Tale Library between mode confirmation and public briefing. It enumerates only the validated catalog projection and presents governed display name, briefing, objective, supported seats, count, focus, selection, and confirmation state. D-pad, left stick, and keyboard navigation move focus; A/Enter confirms; B/Escape returns; and X/H opens the shared Help surface.
+
+The Library requests candidate preparation through `TaleSelectionState` and `VerticalSliceCoordinator`; UI code never constructs authorities or interprets provider declarations. Failed catalog, localization, provider, package, or stable-ID work preserves the prior valid selection, route, roster, ownership, and mode while showing only bounded internal-build recovery guidance. Returning from briefing discards prepared session authorities and restores the same Library setup. Once the active Tale starts, selection is immutable. Production continues to contain only Lantern House.
