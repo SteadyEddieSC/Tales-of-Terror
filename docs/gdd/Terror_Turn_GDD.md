@@ -170,3 +170,10 @@ One static reviewed provider registry owns native content constructors. JSON can
 v0.1.6 places a Tale Library between mode confirmation and public briefing. It enumerates only the validated catalog projection and presents governed display name, briefing, objective, supported seats, count, focus, selection, and confirmation state. D-pad, left stick, and keyboard navigation move focus; A/Enter confirms; B/Escape returns; and X/H opens the shared Help surface.
 
 The Library requests candidate preparation through `TaleSelectionState` and `VerticalSliceCoordinator`; UI code never constructs authorities or interprets provider declarations. Failed catalog, localization, provider, package, or stable-ID work preserves the prior valid selection, route, roster, ownership, and mode while showing only bounded internal-build recovery guidance. Returning from briefing discards prepared session authorities and restores the same Library setup. Once the active Tale starts, selection is immutable. Production continues to contain only Lantern House.
+
+
+## Player-owned interaction pass
+
+v0.1.7 converts the remaining integration-fixture operations into explicit stable-seat controller windows. Threshold and council responses remain RulesSession work; card play belongs to the card owner; the legal seat attempts the courage check; any eligible active seat may acknowledge the bounded Director window; the actual Restless seat acts or passes; and an active seat explicitly continues each authored stage.
+
+The shared-screen projection exposes only public interaction kind, instruction, controls, eligible seats, committed seats, pending seats, owner seat, public option labels, and whether pass is authored. Wrong-seat, disconnected, paused, stale, duplicate, and late input cannot mutate authority. Invalid presentation input consumes no Director RNG. This pass changes how players own the existing verbs; it does not add story, balance, cards, events, roles, factions, endings, a second Tale, or a competing gameplay authority.
