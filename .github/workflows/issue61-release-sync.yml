@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/issue-61-controlled-reveal-privacy
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
