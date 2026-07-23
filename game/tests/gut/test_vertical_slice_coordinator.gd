@@ -127,6 +127,7 @@ func test_protected_reset_clears_waiting_session() -> void:
 	coordinator.confirm_roster()
 	assert_true(coordinator.initialize_session().accepted)
 	assert_true(coordinator.begin_tale().accepted)
+	_complete_private_reveals(coordinator)
 	assert_true(coordinator.advance_player_stage().waiting_for_players)
 	assert_false(coordinator.to_snapshot().stage_transaction.is_empty())
 	assert_true(coordinator.protected_reset_to_title().accepted)
@@ -144,6 +145,7 @@ func test_real_prompt_wait_restores_and_completes_once() -> void:
 	coordinator.confirm_roster()
 	coordinator.initialize_session()
 	coordinator.begin_tale()
+	_complete_private_reveals(coordinator)
 	assert_true(coordinator.advance_player_stage().waiting_for_players)
 	var restored := VerticalSliceCoordinator.new()
 	assert_true(restored.restore_snapshot(coordinator.to_snapshot()).accepted)
@@ -199,6 +201,7 @@ func test_resumable_prompt_requires_exact_authored_content() -> void:
 	coordinator.confirm_roster()
 	coordinator.initialize_session()
 	coordinator.begin_tale()
+	_complete_private_reveals(coordinator)
 	assert_true(coordinator.advance_player_stage().waiting_for_players)
 	var changed: Dictionary = coordinator.to_snapshot()
 	changed.rules.pending_prompt.options[0].text = "Changed under the same option ID"
@@ -224,3 +227,12 @@ func test_manifest_v1_rejects_valid_but_wrong_operation_data() -> void:
 		)
 	)
 	assert_false(failures.is_empty())
+
+
+func _complete_private_reveals(coordinator: VerticalSliceCoordinator) -> void:
+	var flow: PrivateRevealFlow = coordinator.get("_private_reveal_flow")
+	for _index: int in coordinator.active_seats().size():
+		var seat_number: int = flow.current_seat()
+		assert_true(flow.submit(coordinator.role_session, seat_number, "confirm").accepted)
+		assert_true(flow.submit(coordinator.role_session, seat_number, "confirm").accepted)
+	assert_eq(flow.phase, PrivateRevealFlow.PHASE_COMPLETE)
