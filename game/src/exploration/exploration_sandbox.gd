@@ -184,16 +184,22 @@ func _on_session_state_changed(state: Dictionary) -> void:
 	if interaction.is_empty():
 		_message_label.text = ACTIVE_CONTROLS_TEXT
 	else:
-		_message_label.text = "%s\n%s" % [
-			interaction.get("instruction", "Continue the Tale."),
-			interaction.get("controls", ACTIVE_CONTROLS_TEXT),
-		]
+		_message_label.text = (
+			"%s\n%s"
+			% [
+				interaction.get("instruction", "Continue the Tale."),
+				interaction.get("controls", ACTIVE_CONTROLS_TEXT),
+			]
+		)
 	var stage: Dictionary = state.get("stage", {})
 	if not stage.is_empty():
-		_title_label.text = "LANTERN HOUSE  |  STAGE %d  |  %s" % [
-			state.get("stage_index", 0) + 1,
-			stage.get("title", "CURRENT TALE").to_upper(),
-		]
+		_title_label.text = (
+			"LANTERN HOUSE  |  STAGE %d  |  %s"
+			% [
+				state.get("stage_index", 0) + 1,
+				stage.get("title", "CURRENT TALE").to_upper(),
+			]
+		)
 	if is_instance_valid(_rules_hud):
 		_rules_hud.refresh()
 
