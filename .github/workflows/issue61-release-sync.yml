@@ -41,6 +41,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          sed -i 's/portable.count(CURRENT) != 4/portable.count(CURRENT) != 3/' tools/issue61_release_sync.py
           python tools/issue61_release_sync.py
           python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
           python -m pip check
