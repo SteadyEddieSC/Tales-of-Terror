@@ -73,14 +73,14 @@ jobs:
           python tools/portable_bundle.py assemble --platform windows --source-commit "$SOURCE_SHA" --timestamp "$timestamp"
           python tools/portable_bundle.py assemble --platform linux --source-commit "$SOURCE_SHA" --timestamp "$timestamp"
           python tools/portable_bundle.py validate-bundle \
-            builds/bundles/lantern-house-internal-playtest-v0.1.8-windows-x86_64
+            builds/bundles/lantern-house-internal-playtest-v0.1.9-windows-x86_64
           python tools/portable_bundle.py validate-bundle \
-            builds/bundles/lantern-house-internal-playtest-v0.1.8-linux-x86_64
+            builds/bundles/lantern-house-internal-playtest-v0.1.9-linux-x86_64
       - name: Smoke native Linux executable and optional launcher
         shell: bash
         run: |
           set -euo pipefail
-          bundle=builds/bundles/lantern-house-internal-playtest-v0.1.8-linux-x86_64
+          bundle=builds/bundles/lantern-house-internal-playtest-v0.1.9-linux-x86_64
           "$bundle/lantern_house_internal.x86_64" --headless --audio-driver Dummy -- --portable-build-smoke | tee builds/linux-direct-smoke.txt
           "$bundle/launch.sh" --headless --audio-driver Dummy -- --portable-build-smoke | tee builds/linux-launcher-smoke.txt
           for smoke in builds/linux-direct-smoke.txt builds/linux-launcher-smoke.txt; do
@@ -132,19 +132,19 @@ jobs:
       - name: Upload Windows internal bundle
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: lantern-house-internal-playtest-v0.1.8-windows-x86_64
+          name: lantern-house-internal-playtest-v0.1.9-windows-x86_64
           path: |
-            builds/artifacts/lantern-house-internal-playtest-v0.1.8-windows-x86_64.zip
-            builds/artifacts/lantern-house-internal-playtest-v0.1.8-windows-x86_64.zip.sha256
+            builds/artifacts/lantern-house-internal-playtest-v0.1.9-windows-x86_64.zip
+            builds/artifacts/lantern-house-internal-playtest-v0.1.9-windows-x86_64.zip.sha256
           if-no-files-found: error
           retention-days: 14
       - name: Upload Linux internal bundle
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: lantern-house-internal-playtest-v0.1.8-linux-x86_64
+          name: lantern-house-internal-playtest-v0.1.9-linux-x86_64
           path: |
-            builds/artifacts/lantern-house-internal-playtest-v0.1.8-linux-x86_64.zip
-            builds/artifacts/lantern-house-internal-playtest-v0.1.8-linux-x86_64.zip.sha256
+            builds/artifacts/lantern-house-internal-playtest-v0.1.9-linux-x86_64.zip
+            builds/artifacts/lantern-house-internal-playtest-v0.1.9-linux-x86_64.zip.sha256
             builds/linux-direct-smoke.txt
             builds/linux-launcher-smoke.txt
           if-no-files-found: error
