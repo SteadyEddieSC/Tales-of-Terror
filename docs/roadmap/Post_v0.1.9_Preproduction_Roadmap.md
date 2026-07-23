@@ -1,8 +1,8 @@
 # Post-v0.1.9 Preproduction Roadmap
 
-**Version:** 0.1  
-**Status:** Active planning roadmap  
-**Protected-main baseline:** `2151696e76147cc9fbe7f56709e585753cb331a3`  
+**Version:** 0.1
+**Status:** Active planning roadmap
+**Protected-main baseline:** `2151696e76147cc9fbe7f56709e585753cb331a3`
 **Working title status:** Terror Turn and The Underteller remain provisional pending issue #7
 
 ## 1. Current operating constraints
@@ -60,6 +60,7 @@ Deliverables:
 - Underteller Voice Bible.
 - Drowned Harbor Design Bible.
 - Seat Continuity and Multiplayer Admission Contract.
+- AI Media Production and Provenance Guide.
 - This preproduction roadmap.
 - Documentation index and cross-links where appropriate.
 - Draft PR preserving all material independently of chat history.
@@ -231,12 +232,13 @@ Drowned Harbor should become a production candidate only after:
 
 # Documentation structure
 
-Maintain four primary sources rather than many disconnected files:
+Maintain four primary sources plus the media guide rather than many disconnected files:
 
 1. `docs/narrative/Underteller_Voice_Bible.md`
 2. `docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md`
 3. `docs/design/Seat_Continuity_and_Admission.md`
 4. `docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md`
+5. `docs/assets/AI_Media_Production_Guide.md`
 
 Large machine-readable dialogue, asset, and schema catalogs may be separate files beneath the same feature directories. The GDD should retain summaries and links rather than duplicating full Tale content.
 
@@ -273,4 +275,4 @@ Perform a roadmap check:
 
 **P0.1 — Preproduction Narrative & Continuity Foundation**
 
-The target is a reviewed GitHub documentation package containing the Underteller voice authority, Drowned Harbor design authority, stable-seat continuity and future admission model, and the preproduction release roadmap. It does not change the playable game.
+The target is a reviewed GitHub documentation package containing the Underteller voice authority, Drowned Harbor design authority, stable-seat continuity and future admission model, the AI media guide, and the preproduction release roadmap. It does not change the playable game.
