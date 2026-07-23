@@ -171,6 +171,28 @@ func _test_fail_closed_matrix() -> void:
 	_expect(rejected.lifecycle == "tale_library", "provider rejection stays on Tale Library")
 	_expect(rejected._selection.entry == selected_before, "provider rejection retains selection")
 	_expect(rejected.to_snapshot() == rejected_before, "provider rejection is atomic")
+	var rejected_state: Dictionary = rejected.public_state()
+	var rejected_rendered: String = _render_library(rejected)
+	_expect(
+		rejected_state.tale_library.notice == "tale_selection_unavailable",
+		"provider rejection exposes only the sanitized selection notice",
+	)
+	_expect(
+		"TALE SELECTION UNAVAILABLE" in rejected_rendered,
+		"provider rejection renders the fixed recovery callout",
+	)
+	_expect(
+		rejected_state.tale_library.entries[1].display_name.to_upper() in rejected_rendered,
+		"provider rejection keeps the focused Tale card visible",
+	)
+	_expect(
+		_has_recovery_guidance(rejected_rendered),
+		"provider rejection renders Help, back, and protected-reset guidance",
+	)
+	_expect(
+		_presentation_is_bounded(rejected_rendered),
+		"provider rejection recovery callout leaks no provenance or internal reason",
+	)
 
 	for mutation: String in ["package", "missing_localization", "incomplete_display"]:
 		var mutated: VerticalSliceCoordinator = _library_coordinator(1)
@@ -187,9 +209,27 @@ func _test_fail_closed_matrix() -> void:
 		_expect(mutated.lifecycle == "tale_library", "%s stays on Tale Library" % mutation)
 		_expect(mutated._selection.entry == prior, "%s retains prior selection" % mutation)
 		_expect(mutated.to_snapshot() == before, "%s creates no partial mutation" % mutation)
+		var mutated_state: Dictionary = mutated.public_state()
+		var rendered: String = _render_library(mutated)
 		_expect(
-			_presentation_is_bounded(JSON.stringify(mutated.public_state())),
-			"%s exposes only bounded public guidance" % mutation,
+			mutated_state.tale_library.notice == "tale_selection_unavailable",
+			"%s uses the sanitized selection notice" % mutation,
+		)
+		_expect(
+			"TALE SELECTION UNAVAILABLE" in rendered,
+			"%s renders the fixed recovery callout" % mutation,
+		)
+		_expect(
+			mutated_state.tale_library.entries[0].display_name.to_upper() in rendered,
+			"%s keeps the focused Tale card visible" % mutation,
+		)
+		_expect(
+			_has_recovery_guidance(rendered),
+			"%s renders Help, back, and protected-reset guidance" % mutation,
+		)
+		_expect(
+			_presentation_is_bounded(rendered),
+			"%s recovery callout exposes only bounded public guidance" % mutation,
 		)
 
 
@@ -252,6 +292,23 @@ func _join_and_open_library(coordinator: VerticalSliceCoordinator, seat_count: i
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
 	coordinator.navigate_tale_library("open")
+
+
+func _render_library(coordinator: VerticalSliceCoordinator) -> String:
+	var view := VerticalSliceView.new()
+	view._ready()
+	view.present(coordinator.public_state(), coordinator.seat_manager.get_seats())
+	var rendered: String = "%s\n%s\n%s" % [view._title.text, view._body.text, view._footer.text]
+	view.free()
+	return rendered
+
+
+func _has_recovery_guidance(text: String) -> bool:
+	return (
+		"B / ESC: MODE CONFIRMATION" in text
+		and "X / H: HELP" in text
+		and "HOLD Y / R: RESET" in text
+	)
 
 
 func _presentation_is_bounded(text: String) -> bool:
