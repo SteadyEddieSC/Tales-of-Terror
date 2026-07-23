@@ -33,7 +33,10 @@ jobs:
           lines = workflow.read_text(encoding="utf-8").splitlines()
           start = lines.index("          python - <<'PY'") + 1
           end = lines.index("          PY", start)
-          source = "\n".join(line[10:] for line in lines[start:end]) + "\n"
+          source = "\n".join(
+              line[10:] if line.startswith("          ") else line
+              for line in lines[start:end]
+          ) + "\n"
           exec(compile(source, str(workflow), "exec"), {"__name__": "__main__"})
           PY
       - name: Install pinned formatter
