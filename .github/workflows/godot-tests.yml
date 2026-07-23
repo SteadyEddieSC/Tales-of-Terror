@@ -43,6 +43,7 @@ jobs:
         run: |
           set +e
           mkdir -p artifacts/issue63-format
+          cp game/tests/automated_playthrough_lab_test.gd artifacts/issue63-format/staged-lab.gd
           gdformat game/tests/automated_playthrough_lab_test.gd > artifacts/issue63-format/gdformat.txt 2>&1
           status=$?
           cat artifacts/issue63-format/gdformat.txt
@@ -53,6 +54,6 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: issue63-gdformat-diagnostic
-          path: artifacts/issue63-format/gdformat.txt
+          path: artifacts/issue63-format
           if-no-files-found: error
           retention-days: 2
