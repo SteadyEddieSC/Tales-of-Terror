@@ -1,4 +1,4 @@
-# Lantern House v0.1.7 Player-Owned Interaction Candidate Build
+# Lantern House v0.1.8 Player-Owned Interaction Candidate Build
 
 This extracted folder is an internal framework-validation build. No human pilot or manual validation is claimed. The working title is provisional; this is not a public demo or storefront release. A future real pilot under issue #39 requires a fresh candidate from the then-current protected `main`.
 

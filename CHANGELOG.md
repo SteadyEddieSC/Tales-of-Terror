@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.8 - Controlled Reveal & Shared-Screen Privacy Hardening
+
+- Added a deterministic controller-first privacy ceremony between public briefing and ordinary Lantern House play: neutral shield, authorized stable seat, allowlisted private reveal, safe close, and public continuation.
+- Kept RoleSession as the only private-data and acknowledgement authority while the presentation-only PrivateRevealFlow owns only phase, queue position, authorized seat, and reveal revision.
+- Added wrong-seat, duplicate, cancel, Help, disconnect/reconnect, reset/rematch, restoration, 1–8 seat, full-route, GUT, and recursive privacy-canary coverage.
+- Preserved the exact one-Tale catalog/package identities, roles and balance, gameplay/Director RNG, snapshots and report schemas, no-phone route, and unchanged Companion graph.
+- Issue #44 remains open: the inherited Companion dependency audit still reports GHSA-f88m-g3jw-g9cj; this game-only release does not deploy or publicly release Companion services.
+
 ## v0.1.7 - Player-Owned Interaction Pass
 
 - Replaced remaining repeated-confirm and automatic Lantern House progression with explicit stable-seat interaction windows for threshold choices, council voting, card play, courage checks, Director acknowledgement, Restless action/pass, and stage continuation.

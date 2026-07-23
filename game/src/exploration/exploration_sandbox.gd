@@ -133,6 +133,32 @@ func request_rules_navigation(device_id: int, direction: int, confirm: bool, can
 	return _rules_hud.handle_navigation(pawn.seat_number, direction, confirm, cancel)
 
 
+func request_private_reveal_input(device_id: int, confirm: bool, cancel: bool) -> bool:
+	if _session_coordinator == null or (not confirm and not cancel):
+		return false
+	var reveal: Dictionary = _session_coordinator.public_state().get("private_reveal", {})
+	if not (
+		reveal.get("phase", "") in [PrivateRevealFlow.PHASE_SHIELD, PrivateRevealFlow.PHASE_REVEAL]
+	):
+		return false
+	var pawn: PawnState = pawn_registry.get_by_device(device_id)
+	if pawn == null:
+		return true
+	var result: Dictionary = PrivateRevealFlow.submit_for(
+		_session_coordinator, pawn.seat_number, "cancel" if cancel else "confirm"
+	)
+	return result.get("consumed", false)
+
+
+func shield_private_reveal_for_public_surface() -> void:
+	if _session_coordinator == null:
+		return
+	PrivateRevealFlow.shield_for(_session_coordinator)
+	if is_instance_valid(_role_hud):
+		_role_hud.clear_private_cache()
+	_sync_private_reveal(_session_coordinator.public_state())
+
+
 func request_interaction(device_id: int) -> bool:
 	return _interactions.request(pawn_registry.get_by_device(device_id))
 
@@ -180,6 +206,7 @@ func set_safe_margin(value: int) -> void:
 func _on_session_state_changed(state: Dictionary) -> void:
 	if not is_instance_valid(_message_label) or _showcase_mode:
 		return
+	_sync_private_reveal(state)
 	var interaction: Dictionary = state.get("interaction", {})
 	if interaction.is_empty():
 		_message_label.text = ACTIVE_CONTROLS_TEXT
@@ -202,6 +229,36 @@ func _on_session_state_changed(state: Dictionary) -> void:
 		)
 	if is_instance_valid(_rules_hud):
 		_rules_hud.refresh()
+
+
+func _sync_private_reveal(state: Dictionary) -> void:
+	if not is_instance_valid(_role_hud):
+		return
+	var reveal: Dictionary = state.get("private_reveal", {})
+	var phase: String = reveal.get("phase", PrivateRevealFlow.PHASE_IDLE)
+	if phase == PrivateRevealFlow.PHASE_IDLE and state.get("lifecycle", "") == "active_tale":
+		PrivateRevealFlow.ensure_started(_session_coordinator)
+		return
+	if is_instance_valid(_rules_hud):
+		_rules_hud.visible = (
+			phase in [PrivateRevealFlow.PHASE_IDLE, PrivateRevealFlow.PHASE_COMPLETE]
+		)
+	match phase:
+		PrivateRevealFlow.PHASE_SHIELD:
+			_role_hud.present_shield(reveal)
+		PrivateRevealFlow.PHASE_REVEAL:
+			var seat_number: int = reveal.get("authorized_seat", 0)
+			_role_hud.present_private_view(
+				PrivateRevealFlow.private_view_for(_session_coordinator, seat_number),
+				"CONTROLLED PRIVATE REVEAL"
+			)
+		_:
+			_role_hud.clear_private_cache()
+
+
+func _exit_tree() -> void:
+	if is_instance_valid(_role_hud):
+		_role_hud.clear_private_cache()
 
 
 func present_reset_progress(progress: float) -> void:
@@ -336,6 +393,7 @@ func _build_hud() -> void:
 	root.add_child(_director_diagnostics)
 	_director_diagnostics.set_safe_margin(_safe_margin)
 	_role_hud = RoleHud.new()
+	_role_hud.z_index = 60
 	root.add_child(_role_hud)
 	_role_hud.set_safe_margin(_safe_margin)
 	_role_diagnostics = RoleDiagnostics.new()

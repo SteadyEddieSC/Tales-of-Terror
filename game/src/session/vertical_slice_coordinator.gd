@@ -82,6 +82,7 @@ var _stage_checkpoint: Dictionary = {}
 var _selection: TaleSelectionState
 var _tale_library_flow := TaleLibraryFlow.new()
 var _player_interaction_flow := PlayerInteractionFlow.new()
+var _private_reveal_flow := PrivateRevealFlow.new()
 
 
 func _init(
@@ -262,6 +263,7 @@ func begin_tale() -> Dictionary:
 		_tale_library_flow.selection_locked = true
 		stage_index = 0
 		operation_index = 0
+		_private_reveal_flow.begin(role_session, active_seats())
 		_emit_state()
 	return result
 
@@ -275,11 +277,7 @@ func run_current_stage() -> Dictionary:
 
 
 func advance_player_stage() -> Dictionary:
-	if paused:
-		return _reject("session_paused")
-	if lifecycle != "active_tale" or stage_index < 0 or stage_index >= manifest.stages.size():
-		return _reject("no_active_stage")
-	return _execute_stage(false)
+	return _private_reveal_flow.advance_player_stage(self)
 
 
 func _submit_player_interaction(seat_number: int, action: String) -> Dictionary:
@@ -388,6 +386,7 @@ func public_state() -> Dictionary:
 		"selected_tale_id": _selection.selected_tale_id(),
 		"tale_display_name": _selection.metadata.get("display_name", ""),
 		"tale_library": _tale_library_flow.public_state(_selection, last_rejection),
+		"private_reveal": _private_reveal_flow.public_view(role_session),
 		"interaction": _player_interaction_flow.public_state(self),
 		"lifecycle": lifecycle,
 		"stage_index": stage_index,
@@ -448,6 +447,7 @@ func _adopt_candidate(candidate: VerticalSliceCoordinator) -> void:
 	seat_manager = candidate.seat_manager
 	_selection = candidate._selection
 	_tale_library_flow = candidate._tale_library_flow
+	_private_reveal_flow = candidate._private_reveal_flow
 	tale_package = candidate.tale_package
 	tale_package_digest = candidate.tale_package_digest
 	manifest = candidate.manifest
@@ -740,6 +740,7 @@ func _build_session_restore_candidate(
 	candidate.last_director_application = snapshot.last_director_application.duplicate(true)
 	candidate._stage_checkpoint = snapshot.stage_transaction.duplicate(true)
 	candidate._tale_library_flow.lock_for_lifecycle(snapshot.lifecycle)
+	candidate._private_reveal_flow.begin(candidate.role_session, candidate.active_seats())
 	return {"accepted": true, "candidate": candidate}
 
 

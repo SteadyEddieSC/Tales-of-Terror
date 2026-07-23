@@ -83,6 +83,7 @@ func _test_lifecycle_and_atomic_initialization() -> void:
 		print("INITIALIZATION FAILURE: ", initialized)
 	_expect(initialized.accepted, "builds authorities")
 	_expect(coordinator.begin_tale().accepted, "enters the active tale after briefing")
+	_complete_private_reveals(coordinator)
 	_expect(
 		coordinator.board_state.space_for_seat(1) == "lantern_hall",
 		"maps initialized pawn occupancy through BoardState",
@@ -332,9 +333,13 @@ func _test_shared_screen_and_optional_companion() -> void:
 	var coordinator := _initialized_coordinator(3, 6201)
 	var secret_seat: int = coordinator.role_session.seat_with_tag("secret")
 	_expect(secret_seat > 0, "assigns a private role only in a supported mode")
+	var reveal_flow: PrivateRevealFlow = coordinator.get("_private_reveal_flow")
 	_expect(
-		coordinator.role_session.acknowledge_private_role(secret_seat).accepted,
-		"supports controlled shared-screen private reveal without a phone",
+		(
+			reveal_flow.phase == PrivateRevealFlow.PHASE_COMPLETE
+			and coordinator.role_session.seat_states[secret_seat].acknowledged
+		),
+		"completes controlled shared-screen private reveals without a phone",
 	)
 	var bridge: CompanionBridge = coordinator.companion_bridge
 	var transport := CompanionFakeTransport.new(bridge)
@@ -709,7 +714,7 @@ func _test_protected_reset_paths() -> void:
 	)
 	waiting.protected_reset_to_title()
 	_expect(_is_clean_title(waiting), "clears an in-progress wait and checkpoint")
-	var room := _initialized_coordinator(3, 6201)
+	var room := _initialized_coordinator(3, 6201, false)
 	var old_bridge: CompanionBridge = room.companion_bridge
 	_expect(old_bridge.create_room("reset_room", "RSET3").accepted, "opens reset probe room")
 	var transport := CompanionFakeTransport.new(old_bridge)
@@ -931,13 +936,29 @@ func _coordinator_with_seats(seat_count: int) -> VerticalSliceCoordinator:
 	return coordinator
 
 
-func _initialized_coordinator(seat_count: int, seed: int) -> VerticalSliceCoordinator:
+func _initialized_coordinator(
+	seat_count: int, seed: int, complete_reveals: bool = true
+) -> VerticalSliceCoordinator:
 	var coordinator := _coordinator_with_seats(seat_count)
 	coordinator.enter_lobby()
 	coordinator.confirm_roster()
 	coordinator.initialize_session(seed)
 	coordinator.begin_tale()
+	if complete_reveals:
+		_complete_private_reveals(coordinator)
 	return coordinator
+
+
+func _complete_private_reveals(coordinator: VerticalSliceCoordinator) -> void:
+	var flow: PrivateRevealFlow = coordinator.get("_private_reveal_flow")
+	for _index: int in coordinator.active_seats().size():
+		var seat_number: int = flow.current_seat()
+		var opened: Dictionary = flow.submit(coordinator.role_session, seat_number, "confirm")
+		var acknowledged: Dictionary = flow.submit(coordinator.role_session, seat_number, "confirm")
+		_expect(
+			opened.accepted and acknowledged.accepted, "completes reveal for Seat %d" % seat_number
+		)
+	_expect(flow.phase == PrivateRevealFlow.PHASE_COMPLETE, "completes the private reveal queue")
 
 
 func _complete(coordinator: VerticalSliceCoordinator) -> void:

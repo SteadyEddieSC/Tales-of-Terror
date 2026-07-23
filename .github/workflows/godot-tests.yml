@@ -102,6 +102,8 @@ jobs:
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_library_test.gd
       - name: Player-owned interaction and waiting-state tests
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/player_owned_interaction_test.gd
+      - name: Controlled reveal and shared-screen privacy tests
+        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/private_reveal_flow_test.gd
       - name: Tale package replay-equivalence matrix
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_replay_equivalence_test.gd
       - name: Guided session and local playtest report tests

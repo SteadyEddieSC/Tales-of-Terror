@@ -436,7 +436,21 @@ func _initialized_coordinator(seat_count: int, seed: int) -> VerticalSliceCoordi
 	coordinator.confirm_roster()
 	coordinator.initialize_session(seed)
 	coordinator.begin_tale()
+	_complete_private_reveals(coordinator)
 	return coordinator
+
+
+func _complete_private_reveals(coordinator: VerticalSliceCoordinator) -> void:
+	var flow: PrivateRevealFlow = coordinator.get("_private_reveal_flow")
+	for _index: int in coordinator.active_seats().size():
+		var seat_number: int = flow.current_seat()
+		var opened: Dictionary = flow.submit(coordinator.role_session, seat_number, "confirm")
+		var acknowledged: Dictionary = flow.submit(coordinator.role_session, seat_number, "confirm")
+		_expect(
+			opened.accepted and acknowledged.accepted,
+			"completes readiness reveal for Seat %d" % seat_number
+		)
+	_expect(flow.phase == PrivateRevealFlow.PHASE_COMPLETE, "completes readiness reveal queue")
 
 
 func _complete_stage_prompt(coordinator: VerticalSliceCoordinator) -> void:
