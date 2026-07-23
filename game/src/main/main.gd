@@ -189,14 +189,10 @@ func _route_player_owned_interaction(event: InputEvent, device_id: int) -> bool:
 	if seat_index < 0:
 		return false
 	var direction: int = 0
-	if (
-		event.is_action_pressed("ui_navigate_left")
-		or event.is_action_pressed("ui_navigate_up")
-	):
+	if event.is_action_pressed("ui_navigate_left") or event.is_action_pressed("ui_navigate_up"):
 		direction = -1
 	elif (
-		event.is_action_pressed("ui_navigate_right")
-		or event.is_action_pressed("ui_navigate_down")
+		event.is_action_pressed("ui_navigate_right") or event.is_action_pressed("ui_navigate_down")
 	):
 		direction = 1
 	var confirm: bool = event.is_action_pressed("ui_confirm")
