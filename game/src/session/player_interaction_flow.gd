@@ -28,7 +28,10 @@ func public_state(coordinator: VerticalSliceCoordinator) -> Dictionary:
 			"options": [],
 			"allow_pass": false,
 		}
-	if coordinator.rules_session != null and not coordinator.rules_session.pending_prompt.is_empty():
+	if (
+		coordinator.rules_session != null
+		and not coordinator.rules_session.pending_prompt.is_empty()
+	):
 		return _rules_prompt_state(coordinator)
 	var stage: Dictionary = coordinator.manifest.stages[coordinator.stage_index]
 	if coordinator.operation_index == 0 and coordinator._stage_checkpoint.is_empty():
@@ -52,9 +55,7 @@ func public_state(coordinator: VerticalSliceCoordinator) -> Dictionary:
 	return _operation_state(coordinator, stage, operation)
 
 
-func submit(
-	coordinator: VerticalSliceCoordinator, seat_number: int, action: String
-) -> Dictionary:
+func submit(coordinator: VerticalSliceCoordinator, seat_number: int, action: String) -> Dictionary:
 	var rejection: Dictionary = _submission_rejection(coordinator, seat_number, action)
 	if not rejection.is_empty():
 		return rejection
@@ -100,9 +101,7 @@ func _commit_response(coordinator: VerticalSliceCoordinator, action: String) -> 
 	return _consumed(_advance(coordinator))
 
 
-func _commit_stage_continue(
-	coordinator: VerticalSliceCoordinator, action: String
-) -> Dictionary:
+func _commit_stage_continue(coordinator: VerticalSliceCoordinator, action: String) -> Dictionary:
 	if action != "confirm":
 		return {"accepted": false, "consumed": true, "reason": "stage_continue_required"}
 	return _consumed(_advance(coordinator))
@@ -116,7 +115,9 @@ func _advance(coordinator: VerticalSliceCoordinator) -> Dictionary:
 		return {"accepted": false, "reason": "no_active_stage"}
 	var stage: Dictionary = coordinator.manifest.stages[coordinator.stage_index]
 	if coordinator._stage_checkpoint.is_empty():
-		coordinator._stage_checkpoint = VerticalSliceSnapshotPolicy.transaction_snapshot(coordinator)
+		coordinator._stage_checkpoint = VerticalSliceSnapshotPolicy.transaction_snapshot(
+			coordinator
+		)
 	while coordinator.operation_index < stage.operations.size():
 		var operation: Dictionary = stage.operations[coordinator.operation_index]
 		if operation.type in ["submit_prompt", "submit_vote"]:
@@ -135,8 +136,10 @@ func _advance(coordinator: VerticalSliceCoordinator) -> Dictionary:
 		if not result.get("accepted", false):
 			VerticalSliceSnapshotPolicy.rollback_stage_transaction(coordinator)
 			return coordinator._reject(
-				"stage_operation_failed:%s:%s:%s"
-				% [stage.id, operation.type, result.get("reason", "rejected")]
+				(
+					"stage_operation_failed:%s:%s:%s"
+					% [stage.id, operation.type, result.get("reason", "rejected")]
+				)
 			)
 		coordinator.operation_index += 1
 	return coordinator._finish_stage(stage)
@@ -158,8 +161,10 @@ func _submit_operation(
 		VerticalSliceSnapshotPolicy.rollback_stage_transaction(coordinator)
 		return _consumed(
 			coordinator._reject(
-				"stage_operation_failed:%s:%s:%s"
-				% [stage.id, operation.type, result.get("reason", "rejected")]
+				(
+					"stage_operation_failed:%s:%s:%s"
+					% [stage.id, operation.type, result.get("reason", "rejected")]
+				)
 			)
 		)
 	coordinator.operation_index += 1
@@ -183,12 +188,15 @@ func _rules_prompt_state(coordinator: VerticalSliceCoordinator) -> Dictionary:
 		if not option_value is Dictionary:
 			continue
 		var option: Dictionary = option_value
-		options.append(
-			{
-				"id": option.get("id", ""),
-				"label": option.get("text", _friendly(option.get("id", "Option"))),
-				"symbol": option.get("symbol", "◇"),
-			}
+		(
+			options
+			. append(
+				{
+					"id": option.get("id", ""),
+					"label": option.get("text", _friendly(option.get("id", "Option"))),
+					"symbol": option.get("symbol", "◇"),
+				}
+			)
 		)
 	var is_vote: bool = not coordinator.rules_session.active_vote.is_empty()
 	var allow_pass: bool = prompt.get("allow_pass", false)
@@ -199,7 +207,8 @@ func _rules_prompt_state(coordinator: VerticalSliceCoordinator) -> Dictionary:
 		"interaction_id": "rules:%s:%d" % [prompt.get("id", "prompt"), prompt.get("revision", 0)],
 		"kind": "vote" if is_vote else "choice",
 		"title": prompt.get("title", "Public Vote" if is_vote else "Shared Choice"),
-		"instruction": (
+		"instruction":
+		(
 			"%d of %d eligible seats committed; waiting for %s."
 			% [committed.size(), eligible.size(), _seat_list(pending)]
 		),
@@ -227,50 +236,66 @@ func _operation_state(
 	match operation.type:
 		"play_card":
 			var card_owner: int = active[0] if not active.is_empty() else 0
-			base.merge(
-				{
-					"kind": "card_play",
-					"instruction": "Seat %s may play %s or preserve it for later."
-					% [_roman(card_owner), _friendly(operation.get("card_id", "card"))],
-					"controls": "A / ENTER: PLAY CARD  |  B / ESC: PASS  |  X / H: HELP",
-					"eligible_seats": [card_owner],
-					"pending_seats": [card_owner],
-					"owner_seat": card_owner,
-					"options": [
-						{"id": "confirm", "label": "Play Card"},
-						{"id": "pass", "label": "Keep Card"},
-					],
-					"allow_pass": true,
-				},
-				true,
+			(
+				base
+				. merge(
+					{
+						"kind": "card_play",
+						"instruction":
+						(
+							"Seat %s may play %s or preserve it for later."
+							% [_roman(card_owner), _friendly(operation.get("card_id", "card"))]
+						),
+						"controls": "A / ENTER: PLAY CARD  |  B / ESC: PASS  |  X / H: HELP",
+						"eligible_seats": [card_owner],
+						"pending_seats": [card_owner],
+						"owner_seat": card_owner,
+						"options":
+						[
+							{"id": "confirm", "label": "Play Card"},
+							{"id": "pass", "label": "Keep Card"},
+						],
+						"allow_pass": true,
+					},
+					true,
+				)
 			)
 		"resolve_check":
 			var check_owner: int = active[0] if not active.is_empty() else 0
-			base.merge(
-				{
-					"kind": "check_attempt",
-					"instruction": "Seat %s must attempt the %s check."
-					% [_roman(check_owner), _friendly(operation.get("check_id", "check"))],
-					"controls": "A / ENTER: ATTEMPT CHECK  |  X / H: HELP",
-					"eligible_seats": [check_owner],
-					"pending_seats": [check_owner],
-					"owner_seat": check_owner,
-					"options": [{"id": "confirm", "label": "Attempt Check"}],
-				},
-				true,
+			(
+				base
+				. merge(
+					{
+						"kind": "check_attempt",
+						"instruction":
+						(
+							"Seat %s must attempt the %s check."
+							% [_roman(check_owner), _friendly(operation.get("check_id", "check"))]
+						),
+						"controls": "A / ENTER: ATTEMPT CHECK  |  X / H: HELP",
+						"eligible_seats": [check_owner],
+						"pending_seats": [check_owner],
+						"owner_seat": check_owner,
+						"options": [{"id": "confirm", "label": "Attempt Check"}],
+					},
+					true,
+				)
 			)
 		"director_evaluate":
-			base.merge(
-				{
-					"kind": "director_acknowledgement",
-					"instruction": "The House is ready to react. Any active seat may continue.",
-					"controls": "A / ENTER: LET THE HOUSE RESPOND  |  X / H: HELP",
-					"eligible_seats": active,
-					"pending_seats": active,
-					"owner_seat": 0,
-					"options": [{"id": "confirm", "label": "Continue"}],
-				},
-				true,
+			(
+				base
+				. merge(
+					{
+						"kind": "director_acknowledgement",
+						"instruction": "The House is ready to react. Any active seat may continue.",
+						"controls": "A / ENTER: LET THE HOUSE RESPOND  |  X / H: HELP",
+						"eligible_seats": active,
+						"pending_seats": active,
+						"owner_seat": 0,
+						"options": [{"id": "confirm", "label": "Continue"}],
+					},
+					true,
+				)
 			)
 		"role_action":
 			var actor: int = (
@@ -278,34 +303,40 @@ func _operation_state(
 				if coordinator.role_session != null
 				else 0
 			)
-			base.merge(
-				{
-					"kind": "afterlife_action",
-					"instruction": "Seat %s may use a Restless action or pass."
-					% _roman(actor),
-					"controls": "A / ENTER: ACT  |  B / ESC: PASS  |  X / H: HELP",
-					"eligible_seats": [actor] if actor > 0 else [],
-					"pending_seats": [actor] if actor > 0 else [],
-					"owner_seat": actor,
-					"options": [
-						{"id": "confirm", "label": "Use Restless Action"},
-						{"id": "pass", "label": "Pass"},
-					],
-					"allow_pass": true,
-				},
-				true,
+			(
+				base
+				. merge(
+					{
+						"kind": "afterlife_action",
+						"instruction": "Seat %s may use a Restless action or pass." % _roman(actor),
+						"controls": "A / ENTER: ACT  |  B / ESC: PASS  |  X / H: HELP",
+						"eligible_seats": [actor] if actor > 0 else [],
+						"pending_seats": [actor] if actor > 0 else [],
+						"owner_seat": actor,
+						"options":
+						[
+							{"id": "confirm", "label": "Use Restless Action"},
+							{"id": "pass", "label": "Pass"},
+						],
+						"allow_pass": true,
+					},
+					true,
+				)
 			)
 		_:
-			base.merge(
-				{
-					"kind": "automatic_consequence",
-					"instruction": "The Tale is resolving an authored consequence.",
-					"controls": "PLEASE WAIT",
-					"eligible_seats": [],
-					"pending_seats": [],
-					"owner_seat": 0,
-				},
-				true,
+			(
+				base
+				. merge(
+					{
+						"kind": "automatic_consequence",
+						"instruction": "The Tale is resolving an authored consequence.",
+						"controls": "PLEASE WAIT",
+						"eligible_seats": [],
+						"pending_seats": [],
+						"owner_seat": 0,
+					},
+					true,
+				)
 			)
 	return base
 
