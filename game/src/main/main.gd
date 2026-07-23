@@ -45,7 +45,6 @@ func _ready() -> void:
 	add_child(_input_router)
 	_input_router.interact_requested.connect(_on_interact_requested)
 	_input_router.diagnostics_requested.connect(_on_diagnostics_requested)
-	_input_router.rules_navigation_requested.connect(_on_rules_navigation_requested)
 	_ui = InputDisplayLab.new()
 	add_child(_ui)
 	_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -144,6 +143,12 @@ func _input(event: InputEvent) -> void:
 		if event.is_action_pressed(action):
 			_seats.record_action(device_id, action)
 			break
+	if (
+		_coordinator.lifecycle == "active_tale"
+		and _route_player_owned_interaction(event, device_id)
+	):
+		get_viewport().set_input_as_handled()
+		return
 	if _coordinator.lifecycle == "tale_library" and _event_can_navigate(event, owns_active_seat):
 		var focus_direction: int = 0
 		if event.is_action_pressed("ui_navigate_left") or event.is_action_pressed("ui_navigate_up"):
@@ -175,6 +180,40 @@ func _input(event: InputEvent) -> void:
 			)
 	elif event.is_action_pressed("ui_cancel_action"):
 		_cancel_player_flow(device_id)
+
+
+func _route_player_owned_interaction(event: InputEvent, device_id: int) -> bool:
+	if not is_instance_valid(_sandbox):
+		return false
+	var seat_index: int = _seats.find_seat_by_device(device_id)
+	if seat_index < 0:
+		return false
+	var direction: int = 0
+	if (
+		event.is_action_pressed("ui_navigate_left")
+		or event.is_action_pressed("ui_navigate_up")
+	):
+		direction = -1
+	elif (
+		event.is_action_pressed("ui_navigate_right")
+		or event.is_action_pressed("ui_navigate_down")
+	):
+		direction = 1
+	var confirm: bool = event.is_action_pressed("ui_confirm")
+	var cancel: bool = event.is_action_pressed("ui_cancel_action")
+	if direction == 0 and not confirm and not cancel:
+		return false
+	if _sandbox.request_rules_navigation(device_id, direction, confirm, cancel):
+		return true
+	if confirm or cancel:
+		var result: Dictionary = _coordinator.submit_player_interaction(
+			seat_index + 1, "pass" if cancel else "confirm"
+		)
+		if result.get("consumed", false):
+			_refresh_slice_view()
+			return true
+	var interaction: Dictionary = _coordinator.public_state().get("interaction", {})
+	return direction != 0 and not interaction.is_empty()
 
 
 func _ensure_sandbox() -> void:
