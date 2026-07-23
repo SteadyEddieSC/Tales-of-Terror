@@ -83,19 +83,29 @@ func _commit_submission(
 ) -> Dictionary:
 	match state.kind:
 		"choice", "vote":
-			if action != "confirm":
-				return {"accepted": false, "consumed": true, "reason": "response_still_pending"}
-			if not _responses_complete(coordinator):
-				return {"accepted": false, "consumed": true, "reason": "responses_incomplete"}
-			return _consumed(_advance(coordinator))
+			return _commit_response(coordinator, action)
 		"stage_continue":
-			if action != "confirm":
-				return {"accepted": false, "consumed": true, "reason": "stage_continue_required"}
-			return _consumed(_advance(coordinator))
+			return _commit_stage_continue(coordinator, action)
 		"card_play", "check_attempt", "director_acknowledgement", "afterlife_action":
 			return _submit_operation(coordinator, state, action)
 		_:
 			return {"accepted": false, "consumed": true, "reason": "interaction_not_committable"}
+
+
+func _commit_response(coordinator: VerticalSliceCoordinator, action: String) -> Dictionary:
+	if action != "confirm":
+		return {"accepted": false, "consumed": true, "reason": "response_still_pending"}
+	if not _responses_complete(coordinator):
+		return {"accepted": false, "consumed": true, "reason": "responses_incomplete"}
+	return _consumed(_advance(coordinator))
+
+
+func _commit_stage_continue(
+	coordinator: VerticalSliceCoordinator, action: String
+) -> Dictionary:
+	if action != "confirm":
+		return {"accepted": false, "consumed": true, "reason": "stage_continue_required"}
+	return _consumed(_advance(coordinator))
 
 
 func _advance(coordinator: VerticalSliceCoordinator) -> Dictionary:
