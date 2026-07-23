@@ -1,0 +1,100 @@
+name: Apply issue 59 canonical formatting
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+concurrency:
+  group: issue59-format-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Detect pending format marker
+        id: pending
+        shell: bash
+        run: |
+          if [[ -f tools/issue59_format_marker.txt ]]; then
+            echo 'apply=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'apply=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        if: steps.pending.outputs.apply == 'true'
+        with:
+          python-version: 3.11.9
+      - name: Install pinned GDScript Toolkit
+        if: steps.pending.outputs.apply == 'true'
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+      - name: Format exact issue 59 files
+        if: steps.pending.outputs.apply == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          gdformat \
+            game/src/exploration/exploration_sandbox.gd \
+            game/src/main/main.gd \
+            game/src/session/player_interaction_flow.gd \
+            game/tests/player_owned_interaction_test.gd
+          gdlint \
+            game/src/exploration/exploration_sandbox.gd \
+            game/src/main/main.gd \
+            game/src/session/player_interaction_flow.gd \
+            game/tests/player_owned_interaction_test.gd
+          gdformat --check \
+            game/src/exploration/exploration_sandbox.gd \
+            game/src/main/main.gd \
+            game/src/session/player_interaction_flow.gd \
+            game/tests/player_owned_interaction_test.gd
+          git diff --check
+      - name: Publish signed formatted files
+        if: steps.pending.outputs.apply == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+
+          marker_sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/tools/issue59_format_marker.txt?ref=${BRANCH}" --jq .sha)
+          jq -n \
+            --arg message 'Remove temporary issue 59 format marker' \
+            --arg sha "$marker_sha" \
+            --arg branch "$BRANCH" \
+            '{message:$message,sha:$sha,branch:$branch}' \
+            | gh api --method DELETE "repos/${GITHUB_REPOSITORY}/contents/tools/issue59_format_marker.txt" --input - >/dev/null
+
+          publish_file() {
+            local path="$1"
+            local message="$2"
+            local content sha
+            content=$(base64 -w0 "$path")
+            sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/${path}?ref=${BRANCH}" --jq .sha)
+            jq -n \
+              --arg message "$message" \
+              --arg content "$content" \
+              --arg sha "$sha" \
+              --arg branch "$BRANCH" \
+              '{message:$message,content:$content,sha:$sha,branch:$branch}' \
+              | gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${path}" --input - >/dev/null
+          }
+
+          publish_file game/src/exploration/exploration_sandbox.gd 'Format player interaction presentation'
+          publish_file game/src/main/main.gd 'Format stable-seat interaction routing'
+          publish_file game/src/session/player_interaction_flow.gd 'Format player interaction flow'
+          publish_file game/tests/player_owned_interaction_test.gd 'Format player interaction regression tests'
