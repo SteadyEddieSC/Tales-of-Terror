@@ -206,7 +206,7 @@ func _route_player_owned_interaction(event: InputEvent, device_id: int) -> bool:
 	if _sandbox.request_rules_navigation(device_id, direction, confirm, cancel):
 		return true
 	if confirm or cancel:
-		var result: Dictionary = _coordinator.submit_player_interaction(
+		var result: Dictionary = _coordinator._submit_player_interaction(
 			seat_index + 1, "pass" if cancel else "confirm"
 		)
 		if result.get("consumed", false):
