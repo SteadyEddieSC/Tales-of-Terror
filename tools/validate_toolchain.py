@@ -157,6 +157,7 @@ def main() -> int:
         "res://tests/tale_catalog_test.gd",
         "res://tests/tale_library_test.gd",
         "res://tests/player_owned_interaction_test.gd",
+        "res://tests/private_reveal_flow_test.gd",
         "res://tests/tale_replay_equivalence_test.gd",
         "res://tests/playtest_readiness_test.gd",
         "res://tests/portable_build_identity_test.gd",
