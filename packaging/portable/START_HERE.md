@@ -1,4 +1,4 @@
-# Lantern House v0.1.6 Tale Library Candidate Build
+# Lantern House v0.1.7 Player-Owned Interaction Candidate Build
 
 This extracted folder is an internal framework-validation build. No human pilot or manual validation is claimed. The working title is provisional; this is not a public demo or storefront release. A future real pilot under issue #39 requires a fresh candidate from the then-current protected `main`.
 
@@ -11,7 +11,7 @@ The helper is optional. It uses only files beside it, performs no download, requ
 
 ## Play
 
-Connect controllers before starting. Press A to claim a stable seat; an owned controller presses A again to confirm. One to eight seats are supported. Enter is the keyboard development fallback and Space can confirm. Press X/H for Help. Phones are optional: the native Godot host remains authoritative and the complete session can be played without phones.
+Connect controllers before starting. Press A to claim a stable seat; an owned controller presses A again to confirm. One to eight seats are supported. During Lantern House, the shared screen identifies the eligible or owning stable seat for each threshold choice, vote, card play, check, Director acknowledgement, Restless action, and stage continuation. Enter is the keyboard development fallback and Space can confirm. Press X/H for Help. Phones are optional: the native Godot host remains authoritative and the complete session can be played without phones.
 
 ## Reports and facilitation
 
