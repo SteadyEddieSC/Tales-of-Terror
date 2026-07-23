@@ -1,6 +1,6 @@
 # Preproduction Documentation Index
 
-**Status:** Internal design material; not playable implementation  
+**Status:** Internal design material; not playable implementation
 **Current package:** P0.1 — Preproduction Narrative & Continuity Foundation
 
 ## Current source documents
@@ -9,6 +9,7 @@
 - [Drowned Harbor Design Bible](../tales/drowned_harbor/Drowned_Harbor_Design_Bible.md)
 - [Seat Continuity and Multiplayer Admission Contract](../design/Seat_Continuity_and_Admission.md)
 - [Post-v0.1.9 Preproduction Roadmap](../roadmap/Post_v0.1.9_Preproduction_Roadmap.md)
+- [AI Media Production and Provenance Guide](../assets/AI_Media_Production_Guide.md)
 
 ## Authority and boundaries
 
