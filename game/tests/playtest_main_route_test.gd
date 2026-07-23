@@ -246,13 +246,44 @@ func _test_rendered_guidance_and_action_map() -> void:
 	var title: Label = sandbox.get("_title_label")
 	var message: Label = sandbox.get("_message_label")
 	var reset: Label = sandbox.get("_reset_label")
+	var role_hud: RoleHud = sandbox.get("_role_hud")
+	_expect(
+		(
+			role_hud.get_view_model().get("kind", "") == "shield"
+			and "NO PRIVATE ROLE" in role_hud.rendered_player_text()
+			and not "PRIVATE OBJECTIVES" in role_hud.rendered_player_text()
+		),
+		"active route begins on a neutral controlled-reveal shield",
+	)
+	await _press_button(0, BUTTON_A)
+	_expect(
+		(
+			role_hud.get_view_model().get("kind", "") == "seat_private"
+			and "PRIVATE OBJECTIVES" in role_hud.rendered_player_text()
+		),
+		"authorized stable seat opens only its private reveal",
+	)
+	await _press_button(0, BUTTON_X)
+	var help: GuidedSessionHelp = main.get("_help")
+	_expect(help.visible, "Help opens from a private reveal")
+	_expect(
+		(
+			role_hud.get_view_model().get("kind", "") == "shield"
+			and not "PRIVATE OBJECTIVES" in role_hud.rendered_player_text()
+		),
+		"Help clears private content before becoming visible",
+	)
+	await _press_button(0, BUTTON_X)
+	await _press_button(0, BUTTON_A)
+	await _press_button(0, BUTTON_A)
+	await _press_button(0, BUTTON_A)
 	_expect(
 		"LANTERN HOUSE" in title.text and "STAGE 1" in title.text,
 		"sandbox identifies the current Tale and stage",
 	)
 	_expect(
 		"0 of 1 eligible seats committed" in message.text and "waiting for I" in message.text,
-		"sandbox reports the pending stable-seat response",
+		"sandbox reports the pending stable-seat response after reveals complete",
 	)
 	_expect("A / ENTER: COMMIT" in message.text, "sandbox renders the expected commit input")
 	_expect("X / H: HELP" in message.text, "interaction guidance preserves Help")
@@ -343,6 +374,26 @@ func _new_main(device_count: int) -> Control:
 
 
 func _run_active_tale(coordinator: VerticalSliceCoordinator) -> void:
+	var reveal_guard: int = 0
+	while (
+		coordinator.lifecycle == "active_tale"
+		and (
+			coordinator.public_state().get("private_reveal", {}).get("phase", "")
+			!= PrivateRevealFlow.PHASE_COMPLETE
+		)
+		and reveal_guard < 18
+	):
+		var reveal: Dictionary = coordinator.public_state().get("private_reveal", {})
+		var authorized: int = reveal.get("authorized_seat", 0)
+		_expect(authorized > 0, "controlled reveal has an authorized stable seat")
+		if authorized <= 0:
+			break
+		await _press_button(authorized - 1, BUTTON_A)
+		reveal_guard += 1
+		await process_frame
+	_expect(reveal_guard < 18, "controlled reveal completes within the 1–8 seat bound")
+	if coordinator.lifecycle == "active_tale" and coordinator.public_state().interaction.is_empty():
+		await _press_button(0, BUTTON_A)
 	var guard: int = 0
 	while coordinator.lifecycle == "active_tale" and guard < 24:
 		var interaction: Dictionary = coordinator.public_state().get("interaction", {})
