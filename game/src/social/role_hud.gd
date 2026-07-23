@@ -60,13 +60,65 @@ func present(session: RoleSession, view_spec: Dictionary) -> void:
 	match kind:
 		"seat_private":
 			var seat: int = view_spec.get("seat", 0)
-			_present_private(session.seat_private_view(seat), title)
+			present_private_view(session.seat_private_view(seat), title)
 		"outcome":
 			_present_outcome(session.public_view(), title)
 		_:
 			_present_public(session.public_view(), title)
 	visible = true
 	_layout()
+
+
+func present_shield(view: Dictionary) -> void:
+	clear_private_cache()
+	_backdrop.color = Color(0.005, 0.008, 0.015, 1.0)
+	_backdrop.visible = true
+	_title.text = "CONTROLLED REVEAL  •  SHARED SCREEN SHIELDED"
+	var lines := PackedStringArray()
+	lines.append("NO PRIVATE ROLE, FACTION, OBJECTIVE, ACTION, OR TARGET IS VISIBLE.")
+	lines.append("")
+	lines.append(view.get("instruction", "Pass control to the authorized stable seat."))
+	lines.append("")
+	lines.append(
+		"PROGRESS: %d / %d COMPLETE" % [view.get("completed_count", 0), view.get("total_count", 0)]
+	)
+	_rendered_text = "\n".join(lines)
+	_body.text = _rendered_text
+	_footer.text = view.get("controls", "AUTHORIZED SEAT A / ENTER: OPEN")
+	_view_model = {
+		"kind": "shield",
+		"authorized_seat": view.get("authorized_seat", 0),
+		"essential_lines": lines.size(),
+		"essential_content_fits": lines.size() <= MAX_PLAYER_LINES,
+		"shared_screen_obscured": true,
+		"contains_private_ids": false,
+		"safe_margin": _safe_margin,
+	}
+	visible = true
+	_layout()
+
+
+func present_private_view(view: Dictionary, title: String = "PRIVATE ROLE REVEAL") -> void:
+	if not view.get("accepted", false):
+		clear_private_cache()
+		return
+	_present_private(view, title)
+	visible = true
+	_layout()
+
+
+func clear_private_cache() -> void:
+	_rendered_text = ""
+	_view_model.clear()
+	if is_instance_valid(_title):
+		_title.text = ""
+	if is_instance_valid(_body):
+		_body.text = ""
+	if is_instance_valid(_footer):
+		_footer.text = ""
+	if is_instance_valid(_backdrop):
+		_backdrop.visible = false
+	visible = false
 
 
 func get_view_model() -> Dictionary:
@@ -157,6 +209,7 @@ func _present_public(view: Dictionary, title: String) -> void:
 
 
 func _present_private(view: Dictionary, title: String) -> void:
+	clear_private_cache()
 	_backdrop.color = Color(0.015, 0.02, 0.035, 0.98)
 	_backdrop.visible = true
 	_title.text = (
