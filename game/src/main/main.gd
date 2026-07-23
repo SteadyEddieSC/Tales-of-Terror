@@ -199,7 +199,10 @@ func _route_player_owned_interaction(event: InputEvent, device_id: int) -> bool:
 	var cancel: bool = event.is_action_pressed("ui_cancel_action")
 	if direction == 0 and not confirm and not cancel:
 		return false
-	if _sandbox.request_rules_navigation(device_id, direction, confirm, cancel):
+	if (
+		_sandbox.request_private_reveal_input(device_id, confirm, cancel)
+		or _sandbox.request_rules_navigation(device_id, direction, confirm, cancel)
+	):
 		return true
 	if confirm or cancel:
 		var result: Dictionary = _coordinator._submit_player_interaction(
@@ -226,6 +229,7 @@ func _ensure_sandbox() -> void:
 
 func _destroy_sandbox() -> void:
 	if is_instance_valid(_sandbox):
+		_sandbox.shield_private_reveal_for_public_surface()
 		_sandbox.queue_free()
 	_sandbox = null
 	_ui.visible = _developer_lab
@@ -265,11 +269,17 @@ func _on_rules_navigation_requested(
 
 func _on_device_connected(device_id: int, identity: String) -> void:
 	_seats.reconnect_device(device_id, identity, _devices.get_display_name(device_id))
+	var seat_index: int = _seats.find_seat_by_device(device_id)
+	if seat_index >= 0:
+		PrivateRevealFlow.connection_changed_for(_coordinator, seat_index + 1, true)
 
 
 func _on_device_disconnected(device_id: int) -> void:
+	var seat_index: int = _seats.find_seat_by_device(device_id)
 	_input_router.clear_device(device_id)
 	_seats.disconnect_device(device_id)
+	if seat_index >= 0:
+		PrivateRevealFlow.connection_changed_for(_coordinator, seat_index + 1, false)
 
 
 func _on_devices_changed(devices: Array[Dictionary]) -> void:
@@ -301,7 +311,6 @@ func _advance_player_flow() -> void:
 			if _coordinator.begin_tale().accepted:
 				_ensure_sandbox()
 				_sandbox.sync_seats(_seats.get_seats())
-				_coordinator.advance_player_stage()
 		"active_tale":
 			var result: Dictionary = _coordinator.advance_player_stage()
 			if result.accepted and _coordinator.lifecycle == "terminal":
@@ -398,6 +407,7 @@ func _seat_supports_pawn(seat: Dictionary) -> bool:
 func _open_help() -> void:
 	_input_router.set_presentation_input_blocked(true)
 	if is_instance_valid(_sandbox):
+		_sandbox.shield_private_reveal_for_public_surface()
 		_sandbox.process_mode = Node.PROCESS_MODE_DISABLED
 	(
 		_help
