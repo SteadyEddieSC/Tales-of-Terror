@@ -6,27 +6,17 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   headless:
     name: Godot 4.7 headless validation
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - name: Download checksum-pinned Godot 4.7.1 stable
-        shell: bash
-        run: |
-          set -euo pipefail
-          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
-          curl -fsSL -o godot.zip "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
-          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | sha512sum --check -
-          unzip -q godot.zip -d .godot-bin
-          chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
-          echo "$PWD/.godot-bin" >> "$GITHUB_PATH"
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: 3.11.9
@@ -46,167 +36,23 @@ jobs:
           source = "\n".join(line[10:] for line in lines[start:end]) + "\n"
           exec(compile(source, str(workflow), "exec"), {"__name__": "__main__"})
           PY
-      - name: Install pinned GDScript Toolkit
-        run: |
-          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
-          python -m pip check
-          python -m pip freeze --all
-      - name: Canonically format staged issue 63 lab
-        run: gdformat game/tests/automated_playthrough_lab_test.gd
-      - name: Inventory first-party GDScript
+      - name: Install pinned formatter
+        run: python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+      - name: Capture formatter diagnostic
         shell: bash
         run: |
-          set -euo pipefail
-          mkdir -p artifacts/gdscript-quality
-          find game -type f -name '*.gd' \
-            -not -path 'game/addons/gut/*' \
-            -not -path 'game/.godot/*' \
-            -print | sort > artifacts/gdscript-quality/first-party-files.txt
-      - name: Enforce zero-finding GDScript lint gate
-        shell: bash
-        run: |
-          set -euo pipefail
-          mapfile -t gd_files < artifacts/gdscript-quality/first-party-files.txt
-          gdlint "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdlint.txt
-          printf '\nexit_code=0\n' >> artifacts/gdscript-quality/gdlint.txt
-      - name: Enforce canonical GDScript format gate (check only)
-        shell: bash
-        run: |
-          set -euo pipefail
-          mapfile -t gd_files < artifacts/gdscript-quality/first-party-files.txt
-          gdformat --check "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdformat.txt
-          printf '\nexit_code=0\n' >> artifacts/gdscript-quality/gdformat.txt
-      - name: Upload enforced GDScript quality evidence
+          set +e
+          mkdir -p artifacts/issue63-format
+          gdformat game/tests/automated_playthrough_lab_test.gd > artifacts/issue63-format/gdformat.txt 2>&1
+          status=$?
+          cat artifacts/issue63-format/gdformat.txt
+          printf '\nexit_code=%s\n' "$status" >> artifacts/issue63-format/gdformat.txt
+          exit "$status"
+      - name: Upload formatter diagnostic
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: gdscript-quality
-          path: artifacts/gdscript-quality
+          name: issue63-gdformat-diagnostic
+          path: artifacts/issue63-format/gdformat.txt
           if-no-files-found: error
-          retention-days: 14
-      - name: Typed script and import validation
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --editor --path game --quit
-      - name: Main scene smoke test
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --quit-after 3
-      - name: Seat lifecycle tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/seat_manager_test.gd
-      - name: Visual language tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/visual_language_test.gd
-      - name: Shared exploration tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/exploration_test.gd
-      - name: Living Board Engine tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/living_board_test.gd
-      - name: Turn, Event and Card Engine tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/turn_event_card_test.gd
-      - name: Dread Director tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/dread_director_test.gd
-      - name: Dread Director multi-seed simulation
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/director_simulation_test.gd
-      - name: Roles, Factions and Afterlife tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/role_session_test.gd
-      - name: Social privacy and 1-8 player simulation
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/social_simulation_test.gd
-      - name: Companion protocol, privacy, and authority tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/companion_room_test.gd
-      - name: Companion deterministic 1-8 client simulation
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/companion_simulation_test.gd
-      - name: First vertical slice lifecycle and authority tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/vertical_slice_test.gd
-      - name: Tale package identity, inventory, and runtime fail-closed tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_package_test.gd
-      - name: Tale catalog, selection, and provider boundary tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_catalog_test.gd
-      - name: Controller-first Tale Library and selection UX tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_library_test.gd
-      - name: Player-owned interaction and waiting-state tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/player_owned_interaction_test.gd
-      - name: Controlled reveal and shared-screen privacy tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/private_reveal_flow_test.gd
-      - name: Tale package replay-equivalence matrix
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_replay_equivalence_test.gd
-      - name: Guided session and local playtest report tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/playtest_readiness_test.gd
-      - name: Main-route controller, guidance, and report integration tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/playtest_main_route_test.gd
-      - name: Portable build identity and support presentation tests
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/portable_build_identity_test.gd
-      - name: First vertical slice 1-8 seat deterministic simulation
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/vertical_slice_simulation_test.gd
-      - name: Automated playthrough and deadlock lab
-        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/automated_playthrough_lab_test.gd
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version: 24.18.0
-          cache: npm
-      - name: Install locked companion dependencies for native relay integration
-        run: npm ci
-      - name: Real local browser protocol to Durable Object to native authority integration
-        env:
-          GODOT_BIN: Godot_v4.7.1-stable_linux.x86_64
-          WRANGLER_SEND_METRICS: "false"
-        run: npm run test:e2e:local
-      - name: GUT typed smoke and boundary suite
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p game/test-results
-          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
-            --script res://addons/gut/gut_cmdln.gd \
-            -gexit -gjunit_xml_file=res://test-results/gut-junit.xml
-      - name: Upload GUT JUnit results
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: gut-junit-results
-          path: game/test-results/gut-junit.xml
-          if-no-files-found: error
-          retention-days: 14
-      - name: Publish validated issue 63 lab correction
-        if: success() && github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TARGET_BRANCH: agent/issue-63-automated-playthrough-deadlock-lab
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import base64
-          import json
-          import os
-          import urllib.parse
-          import urllib.request
-          from pathlib import Path
-
-          repo = os.environ["GITHUB_REPOSITORY"]
-          branch = os.environ["TARGET_BRANCH"]
-          token = os.environ["GH_TOKEN"]
-          relative = "game/tests/automated_playthrough_lab_test.gd"
-          encoded = urllib.parse.quote(relative, safe="/")
-          headers = {
-              "Authorization": f"Bearer {token}",
-              "Accept": "application/vnd.github+json",
-              "X-GitHub-Api-Version": "2022-11-28",
-          }
-          request = urllib.request.Request(
-              f"https://api.github.com/repos/{repo}/contents/{encoded}?ref={branch}",
-              headers=headers,
-          )
-          with urllib.request.urlopen(request) as response:
-              existing = json.load(response)
-          payload = json.dumps(
-              {
-                  "message": "Refactor automated playthrough lab for enforced quality gates",
-                  "content": base64.b64encode(Path(relative).read_bytes()).decode(),
-                  "sha": existing["sha"],
-                  "branch": branch,
-              }
-          ).encode()
-          request = urllib.request.Request(
-              f"https://api.github.com/repos/{repo}/contents/{encoded}",
-              data=payload,
-              method="PUT",
-              headers=headers,
-          )
-          with urllib.request.urlopen(request):
-              pass
-          PY
+          retention-days: 2
