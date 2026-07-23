@@ -6,19 +6,15 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   headless:
-    if: ${{ github.actor != 'github-actions[bot]' }}
     name: Godot 4.7 headless validation
     runs-on: ubuntu-24.04
-    timeout-minutes: 22
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
       - name: Download checksum-pinned Godot 4.7.1 stable
         shell: bash
         run: |
@@ -39,16 +35,6 @@ jobs:
           python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
           python -m pip check
           python -m pip freeze --all
-      - name: Prepare and validate bounded v0.1.9 release patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          python tools/issue63_release_sync.py
-          python tools/validate_playtest_readiness.py
-          python tools/validate_toolchain.py
-          python tools/portable_bundle.py validate-repository
-          python tools/test_portable_bundle.py
-          git diff --check
       - name: Inventory first-party GDScript
         shell: bash
         run: |
@@ -157,65 +143,3 @@ jobs:
           path: game/test-results/gut-junit.xml
           if-no-files-found: error
           retention-days: 14
-      - name: Publish validated v0.1.9 non-workflow release files
-        if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TARGET_BRANCH: agent/issue-63-automated-playthrough-deadlock-lab
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import base64
-          import importlib.util
-          import json
-          import os
-          import urllib.error
-          import urllib.parse
-          import urllib.request
-          from pathlib import Path
-
-          repo = os.environ["GITHUB_REPOSITORY"]
-          branch = os.environ["TARGET_BRANCH"]
-          token = os.environ["GH_TOKEN"]
-          spec = importlib.util.spec_from_file_location(
-              "issue63_release_sync", "tools/issue63_release_sync.py"
-          )
-          module = importlib.util.module_from_spec(spec)
-          spec.loader.exec_module(module)
-          files = module.RELEASE_FILES
-          headers = {
-              "Authorization": f"Bearer {token}",
-              "Accept": "application/vnd.github+json",
-              "X-GitHub-Api-Version": "2022-11-28",
-          }
-
-          for relative in files:
-              encoded = urllib.parse.quote(relative, safe="/")
-              get_request = urllib.request.Request(
-                  f"https://api.github.com/repos/{repo}/contents/{encoded}?ref={branch}",
-                  headers=headers,
-              )
-              existing = None
-              try:
-                  with urllib.request.urlopen(get_request) as response:
-                      existing = json.load(response)
-              except urllib.error.HTTPError as error:
-                  if error.code != 404:
-                      raise
-              payload = {
-                  "message": f"Synchronize v0.1.9 release: {relative}",
-                  "content": base64.b64encode(Path(relative).read_bytes()).decode(),
-                  "branch": branch,
-              }
-              if existing is not None:
-                  payload["sha"] = existing["sha"]
-              put_request = urllib.request.Request(
-                  f"https://api.github.com/repos/{repo}/contents/{encoded}",
-                  data=json.dumps(payload).encode(),
-                  method="PUT",
-                  headers=headers,
-              )
-              with urllib.request.urlopen(put_request):
-                  pass
-          PY
