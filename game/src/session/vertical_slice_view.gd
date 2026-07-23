@@ -54,38 +54,40 @@ func present(state: Dictionary, seats: Array[Dictionary], developer_lab: bool = 
 		return
 	visible = true
 	var seat_count: int = _joined_seat_count(seats)
-	var tale_name: String = state.get("tale_display_name", "Lantern House")
+	var tale_name: String = state.get("tale_display_name", "Selected Tale")
 	_set_compact(state.lifecycle == "active_tale" and not state.get("paused", false))
 	match state.lifecycle:
 		"boot_title":
 			_title.text = "TERROR TURN"
 			_body.text = (
-				"FIRST VERTICAL SLICE  •  %s\n\n" % tale_name.to_upper()
-				+ "A controller-first shared-screen tale for 1–8 stable seats. "
+				"FIRST VERTICAL SLICE  |  %s\n\n" % tale_name.to_upper()
+				+ "A controller-first shared-screen tale for 1-8 stable seats. "
 				+ "Companion phones are optional; native Godot remains authoritative."
 			)
-			_footer.text = "A / ENTER: JOIN  •  X / H: HELP & ACCESSIBILITY"
+			_footer.text = "A / ENTER: JOIN  |  X / H: HELP & ACCESSIBILITY"
 		"lobby":
-			_title.text = "LOCAL LOBBY  •  %d SEAT%s" % [seat_count, "" if seat_count == 1 else "S"]
+			_title.text = "LOCAL LOBBY  |  %d SEAT%s" % [seat_count, "" if seat_count == 1 else "S"]
 			_body.text = (
 				_seat_roster(seats)
 				+ "\n\nJoin more controllers now. Stable seats survive reconnects."
 			)
 			_footer.text = (
-				"A / ENTER: JOIN; OWNED SEAT CONFIRMS  •  SPACE: LOCK ROSTER\n"
-				+ "B / ESC: LEAVE  •  X / H: HELP"
+				"A / ENTER: JOIN; OWNED SEAT CONFIRMS  |  SPACE: LOCK ROSTER\n"
+				+ "B / ESC: LEAVE  |  X / H: HELP"
 			)
 		"confirmation":
-			_title.text = "%s  •  MODE CONFIRMATION" % tale_name.to_upper()
+			_title.text = "%s  |  MODE CONFIRMATION" % tale_name.to_upper()
 			_body.text = (
-				"Hidden Betrayer is selected for 3–8 seats. One or two seats use the "
+				"Hidden Betrayer is selected for 3-8 seats. One or two seats use the "
 				+ "authored no-secret cooperative fallback. No phone is required."
 			)
-			_footer.text = "A / ENTER / SPACE: PREPARE  •  B / ESC: RETURN TO LOBBY"
+			_footer.text = "A / ENTER / SPACE: TALE LIBRARY  |  B / ESC: RETURN TO LOBBY"
+		"tale_library":
+			_present_tale_library(state.get("tale_library", {}))
 		"briefing":
 			_title.text = "THE %s WAKES" % tale_name.to_upper()
 			_body.text = "%s\n\nOBJECTIVE\n%s" % [state.briefing, state.public_objective]
-			_footer.text = "A / ENTER / SPACE: BEGIN  •  MOVE: STICK / WASD  •  INTERACT: A / E"
+			_footer.text = "A / ENTER / SPACE: BEGIN  |  B / ESC: TALE LIBRARY  |  X / H: HELP"
 		"active_tale":
 			if state.get("paused", false):
 				_title.text = "TALE PAUSED"
@@ -93,27 +95,90 @@ func present(state: Dictionary, seats: Array[Dictionary], developer_lab: bool = 
 					"The native authorities are unchanged. Resume before submitting movement, "
 					+ "interaction, prompt, or stage input."
 				)
-				_footer.text = "MENU / P: RESUME  •  X / H: HELP  •  HOLD Y / R: RESET"
+				_footer.text = "MENU / P: RESUME  |  X / H: HELP  |  HOLD Y / R: RESET"
 			else:
 				var stage: Dictionary = state.get("stage", {})
 				_title.text = (
-					"STAGE %d  •  %s"
-					% [state.get("stage_index", 0) + 1, stage.get("title", "LANTERN HOUSE")]
+					"STAGE %d  |  %s"
+					% [state.get("stage_index", 0) + 1, stage.get("title", "CURRENT TALE")]
 				)
 				_body.text = GuidedSessionHelp.guidance_for_state(state, seats)
-				_footer.text = "A / E: INTERACT  •  MENU / P: PAUSE  •  X / H: HELP"
+				_footer.text = "A / E: INTERACT  |  MENU / P: PAUSE  |  X / H: HELP"
 		"terminal":
 			_title.text = "THE HOUSE REMEMBERS"
 			_body.text = _ending_text(state.get("ending", {}))
-			_footer.text = "A / ENTER / SPACE: REVIEW ENDING  •  X / H: HELP"
+			_footer.text = "A / ENTER / SPACE: REVIEW ENDING  |  X / H: HELP"
 		"ending":
 			_title.text = "THE HOUSE REMEMBERS"
 			_body.text = _ending_text(state.get("ending", {}))
-			_footer.text = ("X / H: HELP & EXPORT  •  A / ENTER / SPACE: REMATCH  •  B / ESC: TITLE")
+			_footer.text = "X / H: HELP & EXPORT  |  A / ENTER / SPACE: REMATCH  |  B / ESC: TITLE"
 		_:
-			_title.text = "LANTERN HOUSE"
-			_body.text = "Preparing the tale…"
+			_title.text = "TALE LIBRARY"
+			_body.text = "Preparing the tale..."
 			_footer.text = "PLEASE WAIT"
+
+
+func _present_tale_library(library: Dictionary) -> void:
+	var count: int = library.get("available_count", 0)
+	_title.text = "TALE LIBRARY  |  %d TALE%s AVAILABLE" % [count, "" if count == 1 else "S"]
+	var focused: Dictionary = {}
+	for entry: Dictionary in library.get("entries", []):
+		if entry.get("focused", false):
+			focused = entry
+			break
+	if focused.is_empty():
+		_body.text = (
+			"TALE SELECTION UNAVAILABLE\n\n"
+			+ "This internal build could not prepare its reviewed Tale Library. "
+			+ "Return to Mode Confirmation or reset, then report the build identity from Help."
+		)
+		_footer.text = "B / ESC: MODE CONFIRMATION  |  X / H: HELP  |  HOLD Y / R: RESET"
+		return
+	var states := PackedStringArray(["FOCUSED"])
+	if focused.get("selected", false):
+		states.append("SELECTED")
+	if focused.get("confirmed", false):
+		states.append("CONFIRMED")
+	var notice: String = _tale_library_recovery_message(library.get("notice", ""))
+	_body.text = (
+		"%s  |  %s\n%s\n\nOBJECTIVE\n%s\n\nSUPPORTED SEATS  %d-%d"
+		% [
+			focused.get("display_name", "Selected Tale").to_upper(),
+			" / ".join(states),
+			focused.get("briefing", ""),
+			focused.get("public_objective", ""),
+			focused.get("minimum_seats", 1),
+			focused.get("maximum_seats", 8),
+		]
+	)
+	if not notice.is_empty():
+		_body.text += "\n\n%s" % notice
+		_footer.text = (
+			"D-PAD / STICK / ARROWS: FOCUS  |  A / ENTER: CONFIRM\n"
+			+ "B / ESC: MODE CONFIRMATION  |  X / H: HELP  |  HOLD Y / R: RESET"
+		)
+		return
+	_footer.text = (
+		"D-PAD / STICK / ARROWS: FOCUS  |  A / ENTER: CONFIRM\n"
+		+ "B / ESC: MODE CONFIRMATION  |  X / H: HELP"
+	)
+
+
+func _tale_library_recovery_message(notice: String) -> String:
+	match notice:
+		"tale_selection_unavailable":
+			return (
+				"TALE SELECTION UNAVAILABLE\n"
+				+ "The focused Tale could not be validated. Your current selection is preserved. "
+				+ "Report the build identity from Help, return, or reset."
+			)
+		"tale_preparation_unavailable":
+			return (
+				"TALE PREPARATION UNAVAILABLE\n"
+				+ "The focused Tale could not be prepared. Your current selection is preserved. "
+				+ "Report the build identity from Help, return, or reset."
+			)
+	return ""
 
 
 func set_safe_margin(value: int) -> void:
@@ -195,7 +260,7 @@ func _seat_roster(seats: Array[Dictionary]) -> String:
 
 func _ending_text(ending: Dictionary) -> String:
 	return (
-		"The Lantern House records a deterministic public outcome.\n\n"
+		"The selected Tale records a deterministic public outcome.\n\n"
 		+ "RESULT: %s\n" % ending.get("terminal_reason", "The tale has ended.").capitalize()
 		+ "Mixed faction and individual details remain filtered until their controlled reveal.\n\n"
 		+ "Every session authority can now reset without stale seats, prompts, rooms, roles, "

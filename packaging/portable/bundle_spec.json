@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "release": "v0.1.5",
+  "release": "v0.1.6",
   "bundle_prefix": "lantern-house-internal-playtest",
   "platforms": {
     "windows": {

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "release": "v0.1.5",
+  "release": "v0.1.6",
   "scenario": {
     "id": "lantern_house_vertical_slice",
     "version": 1

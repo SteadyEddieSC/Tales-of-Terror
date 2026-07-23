@@ -18,7 +18,7 @@ Lantern House declares exactly 1–8 stable seats. Hidden Betrayer remains the d
 
 ## Privacy, text, and ordering
 
-Classify governed values as `public`, `controlled_reveal_private`, `seat_private`, or `faction_private`. Every governed localization or narration key must resolve; extra localization records are rejected as orphans. The v0.1.5 repository Tale catalog repeats the exact governed display, briefing, and objective references needed for pre-session presentation and must match the package.
+Classify governed values as `public`, `controlled_reveal_private`, `seat_private`, or `faction_private`. Every governed localization or narration key must resolve; extra localization records are rejected as orphans. The repository Tale catalog repeats the exact governed display, briefing, and objective references needed for pre-session presentation and must match the package. v0.1.6 projects those governed values plus catalog seat compatibility into the Tale Library without exposing provenance.
 
 Sort inventory IDs, source-ledger paths, privacy keys, compatibility lists, and graph edges. Preserve explicit authored order only where order is semantic, such as `stage_order`. The validator canonicalizes object keys and preserves arrays.
 

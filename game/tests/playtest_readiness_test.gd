@@ -34,7 +34,14 @@ func _initialize() -> void:
 func _test_guidance_every_lifecycle() -> void:
 	var coordinator := VerticalSliceCoordinator.new()
 	var states: PackedStringArray = [
-		"boot_title", "lobby", "confirmation", "briefing", "active_tale", "terminal", "ending"
+		"boot_title",
+		"lobby",
+		"confirmation",
+		"tale_library",
+		"briefing",
+		"active_tale",
+		"terminal",
+		"ending",
 	]
 	for lifecycle: String in states:
 		var state: Dictionary = coordinator.public_state()

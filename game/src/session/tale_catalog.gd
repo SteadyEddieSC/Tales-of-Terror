@@ -167,17 +167,29 @@ static func entry_by_id(catalog: Dictionary, tale_id: String) -> Dictionary:
 	return {}
 
 
-static func selection_metadata(entry: Dictionary, registry: TaleProviderRegistry) -> Dictionary:
+static func selection_metadata(
+	entry: Dictionary, compatibility: Dictionary, registry: TaleProviderRegistry
+) -> Dictionary:
 	var display_result: Dictionary = _load_display(entry, {}, registry)
 	if not display_result.get("accepted", false):
+		return {}
+	var minimum_seats: Variant = compatibility.get("minimum_seats")
+	var maximum_seats: Variant = compatibility.get("maximum_seats")
+	if (
+		not minimum_seats is int
+		or not maximum_seats is int
+		or minimum_seats < 1
+		or maximum_seats < minimum_seats
+		or maximum_seats > 8
+	):
 		return {}
 	return {
 		"tale_id": entry.get("tale_id", ""),
 		"display_name": display_result.values.get(entry.display.display_key, ""),
 		"briefing": display_result.values.get(entry.display.briefing_key, ""),
 		"public_objective": display_result.values.get(entry.display.objective_key, ""),
-		"package_sha256": entry.get("package_sha256", ""),
-		"provider_id": entry.get("provider", {}).get("provider_id", ""),
+		"minimum_seats": minimum_seats,
+		"maximum_seats": maximum_seats,
 	}
 
 

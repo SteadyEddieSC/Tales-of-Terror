@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.6 - Controller-First Tale Library & Selection UX
+
+- Added a controller-first Tale Library between mode confirmation and the public briefing, with D-pad/left-stick/keyboard focus, confirm, back, Help, and protected-reset behavior.
+- Sourced name, briefing, objective, and supported seats from the validated catalog and governed localization projection; production still contains only Lantern House.
+- Added atomic fail-closed preparation, briefing-back restoration, bounded internal-build guidance, immutable active-session selection, and export-excluded two-entry focus/selection coverage.
+- Preserved the exact Tale catalog/package identities and every gameplay, replay, RNG, snapshot, report, stable-seat, no-phone, Companion, and portable-build boundary.
+- Issue #44 remains open: the unchanged Companion dependency graph retains GHSA-f88m-g3jw-g9cj with three High and zero Critical findings; this game-only release does not deploy or publicly release Companion services.
+
 ## v0.1.5 - Tale Catalog, Selection & Runtime Provider Boundary
 
 - Added one closed `tale_catalog` schema-v1 production catalog containing only the exact accepted Lantern House package and governed display/provider/source identities.

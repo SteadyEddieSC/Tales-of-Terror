@@ -53,6 +53,9 @@ jobs:
           test -f docs/technical/Tale_Runtime_Providers.md
           test -f docs/decisions/ADR-0023-tale-catalog-provider-selection.md
           test -f docs/playtests/v0.1.5-tale-catalog-evidence.md
+          test -f docs/releases/v0.1.6-controller-first-tale-library-selection-ux.md
+          test -f docs/technical/Tale_Library_UX.md
+          test -f docs/playtests/v0.1.6-tale-library-evidence.md
           test -f game/data/tales/lantern_house/tale_package_v1.json
           test -f game/data/tales/lantern_house/localization_en.json
           test -f game/data/tales/tale_catalog_v1.json

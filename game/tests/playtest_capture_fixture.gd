@@ -44,6 +44,7 @@ func _configure() -> void:
 		await _press_button(main, 0, BUTTON_A)
 		await _press_button(main, 0, BUTTON_A)
 		await _press_button(main, 0, BUTTON_A)
+		await _press_button(main, 0, BUTTON_A)
 		if not is_instance_valid(main.get("_sandbox")):
 			push_error("Full-route capture did not compose ExplorationSandbox")
 			quit(4)

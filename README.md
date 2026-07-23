@@ -8,14 +8,16 @@ A controller-first, 1–8 player digital horror board-game adventure with shared
 
 1. Preserve the Godot 4.7.1 controller/display, visual, exploration, Living Board, rules, Director, social-role, and companion authority foundations.
 2. Run every legacy regression and deterministic simulation plus the focused GUT 9.7.1 boundary suite under the pinned engine patch.
-3. Complete v0.1.5 by selecting the exact Lantern House package through one reviewed Tale catalog and static runtime-provider boundary.
-4. Keep future Tale proposals behind a separate design/content review plus explicit package, provider, catalog, and replay evidence; no second Tale enters this release.
+3. Complete v0.1.6 with a controller-first Tale Library that selects the exact Lantern House package through the reviewed catalog and provider boundaries.
+4. Keep future Tale proposals behind a separate design/content review plus explicit package, provider, catalog, and replay evidence; production still contains one Tale.
 5. Keep stable-seat privacy and exactly-once intent boundaries regression-tested through the fake transport, local Worker emulation, browser lab, and native-authority E2E.
 6. Defer production Cloudflare deployment, accounts, matchmaking, persistence, full remote play, and security certification until their own reviewed gates.
 
-The normal player route now begins at the title, accepts 1–8 stable seats, confirms the authored mode or safe cooperative fallback, presents a public briefing, runs the Lantern House tale, publishes a privacy-safe ending, and supports a clean rematch. Unowned controller A/keyboard Enter claims a seat without double-advancing; a later owned A/Enter or Space confirms the roster. Contextual guidance identifies stage and waiting progress, X/H opens controller-accessible help, and a finalized report can be explicitly exported as local JSON and Markdown. The v0.1.5 Help surface shows bounded internal build/support identity without entering gameplay snapshots, reports, or authority digests. Controllers are primary, keyboard remains a development fallback, and phones remain optional.
+The normal player route now begins at the title, accepts 1–8 stable seats, confirms the authored mode or safe cooperative fallback, opens the Tale Library, presents a public briefing, runs the selected Tale, publishes a privacy-safe ending, and supports a clean rematch. D-pad or left stick changes Library focus; keyboard arrows remain a development fallback; A/Enter confirms; B/Escape returns; and X/H opens Help. Returning from the briefing restores the focused and selected Tale, stable seats, controller ownership, and mode. Phones remain optional.
 
-v0.1.5 keeps that accepted package exact while moving discovery, stable-ID selection, and content construction behind a closed catalog and static reviewed provider registry. Catalog/package identity is provenance only; saves, reports, gameplay authority, companions, and no-phone play remain unchanged. Production still contains one Tale. No human pilot occurred and no manual pass is claimed; issue #39 remains deferred.
+v0.1.6 exposes the accepted v0.1.5 catalog/provider architecture through a provenance-free player route without changing the catalog or Tale package identities. Invalid catalog, localization, provider, package, or selection input remains on the Library and preserves prior setup state. Production still contains only Lantern House. No human pilot, physical-controller, TV, or remote-device validation occurred and no manual pass is claimed; issue #39 remains deferred.
+
+Issue #44 remains open. The locked Companion graph is unchanged and retains GHSA-f88m-g3jw-g9cj (Wrangler 4.110.0, Miniflare 4.20260708.1, Sharp 0.34.5; three High, zero Critical). Companion services are not deployed or publicly released, and protected main is not represented as fully security-green.
 
 ## Foundation decisions
 

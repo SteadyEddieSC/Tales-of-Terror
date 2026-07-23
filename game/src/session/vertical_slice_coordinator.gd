@@ -8,7 +8,14 @@ const SNAPSHOT_VERSION: int = 2
 const DEFAULT_SEED: int = 4706
 const DEFAULT_MODE: String = "hidden_betrayer"
 const LIFECYCLES: PackedStringArray = [
-	"boot_title", "lobby", "confirmation", "briefing", "active_tale", "terminal", "ending"
+	"boot_title",
+	"lobby",
+	"confirmation",
+	"tale_library",
+	"briefing",
+	"active_tale",
+	"terminal",
+	"ending"
 ]
 const SNAPSHOT_KEYS: PackedStringArray = [
 	"snapshot_version",
@@ -73,6 +80,7 @@ var last_rejection: String = ""
 var paused: bool = false
 var _stage_checkpoint: Dictionary = {}
 var _selection: TaleSelectionState
+var _tale_library_flow := TaleLibraryFlow.new()
 
 
 func _init(
@@ -86,22 +94,13 @@ func _init(
 	_selection = TaleSelectionState.new(p_catalog_path, registry, p_expected_catalog_digest)
 	var result: Dictionary = _selection.load_default()
 	if not result.get("accepted", false):
-		last_rejection = "invalid_tale_catalog:%s" % result.get("reason", "rejected")
+		_tale_library_flow.record_unavailable(
+			self, "invalid_tale_catalog:%s" % result.get("reason", "rejected")
+		)
 
 
 func select_tale(tale_id: String) -> Dictionary:
-	if lifecycle not in ["boot_title", "lobby", "confirmation"] or not tale_package.is_empty():
-		return _reject("tale_selection_not_available")
-	var selected: Dictionary = _selection.select(tale_id)
-	if not selected.get("accepted", false):
-		return _reject(selected.get("reason", "tale_selection_rejected"))
-	last_rejection = ""
-	_emit_state()
-	return {
-		"accepted": true,
-		"selected_tale_id": _selection.selected_tale_id(),
-		"catalog_digest": _selection.catalog_digest,
-	}
+	return _tale_library_flow.select(self, tale_id)
 
 
 func enter_lobby() -> Dictionary:
@@ -112,6 +111,10 @@ func confirm_roster() -> Dictionary:
 	if lifecycle != "lobby" or active_seats().is_empty():
 		return _reject("roster_not_ready")
 	return _transition("lobby", "confirmation")
+
+
+func navigate_tale_library(action: String, value: Variant = null) -> Dictionary:
+	return _tale_library_flow.navigate(self, action, value)
 
 
 func cancel_setup() -> Dictionary:
@@ -132,18 +135,7 @@ func initialize_session(
 	p_seed: int = DEFAULT_SEED,
 	p_requested_mode: String = DEFAULT_MODE,
 ) -> Dictionary:
-	if lifecycle != "confirmation":
-		return _reject("invalid_lifecycle_transition")
-	var roster: Array[int] = active_seats()
-	if roster.is_empty():
-		return _reject("empty_roster")
-	if _selection.entry.is_empty():
-		return _reject("no_valid_tale_selection")
-	var build: Dictionary = _build_authorities(_selection.entry, p_seed, p_requested_mode, roster)
-	if not build.accepted:
-		return _reject(build.reason)
-	_commit_authorities(build, p_seed, p_requested_mode)
-	return _transition("confirmation", "briefing")
+	return _tale_library_flow.initialize_session(self, p_seed, p_requested_mode)
 
 
 func _build_authorities(
@@ -266,6 +258,7 @@ func begin_tale() -> Dictionary:
 		return _reject("session_not_briefed")
 	var result: Dictionary = _transition("briefing", "active_tale")
 	if result.accepted:
+		_tale_library_flow.selection_locked = true
 		stage_index = 0
 		operation_index = 0
 		_emit_state()
@@ -360,10 +353,13 @@ func protected_reset_to_title() -> Dictionary:
 	seed = DEFAULT_SEED
 	requested_mode = DEFAULT_MODE
 	last_rejection = ""
+	_tale_library_flow.clear_rejection()
 	seat_manager.reset_all()
 	var selected: Dictionary = _selection.select(_selection.catalog.get("default_tale_id", ""))
 	if not selected.get("accepted", false):
-		last_rejection = selected.get("reason", "default_tale_selection_failed")
+		_tale_library_flow.record_unavailable(
+			self, selected.get("reason", "default_tale_selection_failed")
+		)
 	_emit_state()
 	return {"accepted": true, "lifecycle": lifecycle}
 
@@ -386,6 +382,7 @@ func public_state() -> Dictionary:
 		"scenario_version": manifest.get("scenario_version", 0),
 		"selected_tale_id": _selection.selected_tale_id(),
 		"tale_display_name": _selection.metadata.get("display_name", ""),
+		"tale_library": _tale_library_flow.public_state(_selection, last_rejection),
 		"lifecycle": lifecycle,
 		"stage_index": stage_index,
 		"operation_index": operation_index,
@@ -444,6 +441,7 @@ func restore_snapshot(snapshot: Dictionary) -> Dictionary:
 func _adopt_candidate(candidate: VerticalSliceCoordinator) -> void:
 	seat_manager = candidate.seat_manager
 	_selection = candidate._selection
+	_tale_library_flow = candidate._tale_library_flow
 	tale_package = candidate.tale_package
 	tale_package_digest = candidate.tale_package_digest
 	manifest = candidate.manifest
@@ -466,6 +464,7 @@ func _adopt_candidate(candidate: VerticalSliceCoordinator) -> void:
 	stage_history = candidate.stage_history.duplicate(true)
 	last_director_decision = candidate.last_director_decision.duplicate(true)
 	last_director_application = candidate.last_director_application.duplicate(true)
+	last_rejection = candidate.last_rejection
 	_stage_checkpoint = candidate._stage_checkpoint.duplicate(true)
 
 
@@ -734,6 +733,7 @@ func _build_session_restore_candidate(
 	candidate.last_director_decision = snapshot.last_director_decision.duplicate(true)
 	candidate.last_director_application = snapshot.last_director_application.duplicate(true)
 	candidate._stage_checkpoint = snapshot.stage_transaction.duplicate(true)
+	candidate._tale_library_flow.lock_for_lifecycle(snapshot.lifecycle)
 	return {"accepted": true, "candidate": candidate}
 
 
@@ -762,11 +762,11 @@ func _pre_session_snapshot_is_coherent(snapshot: Dictionary, manager: SeatManage
 			lifecycle_roster_is_valid = (
 				lifecycle_roster_is_valid and seat.state == SeatManager.SeatState.UNASSIGNED
 			)
-	elif snapshot.lifecycle == "confirmation":
+	elif snapshot.lifecycle in ["confirmation", "tale_library"]:
 		lifecycle_roster_is_valid = not roster.is_empty()
 	return (
 		lifecycle_roster_is_valid
-		and snapshot.lifecycle in ["boot_title", "lobby", "confirmation"]
+		and snapshot.lifecycle in ["boot_title", "lobby", "confirmation", "tale_library"]
 		and snapshot.stage_index == -1
 		and snapshot.operation_index == 0
 		and snapshot.stage_history.is_empty()
@@ -937,6 +937,7 @@ func _transition(expected: String, next: String) -> Dictionary:
 		return _reject("invalid_lifecycle_transition")
 	lifecycle = next
 	last_rejection = ""
+	_tale_library_flow.clear_rejection()
 	_emit_state()
 	return {"accepted": true, "lifecycle": lifecycle}
 
@@ -962,6 +963,7 @@ func _clear_session_authorities() -> void:
 	last_director_decision.clear()
 	last_director_application.clear()
 	_stage_checkpoint.clear()
+	_tale_library_flow.selection_locked = false
 
 
 func _close_companion_room() -> void:
@@ -991,9 +993,7 @@ func _pending_responses_complete() -> bool:
 
 
 func _reject(reason: String) -> Dictionary:
-	last_rejection = reason
-	session_rejected.emit(reason)
-	return {"accepted": false, "reason": reason}
+	return _tale_library_flow.reject_internal(self, reason)
 
 
 func _emit_state() -> void:

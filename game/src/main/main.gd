@@ -144,6 +144,19 @@ func _input(event: InputEvent) -> void:
 		if event.is_action_pressed(action):
 			_seats.record_action(device_id, action)
 			break
+	if _coordinator.lifecycle == "tale_library" and _event_can_navigate(event, owns_active_seat):
+		var focus_direction: int = 0
+		if event.is_action_pressed("ui_navigate_left") or event.is_action_pressed("ui_navigate_up"):
+			focus_direction = -1
+		elif (
+			event.is_action_pressed("ui_navigate_right")
+			or event.is_action_pressed("ui_navigate_down")
+		):
+			focus_direction = 1
+		if focus_direction != 0:
+			_coordinator.navigate_tale_library("focus", focus_direction)
+			get_viewport().set_input_as_handled()
+			return
 	if event.is_action_pressed("safe_area_decrease"):
 		_adjust_safe_margin(-1)
 	elif event.is_action_pressed("safe_area_increase"):
@@ -246,6 +259,8 @@ func _advance_player_flow() -> void:
 		"lobby":
 			_coordinator.confirm_roster()
 		"confirmation":
+			_coordinator.navigate_tale_library("open")
+		"tale_library":
 			_coordinator.initialize_session()
 		"briefing":
 			if _coordinator.begin_tale().accepted:
@@ -270,6 +285,10 @@ func _cancel_player_flow(device_id: int) -> void:
 	match _coordinator.lifecycle:
 		"confirmation":
 			_coordinator.cancel_setup()
+		"tale_library":
+			_coordinator.navigate_tale_library("return_to_mode")
+		"briefing":
+			_coordinator.navigate_tale_library("return_from_briefing")
 		"lobby":
 			_seats.leave_device(device_id)
 			if _coordinator.active_seats().is_empty():
@@ -468,6 +487,10 @@ func _event_can_confirm(event: InputEvent, device_id: int) -> bool:
 	if event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_SPACE:
 		return true
 	return _seats.find_seat_by_device(device_id) >= 0
+
+
+func _event_can_navigate(event: InputEvent, owns_active_seat: bool) -> bool:
+	return owns_active_seat or event is InputEventKey
 
 
 func _run_portable_build_smoke() -> void:

@@ -6,6 +6,7 @@ const BUTTON_B: int = 1
 const BUTTON_X: int = 2
 const BUTTON_Y: int = 3
 const DPAD_RIGHT: int = 14
+const LEFT_STICK_X: int = 0
 
 var _failures: int = 0
 var _current_main: Control
@@ -43,8 +44,40 @@ func _test_controller_first_complete_route_and_rematch_report() -> void:
 	_expect(coordinator.lifecycle == "confirmation", "owned controller A confirms the roster")
 	_expect(coordinator.active_seats().size() == 2, "confirmation retains the locked roster")
 	await _press_button(0, BUTTON_A)
+	_expect(coordinator.lifecycle == "tale_library", "controller opens the Tale Library")
+	var library_state: Dictionary = coordinator.public_state().tale_library
+	_expect(library_state.available_count == 1, "normal route shows one available Tale")
+	_expect(library_state.entries[0].display_name == "Lantern House", "renders governed Tale name")
+	await _press_button(0, DPAD_RIGHT)
+	_expect(
+		coordinator.public_state().tale_library.focused_tale_id == TalePackage.LANTERN_HOUSE_ID,
+		"D-pad focus remains deterministic in the one-entry production Library",
+	)
+	var help: GuidedSessionHelp = main.get("_help")
+	await _press_button(0, BUTTON_X)
+	_expect(help.visible, "Tale Library X opens Help")
+	await _press_button(0, BUTTON_X)
+	_expect(not help.visible, "Tale Library X closes Help")
+	var seats_before_back: Array[Dictionary] = _seat_ownership(coordinator.seat_manager)
+	await _press_button(0, BUTTON_B)
+	_expect(coordinator.lifecycle == "confirmation", "Tale Library B returns to mode confirmation")
+	_expect(
+		_seat_ownership(coordinator.seat_manager) == seats_before_back,
+		"library back retains ownership"
+	)
+	await _press_button(0, BUTTON_A)
+	_expect(coordinator.lifecycle == "tale_library", "mode confirmation reopens Tale Library")
+	await _press_button(0, BUTTON_A)
 	_expect(coordinator.lifecycle == "briefing", "controller confirmation prepares the session")
 	_expect(coordinator.rules_session != null, "prepared session has native rules authority")
+	await _press_button(0, BUTTON_B)
+	_expect(coordinator.lifecycle == "tale_library", "briefing B restores Tale Library")
+	_expect(
+		_seat_ownership(coordinator.seat_manager) == seats_before_back,
+		"briefing back retains ownership"
+	)
+	await _press_button(0, BUTTON_A)
+	_expect(coordinator.lifecycle == "briefing", "restored selection re-enters briefing")
 	await _press_button(0, BUTTON_A)
 	_expect(coordinator.lifecycle == "active_tale", "controller confirmation begins the tale")
 	_expect(is_instance_valid(main.get("_sandbox")), "normal route composes ExplorationSandbox")
@@ -126,7 +159,7 @@ func _test_integrated_return_to_title_report() -> void:
 func _test_integrated_protected_reset_report() -> void:
 	var main: Control = await _new_main(1)
 	var coordinator: VerticalSliceCoordinator = main.get("_coordinator")
-	for _press: int in 4:
+	for _press: int in 5:
 		await _press_button(0, BUTTON_A)
 	_expect(
 		coordinator.lifecycle == "active_tale",
@@ -167,6 +200,13 @@ func _test_keyboard_join_and_confirmation_fallback() -> void:
 	await _press_key(KEY_ENTER)
 	_expect(coordinator.lifecycle == "confirmation", "owned keyboard Enter confirms the roster")
 	await _press_key(KEY_SPACE)
+	_expect(coordinator.lifecycle == "tale_library", "Space opens the keyboard Tale Library route")
+	await _press_key(KEY_RIGHT)
+	_expect(
+		coordinator.public_state().tale_library.focused_tale_id == TalePackage.LANTERN_HOUSE_ID,
+		"keyboard arrows change focus deterministically",
+	)
+	await _press_key(KEY_ENTER)
 	_expect(coordinator.lifecycle == "briefing", "Space remains the keyboard confirmation fallback")
 	await _free_main(main)
 
@@ -183,6 +223,10 @@ func _test_rendered_guidance_and_action_map() -> void:
 		_action_has_joy_button("ui_navigate_right", DPAD_RIGHT),
 		"navigation maps every controller D-pad",
 	)
+	_expect(
+		_action_has_joy_axis("ui_navigate_right", LEFT_STICK_X, 1.0),
+		"navigation maps the controller left stick",
+	)
 	_expect(_action_has_key("help_accessibility", KEY_H), "keyboard H maps Help")
 	_expect(_action_has_key("diagnostic_test", KEY_T), "keyboard T maps diagnostics")
 	_expect(
@@ -196,14 +240,14 @@ func _test_rendered_guidance_and_action_map() -> void:
 	var footer: Label = view.get("_footer")
 	_expect("OWNED SEAT CONFIRMS" in footer.text, "rendered lobby restores roster confirmation")
 	_expect("SPACE: LOCK ROSTER" in footer.text, "rendered lobby shows keyboard roster lock")
-	for _press: int in 3:
+	for _press: int in 4:
 		await _press_button(0, BUTTON_A)
 	var sandbox: ExplorationSandbox = main.get("_sandbox")
 	var title: Label = sandbox.get("_title_label")
 	var message: Label = sandbox.get("_message_label")
 	var reset: Label = sandbox.get("_reset_label")
 	_expect(
-		PlaytestReport.release_id() in title.text, "sandbox uses the single v0.1.5 release source"
+		PlaytestReport.release_id() in title.text, "sandbox uses the single v0.1.6 release source"
 	)
 	_expect("HELP: X / H" in message.text, "sandbox renders X as Help")
 	_expect("DIAGNOSTICS: T" in message.text, "sandbox renders T-only diagnostics")
@@ -262,7 +306,7 @@ func _test_rendered_guidance_and_action_map() -> void:
 
 func _main_at_ending() -> Control:
 	var main: Control = await _new_main(1)
-	for _press: int in 4:
+	for _press: int in 5:
 		await _press_button(0, BUTTON_A)
 	var coordinator: VerticalSliceCoordinator = main.get("_coordinator")
 	await _run_active_tale(coordinator)
@@ -367,6 +411,35 @@ func _action_has_key(action: StringName, physical_keycode: Key) -> bool:
 		if event is InputEventKey and event.physical_keycode == physical_keycode:
 			return true
 	return false
+
+
+func _action_has_joy_axis(action: StringName, axis: int, axis_value: float) -> bool:
+	for event: InputEvent in InputMap.action_get_events(action):
+		if (
+			event is InputEventJoypadMotion
+			and event.device == -1
+			and event.axis == axis
+			and is_equal_approx(event.axis_value, axis_value)
+		):
+			return true
+	return false
+
+
+func _seat_ownership(manager: SeatManager) -> Array[Dictionary]:
+	var ownership: Array[Dictionary] = []
+	for seat: Dictionary in manager.get_seats():
+		(
+			ownership
+			. append(
+				{
+					"seat_number": seat.seat_number,
+					"state": seat.state,
+					"device_id": seat.device_id,
+					"identity": seat.identity,
+				}
+			)
+		)
+	return ownership
 
 
 func _stored_digests_match(

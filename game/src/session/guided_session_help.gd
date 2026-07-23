@@ -218,7 +218,7 @@ static func page_content(
 static func _session_page(state: Dictionary, seats: Array[Dictionary]) -> Dictionary:
 	var lifecycle: String = state.get("lifecycle", "boot_title")
 	var stage: Dictionary = state.get("stage", {})
-	var stage_title: String = stage.get("title", "Lantern House")
+	var stage_title: String = stage.get("title", "Current Tale")
 	var objective: String = state.get("public_objective", "Confirm a stable roster to begin.")
 	var wait: String = guidance_for_state(state, seats)
 	return {
@@ -266,11 +266,19 @@ static func guidance_for_state(state: Dictionary, seats: Array[Dictionary]) -> S
 			)
 		"confirmation":
 			return (
-				"Review mode and fallback. A / Enter / Space prepares the tale; "
+				"Review mode and fallback. A / Enter / Space opens the Tale Library; "
 				+ "B / Esc returns to lobby."
 			)
+		"tale_library":
+			return (
+				"D-pad, left stick, or arrow keys changes focus. A / Enter confirms; "
+				+ "B / Esc returns to mode confirmation."
+			)
 		"briefing":
-			return "Read the public objective together, then A / Enter / Space begins exploration."
+			return (
+				"Read the public objective together. A / Enter / Space begins exploration; "
+				+ "B / Esc returns to the Tale Library."
+			)
 		"active_tale":
 			if state.get("paused", false):
 				return "Paused. Menu / P resumes; help and protected reset remain available."
