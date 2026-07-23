@@ -81,6 +81,7 @@ var paused: bool = false
 var _stage_checkpoint: Dictionary = {}
 var _selection: TaleSelectionState
 var _tale_library_flow := TaleLibraryFlow.new()
+var _player_interaction_flow := PlayerInteractionFlow.new()
 
 
 func _init(
@@ -281,6 +282,10 @@ func advance_player_stage() -> Dictionary:
 	return _execute_stage(false)
 
 
+func submit_player_interaction(seat_number: int, action: String) -> Dictionary:
+	return _player_interaction_flow.submit(self, seat_number, action)
+
+
 func _execute_stage(automated: bool) -> Dictionary:
 	var stage: Dictionary = manifest.stages[stage_index]
 	if _stage_checkpoint.is_empty():
@@ -383,6 +388,7 @@ func public_state() -> Dictionary:
 		"selected_tale_id": _selection.selected_tale_id(),
 		"tale_display_name": _selection.metadata.get("display_name", ""),
 		"tale_library": _tale_library_flow.public_state(_selection, last_rejection),
+		"interaction": _player_interaction_flow.public_state(self),
 		"lifecycle": lifecycle,
 		"stage_index": stage_index,
 		"operation_index": operation_index,
