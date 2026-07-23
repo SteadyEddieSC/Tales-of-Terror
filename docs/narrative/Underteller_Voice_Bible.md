@@ -1,9 +1,9 @@
 # The Underteller Voice Bible
 
-**Version:** 0.1  
-**Status:** Preproduction narrative contract  
-**Character name:** The Underteller  
-**Name status:** Provisional pending issue #7  
+**Version:** 0.1
+**Status:** Preproduction narrative contract
+**Character name:** The Underteller
+**Name status:** Provisional pending issue #7
 **Applies to:** Tale introductions, stage transitions, Director narration, hints, warnings, transformations, defeat, afterlife, endings, rematches, system-facing host dialogue, and future voice production
 
 ## 1. Character purpose
