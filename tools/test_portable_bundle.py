@@ -67,7 +67,7 @@ class PortableBundleTests(unittest.TestCase):
                         value,
                         {
                             "schema_version": 1,
-                            "release": "v0.1.7",
+                            "release": "v0.1.8",
                             "source_commit": SOURCE_COMMIT,
                             "platform": platform,
                             "architecture": "x86_64",
