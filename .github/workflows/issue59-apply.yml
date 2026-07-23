@@ -27,6 +27,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git rev-parse 'HEAD^{tree}' > /tmp/issue59-base-tree.txt
           base64 --decode tools/issue59_payload.b64 > /tmp/issue59_payload.zip
           rm -rf /tmp/issue59_payload
           python -m zipfile -e /tmp/issue59_payload.zip /tmp/issue59_payload
@@ -46,5 +47,12 @@ jobs:
             game/tests/player_owned_interaction_test.gd.uid
             .github/workflows/godot-tests.yml
             tools/validate_toolchain.py
+          if-no-files-found: error
+          retention-days: 2
+      - name: Upload base tree identity
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: issue59-base-tree
+          path: /tmp/issue59-base-tree.txt
           if-no-files-found: error
           retention-days: 2
