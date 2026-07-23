@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.9 - Automated Playthrough & Deadlock Lab
+
+- Added an export-excluded deterministic virtual-player lab that completes the accepted Lantern House route across 1–8 stable seats, four seeds, and five legal strategy profiles.
+- Added paired replay-equivalence checks plus bounded stale, duplicate, wrong-seat, idle, disconnect/reconnect, reset, rematch, and mid-prompt restoration probes.
+- Added privacy-safe failure reproduction records containing only bounded public lifecycle, interaction, seed, strategy, and digest data.
+- Registered the lab as a permanent fail-closed Godot workflow step and raised the enforced first-party GDScript inventory from 99 to 100 files.
+- Preserved all gameplay, Tale, package/catalog, role/faction, Director, Companion, snapshot, report-schema, and human-playtest boundaries; issue #44 and issue #39 remain open.
+
 ## v0.1.8 - Controlled Reveal & Shared-Screen Privacy Hardening
 
 - Added a deterministic controller-first privacy ceremony between public briefing and ordinary Lantern House play: neutral shield, authorized stable seat, allowlisted private reveal, safe close, and public continuation.
