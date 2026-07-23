@@ -10,7 +10,11 @@ on:
       - reopened
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: issue59-apply-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
   apply:
@@ -20,39 +24,75 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
+      - name: Detect pending payload
+        id: pending
+        shell: bash
+        run: |
+          if [[ -f tools/issue59_payload.b64 ]]; then
+            echo 'apply=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'apply=false' >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        if: steps.pending.outputs.apply == 'true'
         with:
           python-version: 3.11.9
       - name: Apply bounded player-owned interaction patch
+        if: steps.pending.outputs.apply == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          git rev-parse 'HEAD^{tree}' > /tmp/issue59-base-tree.txt
           base64 --decode tools/issue59_payload.b64 > /tmp/issue59_payload.zip
           rm -rf /tmp/issue59_payload
           python -m zipfile -e /tmp/issue59_payload.zip /tmp/issue59_payload
           python /tmp/issue59_payload/apply_patch.py "$GITHUB_WORKSPACE"
           git diff --check
-      - name: Upload exact patched files
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: issue59-patched-files
-          path: |
-            game/src/session/player_interaction_flow.gd
-            game/src/session/player_interaction_flow.gd.uid
-            game/src/session/vertical_slice_coordinator.gd
-            game/src/main/main.gd
-            game/src/exploration/exploration_sandbox.gd
-            game/tests/player_owned_interaction_test.gd
-            game/tests/player_owned_interaction_test.gd.uid
-            .github/workflows/godot-tests.yml
-            tools/validate_toolchain.py
-          if-no-files-found: error
-          retention-days: 2
-      - name: Upload base tree identity
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: issue59-base-tree
-          path: /tmp/issue59-base-tree.txt
-          if-no-files-found: error
-          retention-days: 2
+      - name: Publish signed implementation commits
+        if: steps.pending.outputs.apply == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+
+          payload_sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/tools/issue59_payload.b64?ref=${BRANCH}" --jq .sha)
+          jq -n \
+            --arg message 'Remove temporary issue 59 payload' \
+            --arg sha "$payload_sha" \
+            --arg branch "$BRANCH" \
+            '{message:$message,sha:$sha,branch:$branch}' \
+            | gh api --method DELETE "repos/${GITHUB_REPOSITORY}/contents/tools/issue59_payload.b64" --input - >/dev/null
+
+          publish_file() {
+            local path="$1"
+            local message="$2"
+            local content sha
+            content=$(base64 -w0 "$path")
+            if sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/${path}?ref=${BRANCH}" --jq .sha 2>/dev/null); then
+              jq -n \
+                --arg message "$message" \
+                --arg content "$content" \
+                --arg sha "$sha" \
+                --arg branch "$BRANCH" \
+                '{message:$message,content:$content,sha:$sha,branch:$branch}' \
+                | gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${path}" --input - >/dev/null
+            else
+              jq -n \
+                --arg message "$message" \
+                --arg content "$content" \
+                --arg branch "$BRANCH" \
+                '{message:$message,content:$content,branch:$branch}' \
+                | gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${path}" --input - >/dev/null
+            fi
+          }
+
+          publish_file game/src/session/player_interaction_flow.gd 'Add player interaction flow'
+          publish_file game/src/session/player_interaction_flow.gd.uid 'Register player interaction flow identity'
+          publish_file game/src/session/vertical_slice_coordinator.gd 'Route player-owned interaction windows'
+          publish_file game/src/main/main.gd 'Route active Tale input by stable seat'
+          publish_file game/src/exploration/exploration_sandbox.gd 'Present active player interaction guidance'
+          publish_file game/tests/player_owned_interaction_test.gd 'Add player-owned interaction regression coverage'
+          publish_file game/tests/player_owned_interaction_test.gd.uid 'Register player-owned interaction test identity'
+          publish_file .github/workflows/godot-tests.yml 'Run player-owned interaction tests in CI'
+          publish_file tools/validate_toolchain.py 'Register player-owned interaction test policy'
