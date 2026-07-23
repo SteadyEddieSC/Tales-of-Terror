@@ -1,0 +1,41 @@
+name: Apply issue 59 implementation
+
+on:
+  push:
+    branches:
+      - agent/issue-59-player-owned-interaction-pass
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: 3.11.9
+      - name: Apply bounded player-owned interaction patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode tools/issue59_payload.b64 > /tmp/issue59_payload.zip
+          rm -rf /tmp/issue59_payload
+          python -m zipfile -e /tmp/issue59_payload.zip /tmp/issue59_payload
+          python /tmp/issue59_payload/apply_patch.py "$GITHUB_WORKSPACE"
+          rm tools/issue59_payload.b64
+          rm .github/workflows/issue59-apply.yml
+          git diff --check
+      - name: Commit bounded implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement player-owned interaction windows"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
