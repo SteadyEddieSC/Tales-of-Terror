@@ -1,8 +1,8 @@
 # Seat Continuity and Multiplayer Admission Contract
 
-**Version:** 0.1  
-**Status:** Preproduction systems contract  
-**Applies to:** Local controller seats, temporary AI surrogate control, reconnects, late joining, transformed and defeated seats, future remote players, invitations, requests to join, spectators, and host permissions  
+**Version:** 0.1
+**Status:** Preproduction systems contract
+**Applies to:** Local controller seats, temporary AI surrogate control, reconnects, late joining, transformed and defeated seats, future remote players, invitations, requests to join, spectators, and host permissions
 **Local-first rule:** Local couch play remains complete without accounts, network services, or online admission flows
 
 ## 1. Core principle
@@ -326,7 +326,7 @@ Removing a remote human does not remove the stable seat.
 4. Transfer the same seat to game control.
 5. Preserve all character state.
 6. Apply the host's reservation decision.
-7. prevent unauthorized immediate reconnection.
+7. Prevent unauthorized immediate reconnection.
 
 A kicked player does not automatically retain reclaim rights.
 
