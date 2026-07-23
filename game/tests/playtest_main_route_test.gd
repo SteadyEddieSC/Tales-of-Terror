@@ -251,10 +251,10 @@ func _test_rendered_guidance_and_action_map() -> void:
 		"sandbox identifies the current Tale and stage",
 	)
 	_expect(
-		"Any active seat may continue" in message.text,
-		"sandbox states the active player-owned interaction",
+		"0 of 1 eligible seats committed" in message.text and "waiting for I" in message.text,
+		"sandbox reports the pending stable-seat response",
 	)
-	_expect("A / ENTER: CONTINUE" in message.text, "sandbox renders the expected commit input")
+	_expect("A / ENTER: COMMIT" in message.text, "sandbox renders the expected commit input")
 	_expect("X / H: HELP" in message.text, "interaction guidance preserves Help")
 	_expect(not "DIAGNOSTICS: X" in message.text, "sandbox never renders X as diagnostics")
 	_expect(
