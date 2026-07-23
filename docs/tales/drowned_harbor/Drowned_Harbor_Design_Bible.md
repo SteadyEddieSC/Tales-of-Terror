@@ -1,13 +1,13 @@
 # Drowned Harbor — Design Bible
 
-**Version:** 0.1  
-**Status:** Preproduction design authority  
-**Working Tale ID:** `drowned_harbor`  
-**Working display name:** Drowned Harbor  
-**Classification:** Coastal folk horror, supernatural survival, shifting-faction mystery  
-**Target seats:** 1–8  
-**Primary modes:** Cooperative, Hidden Betrayer, Outbreak  
-**Secondary candidates:** Hunted, Rival Crews  
+**Version:** 0.1
+**Status:** Preproduction design authority
+**Working Tale ID:** `drowned_harbor`
+**Working display name:** Drowned Harbor
+**Classification:** Coastal folk horror, supernatural survival, shifting-faction mystery
+**Target seats:** 1–8
+**Primary modes:** Cooperative, Hidden Betrayer, Outbreak
+**Secondary candidates:** Hunted, Rival Crews
 **Production status:** Design-only; Lantern House remains the sole production Tale
 
 ## 1. High concept
