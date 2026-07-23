@@ -11,19 +11,36 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Capture guarded patch output
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: 3.11.9
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Capture release validation outputs
         shell: bash
         run: |
           set +e
           mkdir -p artifacts/issue61-release-sync-diagnostic
           sed -i 's/portable.count(CURRENT) != 4/portable.count(CURRENT) != 3/' tools/issue61_release_sync.py
-          python tools/issue61_release_sync.py > artifacts/issue61-release-sync-diagnostic/output.txt 2>&1
-          echo "$?" > artifacts/issue61-release-sync-diagnostic/exit-code.txt
+          python tools/issue61_release_sync.py > artifacts/issue61-release-sync-diagnostic/01-patch.txt 2>&1
+          echo "$?" > artifacts/issue61-release-sync-diagnostic/01-patch.exit
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt > artifacts/issue61-release-sync-diagnostic/02-install.txt 2>&1
+          echo "$?" > artifacts/issue61-release-sync-diagnostic/02-install.exit
+          python tools/validate_toolchain.py > artifacts/issue61-release-sync-diagnostic/03-toolchain.txt 2>&1
+          echo "$?" > artifacts/issue61-release-sync-diagnostic/03-toolchain.exit
+          python tools/validate_playtest_readiness.py > artifacts/issue61-release-sync-diagnostic/04-readiness.txt 2>&1
+          echo "$?" > artifacts/issue61-release-sync-diagnostic/04-readiness.exit
+          python tools/portable_bundle.py validate-repository > artifacts/issue61-release-sync-diagnostic/05-portable-policy.txt 2>&1
+          echo "$?" > artifacts/issue61-release-sync-diagnostic/05-portable-policy.exit
+          python tools/test_portable_bundle.py > artifacts/issue61-release-sync-diagnostic/06-portable-tests.txt 2>&1
+          echo "$?" > artifacts/issue61-release-sync-diagnostic/06-portable-tests.exit
+          git diff --check > artifacts/issue61-release-sync-diagnostic/07-diff-check.txt 2>&1
+          echo "$?" > artifacts/issue61-release-sync-diagnostic/07-diff-check.exit
           exit 0
       - name: Upload diagnostic
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
