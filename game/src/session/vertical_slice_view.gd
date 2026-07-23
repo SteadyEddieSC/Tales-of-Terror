@@ -139,6 +139,7 @@ func _present_tale_library(library: Dictionary) -> void:
 		states.append("SELECTED")
 	if focused.get("confirmed", false):
 		states.append("CONFIRMED")
+	var notice: String = _tale_library_recovery_message(library.get("notice", ""))
 	_body.text = (
 		"%s  |  %s\n%s\n\nOBJECTIVE\n%s\n\nSUPPORTED SEATS  %d-%d"
 		% [
@@ -150,10 +151,34 @@ func _present_tale_library(library: Dictionary) -> void:
 			focused.get("maximum_seats", 8),
 		]
 	)
+	if not notice.is_empty():
+		_body.text += "\n\n%s" % notice
+		_footer.text = (
+			"D-PAD / STICK / ARROWS: FOCUS  |  A / ENTER: CONFIRM\n"
+			+ "B / ESC: MODE CONFIRMATION  |  X / H: HELP  |  HOLD Y / R: RESET"
+		)
+		return
 	_footer.text = (
 		"D-PAD / STICK / ARROWS: FOCUS  |  A / ENTER: CONFIRM\n"
 		+ "B / ESC: MODE CONFIRMATION  |  X / H: HELP"
 	)
+
+
+func _tale_library_recovery_message(notice: String) -> String:
+	match notice:
+		"tale_selection_unavailable":
+			return (
+				"TALE SELECTION UNAVAILABLE\n"
+				+ "The focused Tale could not be validated. Your current selection is preserved. "
+				+ "Report the build identity from Help, return, or reset."
+			)
+		"tale_preparation_unavailable":
+			return (
+				"TALE PREPARATION UNAVAILABLE\n"
+				+ "The focused Tale could not be prepared. Your current selection is preserved. "
+				+ "Report the build identity from Help, return, or reset."
+			)
+	return ""
 
 
 func set_safe_margin(value: int) -> void:
