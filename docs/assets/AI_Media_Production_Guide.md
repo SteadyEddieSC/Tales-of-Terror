@@ -1,8 +1,8 @@
 # AI Media Production and Provenance Guide
 
-**Version:** 0.1  
-**Status:** Preproduction workflow guidance  
-**Reviewed:** July 23, 2026  
+**Version:** 0.1
+**Status:** Preproduction workflow guidance
+**Reviewed:** July 23, 2026
 **Purpose:** Define a cost-conscious workflow for concept art, graphics, audio, music, video, and temporary production assets while preserving provenance and replacement options
 
 ## 1. Recommended stack
