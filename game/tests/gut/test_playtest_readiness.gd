@@ -57,4 +57,14 @@ func _coordinator() -> VerticalSliceCoordinator:
 	coordinator.confirm_roster()
 	coordinator.initialize_session(4706)
 	coordinator.begin_tale()
+	_complete_private_reveals(coordinator)
 	return coordinator
+
+
+func _complete_private_reveals(coordinator: VerticalSliceCoordinator) -> void:
+	var flow: PrivateRevealFlow = coordinator.get("_private_reveal_flow")
+	for _index: int in coordinator.active_seats().size():
+		var seat_number: int = flow.current_seat()
+		assert_true(flow.submit(coordinator.role_session, seat_number, "confirm").accepted)
+		assert_true(flow.submit(coordinator.role_session, seat_number, "confirm").accepted)
+	assert_eq(flow.phase, PrivateRevealFlow.PHASE_COMPLETE)
