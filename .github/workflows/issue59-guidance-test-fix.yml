@@ -1,0 +1,80 @@
+name: Apply issue 59 guidance-test fix
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+concurrency:
+  group: issue59-guidance-test-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Detect pending guidance-test script
+        id: pending
+        shell: bash
+        run: |
+          if [[ -f tools/issue59_guidance_test_fix.py ]]; then
+            echo 'apply=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'apply=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        if: steps.pending.outputs.apply == 'true'
+        with:
+          python-version: 3.11.9
+      - name: Install pinned GDScript Toolkit
+        if: steps.pending.outputs.apply == 'true'
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+      - name: Apply and validate interaction-guidance assertions
+        if: steps.pending.outputs.apply == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/issue59_guidance_test_fix.py "$GITHUB_WORKSPACE"
+          gdformat game/tests/playtest_main_route_test.gd
+          gdlint game/tests/playtest_main_route_test.gd
+          gdformat --check game/tests/playtest_main_route_test.gd
+          git diff --check
+      - name: Publish signed guidance-test update
+        if: steps.pending.outputs.apply == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+
+          script_sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/tools/issue59_guidance_test_fix.py?ref=${BRANCH}" --jq .sha)
+          jq -n \
+            --arg message 'Remove temporary issue 59 guidance-test script' \
+            --arg sha "$script_sha" \
+            --arg branch "$BRANCH" \
+            '{message:$message,sha:$sha,branch:$branch}' \
+            | gh api --method DELETE "repos/${GITHUB_REPOSITORY}/contents/tools/issue59_guidance_test_fix.py" --input - >/dev/null
+
+          path=game/tests/playtest_main_route_test.gd
+          content=$(base64 -w0 "$path")
+          sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/${path}?ref=${BRANCH}" --jq .sha)
+          jq -n \
+            --arg message 'Assert player-owned interaction guidance in the full route' \
+            --arg content "$content" \
+            --arg sha "$sha" \
+            --arg branch "$BRANCH" \
+            '{message:$message,content:$content,sha:$sha,branch:$branch}' \
+            | gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${path}" --input - >/dev/null
