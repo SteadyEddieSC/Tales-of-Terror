@@ -55,6 +55,15 @@ func public_state(coordinator: VerticalSliceCoordinator) -> Dictionary:
 func submit(
 	coordinator: VerticalSliceCoordinator, seat_number: int, action: String
 ) -> Dictionary:
+	var rejection: Dictionary = _submission_rejection(coordinator, seat_number, action)
+	if not rejection.is_empty():
+		return rejection
+	return _commit_submission(coordinator, public_state(coordinator), action)
+
+
+func _submission_rejection(
+	coordinator: VerticalSliceCoordinator, seat_number: int, action: String
+) -> Dictionary:
 	if coordinator.lifecycle != "active_tale":
 		return {"accepted": false, "consumed": false, "reason": "interaction_not_available"}
 	if coordinator.paused:
@@ -66,11 +75,17 @@ func submit(
 		return {"accepted": false, "consumed": false, "reason": "interaction_not_available"}
 	if not state.get("eligible_seats", []).has(seat_number):
 		return {"accepted": false, "consumed": true, "reason": "interaction_seat_not_eligible"}
+	return {}
+
+
+func _commit_submission(
+	coordinator: VerticalSliceCoordinator, state: Dictionary, action: String
+) -> Dictionary:
 	match state.kind:
 		"choice", "vote":
 			if action != "confirm":
 				return {"accepted": false, "consumed": true, "reason": "response_still_pending"}
-			if not coordinator._pending_responses_complete():
+			if not _responses_complete(coordinator):
 				return {"accepted": false, "consumed": true, "reason": "responses_incomplete"}
 			return _consumed(_advance(coordinator))
 		"stage_continue":
@@ -96,12 +111,12 @@ func _advance(coordinator: VerticalSliceCoordinator) -> Dictionary:
 		var operation: Dictionary = stage.operations[coordinator.operation_index]
 		if operation.type in ["submit_prompt", "submit_vote"]:
 			coordinator.operation_index += 1
-			if not coordinator._pending_responses_complete():
+			if not _responses_complete(coordinator):
 				return _wait(coordinator, stage.id)
 			continue
 		if (
 			operation.type in ["resolve_prompt", "resolve_vote"]
-			and not coordinator._pending_responses_complete()
+			and not _responses_complete(coordinator)
 		):
 			return _wait(coordinator, stage.id)
 		if PLAYER_OPERATION_TYPES.has(operation.type):
@@ -293,6 +308,15 @@ func _wait(coordinator: VerticalSliceCoordinator, stage_id: String) -> Dictionar
 		"waiting_for_players": true,
 		"stage_id": stage_id,
 	}
+
+
+func _responses_complete(coordinator: VerticalSliceCoordinator) -> bool:
+	var prompt: Dictionary = coordinator.rules_session.pending_prompt
+	if prompt.is_empty():
+		return false
+	var eligible: Array = prompt.get("eligible_seats", [])
+	var responses: Dictionary = prompt.get("responses", {})
+	return not eligible.is_empty() and responses.size() >= eligible.size()
 
 
 func _consumed(result: Dictionary) -> Dictionary:
