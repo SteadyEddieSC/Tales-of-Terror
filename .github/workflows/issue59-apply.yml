@@ -10,11 +10,10 @@ on:
       - reopened
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   apply:
-    if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
@@ -32,15 +31,20 @@ jobs:
           rm -rf /tmp/issue59_payload
           python -m zipfile -e /tmp/issue59_payload.zip /tmp/issue59_payload
           python /tmp/issue59_payload/apply_patch.py "$GITHUB_WORKSPACE"
-          rm tools/issue59_payload.b64
-          rm .github/workflows/issue59-apply.yml
           git diff --check
-      - name: Commit bounded implementation
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Implement player-owned interaction windows"
-          git push origin "HEAD:${{ github.head_ref }}"
+      - name: Upload exact patched files
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: issue59-patched-files
+          path: |
+            game/src/session/player_interaction_flow.gd
+            game/src/session/player_interaction_flow.gd.uid
+            game/src/session/vertical_slice_coordinator.gd
+            game/src/main/main.gd
+            game/src/exploration/exploration_sandbox.gd
+            game/tests/player_owned_interaction_test.gd
+            game/tests/player_owned_interaction_test.gd.uid
+            .github/workflows/godot-tests.yml
+            tools/validate_toolchain.py
+          if-no-files-found: error
+          retention-days: 2
