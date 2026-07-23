@@ -73,8 +73,12 @@ func _test_player_owned_complete_route() -> void:
 		coordinator.authority_digest() == before_wrong_check,
 		"wrong-seat check input mutates nothing",
 	)
-	_expect(coordinator._submit_player_interaction(1, "confirm").accepted, "Seat I attempts the check")
-	_expect(not coordinator.rules_session.recent_check.is_empty(), "records the deterministic check")
+	_expect(
+		coordinator._submit_player_interaction(1, "confirm").accepted, "Seat I attempts the check"
+	)
+	_expect(
+		not coordinator.rules_session.recent_check.is_empty(), "records the deterministic check"
+	)
 
 	var director: Dictionary = coordinator.public_state().interaction
 	_expect(director.kind == "director_acknowledgement", "pauses before the Director application")
@@ -87,7 +91,9 @@ func _test_player_owned_complete_route() -> void:
 		coordinator.director_runtime.to_snapshot() == director_before,
 		"invalid acknowledgement consumes no Director RNG",
 	)
-	_expect(coordinator._submit_player_interaction(2, "confirm").accepted, "an active seat continues")
+	_expect(
+		coordinator._submit_player_interaction(2, "confirm").accepted, "an active seat continues"
+	)
 	_expect(not coordinator.last_director_decision.is_empty(), "records one Director decision")
 	_expect(coordinator.stage_index == 3, "advances to afterlife")
 
@@ -143,7 +149,9 @@ func _test_pause_and_invalid_seat_are_non_mutating() -> void:
 	var invalid_before: Dictionary = coordinator.to_snapshot()
 	var invalid: Dictionary = coordinator._submit_player_interaction(8, "confirm")
 	_expect(not invalid.accepted and invalid.consumed, "consumes an ineligible-seat attempt")
-	_expect(coordinator.to_snapshot() == invalid_before, "ineligible-seat attempt changes no snapshot")
+	_expect(
+		coordinator.to_snapshot() == invalid_before, "ineligible-seat attempt changes no snapshot"
+	)
 
 
 func _active_coordinator(seat_count: int) -> VerticalSliceCoordinator:
@@ -158,14 +166,17 @@ func _active_coordinator(seat_count: int) -> VerticalSliceCoordinator:
 	return coordinator
 
 
-func _submit_first_option_for_every_eligible_seat(
-	coordinator: VerticalSliceCoordinator
-) -> void:
+func _submit_first_option_for_every_eligible_seat(coordinator: VerticalSliceCoordinator) -> void:
 	var prompt: Dictionary = coordinator.rules_session.pending_prompt
 	var option_id: String = prompt.options[0].id
 	for seat_number: int in prompt.eligible_seats:
 		_expect(
-			coordinator.rules_session.submit_response(seat_number, [option_id], prompt.revision).accepted,
+			(
+				coordinator
+				. rules_session
+				. submit_response(seat_number, [option_id], prompt.revision)
+				. accepted
+			),
 			"accepts Seat %d threshold response" % seat_number,
 		)
 
@@ -175,7 +186,12 @@ func _submit_alternating_vote(coordinator: VerticalSliceCoordinator) -> void:
 	for seat_number: int in prompt.eligible_seats:
 		var option_id: String = "gallery" if seat_number % 2 == 1 else "vault"
 		_expect(
-			coordinator.rules_session.submit_response(seat_number, [option_id], prompt.revision).accepted,
+			(
+				coordinator
+				. rules_session
+				. submit_response(seat_number, [option_id], prompt.revision)
+				. accepted
+			),
 			"accepts Seat %d council vote" % seat_number,
 		)
 
