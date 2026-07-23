@@ -43,6 +43,11 @@ jobs:
           set -euo pipefail
           sed -i 's/portable.count(CURRENT) != 4/portable.count(CURRENT) != 3/' tools/issue61_release_sync.py
           python tools/issue61_release_sync.py
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("docs/gdd/Terror_Turn_GDD.md")
+          path.write_text(path.read_text(encoding="utf-8").rstrip() + "\n", encoding="utf-8")
+          PY
           python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
           python -m pip check
           python tools/validate_toolchain.py
