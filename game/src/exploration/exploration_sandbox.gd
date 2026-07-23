@@ -91,6 +91,9 @@ func _ready() -> void:
 	_camera = SharedCameraCoordinator.new()
 	add_child(_camera)
 	_build_hud()
+	if _session_coordinator != null:
+		_session_coordinator.lifecycle_changed.connect(_on_session_state_changed)
+		_on_session_state_changed(_session_coordinator.public_state())
 
 
 func sync_seats(seats: Array[Dictionary]) -> void:
@@ -172,6 +175,33 @@ func set_safe_margin(value: int) -> void:
 		_companion_lab.set_safe_margin(_safe_margin)
 	_layout_top_hud()
 	_layout_bottom_hud()
+
+
+func _on_session_state_changed(state: Dictionary) -> void:
+	if not is_instance_valid(_message_label) or _showcase_mode:
+		return
+	var interaction: Dictionary = state.get("interaction", {})
+	if interaction.is_empty():
+		_message_label.text = ACTIVE_CONTROLS_TEXT
+	else:
+		_message_label.text = (
+			"%s\n%s"
+			% [
+				interaction.get("instruction", "Continue the Tale."),
+				interaction.get("controls", ACTIVE_CONTROLS_TEXT),
+			]
+		)
+	var stage: Dictionary = state.get("stage", {})
+	if not stage.is_empty():
+		_title_label.text = (
+			"LANTERN HOUSE  |  STAGE %d  |  %s"
+			% [
+				state.get("stage_index", 0) + 1,
+				stage.get("title", "CURRENT TALE").to_upper(),
+			]
+		)
+	if is_instance_valid(_rules_hud):
+		_rules_hud.refresh()
 
 
 func present_reset_progress(progress: float) -> void:

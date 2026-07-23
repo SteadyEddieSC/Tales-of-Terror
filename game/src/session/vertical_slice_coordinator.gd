@@ -81,6 +81,7 @@ var paused: bool = false
 var _stage_checkpoint: Dictionary = {}
 var _selection: TaleSelectionState
 var _tale_library_flow := TaleLibraryFlow.new()
+var _player_interaction_flow := PlayerInteractionFlow.new()
 
 
 func _init(
@@ -281,6 +282,10 @@ func advance_player_stage() -> Dictionary:
 	return _execute_stage(false)
 
 
+func _submit_player_interaction(seat_number: int, action: String) -> Dictionary:
+	return _player_interaction_flow.submit(self, seat_number, action)
+
+
 func _execute_stage(automated: bool) -> Dictionary:
 	var stage: Dictionary = manifest.stages[stage_index]
 	if _stage_checkpoint.is_empty():
@@ -289,14 +294,14 @@ func _execute_stage(automated: bool) -> Dictionary:
 		var operation: Dictionary = stage.operations[operation_index]
 		if not automated and operation.type in ["submit_prompt", "submit_vote"]:
 			operation_index += 1
-			if not _pending_responses_complete():
+			if not _player_interaction_flow._responses_complete(self):
 				_emit_state()
 				return {"accepted": true, "waiting_for_players": true, "stage_id": stage.id}
 			continue
 		if (
 			not automated
 			and operation.type in ["resolve_prompt", "resolve_vote"]
-			and not _pending_responses_complete()
+			and not _player_interaction_flow._responses_complete(self)
 		):
 			_emit_state()
 			return {"accepted": true, "waiting_for_players": true, "stage_id": stage.id}
@@ -383,6 +388,7 @@ func public_state() -> Dictionary:
 		"selected_tale_id": _selection.selected_tale_id(),
 		"tale_display_name": _selection.metadata.get("display_name", ""),
 		"tale_library": _tale_library_flow.public_state(_selection, last_rejection),
+		"interaction": _player_interaction_flow.public_state(self),
 		"lifecycle": lifecycle,
 		"stage_index": stage_index,
 		"operation_index": operation_index,
@@ -982,14 +988,6 @@ func _finish_stage(stage: Dictionary) -> Dictionary:
 		_transition("active_tale", "terminal")
 	_emit_state()
 	return {"accepted": true, "stage_id": stage.id, "lifecycle": lifecycle}
-
-
-func _pending_responses_complete() -> bool:
-	if rules_session.pending_prompt.is_empty():
-		return false
-	var eligible: Array = rules_session.pending_prompt.get("eligible_seats", [])
-	var responses: Dictionary = rules_session.pending_prompt.get("responses", {})
-	return not eligible.is_empty() and responses.size() >= eligible.size()
 
 
 func _reject(reason: String) -> Dictionary:

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.7 - Player-Owned Interaction Pass
+
+- Replaced remaining repeated-confirm and automatic Lantern House progression with explicit stable-seat interaction windows for threshold choices, council voting, card play, courage checks, Director acknowledgement, Restless action/pass, and stage continuation.
+- Added privacy-safe shared-screen projections for eligible, committed, pending, and owning seats while preserving existing RulesSession, BoardState, Director, and RoleSession authority.
+- Added wrong-seat, paused, duplicate, stale, pass, RNG-invariance, full-route, and 1–8 seat deterministic coverage plus permanent CI/toolchain registration.
+- Preserved the exact one-Tale catalog/package identities, story, balance, snapshots, report schema, Companion graph, and no-phone route.
+- Issue #44 remains open: the unchanged Companion dependency graph retains GHSA-f88m-g3jw-g9cj; this game-only release does not deploy or publicly release Companion services.
+
 ## v0.1.6 - Controller-First Tale Library & Selection UX
 
 - Added a controller-first Tale Library between mode confirmation and the public briefing, with D-pad/left-stick/keyboard focus, confirm, back, Help, and protected-reset behavior.

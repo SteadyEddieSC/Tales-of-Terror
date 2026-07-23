@@ -247,10 +247,15 @@ func _test_rendered_guidance_and_action_map() -> void:
 	var message: Label = sandbox.get("_message_label")
 	var reset: Label = sandbox.get("_reset_label")
 	_expect(
-		PlaytestReport.release_id() in title.text, "sandbox uses the single v0.1.6 release source"
+		"LANTERN HOUSE" in title.text and "STAGE 1" in title.text,
+		"sandbox identifies the current Tale and stage",
 	)
-	_expect("HELP: X / H" in message.text, "sandbox renders X as Help")
-	_expect("DIAGNOSTICS: T" in message.text, "sandbox renders T-only diagnostics")
+	_expect(
+		"0 of 1 eligible seats committed" in message.text and "waiting for I" in message.text,
+		"sandbox reports the pending stable-seat response",
+	)
+	_expect("A / ENTER: COMMIT" in message.text, "sandbox renders the expected commit input")
+	_expect("X / H: HELP" in message.text, "interaction guidance preserves Help")
 	_expect(not "DIAGNOSTICS: X" in message.text, "sandbox never renders X as diagnostics")
 	_expect(
 		"RETURN TO TITLE" in reset.text, "protected reset accurately names the title destination"
@@ -339,17 +344,31 @@ func _new_main(device_count: int) -> Control:
 
 func _run_active_tale(coordinator: VerticalSliceCoordinator) -> void:
 	var guard: int = 0
-	while coordinator.lifecycle == "active_tale" and guard < 8:
-		var prompt: Dictionary = coordinator.rules_session.pending_prompt
-		if not prompt.is_empty():
-			var option_id: String = prompt.options[0].id
-			for seat_number: int in prompt.eligible_seats:
-				coordinator.rules_session.submit_response(seat_number, [option_id], prompt.revision)
-		var result: Dictionary = coordinator.run_current_stage()
-		_expect(result.accepted, "fixture advances authored active stage %d" % guard)
+	while coordinator.lifecycle == "active_tale" and guard < 24:
+		var interaction: Dictionary = coordinator.public_state().get("interaction", {})
+		_expect(not interaction.is_empty(), "active route publishes interaction %d" % guard)
+		if interaction.is_empty():
+			break
+		if interaction.get("kind", "") in ["choice", "vote"]:
+			for seat_number: int in interaction.get("pending_seats", []):
+				await _press_button(seat_number - 1, BUTTON_A)
+			interaction = coordinator.public_state().get("interaction", {})
+			if interaction.get("kind", "") in ["choice", "vote"]:
+				var eligible: Array = interaction.get("eligible_seats", [])
+				if not eligible.is_empty():
+					await _press_button(int(eligible[0]) - 1, BUTTON_A)
+		else:
+			var actor: int = int(interaction.get("owner_seat", 0))
+			var eligible: Array = interaction.get("eligible_seats", [])
+			if actor <= 0 and not eligible.is_empty():
+				actor = int(eligible[0])
+			_expect(actor > 0, "interaction %d has an eligible controller owner" % guard)
+			if actor <= 0:
+				break
+			await _press_button(actor - 1, BUTTON_A)
 		guard += 1
 		await process_frame
-	_expect(guard < 8, "active route reaches terminal within the authored stage bound")
+	_expect(guard < 24, "active route reaches terminal within the interaction bound")
 
 
 func _press_button(device_id: int, button_index: int) -> void:
