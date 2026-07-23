@@ -162,6 +162,7 @@ def main() -> int:
         "res://tests/playtest_readiness_test.gd",
         "res://tests/portable_build_identity_test.gd",
         "res://tests/vertical_slice_simulation_test.gd",
+        "res://tests/automated_playthrough_lab_test.gd",
         "gut-junit.xml",
         "if: always()",
     ]
@@ -283,6 +284,7 @@ def main() -> int:
         "playtest_main_route_test.gd",
         "portable_build_identity_test.gd",
         "vertical_slice_simulation_test.gd",
+        "automated_playthrough_lab_test.gd",
     ]
     for filename in legacy_tests:
         if not (ROOT / "game" / "tests" / filename).is_file():

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble and validate bounded v0.1.8 internal playtest bundles."""
+"""Assemble and validate bounded v0.1.9 internal playtest bundles."""
 
 from __future__ import annotations
 
@@ -142,7 +142,7 @@ def _spec() -> dict[str, Any]:
         "forbidden_extensions",
     }:
         raise BundleError("bundle specification keys changed")
-    if spec["schema_version"] != 1 or spec["release"] != "v0.1.8":
+    if spec["schema_version"] != 1 or spec["release"] != "v0.1.9":
         raise BundleError("unsupported bundle specification")
     if set(spec["platforms"]) != {"windows", "linux"}:
         raise BundleError("bundle platforms must be exactly Windows and Linux")
@@ -308,7 +308,7 @@ def assemble(
 def validate_manifest(manifest: dict[str, Any], bundle_dir: Path) -> None:
     if set(manifest) != MANIFEST_KEYS:
         raise BundleError("build manifest exact root keys changed")
-    if manifest["schema_version"] != 1 or manifest["release"] != "v0.1.8":
+    if manifest["schema_version"] != 1 or manifest["release"] != "v0.1.9":
         raise BundleError("unsupported build manifest version")
     _validate_source_commit(manifest["source_commit"])
     if manifest["platform"] not in {"windows", "linux"}:
@@ -457,7 +457,7 @@ def validate_repository() -> None:
         encoding="utf-8"
     )
     required_identity_fragments = (
-        'const RELEASE: String = "v0.1.8"',
+        'const RELEASE: String = "v0.1.9"',
         '"INTERNAL PLAYTEST"',
         '"SOURCE CHECKOUT"',
         '"INVALID EXPORTED IDENTITY"',

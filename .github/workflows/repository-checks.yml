@@ -60,6 +60,8 @@ jobs:
           test -f docs/playtests/v0.1.7-player-owned-interaction-evidence.md
           test -f docs/releases/v0.1.8-controlled-reveal-shared-screen-privacy.md
           test -f docs/playtests/v0.1.8-controlled-reveal-evidence.md
+          test -f docs/releases/v0.1.9-automated-playthrough-deadlock-lab.md
+          test -f docs/playtests/v0.1.9-automated-playthrough-evidence.md
           test -f game/data/tales/lantern_house/tale_package_v1.json
           test -f game/data/tales/lantern_house/localization_en.json
           test -f game/data/tales/tale_catalog_v1.json

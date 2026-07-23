@@ -1,7 +1,7 @@
 # Terror Turn local playtest report
 
 - Schema: 2
-- Release: v0.1.8
+- Release: v0.1.9
 - Scenario: lantern_house_vertical_slice v1
 - Seed: 4706
 - Seats: 1
