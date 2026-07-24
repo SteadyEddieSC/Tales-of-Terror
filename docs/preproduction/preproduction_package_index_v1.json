@@ -13,48 +13,61 @@
   "packages": [
     {
       "release_id": "P0.1",
-      "title": "Drowned Harbor Foundation and Lore",
+      "title": "Preproduction Narrative & Continuity Foundation",
       "pull_request": 65,
       "status": "merged",
-      "merged_main_sha": null,
-      "merge_reference": "PR #65 is authoritative for the legacy P0.1 squash identity.",
+      "merged_main_sha": "53a9db5ba1c665ae6ba42873c8aed6e84806890c",
+      "merge_reference": "Protected-main squash for PR #65.",
       "release_summary": "docs/preproduction/P0.1_Release_Summary.md",
       "primary_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Foundation_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_World_Bible_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Narrative_Library_v1.0.md"
+        "docs/narrative/Underteller_Voice_Bible.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md",
+        "docs/assets/AI_Media_Production_Guide.md",
+        "docs/preproduction/README.md"
       ],
       "governed_outputs": [
-        "Tale premise and stage structure",
-        "World and landmark identity",
-        "Narrative and Underteller line foundation"
+        "Provisional Underteller voice and truthfulness foundation",
+        "Drowned Harbor premise, stages, landmarks, roles, hazards, and ending candidates",
+        "Stable-seat continuity and admission direction",
+        "P0.x preproduction roadmap",
+        "AI-media provenance and original-first production guidance"
       ],
       "implementation_authorized": false,
       "production_assets_approved": false
     },
     {
       "release_id": "P0.2",
-      "title": "Drowned Harbor Mechanics, Roles, Continuity, and Automation",
+      "title": "Drowned Harbor Dialogue and Localization Corpus",
       "pull_request": 66,
       "status": "merged",
       "merged_main_sha": "cd78cc68f80c5546ea91bd0a9431642eba1e4d30",
       "merge_reference": "Protected-main squash for PR #66.",
       "release_summary": "docs/preproduction/P0.2_Release_Summary.md",
       "primary_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md",
-        "docs/tales/drowned_harbor/Drop_In_Drop_Out_Seat_Continuity_Contract_v1.0.md",
-        "docs/tales/drowned_harbor/Multiplayer_Session_Admission_and_Seat_Reclaim_Contract_v1.0.md"
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/assets/AI_and_Creative_Tooling_Shortlist_2026-07.md",
+        "docs/assets/Bundle_and_Marketplace_Procurement_Guide.md",
+        "docs/assets/Audio_Hero_Bundle_License_Review_2026-07.md",
+        "docs/assets/Original_First_Visual_Asset_Policy.md",
+        "docs/tales/drowned_harbor/dialogue/dialogue_entry_schema_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1_encounters.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_admission_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_items_hazards_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_private_bargains_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_handoffs_endings_cards_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/underteller_voice_audition_manifest_v1.json"
       ],
       "governed_outputs": [
-        "Public archetypes, private roles, objectives, factions, and continuation forms",
-        "Stage and ending state matrix",
-        "Stable-seat drop-in and drop-out continuity",
-        "Online admission and seat reclaim policy",
-        "Deterministic automation and implementation contracts"
+        "104 governed English dialogue entries across seven catalogs",
+        "Public, seat-private, faction-private, and controlled-private classifications",
+        "Spooky, Grim, Gore & Dread, and plain-fallback equivalence",
+        "Admission, continuity, encounter, item, hazard, bargain, faction, afterlife, and ending language",
+        "24-selection Underteller voice-audition manifest and export tooling",
+        "AI-tooling, bundle-procurement, licensing, and original-first asset policies"
       ],
       "implementation_authorized": false,
       "production_assets_approved": false
