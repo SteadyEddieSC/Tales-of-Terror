@@ -1,0 +1,129 @@
+{
+  "manifest_kind": "tale_authoring_content_groups",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "manifest_id": "drowned_harbor_gameplay_content",
+  "production_status": "design_only",
+  "groups": [
+    {
+      "kind": "card",
+      "status": "draft",
+      "privacy": "seat_private",
+      "stages": [],
+      "tags": [
+        "deterministic_consequence",
+        "mechanical_truth_required"
+      ],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 27. Initial card set",
+      "traceability_concepts": [],
+      "ids": [
+        "a_name_remembered",
+        "borrowed_breath",
+        "cut_the_line",
+        "hold_fast",
+        "mark_the_door",
+        "one_more_passenger",
+        "salt_in_the_wound",
+        "share_the_weight",
+        "the_harbor_owes_me",
+        "the_light_looks_back",
+        "the_long_way_around",
+        "wrong_bell"
+      ],
+      "note": "Draft card identities; exact effects, ownership, timing, counts, and balance remain open."
+    },
+    {
+      "kind": "hazard",
+      "status": "draft",
+      "privacy": "public",
+      "stages": [
+        "high_water"
+      ],
+      "tags": [
+        "authored_recovery_required",
+        "deterministic_consequence",
+        "public_warning_required",
+        "warning_response_recovery"
+      ],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 28. Initial hazard set",
+      "traceability_concepts": [
+        "DH-XM-007",
+        "DH-XM-014"
+      ],
+      "ids": [
+        "archive_collapse",
+        "bell_shock",
+        "drowned_patrol",
+        "harbors_claim",
+        "lamps_turn_seaward",
+        "lifeboat_breaks_free",
+        "light_answers",
+        "missing_name",
+        "returning_current",
+        "salt_rot",
+        "street_gives_way",
+        "water_in_lungs"
+      ],
+      "note": "Draft hazard identities; each requires warning, legal responses, deterministic consequences, recovery, Director compatibility, and snapshot behavior."
+    },
+    {
+      "kind": "item",
+      "status": "draft",
+      "privacy": "public",
+      "stages": [],
+      "tags": [
+        "mechanical_truth_required",
+        "stateful_condition"
+      ],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 26. Initial item set",
+      "traceability_concepts": [
+        "DH-XM-003",
+        "DH-XM-004",
+        "DH-XM-005"
+      ],
+      "ids": [
+        "chapel_salt_censer",
+        "cracked_lighthouse_lens",
+        "dead_mans_compass",
+        "glass_bell_clapper",
+        "harbor_masters_seal",
+        "ledger_knife",
+        "lifeboat_flare",
+        "missing_name_tablet",
+        "oilskin_satchel",
+        "salt_stiff_rope",
+        "tin_lantern",
+        "wreckers_hook"
+      ],
+      "note": "Draft item identities; ownership, condition, charges, loss, and deterministic flooding behavior remain open."
+    },
+    {
+      "kind": "resource",
+      "status": "draft",
+      "privacy": "public",
+      "stages": [],
+      "tags": [
+        "deterministic_consequence",
+        "mechanical_truth_required",
+        "stateful_condition"
+      ],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 25. Public resources",
+      "traceability_concepts": [],
+      "ids": [
+        "bell_tokens",
+        "dry_matches",
+        "harbor_keys",
+        "lamp_oil",
+        "lifeboat_capacity",
+        "memory_fragments",
+        "rope",
+        "salt_marks"
+      ],
+      "note": "Draft public resource identities; capacities, spending, ownership, transfer, and reset semantics remain open."
+    }
+  ]
+}
