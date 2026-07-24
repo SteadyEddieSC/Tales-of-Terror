@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-dialogue-entry-v1.json",
+  "title": "Drowned Harbor governed dialogue entry",
+  "description": "Preproduction schema for authored Underteller and system-facing dialogue. It is not a runtime localization contract until separately approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "key",
+    "function",
+    "classification",
+    "speaker",
+    "public_trigger",
+    "required_facts",
+    "variants",
+    "fallback",
+    "display_budget",
+    "voice_budget",
+    "repeat_policy",
+    "placeholders",
+    "implementation_status"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "pattern": "^(tale\\.drowned_harbor|system\\.seat_control|system\\.admission|private\\.seat_control)\\.[a-z0-9_]+(?:\\.[a-z0-9_]+)*$"
+    },
+    "function": {
+      "type": "string",
+      "enum": [
+        "welcome",
+        "opening",
+        "briefing",
+        "stage_transition",
+        "choice_prompt",
+        "choice_confirmation",
+        "accepted_action",
+        "rejected_action",
+        "warning",
+        "hint",
+        "director_pressure",
+        "director_relief",
+        "terror_turn",
+        "reveal",
+        "transformation",
+        "defeat",
+        "afterlife_activation",
+        "seat_departure",
+        "surrogate_activation",
+        "seat_takeover",
+        "seat_return",
+        "admission",
+        "spectator",
+        "ending",
+        "rematch",
+        "closure"
+      ]
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "public",
+        "controlled_reveal_private",
+        "seat_private",
+        "faction_private",
+        "diagnostic_only"
+      ]
+    },
+    "speaker": {
+      "type": "string",
+      "enum": [
+        "underteller",
+        "plain_system"
+      ]
+    },
+    "public_trigger": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Exact approved public or authority event that permits presentation. Private entries describe the authorized private handoff event without including secret values."
+    },
+    "required_facts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "variants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spooky",
+        "grim",
+        "gore_and_dread"
+      ],
+      "properties": {
+        "spooky": {
+          "$ref": "#/$defs/textVariant"
+        },
+        "grim": {
+          "$ref": "#/$defs/textVariant"
+        },
+        "gore_and_dread": {
+          "$ref": "#/$defs/textVariant"
+        }
+      }
+    },
+    "fallback": {
+      "$ref": "#/$defs/textVariant",
+      "description": "Plain-language mechanically complete text used when shortened narration is enabled or authored voice presentation is unavailable."
+    },
+    "display_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_characters",
+        "max_lines",
+        "skippable"
+      ],
+      "properties": {
+        "max_characters": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "max_lines": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "skippable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "voice_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_seconds",
+        "maximum_seconds"
+      ],
+      "properties": {
+        "target_seconds": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 120
+        },
+        "maximum_seconds": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 180
+        }
+      }
+    },
+    "repeat_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "minimum_cooldown_events"
+      ],
+      "properties": {
+        "class": {
+          "type": "string",
+          "enum": [
+            "unique_per_tale",
+            "unique_per_stage",
+            "rare",
+            "reusable",
+            "system_repeatable"
+          ]
+        },
+        "minimum_cooldown_events": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        }
+      }
+    },
+    "placeholders": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "type",
+          "visibility"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "stable_seat_label",
+              "public_item_name",
+              "public_space_name",
+              "public_route_name",
+              "public_condition_name",
+              "nonnegative_integer",
+              "governed_public_text"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public_safe",
+              "authorized_private_only"
+            ]
+          }
+        }
+      }
+    },
+    "plain_system_equivalent": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional direct interface wording when the Underteller presentation is disabled."
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "implementation_status": {
+      "type": "string",
+      "enum": [
+        "preproduction_draft",
+        "narrative_reviewed",
+        "mechanical_reviewed",
+        "localization_ready",
+        "production_candidate",
+        "approved"
+      ]
+    }
+  },
+  "$defs": {
+    "textVariant": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    }
+  }
+}
