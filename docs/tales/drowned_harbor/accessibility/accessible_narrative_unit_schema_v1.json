@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-accessible-narrative-unit-v1.json",
+  "title": "Drowned Harbor accessible narrative unit",
+  "description": "Preproduction registry schema mapping governed source families to captions, transcripts, persistent text, announcements, and translation context.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "unit_id",
+    "source_family_id",
+    "source_locale",
+    "speaker_key",
+    "privacy_class",
+    "importance",
+    "source_field_paths",
+    "mechanical_equivalence_key",
+    "placeholder_policy",
+    "caption_policy",
+    "transcript_policy",
+    "announcement_policy",
+    "persistent_text_policy",
+    "reading_order",
+    "translator_notes",
+    "status",
+    "approval_boundary"
+  ],
+  "properties": {
+    "unit_id": {
+      "type": "string",
+      "pattern": "^DH-LOC-VO-[0-9]{3}$"
+    },
+    "source_family_id": {
+      "type": "string",
+      "pattern": "^DH-VO-(NAR|SYS|REV|END)-[0-9]{3}$"
+    },
+    "source_locale": {
+      "type": "string",
+      "const": "en-US"
+    },
+    "speaker_key": {
+      "type": "string",
+      "enum": [
+        "speaker.host",
+        "speaker.system",
+        "speaker.harbor",
+        "speaker.bellhouse",
+        "speaker.lighthouse",
+        "speaker.seat",
+        "speaker.none"
+      ]
+    },
+    "privacy_class": {
+      "type": "string",
+      "enum": ["public_shared", "plain_system", "private_surface_deferred"]
+    },
+    "importance": {
+      "type": "string",
+      "enum": ["critical", "important", "contextual"]
+    },
+    "source_field_paths": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "draft_script.spooky",
+          "draft_script.grim",
+          "draft_script.gore_and_dread",
+          "draft_script.plain_system"
+        ]
+      }
+    },
+    "mechanical_equivalence_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "placeholder_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_placeholders", "named_only", "sentence_concatenation", "private_placeholders_allowed"],
+      "properties": {
+        "allowed_placeholders": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^\\{[a-z][a-z0-9_]*\\}$"
+          }
+        },
+        "named_only": {"type": "boolean"},
+        "sentence_concatenation": {"type": "boolean"},
+        "private_placeholders_allowed": {"type": "boolean"}
+      }
+    },
+    "caption_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subtitle_required", "closed_caption_supported", "max_lines", "target_characters_per_line", "timed_only", "speaker_label_supported", "text_scale_safe"],
+      "properties": {
+        "subtitle_required": {"type": "boolean"},
+        "closed_caption_supported": {"type": "boolean"},
+        "max_lines": {"type": "integer", "minimum": 1, "maximum": 3},
+        "target_characters_per_line": {"type": "integer", "minimum": 20, "maximum": 60},
+        "timed_only": {"type": "boolean"},
+        "speaker_label_supported": {"type": "boolean"},
+        "text_scale_safe": {"type": "boolean"}
+      }
+    },
+    "transcript_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["included", "replayable", "event_label_key", "public_history"],
+      "properties": {
+        "included": {"type": "boolean"},
+        "replayable": {"type": "boolean"},
+        "event_label_key": {"type": "string", "minLength": 1},
+        "public_history": {"type": "boolean"}
+      }
+    },
+    "announcement_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["priority", "coalesce_key", "focus_required", "interrupt_lower_priority"],
+      "properties": {
+        "priority": {
+          "type": "string",
+          "enum": ["none", "polite", "assertive", "focus_required"]
+        },
+        "coalesce_key": {"type": "string", "minLength": 1},
+        "focus_required": {"type": "boolean"},
+        "interrupt_lower_priority": {"type": "boolean"}
+      }
+    },
+    "persistent_text_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "dismissal", "plain_system_available", "survives_voice_interruption"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "dismissal": {
+          "type": "string",
+          "enum": [
+            "state_change_or_user",
+            "state_change_only",
+            "user_or_transcript",
+            "transcript_only"
+          ]
+        },
+        "plain_system_available": {"type": "boolean"},
+        "survives_voice_interruption": {"type": "boolean"}
+      }
+    },
+    "reading_order": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "translator_notes": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "brief_draft",
+        "preproduction_ready",
+        "localization_candidate",
+        "linguistic_reviewed",
+        "in_context_reviewed",
+        "production_candidate",
+        "approved",
+        "rejected",
+        "deferred"
+      ]
+    },
+    "approval_boundary": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
