@@ -1,0 +1,672 @@
+{
+  "manifest_kind": "audio_asset_briefs_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "entry_schema": "audio_asset_brief_schema_v1.json",
+  "entries": [
+    {
+      "asset_id": "DH-AUD-AMB-001",
+      "title": "Lowest Tide Harbor Bed",
+      "category": "ambience",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "none",
+      "stages": ["low_tide_arrival"],
+      "trigger": "Lowest Tide ambience becomes active after the Tale establishes the public harbor board.",
+      "purpose": "Establish an exposed town listening across impossible tidal mud while leaving space for orientation, dialogue, and decisions.",
+      "duration": {
+        "minimum_seconds": 30,
+        "target_seconds": 75,
+        "maximum_seconds": 150
+      },
+      "loop_mode": "layered_bed",
+      "spatial_mode": "environment_bed",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Distant returning waterline",
+        "Thin tide-pool movement",
+        "Mud crack release and restrained suction",
+        "Sparse wet-timber strain",
+        "Cold coastal wind with large quiet gaps"
+      ],
+      "sonic_requirements": [
+        "Dark maritime atmosphere without a constant low-frequency drone",
+        "Enough upper-mid texture to survive television speakers",
+        "Sparse events must randomize outside the seamless base loop",
+        "Spooky remains clearer; Grim adds weight; Gore & Dread adds only localized physical detail"
+      ],
+      "negative_constraints": [
+        "No constant crashing surf",
+        "No pirate harbor ambience",
+        "No intelligible whispers",
+        "No required clue embedded in the loop",
+        "No obvious short repetition",
+        "No extreme sub-bass dependency"
+      ],
+      "mix_policy": {
+        "bus": "ambience",
+        "foreground_priority": 20,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 4,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": false,
+        "visual_redundancy_required": false,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce sparse transient range and mud impacts while preserving the returning-water and timber identity."
+      },
+      "generator_guidance": {
+        "prompt": "Seamless layered ambience for an original drowned storybook harbor exposed at extreme low tide: distant returning sea, thin reflective tide pools, subtle mud crack release, sparse swollen timber strain, cold coastal wind, large quiet spaces, dark maritime folk horror, tactile and restrained, no speech, designed to sit beneath narration and local conversation.",
+        "negative_prompt": "pirate harbor, cheerful seagulls, constant crashing waves, intelligible whispers, musical score, trailer boom, jump scare, extreme sub bass, obvious loop repetition, copyrighted melody",
+        "consistency_anchor": "Water, wet timber, rope, salt, and distant bell resonance behave like damaged memories while remaining tactile and mechanically readable."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": [
+          "original_recording",
+          "original_synthesis",
+          "original_ai_assisted",
+          "commissioned",
+          "licensed_transformed"
+        ],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": [
+          "creator or generator",
+          "source recordings and licenses",
+          "full prompt when generated",
+          "edit and layering notes",
+          "creation date",
+          "review disposition"
+        ]
+      },
+      "approval_boundary": "Preproduction ambience brief only; no final loop, mix, loudness, implementation, or listening-test approval."
+    },
+    {
+      "asset_id": "DH-AUD-AMB-002",
+      "title": "Salt Market Canvas and Stall Bed",
+      "category": "ambience",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P1",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "none",
+      "stages": ["low_tide_arrival", "bellhouse_ledger"],
+      "trigger": "A public camera or active-seat focus enters the Salt Market region.",
+      "purpose": "Give the Salt Market a distinct cloth, rope, crate, and empty-commerce identity without implying unseen merchants or hidden dialogue.",
+      "duration": {
+        "minimum_seconds": 20,
+        "target_seconds": 50,
+        "maximum_seconds": 100
+      },
+      "loop_mode": "layered_bed",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Weather-torn canvas movement",
+        "Rope loops against timber poles",
+        "Occasional crate or table settling",
+        "Sparse glass and metal contact",
+        "Open wind passing through empty stalls"
+      ],
+      "sonic_requirements": [
+        "Canvas must be recognizable without becoming a constant flap",
+        "Market texture remains materially distinct from ordinary houses",
+        "Localized layer may fade cleanly into the Lowest Tide base bed"
+      ],
+      "negative_constraints": [
+        "No crowd walla",
+        "No coins or cheerful commerce",
+        "No intelligible voices",
+        "No circus tent sound",
+        "No continuous rhythmic flapping"
+      ],
+      "mix_policy": {
+        "bus": "ambience",
+        "foreground_priority": 24,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 4,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": false,
+        "visual_redundancy_required": false,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce sharp cloth snaps and metal contacts while retaining canvas, rope, and empty-stall motion."
+      },
+      "generator_guidance": {
+        "prompt": "Localized seamless ambience for an empty salt market in a drowned storybook harbor: weather-torn canvas awnings, rope against wet timber poles, sparse crate settling, occasional cloudy glass contact, cold wind through abandoned stalls, tactile and restrained, no people, no speech, no music.",
+        "negative_prompt": "busy marketplace, crowd voices, coins, cheerful commerce, circus tent, rhythmic flapping, pirate tavern, music, speech, jump scare",
+        "consistency_anchor": "The Salt Market is defined by pale canvas, rope, wet timber, and empty ordered commerce inside the same Drowned Harbor material world."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": [
+          "original_recording",
+          "original_synthesis",
+          "original_ai_assisted",
+          "commissioned",
+          "licensed_transformed",
+          "licensed_supporting"
+        ],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": [
+          "creator or generator",
+          "source licenses",
+          "full prompt when generated",
+          "transformation notes",
+          "creation date",
+          "review disposition"
+        ]
+      },
+      "approval_boundary": "Preproduction localized ambience brief only; no final loop, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-AMB-003",
+      "title": "Bellhouse Square Resonance Bed",
+      "category": "ambience",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "redundant",
+      "stages": ["bellhouse_ledger", "high_water"],
+      "trigger": "The public board focus enters Bellhouse Square or the Bellhouse mechanism becomes the active public objective.",
+      "purpose": "Establish rope, tower, brass, and ledger tension without embedding a full bell strike or hidden faction information in the loop.",
+      "duration": {
+        "minimum_seconds": 25,
+        "target_seconds": 65,
+        "maximum_seconds": 130
+      },
+      "loop_mode": "layered_bed",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Bell rope movement under light tension",
+        "Tower timber and fastener resonance",
+        "Very low brass body vibration without a strike",
+        "Wet ledger pages and index-tab movement",
+        "Distant structures answering through air or water"
+      ],
+      "sonic_requirements": [
+        "No full bell strike may occur inside the permanent loop",
+        "The mechanism should feel ordered rather than haunted at random",
+        "High Water variant may carry more resonance through water",
+        "No layer may identify a hidden Bellmarked seat"
+      ],
+      "negative_constraints": [
+        "No church service ambience",
+        "No constant bell tolling",
+        "No intelligible names",
+        "No ghost choir",
+        "No hidden-role audio hint",
+        "No generic haunted-house creaks"
+      ],
+      "mix_policy": {
+        "bus": "ambience",
+        "foreground_priority": 32,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 5,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": false,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce low resonance and rope snaps while keeping the ordered tower-and-ledger identity audible."
+      },
+      "generator_guidance": {
+        "prompt": "Seamless localized ambience for an original maritime Bellhouse: long ropes under slight tension, swollen tower timber, restrained oxidized-brass body resonance without a bell strike, wet ledger pages, index tabs, distant structures answering faintly, ordered supernatural mechanism, storybook folk horror, no voices, no music.",
+        "negative_prompt": "church service, constant bell tolling, spoken names, whispering, ghost choir, musical drone, generic haunted house, hidden traitor clue, trailer impact",
+        "consistency_anchor": "The Bellhouse indexes public possibilities through rope, brass, wood, and wet records; its ambience never performs a one-time bell event."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": [
+          "original_recording",
+          "original_synthesis",
+          "original_ai_assisted",
+          "commissioned",
+          "licensed_transformed"
+        ],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": [
+          "creator or generator",
+          "bell and rope source provenance",
+          "full prompt when generated",
+          "layering and pitch notes",
+          "creation date",
+          "review disposition"
+        ]
+      },
+      "approval_boundary": "Signature ambience brief only; no final Bellhouse identity, hidden-role behavior, mix, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-AMB-004",
+      "title": "Lighthouse Exterior Wind and Beam Bed",
+      "category": "ambience",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "none",
+      "stages": ["lighthouse_council", "high_water", "last_light"],
+      "trigger": "The public board focus enters the lighthouse exterior region.",
+      "purpose": "Create vertical isolation, exposed wind, and distant mechanism authority without turning the lighthouse beam into a science-fiction effect.",
+      "duration": {
+        "minimum_seconds": 30,
+        "target_seconds": 70,
+        "maximum_seconds": 140
+      },
+      "loop_mode": "layered_bed",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "High coastal wind around stone and slate",
+        "Tower structure movement",
+        "Distant slow lens bearing",
+        "Restrained directional beam sweep texture",
+        "Sea pressure below the tower"
+      ],
+      "sonic_requirements": [
+        "Wind must leave clear speech space",
+        "Beam sweep remains tactile and mechanical",
+        "Exterior and lantern-room families must share lens and bearing identity",
+        "No musical pitch sequence should dominate"
+      ],
+      "negative_constraints": [
+        "No laser beam",
+        "No science-fiction hum",
+        "No heroic coastal postcard wind",
+        "No constant thunder",
+        "No musical lighthouse motif",
+        "No intelligible calls"
+      ],
+      "mix_policy": {
+        "bus": "ambience",
+        "foreground_priority": 28,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 4,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": false,
+        "visual_redundancy_required": false,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Compress wind peaks and shorten beam-sweep texture while preserving tower height and mechanical identity."
+      },
+      "generator_guidance": {
+        "prompt": "Seamless exterior ambience for a tall storybook-horror lighthouse above a drowned harbor: cold exposed coastal wind around wet slate, restrained tower movement, distant thick-glass lens bearing, subtle tactile beam sweep, sea pressure far below, sparse and dialogue-friendly, no speech, no music, no science fiction.",
+        "negative_prompt": "laser, sci-fi hum, heroic lighthouse, constant thunder, cinematic score, musical motif, spoken calls, foghorn cliché, extreme sub bass",
+        "consistency_anchor": "The lighthouse is a memory-guidance machine made of cloudy glass, oxidized brass, wet slate, and controlled amber light."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": [
+          "original_recording",
+          "original_synthesis",
+          "original_ai_assisted",
+          "commissioned",
+          "licensed_transformed"
+        ],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": [
+          "creator or generator",
+          "wind and mechanism source provenance",
+          "full prompt when generated",
+          "edit notes",
+          "creation date",
+          "review disposition"
+        ]
+      },
+      "approval_boundary": "Preproduction ambience brief only; no final beam, wind, spatialization, mix, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-AMB-005",
+      "title": "Lantern Room Mechanism Bed",
+      "category": "ambience",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "redundant",
+      "stages": ["lighthouse_council", "last_light"],
+      "trigger": "The lantern room becomes the active public decision space.",
+      "purpose": "Focus attention on the memory-guidance mechanism while preserving silence around Council and final confirmations.",
+      "duration": {
+        "minimum_seconds": 25,
+        "target_seconds": 60,
+        "maximum_seconds": 120
+      },
+      "loop_mode": "layered_bed",
+      "spatial_mode": "environment_bed",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Slow brass ring rotation",
+        "Cloudy glass pressure",
+        "Sparse indexed clicks",
+        "Bearing friction",
+        "Wind outside thick lantern-room glass"
+      ],
+      "sonic_requirements": [
+        "Mechanism sounds deliberate and readable rather than busy",
+        "Long tails must duck rapidly under Council speech",
+        "The base loop excludes irreversible choice confirmations",
+        "Profile changes add texture rather than loudness"
+      ],
+      "negative_constraints": [
+        "No clockwork overload",
+        "No steampunk machine bed",
+        "No science-fiction reactor",
+        "No musical chord progression",
+        "No constant glass squeal",
+        "No hidden ending hint"
+      ],
+      "mix_policy": {
+        "bus": "ambience",
+        "foreground_priority": 36,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 5,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": false,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce glass-pressure peaks and index-click density while keeping the rotating brass and thick-glass mechanism recognizable."
+      },
+      "generator_guidance": {
+        "prompt": "Seamless restrained ambience inside an original supernatural lighthouse lantern room: slow oxidized-brass ring rotation, thick cloudy glass under pressure, sparse indexed clicks, old bearing friction, cold wind outside the glass, deliberate memory-guidance mechanism, tactile storybook folk horror, no speech, no music, clear space for major decisions.",
+        "negative_prompt": "steampunk clockwork, sci-fi reactor, laser, musical chord, constant squeal, busy machinery, hidden ending hint, dialogue, jump scare",
+        "consistency_anchor": "The lantern room guides named memory through cloudy cracked glass and ordered brass indexes; every mechanism sound is deliberate."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": [
+          "original_recording",
+          "original_synthesis",
+          "original_ai_assisted",
+          "commissioned",
+          "licensed_transformed"
+        ],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": [
+          "creator or generator",
+          "glass and mechanism source provenance",
+          "full prompt when generated",
+          "layer and timing notes",
+          "creation date",
+          "review disposition"
+        ]
+      },
+      "approval_boundary": "Signature ambience brief only; no final mechanism, mix, Council behavior, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-AMB-006",
+      "title": "Drowned Archive Interior Bed",
+      "category": "ambience",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "redundant",
+      "stages": ["high_water"],
+      "trigger": "The Drowned Archive becomes publicly accessible and active.",
+      "purpose": "Create a submerged record space where paper, water, shelves, and the inland lighthouse beam compete for attention.",
+      "duration": {
+        "minimum_seconds": 30,
+        "target_seconds": 70,
+        "maximum_seconds": 140
+      },
+      "loop_mode": "layered_bed",
+      "spatial_mode": "environment_bed",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Waist-deep interior water movement",
+        "Swollen page separation and shelf strain",
+        "Brass binding mechanism resonance",
+        "Inland lighthouse beam texture",
+        "Sparse submerged impacts outside the room"
+      ],
+      "sonic_requirements": [
+        "Paper and water remain distinct",
+        "No intelligible historical voices appear in the base bed",
+        "Collapse events remain separate one-shots",
+        "The ambience must support several visible objective directions without implying one correct answer"
+      ],
+      "negative_constraints": [
+        "No magical library ambience",
+        "No spoken memories",
+        "No whale song",
+        "No constant underwater filter",
+        "No embedded collapse",
+        "No score or choir"
+      ],
+      "mix_policy": {
+        "bus": "ambience",
+        "foreground_priority": 38,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 5,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": false,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce submerged impacts and shelf-strain peaks while preserving water, paper, brass, and beam layers."
+      },
+      "generator_guidance": {
+        "prompt": "Seamless ambience inside the Drowned Archive: black waist-deep interior water, swollen paper separating, wet shelves under strain, restrained oxidized-brass binding resonance, a tactile inland lighthouse beam, sparse submerged impacts beyond the chamber, original storybook maritime horror, no voices, no music, no collapse event inside the loop.",
+        "negative_prompt": "magical library, spoken memories, whispering, whale song, full underwater filter, choir, score, constant collapse, fantasy spell sound, jump scare",
+        "consistency_anchor": "The Archive stores damaged histories in swollen paper, black water, wet timber, and ordered brass beneath the same lighthouse mechanism."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": [
+          "original_recording",
+          "original_synthesis",
+          "original_ai_assisted",
+          "commissioned",
+          "licensed_transformed"
+        ],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": [
+          "creator or generator",
+          "water, paper, and structure source provenance",
+          "full prompt when generated",
+          "layering notes",
+          "creation date",
+          "review disposition"
+        ]
+      },
+      "approval_boundary": "Signature ambience brief only; no final Archive identity, clue behavior, mix, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-AMB-007",
+      "title": "High Water Flooded Streets Bed",
+      "category": "ambience",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "redundant",
+      "stages": ["high_water"],
+      "trigger": "The High Water Terror Turn commits and the transformed public board becomes active.",
+      "purpose": "Replace exposed-mud stillness with active water routes, loaded structures, and submerged town pressure without becoming a continuous disaster roar.",
+      "duration": {
+        "minimum_seconds": 35,
+        "target_seconds": 80,
+        "maximum_seconds": 160
+      },
+      "loop_mode": "layered_bed",
+      "spatial_mode": "environment_bed",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Current moving through lower streets",
+        "Rope and mooring strain",
+        "Floating debris and dock movement",
+        "Interior water behind walls",
+        "Distant bell resonance carried through water"
+      ],
+      "sonic_requirements": [
+        "Water movement is active but not a constant wall",
+        "Land and water route regions may receive localized overlays",
+        "Dialogue space remains available",
+        "The stage change is introduced by a separate Terror Turn transition cue"
+      ],
+      "negative_constraints": [
+        "No tsunami",
+        "No constant waterfall roar",
+        "No disaster-film trailer bed",
+        "No intelligible drowned voices",
+        "No permanent transformation event inside the loop",
+        "No overpowering sub bass"
+      ],
+      "mix_policy": {
+        "bus": "ambience",
+        "foreground_priority": 34,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 6,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": false,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Compress current and debris peaks, reduce concurrent overlays, and retain route-specific water and rope identity."
+      },
+      "generator_guidance": {
+        "prompt": "Seamless layered ambience for flooded streets in an original drowned storybook harbor after High Water: active current through lower roads, rope and mooring strain, sparse floating debris, wet dock movement, interior water behind timber walls, distant bell resonance carried through water, tense but dialogue-friendly, no speech, no music, no tsunami roar.",
+        "negative_prompt": "tsunami, constant waterfall, disaster trailer, screaming crowd, spoken drowned voices, music, transformation event embedded in loop, extreme sub bass, obvious short repetition",
+        "consistency_anchor": "High Water activates water routes and structural load while preserving the same wet timber, rope, bell, brass, and memory mechanism families."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": [
+          "original_recording",
+          "original_synthesis",
+          "original_ai_assisted",
+          "commissioned",
+          "licensed_transformed"
+        ],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": [
+          "creator or generator",
+          "water, rope, debris, and structure source provenance",
+          "full prompt when generated",
+          "layer and transition notes",
+          "creation date",
+          "review disposition"
+        ]
+      },
+      "approval_boundary": "Signature ambience brief only; no final stage mix, route spatialization, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-AMB-008",
+      "title": "Last Light Reduced Ambience",
+      "category": "ambience",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "redundant",
+      "stages": ["last_light", "ending_resolution"],
+      "trigger": "Last Light becomes active and the public final-state mechanism is displayed.",
+      "purpose": "Remove ordinary exploration noise and create focused space around final mechanisms, sacrifices, and ending choices.",
+      "duration": {
+        "minimum_seconds": 30,
+        "target_seconds": 75,
+        "maximum_seconds": 150
+      },
+      "loop_mode": "layered_bed",
+      "spatial_mode": "environment_bed",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Controlled sea pressure",
+        "Sparse lighthouse lens movement",
+        "Very distant bell body resonance",
+        "Minimal tower or boat strain according to route",
+        "Large authored quiet intervals"
+      ],
+      "sonic_requirements": [
+        "Silence and negative space are primary design elements",
+        "The bed must adapt to valid final mechanisms without revealing hidden outcomes",
+        "Ending punctuation remains separate",
+        "Profile intensity changes texture rather than loudness"
+      ],
+      "negative_constraints": [
+        "No full musical finale",
+        "No constant drone",
+        "No hidden ending clue",
+        "No embedded sacrifice cue",
+        "No constant bell toll",
+        "No loudness escalation as tension"
+      ],
+      "mix_policy": {
+        "bus": "ambience",
+        "foreground_priority": 30,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 4,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": false,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Preserve quiet intervals and final-mechanism identity while reducing pressure swells and transient structure movement."
+      },
+      "generator_guidance": {
+        "prompt": "Seamless minimal Last Light ambience for an original drowned harbor finale: controlled sea pressure, sparse lighthouse lens movement, very distant bell-body resonance, occasional route-specific structure strain, large deliberate quiet intervals, grave and restrained, designed beneath final choices and narration, no music, no speech, no ending reveal.",
+        "negative_prompt": "musical finale, constant drone, bell toll loop, hidden ending clue, sacrifice cue, trailer rise, loudness escalation, choir, speech, jump scare",
+        "consistency_anchor": "Last Light removes exploration clutter and leaves the lighthouse, bell, sea pressure, and chosen route as the only remaining public sonic authorities."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": [
+          "original_recording",
+          "original_synthesis",
+          "original_ai_assisted",
+          "commissioned",
+          "licensed_transformed"
+        ],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": [
+          "creator or generator",
+          "source provenance",
+          "full prompt when generated",
+          "route adaptation notes",
+          "creation date",
+          "review disposition"
+        ]
+      },
+      "approval_boundary": "Signature ambience brief only; no final ending mix, score, voice, implementation, or production approval."
+    }
+  ]
+}
