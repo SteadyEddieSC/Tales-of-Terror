@@ -1,0 +1,316 @@
+{
+  "authoring_kind": "tale_authoring_reference",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "reference_version": 1,
+  "display_name": "Drowned Harbor",
+  "production_status": "design_only",
+  "runtime_integration_authorized": false,
+  "production_catalog_authorized": false,
+  "source_authorities": [
+    "docs/design/Seat_Continuity_and_Admission.md",
+    "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json",
+    "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+    "docs/technical/Tale_Authoring_Reference_Contract_v1.md"
+  ],
+  "compatibility": {
+    "engine_target": "godot_4_7",
+    "minimum_seats": 1,
+    "maximum_seats": 8,
+    "modes": [
+      {
+        "id": "cooperative",
+        "status": "supported",
+        "minimum_seats": 1,
+        "maximum_seats": 8,
+        "privacy_model": "public_only",
+        "fallback_mode": null
+      },
+      {
+        "id": "hidden_betrayer",
+        "status": "supported",
+        "minimum_seats": 3,
+        "maximum_seats": 8,
+        "privacy_model": "optional_hidden_faction",
+        "fallback_mode": "cooperative"
+      },
+      {
+        "id": "hunted",
+        "status": "deferred",
+        "minimum_seats": 2,
+        "maximum_seats": 8,
+        "privacy_model": "optional_hidden_faction",
+        "fallback_mode": "cooperative"
+      },
+      {
+        "id": "outbreak",
+        "status": "supported",
+        "minimum_seats": 2,
+        "maximum_seats": 8,
+        "privacy_model": "dynamic_faction",
+        "fallback_mode": "cooperative"
+      },
+      {
+        "id": "rival_crews",
+        "status": "deferred",
+        "minimum_seats": 4,
+        "maximum_seats": 8,
+        "privacy_model": "mixed_public_competition",
+        "fallback_mode": "cooperative"
+      }
+    ]
+  },
+  "privacy_classes": [
+    "controlled_reveal_private",
+    "faction_private",
+    "public",
+    "seat_private"
+  ],
+  "stage_graph": {
+    "entry_stage": "low_tide_arrival",
+    "required_terminal_stage": "last_light",
+    "stage_order": [
+      "low_tide_arrival",
+      "bellhouse_ledger",
+      "lighthouse_council",
+      "high_water",
+      "last_light"
+    ],
+    "transitions": [
+      {
+        "id": "advance_bellhouse_to_council",
+        "from": "bellhouse_ledger",
+        "to": "lighthouse_council",
+        "trigger_id": "bellhouse_priority_committed",
+        "once_only": true
+      },
+      {
+        "id": "advance_high_water_to_last_light",
+        "from": "high_water",
+        "to": "last_light",
+        "trigger_id": "high_water_objectives_resolved",
+        "once_only": true
+      },
+      {
+        "id": "commit_council_high_water",
+        "from": "lighthouse_council",
+        "to": "high_water",
+        "trigger_id": "lighthouse_council_committed",
+        "once_only": true
+      },
+      {
+        "id": "advance_low_tide_to_bellhouse",
+        "from": "low_tide_arrival",
+        "to": "bellhouse_ledger",
+        "trigger_id": "low_tide_record_threshold_reached",
+        "once_only": true
+      }
+    ]
+  },
+  "signature_transformations": [
+    {
+      "id": "high_water_transform",
+      "source_stage": "lighthouse_council",
+      "target_stage": "high_water",
+      "trigger_id": "lighthouse_council_committed",
+      "deterministic": true,
+      "once_only": true,
+      "minimum_changed_state_categories": 2,
+      "allowed_state_categories": [
+        "board",
+        "encounter_eligibility",
+        "ending_eligibility",
+        "faction",
+        "form",
+        "objective",
+        "resource_economy",
+        "route"
+      ]
+    }
+  ],
+  "content_manifests": [
+    "docs/tales/drowned_harbor/authoring/drowned_harbor_gameplay_content_v1.json",
+    "docs/tales/drowned_harbor/authoring/drowned_harbor_narrative_content_v1.json",
+    "docs/tales/drowned_harbor/authoring/drowned_harbor_social_content_v1.json",
+    "docs/tales/drowned_harbor/authoring/drowned_harbor_world_content_v1.json"
+  ],
+  "media_sources": {
+    "dialogue_catalogs": [
+      "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_admission_en_v1.json",
+      "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json",
+      "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1_encounters.json",
+      "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json",
+      "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_handoffs_endings_cards_en_v1.json",
+      "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_items_hazards_en_v1.json",
+      "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_private_bargains_en_v1.json"
+    ],
+    "visual_manifests": [
+      "docs/tales/drowned_harbor/visual/drowned_harbor_visual_asset_briefs_v1.json",
+      "docs/tales/drowned_harbor/visual/drowned_harbor_visual_asset_briefs_wave2_v1.json"
+    ],
+    "audio_manifests": [
+      "docs/tales/drowned_harbor/audio/drowned_harbor_audio_ambience_briefs_v1.json",
+      "docs/tales/drowned_harbor/audio/drowned_harbor_audio_continuity_briefs_v1.json",
+      "docs/tales/drowned_harbor/audio/drowned_harbor_audio_event_briefs_v1.json"
+    ],
+    "music_manifests": [
+      "docs/tales/drowned_harbor/music/drowned_harbor_music_resolution_briefs_v1.json",
+      "docs/tales/drowned_harbor/music/drowned_harbor_music_stage_briefs_v1.json"
+    ],
+    "voice_manifests": [
+      "docs/tales/drowned_harbor/voice/drowned_harbor_voice_narrative_families_v1.json",
+      "docs/tales/drowned_harbor/voice/drowned_harbor_voice_reveal_continuity_families_v1.json"
+    ],
+    "accessibility_manifests": [
+      "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_narrative_reveal_continuity_units_v1.json",
+      "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_narrative_stage_units_v1.json"
+    ],
+    "traceability_path": "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
+  },
+  "fallbacks": {
+    "cooperative_mode": "cooperative",
+    "no_phone": "shared_screen_controller_complete",
+    "optional_companion_unavailable": "continue_native_authority",
+    "voice_unavailable": "plain_system_text_and_captions",
+    "music_unavailable": "continue_without_music",
+    "noncritical_media_unavailable": "use_original_placeholder_or_text",
+    "invalid_action": "reject_without_mutation_show_legal_options",
+    "defeat_continuation": "offer_authored_form_replacement_or_terminal_result",
+    "unsupported_optional_feature": "fail_closed_before_session"
+  },
+  "validation_obligations": [
+    {
+      "id": "all_final_routes_attribute_outcomes",
+      "requirement": "Every reachable ending must assign an explicit public or controlled-private outcome to every stable seat and faction.",
+      "status": "declared_preproduction"
+    },
+    {
+      "id": "connector_state_per_tide",
+      "requirement": "Every connector must have an authored state for every supported tide state before runtime implementation.",
+      "status": "declared_preproduction"
+    },
+    {
+      "id": "human_accessibility_validation",
+      "requirement": "Television readability, caption pacing, controller focus, and assistive-technology behavior require human validation.",
+      "status": "human_validation_required"
+    },
+    {
+      "id": "human_audio_visual_validation",
+      "requirement": "Visual clarity, sound quality, music fatigue, and voice intelligibility require human review on representative hardware.",
+      "status": "human_validation_required"
+    },
+    {
+      "id": "human_gameplay_validation",
+      "requirement": "Fun, pacing, balance, fairness, social tension, and comprehension require exact-build human playtesting.",
+      "status": "human_validation_required"
+    },
+    {
+      "id": "rejected_mutation_is_noop",
+      "requirement": "Every invalid, stale, duplicate, wrong-seat, or unavailable action must leave authoritative state and RNG unchanged.",
+      "status": "declared_preproduction"
+    },
+    {
+      "id": "stable_seat_continuity",
+      "requirement": "Disconnect, surrogate activation, takeover, return, defeat, transformation, and continuation must preserve stable-seat-owned state.",
+      "status": "declared_preproduction"
+    },
+    {
+      "id": "terminal_reachability",
+      "requirement": "Every supported route must retain a reachable valid ending or authored continuation after each committed transformation.",
+      "status": "declared_preproduction"
+    }
+  ],
+  "open_decisions": [
+    {
+      "id": "bellmarked_origin",
+      "summary": "Resolve the exact origin and historical formation of the Bellmarked faction.",
+      "blocks_production": true,
+      "status": "open",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "chronicle_relationship",
+      "summary": "Decide whether and how Drowned Harbor contributes to a future Chronicle system.",
+      "blocks_production": false,
+      "status": "deferred",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "final_inventory_capacity",
+      "summary": "Set final inventory capacity, item counts, card counts, and resource economy values.",
+      "blocks_production": true,
+      "status": "open",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "final_role_seat_plans",
+      "summary": "Define final seat-count-valid role, Bellmarked, Tidebound, Restless, and replacement plans for every supported mode.",
+      "blocks_production": true,
+      "status": "open",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "harbor_proper_name",
+      "summary": "Select any original in-fiction proper name for the Harbor while preserving the working Tale identity.",
+      "blocks_production": false,
+      "status": "deferred",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "mandatory_encounter_sets",
+      "summary": "Separate mandatory encounters and clues from optional encounter pools for each supported route.",
+      "blocks_production": true,
+      "status": "open",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "missing_assistant_identity",
+      "summary": "Resolve the missing Bellhouse assistant identity, motive, and ultimate fate.",
+      "blocks_production": true,
+      "status": "open",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "relief_vessel_identity",
+      "summary": "Select the relief vessel name and final public-history treatment.",
+      "blocks_production": false,
+      "status": "deferred",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "tidebound_conversion_rules",
+      "summary": "Define exact deterministic Tidebound eligibility, refusal, conversion, spread, cure, and ending behavior.",
+      "blocks_production": true,
+      "status": "open",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    },
+    {
+      "id": "underteller_prior_hosting",
+      "summary": "Decide whether the provisional host has presented an earlier version of the Tale.",
+      "blocks_production": false,
+      "status": "deferred",
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+    }
+  ],
+  "compilation_boundary": {
+    "target_package_kind": "tale",
+    "target_schema_version": 1,
+    "compilation_authorized": false,
+    "runtime_loader_input": false,
+    "production_catalog_entry": false,
+    "required_future_artifacts": [
+      "board_authority",
+      "director_content",
+      "governed_localization_catalog",
+      "provider_registration",
+      "rules_content",
+      "scenario_manifest",
+      "social_content"
+    ]
+  },
+  "identity_policy": {
+    "algorithm": "sha256",
+    "canonicalization": "utf8_json_sorted_object_keys_compact_arrays_preserved",
+    "authoring_identity_only": true
+  }
+}
