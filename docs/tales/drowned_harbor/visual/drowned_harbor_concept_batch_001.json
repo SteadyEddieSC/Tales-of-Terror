@@ -77,6 +77,24 @@
       "repository_disposition": "external_candidate_pending_upload",
       "review_status": "unreviewed",
       "approval_boundary": "Concept candidate only. Generation does not approve final symbols, readable text, UI integration, puzzle behavior, or production use."
+    },
+    {
+      "candidate_id": "DH-CAND-001-B",
+      "asset_id": "DH-KEY-001",
+      "generator": "gemini",
+      "model_or_tool": "Google Gemini image generation through the project owner's Google AI Plus account",
+      "status": "planned",
+      "source_kind": "original_ai_assisted",
+      "prompt_source": "governed_revision",
+      "prompt": "Create one single uninterrupted wide cinematic key-art illustration in exact 16:9 landscape format. Do not create a presentation board, mood board, concept sheet, collage, triptych, UI layout, infographic, or design document. Do not include any text, captions, labels, legends, swatches, icons, borders, panels, logos, title treatment, or watermark. Scene: at an impossible extreme low tide, an entire drowned coastal harbor town has risen from black tidal mud. Use an elevated three-quarter perspective with coherent geography. In the foreground, show cracked mud, shallow reflective tide pools, a damaged causeway, and four to six tiny traveler silhouettes for scale. In the middle ground, show leaning wet-timber buildings, the Salt Market, a clearly recognizable Bellhouse with one large bell and long vertical ropes, and a Lifeboat Shed with a visible rescue route. In the background, place a narrow tapered lighthouse off-center as the dominant vertical anchor, with an oversized lantern room and one restrained amber beam cutting through pale fog. The waterline should be distant but visibly returning. Style: original storybook horror rendered like a tactile theatrical miniature diorama, with hand-inked contours, watercolor and gouache surface variation, simplified carved shapes, controlled cel shading, and strong readable silhouettes. Materials: wet carved timber, salt-stained slate, oxidized brass, cloudy cracked glass, swollen paper, black green-gray tidal water. Palette: harbor ink, wet slate, fog paper, salt bone, muted verdigris, and very scarce lantern amber. Mood: melancholic wonder wrapped in dread; beautiful, old, and dangerous rather than chaotic. Preserve a clear foreground, playable middle ground, and atmospheric background. The image must remain readable at thumbnail size and must look like original Drowned Harbor key art rather than an asset-pack scene. Avoid photorealism, generic low-poly styling, modern harbor structures, pirate fantasy, steampunk clutter, gothic castle clichés, tropical water, neon, anime, excessive fog, excessive bloom, unreadable darkness, distorted architecture, duplicated lighthouse towers, embedded typography, or imitation of any existing game, film, illustrator, or living artist. Output only the image.",
+      "negative_prompt": "presentation board, mood board, concept sheet, collage, multiple panels, triptych, infographic, UI, captions, labels, legends, color swatches, icons, borders, title, logo, watermark, text, photorealism, generic low-poly asset pack, modern harbor, tropical beach, pirate fantasy, steampunk clutter, gothic castle, neon cyberpunk, anime, excessive fog, excessive bloom, illegible darkness, duplicated lighthouse, distorted geography, direct imitation",
+      "aspect_ratio": "16:9",
+      "input_assets": [],
+      "third_party_inputs": false,
+      "expected_outputs": 1,
+      "repository_disposition": "external_candidate_pending_upload",
+      "review_status": "unreviewed",
+      "approval_boundary": "Gemini comparison candidate only. Generation does not approve the visual direction, key art, title treatment, storefront use, production integration, or a Drowned Harbor production Tale."
     }
   ]
 }
