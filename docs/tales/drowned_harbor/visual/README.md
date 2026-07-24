@@ -16,11 +16,23 @@ Drowned Harbor uses an original-first **drowned storybook diorama** direction:
 - strong board and silhouette readability;
 - no photoreal or unmodified marketplace-pack appearance.
 
-The controlling direction is `Drowned_Harbor_Visual_Language_v1.md`.
+The controlling visual foundation is `Drowned_Harbor_Visual_Language_v1.md`.
+
+`Drowned_Harbor_Palette_and_Contrast_Guardrails_v1.md` adds the approved preproduction clarification that dark and dreary scenes must preserve cool maritime color, material separation, and readable midtones rather than collapsing into brown mud, sepia, or one undifferentiated dark mass.
+
+## Provisional reference hierarchy
+
+The external image binaries are not stored in this public package, but their filenames, dimensions, digests, reviews, and dispositions are recorded.
+
+- `cgpt-v2.png` — provisional composition and world north star;
+- `Gemini_2.png` — Spooky-profile linework and readability reference;
+- `Gemini_3.png` — Grim-profile atmosphere, contrast, and cool-dark palette reference.
+
+No image is final or production-approved.
 
 ## Governed brief inventory
 
-The package currently contains 18 Tier A signature briefs across two manifests.
+The package contains 18 Tier A signature briefs across two manifests.
 
 ### First wave
 
@@ -60,7 +72,7 @@ Every brief defines:
 - required provenance record;
 - explicit non-approval boundary.
 
-## Validation
+## Asset validation
 
 Validate all briefs as one dependency graph:
 
@@ -84,7 +96,7 @@ The validator rejects:
 
 Generated images are not silently treated as repository or production assets.
 
-A candidate batch must be registered before generation with:
+A candidate batch must be registered with:
 
 - candidate and governed asset IDs;
 - generator and tool;
@@ -97,21 +109,26 @@ A candidate batch must be registered before generation with:
 - review state;
 - approval boundary.
 
-Validate all candidate batches:
+Validate all candidate batches, including governed reviews of external files:
 
 ```bash
-python tools/validate_preproduction_visual_candidates.py
-python tools/test_validate_preproduction_visual_candidates.py
+python tools/validate_preproduction_visual_candidates_reviewed_external.py
+python tools/test_validate_preproduction_visual_candidates_reviewed_external.py
 ```
 
-The first registered batch, `DH-CB-001`, covers:
+The registered batch `DH-CB-001` includes planned design-sheet candidates and the reviewed external key-art comparison set.
 
-- `DH-CAND-001-A` — `DH-KEY-001`;
-- `DH-CAND-002-A` — `DH-ENV-001`;
-- `DH-CAND-003-A` — `DH-ENV-003`;
-- `DH-CAND-004-A` — `DH-PROP-001`.
+## External review policy
 
-These candidates begin as external and unreviewed. A generated image is not claimed as stored in GitHub until its public repository path and SHA-256 digest are recorded.
+A candidate may be reviewed while its binary remains external when:
+
+- it is explicitly marked `generated_external`;
+- no repository path is claimed;
+- generator and tool provenance remain recorded;
+- review status and non-approval boundary are explicit;
+- filename, dimensions, and SHA-256 digest are preserved in a governed Markdown review record.
+
+The candidate manifest does not pretend an external binary has been uploaded. Its review record preserves identity and disposition separately.
 
 ## Candidate lifecycle
 
@@ -119,10 +136,11 @@ These candidates begin as external and unreviewed. A generated image is not clai
 2. **Generation ready** — prompt and provenance policy pass validation.
 3. **Candidate planned** — a governed batch entry exists.
 4. **Generated externally** — an output exists outside the repository.
-5. **Uploaded unreviewed** — a candidate path and digest are recorded.
-6. **Reviewed** — disposition is `needs_revision`, `reference_only`, `rejected`, or `preproduction_shortlist`.
-7. **Production candidate** — requires a later, separately governed approval package.
-8. **Approved** — prohibited inside P0.3.
+5. **External review recorded** — the filename, dimensions, digest, strengths, defects, and disposition are documented without claiming repository storage.
+6. **Uploaded unreviewed** — a future candidate path and digest may be recorded when repository storage is appropriate and permitted.
+7. **Reviewed repository candidate** — a stored candidate receives an explicit disposition.
+8. **Production candidate** — requires a later, separately governed approval package.
+9. **Approved** — prohibited inside P0.3.
 
 ## Third-party boundary
 
