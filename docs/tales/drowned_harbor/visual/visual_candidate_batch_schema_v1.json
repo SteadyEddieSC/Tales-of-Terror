@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-visual-candidate-batch-v1.json",
+  "title": "Drowned Harbor visual candidate batch",
+  "description": "Preproduction record for planned or generated visual candidates. It does not approve production art.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_kind",
+    "schema_version",
+    "batch_id",
+    "tale_id",
+    "production_status",
+    "created_date",
+    "entries"
+  ],
+  "properties": {
+    "manifest_kind": {
+      "const": "visual_candidate_batch_preproduction"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "batch_id": {
+      "type": "string",
+      "pattern": "^DH-CB-[0-9]{3}$"
+    },
+    "tale_id": {
+      "const": "drowned_harbor"
+    },
+    "production_status": {
+      "const": "concept_only"
+    },
+    "created_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/candidate"
+      }
+    }
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "asset_id",
+        "generator",
+        "model_or_tool",
+        "status",
+        "source_kind",
+        "prompt_source",
+        "prompt",
+        "negative_prompt",
+        "aspect_ratio",
+        "input_assets",
+        "third_party_inputs",
+        "expected_outputs",
+        "repository_disposition",
+        "review_status",
+        "approval_boundary"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^DH-CAND-[0-9]{3}-[A-Z]$"
+        },
+        "asset_id": {
+          "type": "string",
+          "pattern": "^DH-(ENV|PROP|CHAR|FORM|UI|ICON|KEY)-[0-9]{3}$"
+        },
+        "generator": {
+          "type": "string",
+          "enum": ["chatgpt", "gemini", "human", "commissioned"]
+        },
+        "model_or_tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": ["planned", "generated_external", "uploaded_unreviewed", "reviewed", "rejected", "deferred"]
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": ["original_human", "original_ai_assisted", "commissioned"]
+        },
+        "prompt_source": {
+          "type": "string",
+          "enum": ["governed_brief", "governed_revision"]
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "negative_prompt": {
+          "type": "string",
+          "minLength": 20
+        },
+        "aspect_ratio": {
+          "type": "string",
+          "pattern": "^[0-9]+:[0-9]+$"
+        },
+        "input_assets": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "third_party_inputs": {
+          "type": "boolean"
+        },
+        "expected_outputs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "repository_disposition": {
+          "type": "string",
+          "enum": ["external_candidate_pending_upload", "public_candidate_path_recorded", "rejected_not_retained"]
+        },
+        "candidate_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "review_status": {
+          "type": "string",
+          "enum": ["unreviewed", "needs_revision", "reference_only", "rejected", "preproduction_shortlist"]
+        },
+        "approval_boundary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
