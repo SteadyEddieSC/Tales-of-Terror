@@ -33,17 +33,4 @@ jobs:
       - name: Validate package index, traceability, and Codex handoff
         run: python tools/validate_preproduction_package_traceability.py
       - name: Run package traceability regression tests
-        id: regression
-        continue-on-error: true
         run: python tools/test_validate_preproduction_package_traceability.py
-      - name: Upload regression diagnosis
-        if: steps.regression.outcome == 'failure'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: p0.8-regression-diagnosis
-          path: p0.8-regression-failure.txt
-          if-no-files-found: error
-          retention-days: 1
-      - name: Fail after regression diagnosis
-        if: steps.regression.outcome == 'failure'
-        run: exit 1
