@@ -13,7 +13,7 @@ on:
       - 'tools/validate_tale_authoring_reference.py'
       - 'tools/test_validate_tale_authoring_reference.py'
   push:
-    branches: [main]
+    branches: [main, docs/p0.9-tale-authoring-schema]
     paths:
       - '.github/workflows/preproduction-tale-authoring.yml'
       - 'docs/preproduction/tale_authoring_*_schema_v1.json'
