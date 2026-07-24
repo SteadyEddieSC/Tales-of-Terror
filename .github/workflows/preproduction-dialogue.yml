@@ -24,7 +24,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - name: Validate governed dialogue catalog
-        run: python tools/validate_preproduction_dialogue.py
+      - name: Validate all governed dialogue catalogs
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          catalogs=(docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1*.json)
+          if (( ${#catalogs[@]} == 0 )); then
+            echo 'No governed dialogue catalogs found.'
+            exit 1
+          fi
+          for catalog in "${catalogs[@]}"; do
+            python tools/validate_preproduction_dialogue.py "$catalog"
+          done
       - name: Run dialogue validator regression tests
         run: python tools/test_validate_preproduction_dialogue.py
