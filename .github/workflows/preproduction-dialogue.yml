@@ -28,14 +28,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          shopt -s nullglob
-          catalogs=(docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1*.json)
+          mapfile -t catalogs < <(
+            find docs/tales/drowned_harbor/dialogue \
+              -maxdepth 1 \
+              -type f \
+              -name 'drowned_harbor_dialogue*.json' \
+              -print | sort
+          )
           if (( ${#catalogs[@]} == 0 )); then
             echo 'No governed dialogue catalogs found.'
             exit 1
           fi
-          for catalog in "${catalogs[@]}"; do
-            python tools/validate_preproduction_dialogue.py "$catalog"
-          done
+          python tools/validate_preproduction_dialogue.py "${catalogs[@]}"
       - name: Run dialogue validator regression tests
         run: python tools/test_validate_preproduction_dialogue.py
