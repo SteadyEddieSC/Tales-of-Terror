@@ -205,7 +205,8 @@
               "public_route_name",
               "public_condition_name",
               "nonnegative_integer",
-              "governed_public_text"
+              "governed_public_text",
+              "governed_private_text"
             ]
           },
           "visibility": {
