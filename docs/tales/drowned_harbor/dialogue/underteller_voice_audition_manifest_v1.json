@@ -1,0 +1,221 @@
+{
+  "manifest_kind": "underteller_voice_audition_preproduction",
+  "version": 1,
+  "locale": "en-US",
+  "tale_id": "drowned_harbor",
+  "voice_identity": "underteller_provisional",
+  "production_status": "audition_only",
+  "instructions": {
+    "goal": "Compare clarity, menace, warmth, dry amusement, pacing, and profile differentiation without selecting a final performer.",
+    "prohibited": [
+      "Do not imitate a recognizable actor or commercial horror host.",
+      "Do not treat generated audio as final production voice.",
+      "Do not upload private gameplay state or personal information."
+    ],
+    "recommended_tools": [
+      "Gemini or Google Flow where voice capability is available",
+      "ElevenLabs Voice Design or licensed stock voices",
+      "Local recording and editing tools"
+    ]
+  },
+  "selections": [
+    {
+      "id": "opening_spooky",
+      "key": "tale.drowned_harbor.opening",
+      "profile": "spooky",
+      "purpose": "Approachable Tale opening",
+      "performance_direction": "Elegant invitation, clear stakes, restrained danger.",
+      "sample_values": {}
+    },
+    {
+      "id": "opening_grim",
+      "key": "tale.drowned_harbor.opening",
+      "profile": "grim",
+      "purpose": "Default Tale opening",
+      "performance_direction": "Measured authority, serious consequence, no melodrama.",
+      "sample_values": {}
+    },
+    {
+      "id": "opening_gore",
+      "key": "tale.drowned_harbor.opening",
+      "profile": "gore_and_dread",
+      "purpose": "Mature-profile opening",
+      "performance_direction": "Controlled revulsion; remain intelligible and not breathless.",
+      "sample_values": {}
+    },
+    {
+      "id": "arrival",
+      "key": "tale.drowned_harbor.stage.low_tide_arrival",
+      "profile": "spooky",
+      "purpose": "Short stage transition",
+      "performance_direction": "Storybook unease with brisk pacing.",
+      "sample_values": {}
+    },
+    {
+      "id": "ledger",
+      "key": "tale.drowned_harbor.ledger.reveal",
+      "profile": "grim",
+      "purpose": "Mystery reveal",
+      "performance_direction": "Let the final unresolved entry land without overselling it.",
+      "sample_values": {}
+    },
+    {
+      "id": "council",
+      "key": "tale.drowned_harbor.council.prompt",
+      "profile": "grim",
+      "purpose": "Strategic choice prompt",
+      "performance_direction": "Mechanically clear first; menace only after choices are understood.",
+      "sample_values": {}
+    },
+    {
+      "id": "terror_spooky",
+      "key": "tale.drowned_harbor.terror_turn.high_water",
+      "profile": "spooky",
+      "purpose": "Signature Terror Turn",
+      "performance_direction": "Ceremonial emphasis on 'Terror Turn'; accelerate slightly afterward.",
+      "sample_values": {}
+    },
+    {
+      "id": "terror_grim",
+      "key": "tale.drowned_harbor.terror_turn.high_water",
+      "profile": "grim",
+      "purpose": "Signature default profile",
+      "performance_direction": "Decisive and grave, with precise route-change meaning.",
+      "sample_values": {}
+    },
+    {
+      "id": "terror_gore",
+      "key": "tale.drowned_harbor.terror_turn.high_water",
+      "profile": "gore_and_dread",
+      "purpose": "Signature mature profile",
+      "performance_direction": "Visceral but controlled; preserve every mechanical fact.",
+      "sample_values": {}
+    },
+    {
+      "id": "pressure",
+      "key": "tale.drowned_harbor.director.bell_marks_seat",
+      "profile": "spooky",
+      "purpose": "Director pressure",
+      "performance_direction": "Dry observation; do not imply automatic death.",
+      "sample_values": {
+        "seat": "Seat IV"
+      }
+    },
+    {
+      "id": "relief",
+      "key": "tale.drowned_harbor.director.relief.tide_pause",
+      "profile": "grim",
+      "purpose": "Director relief",
+      "performance_direction": "Relief without kindness; short and usable.",
+      "sample_values": {}
+    },
+    {
+      "id": "hint",
+      "key": "tale.drowned_harbor.hint.lighthouse",
+      "profile": "spooky",
+      "purpose": "Non-solving hint",
+      "performance_direction": "Invite attention rather than announce the answer.",
+      "sample_values": {}
+    },
+    {
+      "id": "market",
+      "key": "tale.drowned_harbor.encounter.market_of_shadows.prompt",
+      "profile": "spooky",
+      "purpose": "Environmental dry humor",
+      "performance_direction": "Polite amusement with a readable warning.",
+      "sample_values": {}
+    },
+    {
+      "id": "bargain",
+      "key": "tale.drowned_harbor.bargain.offer_public",
+      "profile": "grim",
+      "purpose": "Harbor bargain introduction",
+      "performance_direction": "Precise, credible, and dangerous; no carnival-villain tone.",
+      "sample_values": {}
+    },
+    {
+      "id": "bellmarked",
+      "key": "tale.drowned_harbor.bellmarked.reveal",
+      "profile": "spooky",
+      "purpose": "Public faction reveal",
+      "performance_direction": "Recognition rather than shouting; the reveal should feel inevitable.",
+      "sample_values": {
+        "seat": "Seat IV"
+      }
+    },
+    {
+      "id": "tidebound",
+      "key": "tale.drowned_harbor.tidebound.transform_public",
+      "profile": "grim",
+      "purpose": "Public transformation",
+      "performance_direction": "Acknowledge continuity and changed state clearly.",
+      "sample_values": {
+        "seat": "Seat VI"
+      }
+    },
+    {
+      "id": "defeat",
+      "key": "tale.drowned_harbor.defeat.living",
+      "profile": "grim",
+      "purpose": "Defeat with continued agency",
+      "performance_direction": "Respectful weight followed by immediate relevance.",
+      "sample_values": {}
+    },
+    {
+      "id": "afterlife",
+      "key": "tale.drowned_harbor.afterlife.bell_witness",
+      "profile": "spooky",
+      "purpose": "Afterlife activation",
+      "performance_direction": "Inviting and purposeful, not mournful.",
+      "sample_values": {}
+    },
+    {
+      "id": "last_light",
+      "key": "tale.drowned_harbor.stage.last_light",
+      "profile": "spooky",
+      "purpose": "Final-stage transition",
+      "performance_direction": "Ceremonial finality with a clear decision invitation.",
+      "sample_values": {}
+    },
+    {
+      "id": "lifeboat_ending",
+      "key": "tale.drowned_harbor.ending.last_lifeboat",
+      "profile": "spooky",
+      "purpose": "Ominous survival ending",
+      "performance_direction": "Begin with relief; turn the final sentence subtly.",
+      "sample_values": {}
+    },
+    {
+      "id": "sealed_ending",
+      "key": "tale.drowned_harbor.ending.sealed",
+      "profile": "grim",
+      "purpose": "Containment ending",
+      "performance_direction": "Practical victory with unresolved moral weight.",
+      "sample_values": {}
+    },
+    {
+      "id": "released_ending",
+      "key": "tale.drowned_harbor.ending.released",
+      "profile": "spooky",
+      "purpose": "Release ending",
+      "performance_direction": "Quiet resolution; darkness should feel merciful.",
+      "sample_values": {}
+    },
+    {
+      "id": "rises_ending",
+      "key": "tale.drowned_harbor.ending.harbor_rises",
+      "profile": "spooky",
+      "purpose": "Harbor victory ending",
+      "performance_direction": "Calm certainty is more frightening than triumph.",
+      "sample_values": {}
+    },
+    {
+      "id": "rematch",
+      "key": "tale.drowned_harbor.rematch",
+      "profile": "spooky",
+      "purpose": "Rematch invitation",
+      "performance_direction": "Dry amusement and a light closing cadence.",
+      "sample_values": {}
+    }
+  ]
+}
