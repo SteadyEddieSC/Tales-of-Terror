@@ -1,0 +1,1021 @@
+{
+  "manifest_kind": "audio_asset_briefs_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "entry_schema": "audio_asset_brief_schema_v1.json",
+  "entries": [
+    {
+      "asset_id": "DH-AUD-TRN-004",
+      "title": "Harbor Bargain Offer",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["bellhouse_ledger", "high_water", "last_light"],
+      "trigger": "A validated Harbor bargain becomes publicly available while its private or public terms remain on the authorized surface.",
+      "purpose": "Announce that a precise supernatural transaction is available without exposing its private cost or implying acceptance.",
+      "duration": {"minimum_seconds": 2, "target_seconds": 5, "maximum_seconds": 10},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Water withdrawing into a contained shape",
+        "Cloudy glass or brass term marker",
+        "Short paper or ledger acknowledgment",
+        "Open unresolved tail"
+      ],
+      "sonic_requirements": [
+        "Sounds contractual rather than predatory chaos",
+        "Does not reveal the bargain's private cost",
+        "Ends unresolved because no choice has committed",
+        "Profile changes alter texture rather than loudness"
+      ],
+      "negative_constraints": [
+        "No acceptance confirmation",
+        "No spoken terms",
+        "No demonic voice",
+        "No villain sting",
+        "No cash-register sound",
+        "No hidden objective cue"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 78,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce water and glass transients while retaining the unresolved contractual sequence."
+      },
+      "generator_guidance": {
+        "prompt": "Original Harbor bargain offer cue for a drowned storybook town: water withdraws into a precise contained shape, cloudy glass and oxidized brass mark a term, swollen paper acknowledges the offer, and the sound ends unresolved before any choice commits; elegant, exact, supernatural, no speech, no music, no villain sting.",
+        "negative_prompt": "acceptance cue, spoken terms, demon voice, cash register, villain fanfare, hidden objective clue, jump scare, musical sting, comedy",
+        "consistency_anchor": "Harbor bargains sound precise, contractual, and materially connected to water, glass, brass, and records rather than generically evil."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "source provenance", "full prompt when generated", "relationship to bargain family", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature transition brief only; no final bargain terms, privacy behavior, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-005",
+      "title": "Harbor Bargain Accepted",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["bellhouse_ledger", "high_water", "last_light"],
+      "trigger": "A Harbor bargain acceptance commits and its authorized public consequence becomes active.",
+      "purpose": "Confirm a completed transaction without exposing unrevealed private terms or implying that the bargain was beneficial.",
+      "duration": {"minimum_seconds": 2.5, "target_seconds": 6, "maximum_seconds": 11},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Contained water closure",
+        "Brass or glass term lock",
+        "Wet ledger confirmation",
+        "Short Harbor debt resonance"
+      ],
+      "sonic_requirements": [
+        "Clearly distinct from an offer or refusal",
+        "No private cost is sonically encoded",
+        "The result feels binding rather than triumphant",
+        "Supports a later related debt-collection cue"
+      ],
+      "negative_constraints": [
+        "No victory sound",
+        "No spoken private cost",
+        "No cash register",
+        "No demonic laugh",
+        "No musical cadence",
+        "No automatic transformation implication"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 84,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Compress the term-lock transient and debt resonance while preserving committed closure."
+      },
+      "generator_guidance": {
+        "prompt": "Original Harbor bargain acceptance cue: contained black water closes like a precise seal, oxidized brass and cloudy glass lock one term into place, a swollen ledger confirms the transaction, and a restrained debt resonance remains; binding and morally uncertain, no speech, no music, no victory.",
+        "negative_prompt": "victory cue, spoken cost, cash register, demon laugh, musical cadence, automatic transformation, villain fanfare, jump scare",
+        "consistency_anchor": "Accepted bargains close a precise water-glass-brass-record transaction and leave a recognizable debt resonance without revealing private terms."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "source provenance", "full prompt when generated", "relationship to offer and debt cues", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature transition brief only; no final bargain consequence, privacy behavior, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-006",
+      "title": "Harbor Bargain Refused",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["bellhouse_ledger", "high_water", "last_light"],
+      "trigger": "A Harbor bargain refusal commits and no bargain effect is applied.",
+      "purpose": "Confirm refusal without sounding like a reward, punishment, or future retaliation guarantee.",
+      "duration": {"minimum_seconds": 1.5, "target_seconds": 4, "maximum_seconds": 8},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Water shape releasing",
+        "Unlocked brass or glass term marker",
+        "Paper returning to rest",
+        "Short neutral withdrawal"
+      ],
+      "sonic_requirements": [
+        "Refusal is unmistakable but not celebratory",
+        "No cost or benefit is applied",
+        "No future punishment is promised",
+        "Short enough to preserve decision flow"
+      ],
+      "negative_constraints": [
+        "No success fanfare",
+        "No punishment sting",
+        "No angry monster",
+        "No spoken threat",
+        "No musical cadence",
+        "No debt marker"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 70,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Preserve the release-and-withdrawal sequence with reduced transient contrast."
+      },
+      "generator_guidance": {
+        "prompt": "Short original Harbor bargain refusal cue: a contained water shape relaxes, an unlocked cloudy-glass and brass term marker settles, swollen paper returns to rest, and the offer withdraws neutrally; no benefit, no punishment, no speech, no music, restrained storybook maritime horror.",
+        "negative_prompt": "success fanfare, punishment sting, angry monster, spoken threat, debt cue, musical cadence, jump scare, comedy",
+        "consistency_anchor": "A refused bargain releases the same precise materials without locking a term or creating a debt."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "source provenance", "full prompt when generated", "relationship to bargain family", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature transition brief only; no final refusal behavior, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-007",
+      "title": "Harbor Debt Collection",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water", "last_light", "ending_resolution"],
+      "trigger": "A previously accepted Harbor debt reaches an authorized public collection event.",
+      "purpose": "Connect a visible public consequence to the bargain family without exposing unrevealed private terms or inventing additional costs.",
+      "duration": {"minimum_seconds": 3, "target_seconds": 7, "maximum_seconds": 13},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Recognizable accepted-bargain debt resonance",
+        "Water returning under load",
+        "Brass or glass term unlocking",
+        "Public consequence impact",
+        "Short completed-account tail"
+      ],
+      "sonic_requirements": [
+        "Recognizably related to DH-AUD-TRN-005",
+        "Narrates only the public consequence",
+        "Does not add a second ungoverned punishment",
+        "Profile intensity changes physical texture rather than peak loudness"
+      ],
+      "negative_constraints": [
+        "No spoken private term",
+        "No generic revenge cue",
+        "No extra ungoverned impact",
+        "No villain laugh",
+        "No musical payoff",
+        "No hidden target cue"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 91,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Compress collection impact and water-return peaks while preserving the recognized debt motif and completed account."
+      },
+      "generator_guidance": {
+        "prompt": "Original Harbor debt collection cue related to an earlier bargain acceptance: the same restrained debt resonance returns, black water arrives under load, cloudy glass and oxidized brass unlock the recorded term, one public consequence commits, and the account closes; exact and inevitable, no speech, no music, no extra punishment.",
+        "negative_prompt": "spoken private term, revenge sting, villain laugh, extra impact, musical payoff, hidden target clue, jump scare, comedy",
+        "consistency_anchor": "Debt collection resolves the exact previously accepted water-glass-brass-record transaction and nothing more."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "relationship to acceptance cue", "source provenance", "full prompt when generated", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature transition brief only; no final debt behavior, private-state meaning, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-008",
+      "title": "Bell-Witness Activation",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["bellhouse_ledger", "high_water", "last_light"],
+      "trigger": "A defeated stable seat completes the public Bell-Witness continuation transition.",
+      "purpose": "Confirm that the seat remains active through the bell-warning form rather than presenting defeat as removal.",
+      "duration": {"minimum_seconds": 3, "target_seconds": 7, "maximum_seconds": 13},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Final bodily weight settling",
+        "Bellhouse harmonic accepting the seat",
+        "Rope or index movement without a full strike",
+        "Active warning-form completion"
+      ],
+      "sonic_requirements": [
+        "Transition ends with active agency rather than mourning",
+        "Clearly belongs to Bellhouse family",
+        "No private objective is encoded",
+        "Profile variants change physical defeat texture only"
+      ],
+      "negative_constraints": [
+        "No funeral bell",
+        "No player-elimination cue",
+        "No spoken warning",
+        "No ghost choir",
+        "No victory sting",
+        "No hidden objective hint"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 86,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce bodily and harmonic peaks while retaining the seat-to-warning-form completion."
+      },
+      "generator_guidance": {
+        "prompt": "Original Bell-Witness continuation cue: a defeated body's weight settles, the oxidized Bellhouse harmonic accepts the stable seat without a full strike, rope and index marks move, and an active warning-form resonance remains; purposeful afterlife agency, no funeral music, no speech, no elimination cue.",
+        "negative_prompt": "funeral bell, player elimination, ghost choir, spoken warning, victory sting, hidden objective clue, sad music, jump scare",
+        "consistency_anchor": "A Bell-Witness continues through the Bellhouse warning mechanism; defeat changes available actions but does not remove the seat."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "bell and body source provenance", "full prompt when generated", "profile intensity notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature continuation brief only; no final afterlife mechanics, content intensity, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-009",
+      "title": "Drowned Guide Activation",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water", "last_light"],
+      "trigger": "A defeated stable seat completes the public Drowned Guide continuation transition.",
+      "purpose": "Confirm that the seat remains active through submerged-route authority without using generic ghost or drowning audio.",
+      "duration": {"minimum_seconds": 3, "target_seconds": 7, "maximum_seconds": 13},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Bodily weight settling into water",
+        "Submerged route opening through current",
+        "Doubled footsteps or directional movement",
+        "Active guide-form completion"
+      ],
+      "sonic_requirements": [
+        "Ends with navigational agency",
+        "No intelligible drowned speech",
+        "Does not promise a route is open until visible state confirms it",
+        "Profile variants alter body texture rather than mechanics"
+      ],
+      "negative_constraints": [
+        "No ghost wail",
+        "No drowning scream",
+        "No player-elimination cue",
+        "No whale song",
+        "No automatic route-open claim",
+        "No music"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 86,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce water and body peaks while preserving submerged-route and active-form completion."
+      },
+      "generator_guidance": {
+        "prompt": "Original Drowned Guide continuation cue: a defeated stable seat settles into black water, an impossible submerged route begins to resonate, doubled footsteps or directional current emerge, and an active guide-form presence remains; purposeful and navigational, no drowning scream, no speech, no music, no elimination cue.",
+        "negative_prompt": "ghost wail, drowning scream, player elimination, whale song, spoken guide, automatic route opening, music, jump scare",
+        "consistency_anchor": "A Drowned Guide continues by manipulating submerged memory routes; defeat changes movement authority but preserves stable-seat agency."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "water, footsteps, and body source provenance", "full prompt when generated", "profile intensity notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature continuation brief only; no final afterlife mechanics, route behavior, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-010",
+      "title": "Lighthouse Guardian Activation",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["lighthouse_council", "high_water", "last_light"],
+      "trigger": "A defeated stable seat completes the public Lighthouse Guardian continuation transition.",
+      "purpose": "Confirm that the seat remains active through lighthouse protection and sacrifice authority.",
+      "duration": {"minimum_seconds": 3, "target_seconds": 7, "maximum_seconds": 13},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Final body or shadow contact near the mechanism",
+        "Cloudy glass imprint",
+        "Brass index accepting a new guardian position",
+        "Active protective resonance"
+      ],
+      "sonic_requirements": [
+        "Transition ends with protective agency",
+        "Belongs to lighthouse lens family",
+        "Does not imply an automatic sacrifice",
+        "No private ending objective is encoded"
+      ],
+      "negative_constraints": [
+        "No angelic choir",
+        "No player-elimination cue",
+        "No automatic sacrifice sound",
+        "No superhero transformation",
+        "No spoken oath",
+        "No music"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 86,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce glass and brass peaks while preserving guardian-position acceptance and active protection."
+      },
+      "generator_guidance": {
+        "prompt": "Original Lighthouse Guardian continuation cue: a defeated stable seat's body or shadow contacts the memory-guidance mechanism, cloudy cracked glass accepts an imprint, oxidized brass indexes a guardian position, and a restrained active protective resonance remains; purposeful afterlife agency, no choir, no speech, no music, no automatic sacrifice.",
+        "negative_prompt": "angelic choir, player elimination, automatic sacrifice, superhero transformation, spoken oath, music, heavenly glow sound, jump scare",
+        "consistency_anchor": "A Lighthouse Guardian continues through the lens and brass indexing mechanism, preserving final choices without automatically spending its sacrifice."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "glass, brass, body, and shadow source provenance", "full prompt when generated", "profile intensity notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature continuation brief only; no final afterlife mechanics, sacrifice behavior, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-010",
+      "title": "Lifeboat Breaks Free",
+      "category": "sound_effect",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P1",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water"],
+      "trigger": "The public lifeboat mooring fails or releases through the authored break-free hazard.",
+      "purpose": "Communicate that the boat is moving away and requires a visible response without implying permanent loss before resolution.",
+      "duration": {"minimum_seconds": 2, "target_seconds": 6, "maximum_seconds": 11},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Mooring strain and release",
+        "Wet hull movement",
+        "Ramp or dock response",
+        "Current beginning to carry the craft",
+        "Recoverable distance tail"
+      ],
+      "sonic_requirements": [
+        "Clearly distinct from an intentional launch",
+        "Does not imply the boat is permanently lost",
+        "Response window remains readable",
+        "Direction may support but not replace visible route information"
+      ],
+      "negative_constraints": [
+        "No boat destruction",
+        "No automatic escape",
+        "No permanent-loss cue",
+        "No motor engine",
+        "No music",
+        "No shouted dialogue"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 80,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Compress mooring release and dock impacts while preserving unintended movement and recoverable distance."
+      },
+      "generator_guidance": {
+        "prompt": "Original small lifeboat break-free hazard: salt-stiff mooring strains and releases unexpectedly, swollen wooden hull shifts, wet dock and ramp respond, current begins carrying the craft away, recoverable but urgent, no destruction, no engine, no voices, no music.",
+        "negative_prompt": "boat destruction, permanent loss, automatic escape, motorboat, shouting, music, victory cue, giant wave, comedy",
+        "consistency_anchor": "The lifeboat is a recoverable small craft whose rope, hull, dock, and current state remain mechanically honest."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed", "licensed_supporting"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "rope, hull, dock, and water source licenses", "full prompt when generated", "edit notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Hazard SFX brief only; no final response window, route result, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-011",
+      "title": "Bell Marks a Living Seat",
+      "category": "sound_effect",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water", "last_light"],
+      "trigger": "The bell publicly applies a visible danger mark to one eligible stable seat.",
+      "purpose": "Support the public mark and preparation window without sounding like an immediate death sentence.",
+      "duration": {"minimum_seconds": 2, "target_seconds": 5, "maximum_seconds": 10},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Contained Bellhouse warning harmonic",
+        "Ledger or public mark index",
+        "Short preparation-window resonance",
+        "Unresolved danger tail"
+      ],
+      "sonic_requirements": [
+        "Danger is clear but not equivalent to defeat",
+        "No hidden cause is exposed",
+        "The seat remains able to prepare or respond",
+        "Profile variants alter threat texture without increasing peak loudness"
+      ],
+      "negative_constraints": [
+        "No death knell",
+        "No player-elimination alarm",
+        "No hidden attacker cue",
+        "No spoken seat name",
+        "No jump-scare peak",
+        "No music"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 88,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 4,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce warning transient and tail contrast while preserving the public mark and unresolved preparation window."
+      },
+      "generator_guidance": {
+        "prompt": "Original public Bellhouse warning cue when a visible stable seat receives a danger mark: a contained oxidized-bell harmonic, swollen ledger index, and unresolved preparation-window resonance; serious but not a death knell, no speech, no music, no hidden attacker, no jump-scare loudness.",
+        "negative_prompt": "death knell, player elimination, hidden attacker cue, spoken seat name, jump scare, music, villain sting, automatic defeat",
+        "consistency_anchor": "A public bell mark increases danger pressure and preparation urgency without guaranteeing the seat's defeat."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "bell and ledger source provenance", "full prompt when generated", "relationship to bell family", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature warning brief only; no final targeting, hazard timing, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SYS-001",
+      "title": "Stable Seat Human Departure",
+      "category": "system",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["reusable_system"],
+      "trigger": "A human controller intentionally leaves or disconnects from a stable seat and the reconnect grace state begins.",
+      "purpose": "Acknowledge a control-source change without sounding like defeat, punishment, seat removal, or a supernatural event.",
+      "duration": {"minimum_seconds": 0.4, "target_seconds": 1.2, "maximum_seconds": 2.5},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": ["Soft neutral control release", "Stable seat identity tone retained"],
+      "sonic_requirements": [
+        "Calm and nonpunitive",
+        "Distinct from defeat or seat deletion",
+        "Short enough for repeated online or local continuity events",
+        "No private seat state is exposed"
+      ],
+      "negative_constraints": [
+        "No failure buzzer",
+        "No defeat sting",
+        "No supernatural cue",
+        "No disconnection alarm",
+        "No speech",
+        "No removal implication"
+      ],
+      "mix_policy": {
+        "bus": "system",
+        "foreground_priority": 58,
+        "duck_under_dialogue": false,
+        "maximum_simultaneous_instances": 4,
+        "minimum_variation_count": 2,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Use the same low-contrast neutral control release."
+      },
+      "generator_guidance": {
+        "prompt": "Very short neutral system sound for a human controller leaving a persistent stable seat: soft control release while the seat identity tone remains, calm, nonpunitive, not a defeat or deletion, no speech, no music, no alarm.",
+        "negative_prompt": "failure buzzer, defeat sting, disconnect alarm, supernatural effect, speech, music, seat deletion, punishment",
+        "consistency_anchor": "Seat-control cues are calm, brief, neutral, and preserve the stable seat rather than dramatizing connection changes."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_synthesis", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt when generated", "synthesis notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "System-cue brief only; no final seat lifecycle, UI, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SYS-002",
+      "title": "Stable Seat Surrogate Activation",
+      "category": "system",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["reusable_system"],
+      "trigger": "The reconnect grace period ends or an authorized action activates deterministic game control for a stable seat.",
+      "purpose": "Confirm game control without implying that the seat, character, objectives, inventory, or faction were reset.",
+      "duration": {"minimum_seconds": 0.5, "target_seconds": 1.5, "maximum_seconds": 3},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": ["Stable seat identity tone", "Soft neutral control engagement"],
+      "sonic_requirements": [
+        "Clearly related to departure and takeover cues",
+        "No robot or AI personality implication",
+        "No reset or replacement implication",
+        "No private state is exposed"
+      ],
+      "negative_constraints": [
+        "No robot beep",
+        "No hostile AI cue",
+        "No character replacement",
+        "No reset sound",
+        "No speech",
+        "No music"
+      ],
+      "mix_policy": {
+        "bus": "system",
+        "foreground_priority": 60,
+        "duck_under_dialogue": false,
+        "maximum_simultaneous_instances": 4,
+        "minimum_variation_count": 2,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Use the same low-contrast stable-seat and control-engagement sequence."
+      },
+      "generator_guidance": {
+        "prompt": "Very short neutral system sound for deterministic game control engaging on an existing stable seat: the seat identity tone remains and a soft control-engagement layer joins it, calm, nonrobotic, no reset, no replacement, no speech, no music.",
+        "negative_prompt": "robot beep, hostile AI, reset sound, character replacement, speech, music, alarm, science fiction",
+        "consistency_anchor": "Seat-control cues preserve the same stable-seat identity while only the controller source changes."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_synthesis", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt when generated", "relationship to seat-control family", "creation date", "review disposition"]
+      },
+      "approval_boundary": "System-cue brief only; no final surrogate behavior, AI identity, UI, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SYS-003",
+      "title": "Stable Seat Human Takeover",
+      "category": "system",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["reusable_system"],
+      "trigger": "A validated human authority transfer commits at a safe handoff for a game-controlled stable seat.",
+      "purpose": "Confirm that a human now controls the unchanged seat state without sounding like a new character spawn or reward.",
+      "duration": {"minimum_seconds": 0.6, "target_seconds": 1.7, "maximum_seconds": 3.2},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": ["Stable seat identity tone", "Soft human control handoff completion"],
+      "sonic_requirements": [
+        "No state reset implication",
+        "No spawn or reward implication",
+        "Related to surrogate activation but clearly a human handoff",
+        "No private inherited state is exposed"
+      ],
+      "negative_constraints": [
+        "No level-up sound",
+        "No respawn cue",
+        "No character select flourish",
+        "No speech",
+        "No music",
+        "No private-state motif"
+      ],
+      "mix_policy": {
+        "bus": "system",
+        "foreground_priority": 62,
+        "duck_under_dialogue": false,
+        "maximum_simultaneous_instances": 4,
+        "minimum_variation_count": 2,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Use the same low-contrast seat-identity and handoff-completion sequence."
+      },
+      "generator_guidance": {
+        "prompt": "Very short neutral system sound for a human taking control of an unchanged persistent stable seat at a safe handoff: the seat identity tone remains and a soft human-control completion joins it, no spawn, no reward, no reset, no speech, no music.",
+        "negative_prompt": "level up, respawn, character select, victory, reset, speech, music, private role clue, alarm",
+        "consistency_anchor": "Human takeover changes controller authority only; the stable seat's history, injuries, inventory, role, faction, and objectives remain."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_synthesis", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt when generated", "relationship to seat-control family", "creation date", "review disposition"]
+      },
+      "approval_boundary": "System-cue brief only; no final takeover flow, private handoff, UI, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SYS-004",
+      "title": "Reserved Player Return",
+      "category": "system",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["reusable_system"],
+      "trigger": "A returning player reclaims the same reserved stable seat at a safe handoff.",
+      "purpose": "Confirm return to the evolved seat without implying rollback, healing, item restoration, or objective reset.",
+      "duration": {"minimum_seconds": 0.6, "target_seconds": 1.8, "maximum_seconds": 3.5},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": ["Stable seat identity tone", "Recognizable return cadence", "Soft control completion"],
+      "sonic_requirements": [
+        "Related to takeover but recognizably returns to the same seat",
+        "No rollback or restoration implication",
+        "No private recap information is encoded",
+        "Calm and nonpunitive"
+      ],
+      "negative_constraints": [
+        "No rewind sound",
+        "No healing cue",
+        "No inventory reward",
+        "No objective reset",
+        "No speech",
+        "No music"
+      ],
+      "mix_policy": {
+        "bus": "system",
+        "foreground_priority": 62,
+        "duck_under_dialogue": false,
+        "maximum_simultaneous_instances": 4,
+        "minimum_variation_count": 2,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Use the same low-contrast identity, return, and completion sequence."
+      },
+      "generator_guidance": {
+        "prompt": "Very short neutral system sound for a returning player reclaiming the same evolved stable seat: the existing seat identity tone is recognized, a restrained return cadence answers it, and control completes; no rewind, no healing, no reward, no reset, no speech, no music.",
+        "negative_prompt": "rewind, healing, inventory reward, objective reset, respawn, speech, music, victory, alarm",
+        "consistency_anchor": "Returning players reclaim the same stable seat exactly as it evolved while game-controlled; no gameplay state rolls back."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_synthesis", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt when generated", "relationship to seat-control family", "creation date", "review disposition"]
+      },
+      "approval_boundary": "System-cue brief only; no final reconnect policy, private recap, UI, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SYS-005",
+      "title": "Spectator Enters Public View",
+      "category": "system",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P2",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "redundant",
+      "stages": ["reusable_system"],
+      "trigger": "An approved remote requester enters spectator mode with public-only access.",
+      "purpose": "Acknowledge public observation without implying player authority, seat assignment, or private access.",
+      "duration": {"minimum_seconds": 0.4, "target_seconds": 1.2, "maximum_seconds": 2.5},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": ["Soft observer-presence cue", "Public-view boundary closure"],
+      "sonic_requirements": [
+        "Neutral and unobtrusive",
+        "No seat authority implication",
+        "No private-view cue",
+        "May be disabled or grouped when several spectators join"
+      ],
+      "negative_constraints": [
+        "No player spawn",
+        "No applause",
+        "No private access implication",
+        "No seat selection cue",
+        "No speech",
+        "No music"
+      ],
+      "mix_policy": {
+        "bus": "system",
+        "foreground_priority": 42,
+        "duck_under_dialogue": false,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 2,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Use the same low-level observer and public-boundary cue."
+      },
+      "generator_guidance": {
+        "prompt": "Very short unobtrusive system sound for an approved spectator entering a public-only game view: soft observer presence and a clear public-boundary closure, no seat authority, no private access, no speech, no music, suitable for grouping or disabling.",
+        "negative_prompt": "player spawn, applause, seat selection, private access, speech, music, victory, alarm, social-media notification",
+        "consistency_anchor": "Spectators observe only the authorized public projection and do not receive stable-seat authority or private information."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_synthesis", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt when generated", "synthesis notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "System-cue brief only; no final spectator policy, UI, networking, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SYS-006",
+      "title": "Join Request Received",
+      "category": "system",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P2",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "redundant",
+      "stages": ["reusable_system"],
+      "trigger": "A compatible remote requester submits a join request for host review.",
+      "purpose": "Notify the host without granting access, assigning a seat, or disrupting active Tale audio.",
+      "duration": {"minimum_seconds": 0.3, "target_seconds": 0.9, "maximum_seconds": 2},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": ["Soft bounded request cue"],
+      "sonic_requirements": [
+        "Clearly lower priority than gameplay warnings",
+        "May be suppressed during critical decisions",
+        "No approval or access implication",
+        "Multiple requests may group without a notification cascade"
+      ],
+      "negative_constraints": [
+        "No doorbell cliché",
+        "No phone notification imitation",
+        "No access-granted sound",
+        "No alarm",
+        "No speech",
+        "No music"
+      ],
+      "mix_policy": {
+        "bus": "system",
+        "foreground_priority": 34,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 2,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Use the same low-level bounded request cue."
+      },
+      "generator_guidance": {
+        "prompt": "Subtle short system sound for a remote join request entering a host review queue: one bounded neutral request cue, lower priority than gameplay, no access granted, no seat assignment, no phone-notification imitation, no speech, no music.",
+        "negative_prompt": "doorbell, phone notification, access granted, player spawn, alarm, speech, music, social-media chime, victory",
+        "consistency_anchor": "Admission cues communicate queue and authority state without granting seats, rooms, spectator access, or private information."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_synthesis", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt when generated", "synthesis notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "System-cue brief only; no final admission policy, networking, UI, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-011",
+      "title": "Public Ending Punctuation Family",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["ending_resolution"],
+      "trigger": "A public ending family and its visible authoritative result have committed.",
+      "purpose": "Provide short material-based punctuation for public ending families without acting as a musical score or collapsing mixed seat outcomes into one universal victory or defeat.",
+      "duration": {"minimum_seconds": 3, "target_seconds": 8, "maximum_seconds": 15},
+      "loop_mode": "none",
+      "spatial_mode": "environment_bed",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Ending-specific bell, lens, water, archive, or lifeboat mechanism",
+        "Short environmental resolution",
+        "Space for seat and faction attribution",
+        "Nonmusical closing tail"
+      ],
+      "sonic_requirements": [
+        "Separate variants for sealed, released, escaped, risen, propagated, erased, and mixed outcomes",
+        "No variant substitutes for seat-by-seat or faction attribution",
+        "No final score or melody is established in P0.4",
+        "Mixed outcomes remain morally and mechanically plural"
+      ],
+      "negative_constraints": [
+        "No universal victory fanfare",
+        "No universal defeat sting",
+        "No final musical theme",
+        "No hidden outcome attribution",
+        "No credits music",
+        "No spoken summary"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 94,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 7,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Compress ending transients while preserving each mechanism family and leaving room for authoritative attribution."
+      },
+      "generator_guidance": {
+        "prompt": "Family of short original nonmusical ending punctuation cues for Drowned Harbor: distinct material resolutions built from bell, lighthouse lens, water, archive records, lifeboat, rope, and Harbor signal; variants for sealed, released, escaped, risen, propagated, erased, and mixed outcomes; leave space for seat attribution, no universal victory or defeat, no score, no speech.",
+        "negative_prompt": "victory fanfare, defeat sting, musical theme, credits music, spoken summary, hidden outcome, choir, trailer ending, universal success",
+        "consistency_anchor": "Endings resolve through the Tale's existing public mechanisms and preserve separate Living, Restless, Bellmarked, Tidebound, and Harbor outcomes."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "source provenance", "full prompt when generated", "ending-variant mapping", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature ending-SFX family brief only; no final score, ending attribution, mix, implementation, or production approval."
+    }
+  ]
+}
