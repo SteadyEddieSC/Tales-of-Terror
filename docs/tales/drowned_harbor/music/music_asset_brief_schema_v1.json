@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-music-asset-brief-v1.json",
+  "title": "Drowned Harbor music asset brief",
+  "description": "Preproduction schema for music cues, adaptive beds, stems, transitions, and ending treatments. It is not a production composition or runtime contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_id",
+    "title",
+    "category",
+    "signature_asset",
+    "originality_tier",
+    "priority",
+    "status",
+    "stages",
+    "public_state_inputs",
+    "forbidden_private_inputs",
+    "purpose",
+    "duration",
+    "loop_mode",
+    "tempo_behavior",
+    "meter_behavior",
+    "harmonic_behavior",
+    "motif_families",
+    "instrumentation",
+    "stem_architecture",
+    "transition_policy",
+    "dialogue_policy",
+    "presentation_profiles",
+    "accessibility",
+    "generator_guidance",
+    "provenance_policy",
+    "approval_boundary"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "pattern": "^DH-MUS-(CUE|STM|TRN|END)-[0-9]{3}$"
+    },
+    "title": {"type": "string", "minLength": 1},
+    "category": {
+      "type": "string",
+      "enum": ["cue", "adaptive_stem", "transition", "ending_treatment"]
+    },
+    "signature_asset": {"type": "boolean"},
+    "originality_tier": {"type": "string", "enum": ["A", "B", "C", "D"]},
+    "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+    "status": {
+      "type": "string",
+      "enum": [
+        "brief_draft",
+        "brief_reviewed",
+        "generation_ready",
+        "candidate_generated",
+        "candidate_reviewed",
+        "production_candidate",
+        "approved",
+        "rejected",
+        "deferred"
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "low_tide_arrival",
+          "bellhouse_ledger",
+          "lighthouse_council",
+          "high_water",
+          "last_light",
+          "ending_resolution",
+          "reusable_system"
+        ]
+      }
+    },
+    "public_state_inputs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "forbidden_private_inputs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "purpose": {"type": "string", "minLength": 1},
+    "duration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum_seconds", "target_seconds", "maximum_seconds"],
+      "properties": {
+        "minimum_seconds": {"type": "number", "minimum": 0.5, "maximum": 1200},
+        "target_seconds": {"type": "number", "minimum": 0.5, "maximum": 1200},
+        "maximum_seconds": {"type": "number", "minimum": 0.5, "maximum": 1200}
+      }
+    },
+    "loop_mode": {
+      "type": "string",
+      "enum": ["none", "seamless_loop", "adaptive_loop_family", "phrase_bound"]
+    },
+    "tempo_behavior": {"type": "string", "minLength": 1},
+    "meter_behavior": {"type": "string", "minLength": 1},
+    "harmonic_behavior": {"type": "string", "minLength": 1},
+    "motif_families": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "harbor_memory",
+          "lighthouse_destination",
+          "bellhouse_index",
+          "living_witness",
+          "drowned_release",
+          "harbor_propagation",
+          "none"
+        ]
+      }
+    },
+    "instrumentation": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "stem_architecture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_stems", "optional_stems", "reduced_density_removals", "contains_critical_sfx"],
+      "properties": {
+        "required_stems": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["foundation", "memory", "witness", "mechanism", "pressure", "transformation", "resolution"]
+          }
+        },
+        "optional_stems": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["foundation", "memory", "witness", "mechanism", "pressure", "transformation", "resolution"]
+          }
+        },
+        "reduced_density_removals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["foundation", "memory", "witness", "mechanism", "pressure", "transformation", "resolution"]
+          }
+        },
+        "contains_critical_sfx": {"type": "boolean"}
+      }
+    },
+    "transition_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entry", "exit", "silence_allowed", "deterministic_replay_required"],
+      "properties": {
+        "entry": {"type": "string", "minLength": 1},
+        "exit": {"type": "string", "minLength": 1},
+        "silence_allowed": {"type": "boolean"},
+        "deterministic_replay_required": {"type": "boolean"}
+      }
+    },
+    "dialogue_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["duck_under_dialogue", "may_drop_to_foundation", "may_cut_to_silence", "midrange_density_limit"],
+      "properties": {
+        "duck_under_dialogue": {"type": "boolean"},
+        "may_drop_to_foundation": {"type": "boolean"},
+        "may_cut_to_silence": {"type": "boolean"},
+        "midrange_density_limit": {"type": "string", "minLength": 1}
+      }
+    },
+    "presentation_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["spooky", "grim", "gore_and_dread", "profile_neutral"]
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["music_off_safe", "mono_safe", "reduced_density_supported", "reduced_dynamics_behavior", "contains_required_gameplay_information"],
+      "properties": {
+        "music_off_safe": {"type": "boolean"},
+        "mono_safe": {"type": "boolean"},
+        "reduced_density_supported": {"type": "boolean"},
+        "reduced_dynamics_behavior": {"type": "string", "minLength": 1},
+        "contains_required_gameplay_information": {"type": "boolean"}
+      }
+    },
+    "generator_guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt", "negative_prompt", "consistency_anchor", "human_edit_plan"],
+      "properties": {
+        "prompt": {"type": "string", "minLength": 1},
+        "negative_prompt": {"type": "string", "minLength": 1},
+        "consistency_anchor": {"type": "string", "minLength": 1},
+        "human_edit_plan": {"type": "string", "minLength": 1}
+      }
+    },
+    "provenance_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_source_kinds", "content_id_policy", "raw_public_distribution", "third_party_ai_input", "required_record"],
+      "properties": {
+        "allowed_source_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "original_human_composition",
+              "original_performance",
+              "original_synthesis",
+              "original_ai_assisted",
+              "commissioned",
+              "licensed_transformed",
+              "licensed_supporting",
+              "placeholder"
+            ]
+          }
+        },
+        "content_id_policy": {
+          "type": "string",
+          "enum": ["prohibited", "review_required", "not_applicable"]
+        },
+        "raw_public_distribution": {
+          "type": "string",
+          "enum": ["allowed", "prohibited", "license_dependent"]
+        },
+        "third_party_ai_input": {
+          "type": "string",
+          "enum": ["prohibited", "explicit_permission_required", "not_applicable"]
+        },
+        "required_record": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "approval_boundary": {"type": "string", "minLength": 1}
+  }
+}
