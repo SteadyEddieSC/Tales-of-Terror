@@ -7,6 +7,8 @@ on:
       - 'docs/tales/drowned_harbor/visual/**'
       - 'tools/validate_preproduction_visual_assets.py'
       - 'tools/test_validate_preproduction_visual_assets.py'
+      - 'tools/validate_preproduction_visual_candidates.py'
+      - 'tools/test_validate_preproduction_visual_candidates.py'
   push:
     branches: [main]
     paths:
@@ -14,6 +16,8 @@ on:
       - 'docs/tales/drowned_harbor/visual/**'
       - 'tools/validate_preproduction_visual_assets.py'
       - 'tools/test_validate_preproduction_visual_assets.py'
+      - 'tools/validate_preproduction_visual_candidates.py'
+      - 'tools/test_validate_preproduction_visual_candidates.py'
 
 permissions:
   contents: read
@@ -28,3 +32,7 @@ jobs:
         run: python tools/validate_preproduction_visual_assets.py
       - name: Run visual asset validator regression tests
         run: python tools/test_validate_preproduction_visual_assets.py
+      - name: Validate governed visual candidate batches
+        run: python tools/validate_preproduction_visual_candidates.py
+      - name: Run visual candidate validator regression tests
+        run: python tools/test_validate_preproduction_visual_candidates.py
