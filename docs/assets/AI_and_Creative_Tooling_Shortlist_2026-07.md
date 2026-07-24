@@ -1,8 +1,10 @@
 # AI and Creative Tooling Shortlist — July 2026
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Active procurement and workflow guidance
 **Review date:** July 24, 2026
+
+This shortlist records current preferred tools, subscriptions, and lifetime-deal candidates. The controlling bundle and marketplace purchase rules are in `docs/assets/Bundle_and_Marketplace_Procurement_Guide.md`.
 
 ## 1. Current available subscriptions
 
@@ -247,7 +249,22 @@ Potential use:
 
 Not needed for game-content production now.
 
-## 5. Recommended acquisition order
+## 5. Humble Bundle and marketplace policy
+
+Humble, Fanatical, Fab, Unity Asset Store, Godot Asset Store, creator stores, and course bundles are evaluated under the separate procurement guide.
+
+Current standing rules:
+
+- judge the usable licensed subset, not MSRP or item count;
+- require at least three concrete near-term uses;
+- save the license, receipt, item list, redemption details, and checksums;
+- treat third-party assets as not approved for generative-AI input unless the license explicitly allows it;
+- do not commit restricted raw assets to public GitHub;
+- prefer native Godot or engine-neutral formats;
+- delay audio-library purchases until the cue list exists;
+- delay visual-bundle purchases until the P0.3 asset brief identifies exact needs.
+
+## 6. Recommended acquisition order
 
 1. Spend nothing additional while ChatGPT Plus and Google AI Plus are underused.
 2. Install free Affinity, Blender, Krita, Audacity, and DaVinci Resolve as needed.
@@ -256,9 +273,10 @@ Not needed for game-content production now.
 5. Purchase REAPER only when sustained editing and mixing begins.
 6. Consider Eagle when the asset library becomes difficult to manage manually.
 7. Review VectorGrove only when a concrete icon/vector need exists.
-8. Avoid large lifetime AI purchases until an existing tool fails a defined requirement.
+8. Review Humble or marketplace bundles only against an approved asset or audio cue list.
+9. Avoid large lifetime AI purchases until an existing tool fails a defined requirement.
 
-## 6. What ChatGPT can directly utilize
+## 7. What ChatGPT can directly utilize
 
 ChatGPT can directly:
 
@@ -279,9 +297,9 @@ The practical handoff is:
 4. ChatGPT reviews or transforms it.
 5. GitHub stores the approved asset and provenance record.
 
-## 7. Procurement rule
+## 8. Procurement rule
 
-Before purchasing any new service or lifetime deal, record:
+Before purchasing any new service, bundle, or lifetime deal, record:
 
 - exact use case;
 - current price and tier;
