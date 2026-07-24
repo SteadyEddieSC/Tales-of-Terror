@@ -1,14 +1,14 @@
 # DH-CAND-001-A Review
 
-**Asset:** `DH-KEY-001` — Drowned Harbor Low-Tide Key Art  
-**Candidate:** `DH-CAND-001-A`  
-**Generator:** OpenAI image generation through ChatGPT  
-**Generation ID:** `ef4235ab-e564-49a1-a243-6440887cb359`  
-**External file:** `a_wide_high_resolution_concept_art_style_presenta.png`  
-**Dimensions:** 1313 × 1198  
-**External SHA-256:** `1943fec407d0e0c11a08494d2882b5189f570e8b00c83462e59d1a73147abed9`  
-**Repository image status:** Not uploaded; review record only  
-**Disposition:** Needs revision; retain as visual-development reference  
+**Asset:** `DH-KEY-001` — Drowned Harbor Low-Tide Key Art
+**Candidate:** `DH-CAND-001-A`
+**Generator:** OpenAI image generation through ChatGPT
+**Generation ID:** `ef4235ab-e564-49a1-a243-6440887cb359`
+**External file:** `a_wide_high_resolution_concept_art_style_presenta.png`
+**Dimensions:** 1313 × 1198
+**External SHA-256:** `1943fec407d0e0c11a08494d2882b5189f570e8b00c83462e59d1a73147abed9`
+**Repository image status:** Not uploaded; review record only
+**Disposition:** Needs revision; retain as visual-development reference
 **Production status:** Not approved
 
 ## Summary
