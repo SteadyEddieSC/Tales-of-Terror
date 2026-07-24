@@ -1,8 +1,8 @@
 # DH-KEY-001 Synthesis Round 2 Review
 
-**Asset:** `DH-KEY-001` — Drowned Harbor Low-Tide Key Art  
-**Status:** Preproduction comparison only  
-**Production approval:** None  
+**Asset:** `DH-KEY-001` — Drowned Harbor Low-Tide Key Art
+**Status:** Preproduction comparison only
+**Production approval:** None
 **Prompt provenance:** The files were supplied by the project owner after the governed synthesis prompt. Exact external generator transcripts were not separately supplied, so this review records the outputs and does not assert an independently verified per-image prompt history.
 
 ## Source files
@@ -11,7 +11,7 @@
 |---|---|---|---:|---|---|
 | `DH-CAND-001-F` | ChatGPT | `cgpt-v2.png` | 1672 × 941 | `488222801b80377e640143072ea5b39cc9d746368ea1697fb3874973ee26f2f7` | Provisional visual north star |
 | `DH-CAND-001-G` | Gemini | `Gemini_2.png` | 2048 × 1143 | `a308338febc156cc9406a9ba1b70f96cf6199354a49b86ca01e2416f6a131eae` | Spooky/readability reference |
-| `DH-CAND-001-H` | Gemini | `Gemini_3.png` | 2048 × 1143 | `5a1f9934a8b68e79c8aa6c17433e0ba69388311f9eca4554e1e37d3c4f0b2551` | Grim-board reference |
+| `DH-CAND-001-H` | Gemini | `Gemini_3.png` | 2048 × 1143 | `5a1f9934a8b68e79c8aa6c17433e0ba69388311f9eca4554e1e37d3c4f0b2551` | Grim atmosphere and palette reference |
 
 The image binaries remain external to the repository. This file records provenance, review, and digests only.
 
@@ -35,6 +35,7 @@ The image binaries remain external to the repository. This file records provenan
 - The central market mass could use clearer stall organization and a more authored silhouette.
 - The scene still needs one or two restrained supernatural impossibilities so it feels like a memory mechanism rather than only an abandoned tidal town.
 - Some background houses remain same-family and could be simplified further.
+- Future refinements must guard against brown-on-brown material collapse.
 
 ### Disposition
 
@@ -67,14 +68,15 @@ Retain as the **Spooky-profile, silhouette, and readability reference**. Do not 
 ### Strengths
 
 - Preserves Candidate G's clean geography and silhouettes.
-- Adds stronger dread and nighttime atmosphere.
+- Adds the strongest dark, dreary, storm-pressured atmosphere without reducing the scene to brown mud.
 - Amber lighthouse beam reads clearly against the darker sky.
 - The Salt Market receives useful visual identity.
-- Could inform a high-contrast Grim board-state or storm-pressure presentation study.
+- Cool blue-green shadows keep water, slate, timber, and sky more distinct than a brown or sepia grade would.
+- Provides the preferred Grim atmosphere, contrast, and cool-dark palette reference.
 
 ### Weaknesses
 
-- Heavy cyan/teal grading becomes more conventional fantasy-horror than the intended muted maritime palette.
+- The cyan/teal influence should remain controlled rather than becoming a global material wash.
 - Red market fabric becomes a competing accent against the scarce-amber rule.
 - Bellhouse remains too dominant relative to the lighthouse.
 - Flat color grading does not provide the tactile depth or material specificity of Candidate F.
@@ -82,18 +84,18 @@ Retain as the **Spooky-profile, silhouette, and readability reference**. Do not 
 
 ### Disposition
 
-Retain as a **Grim-profile and board-lighting reference**, not as the main key-art direction.
+Retain as the **primary Grim-profile atmosphere, contrast, and cool-dark palette reference**. Do not use it as the main composition north star, but preserve its ability to feel dark and dreary without washing out local color or collapsing everything into brown dirt and mud.
 
 ## Decision
 
-P0.3 should stop broad key-art exploration and use Candidate F as the provisional visual north star.
+P0.3 should stop broad key-art exploration and use Candidate F as the provisional composition and world north star.
 
-Borrow only controlled qualities from the Gemini variants:
+Borrow controlled qualities from the Gemini variants:
 
 - Candidate G: clean contours, simplified silhouettes, and Spooky-profile value range.
-- Candidate H: stronger storm pressure and readable amber-against-dark contrast.
+- Candidate H: cool-dark storm pressure, local color separation, and readable amber-against-dark contrast.
 
-Do not merge Candidate H's dominant cyan grade or red accent into the core palette.
+Do not merge Candidate H's competing red accent or allow cyan to flatten every material. Equally, do not replace its successful cool-dark range with a brown, sepia, or muddy global grade.
 
 ## Targeted north-star corrections
 
@@ -104,7 +106,8 @@ Future Candidate F revisions should address only:
 3. organize the Salt Market into a clearer central landmark;
 4. reduce repetitive background housing;
 5. add one or two subtle supernatural memory cues without adding clutter;
-6. preserve the causeway, travelers, landmark geography, composition, and restrained amber lighting.
+6. preserve the causeway, travelers, landmark geography, composition, and restrained amber lighting;
+7. introduce controlled cool blue-green storm atmosphere so timber, mud, slate, water, and clothing do not merge into one brown-gray mass.
 
 ## Approval boundary
 
