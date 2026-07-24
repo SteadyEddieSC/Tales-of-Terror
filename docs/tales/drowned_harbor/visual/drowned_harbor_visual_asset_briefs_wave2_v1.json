@@ -1,0 +1,359 @@
+{
+  "manifest_kind": "visual_asset_briefs_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "entry_schema": "visual_asset_brief_schema_v1.json",
+  "entries": [
+    {
+      "asset_id": "DH-PROP-002",
+      "title": "Cracked Lighthouse Lens",
+      "category": "prop",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Define the central lighthouse mechanism as a readable prop that can guide, expose, imprison, or misdirect Harbor memory.",
+      "deliverables": ["front mechanism view", "three-quarter mechanism view", "crack-pattern study", "light-beam behavior sheet"],
+      "visual_requirements": [
+        "Cloudy thick glass divided by one memorable asymmetrical crack system",
+        "Oxidized brass rings and indexing marks remain mechanically legible",
+        "The lens can visually support seaward, inland, extinguished, and broken states",
+        "Cracks suggest routes or names without containing legible personal information",
+        "Silhouette remains identifiable when shown small inside the lantern room"
+      ],
+      "negative_constraints": ["No clean modern Fresnel lens", "No sci-fi hologram", "No magical crystal cliché", "No embedded names", "No steampunk overload", "No photoreal product rendering"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": ["DH-ENV-003"],
+      "generator_guidance": {
+        "prompt": "Original cracked lighthouse lens mechanism for Drowned Harbor, thick cloudy salt glass held in concentric oxidized-brass indexing rings, one memorable asymmetrical crack network that resembles routes and overwritten names without readable text, tactile storybook prop design, hand-inked contours, watercolor and gouache surface variation, restrained amber light, mechanically readable seaward and inland rotation states, elegant maritime folk horror.",
+        "negative_prompt": "clean modern Fresnel lens, glowing fantasy crystal, sci-fi hologram, steampunk clutter, readable names, personal data, photoreal product photo, excessive bloom, branded design",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Design sheet with frontal mechanism, three-quarter depth, and crack-pattern callouts.",
+        "consistency_anchor": "Cloudy salt glass, asymmetrical route-like cracks, oxidized brass rings, and scarce amber light."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "model or tool version", "full prompt", "reference rights", "creation date", "human edits", "approval state"]
+      },
+      "approval_boundary": "Concept prop only; no final lens geometry, puzzle behavior, animation, or production approval."
+    },
+    {
+      "asset_id": "DH-PROP-003",
+      "title": "Missing-Name Tablet",
+      "category": "prop",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "intended_use": "Define a portable or recoverable Harbor anchor associated with absence, indexing failure, and ending eligibility without displaying real names.",
+      "deliverables": ["front and back prop views", "hand-scale study", "inactive and awakened states", "UI inventory silhouette"],
+      "visual_requirements": [
+        "Palm-sized slab of salt glass, dark slate, or layered shell",
+        "One intentionally empty central index surrounded by partial marks",
+        "Readable silhouette distinct from the Ledger and lens",
+        "Awakened state uses restrained condensation, light, or ink movement",
+        "No real or fictional player name is visibly written"
+      ],
+      "negative_constraints": ["No tombstone", "No occult rune stone", "No readable personal name", "No glowing quest-item cliché", "No generic fantasy tablet", "No branded symbol"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": ["DH-PROP-001"],
+      "generator_guidance": {
+        "prompt": "Original Missing-Name Tablet prop for Drowned Harbor, palm-sized layered salt-glass and dark slate object with an intentionally empty central index, partial feathered marks around the edge, oxidized-brass binding pin, tactile storybook illustration with inked contours and watercolor mineral textures, mysterious archival object rather than magical rune stone, readable inventory silhouette, no visible name.",
+        "negative_prompt": "tombstone, magic rune stone, glowing quest item, readable name, personal data, generic fantasy tablet, sci-fi device, branded emblem, photoreal product shot",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Prop design sheet with front, back, hand-scale, and awakened-state thumbnails.",
+        "consistency_anchor": "Layered salt glass, dark slate, empty central index, partial marks, and one oxidized-brass binding pin."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "creation date", "human edits", "approval state"]
+      },
+      "approval_boundary": "Concept prop only; no final mechanics, text, inventory behavior, or production approval."
+    },
+    {
+      "asset_id": "DH-PROP-004",
+      "title": "Empty Lifeboat and Wet Extra Seat",
+      "category": "prop",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Define the Tale's primary escape craft and its unexplained additional passenger position while preserving clear capacity readability.",
+      "deliverables": ["three-quarter boat view", "capacity diagram", "extra-seat detail", "damaged and repaired state sheet"],
+      "visual_requirements": [
+        "Small practical harbor lifeboat with readable passenger positions",
+        "One extra wet seat appears structurally present but historically impossible",
+        "Missing oar and launch-seal states are visually distinct",
+        "Boat looks repairable and usable rather than decorative",
+        "Extra seat is eerie without revealing a hidden identity"
+      ],
+      "negative_constraints": ["No pirate rowboat", "No modern rescue craft", "No ghost visibly seated", "No hidden-player silhouette", "No luxury finish", "No unreadable capacity layout"],
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "dependencies": ["DH-ENV-001"],
+      "generator_guidance": {
+        "prompt": "Original Drowned Harbor lifeboat prop, compact practical salt-stained wooden escape craft with clearly readable passenger benches, one historically impossible extra seat that remains freshly wet, one missing oar bracket and damaged launch seal, carved storybook miniature construction, hand-inked contours, watercolor wet-timber surfaces, repairable and functional, eerie maritime mystery without a visible ghost.",
+        "negative_prompt": "pirate boat, modern rescue vessel, visible ghost passenger, hidden traitor silhouette, luxury yacht, generic fantasy skiff, photoreal marina photo, illegible seating",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Three-quarter prop design sheet with capacity and repair-state callouts.",
+        "consistency_anchor": "Salt-stained wet timber, practical bench geometry, one impossible wet extra seat, missing oar bracket, and damaged launch seal."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "prompt or source list", "license status", "human transformation record", "profile", "approval state"]
+      },
+      "approval_boundary": "Concept prop only; no final capacity, passenger rule, repair logic, or production approval."
+    },
+    {
+      "asset_id": "DH-ICON-001",
+      "title": "Bellmarked Insignia and Signal Mark",
+      "category": "icon_family",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "intended_use": "Define a faction-private-to-public visual identity that can be concealed, privately presented, and later revealed without resembling a generic cult emblem.",
+      "deliverables": ["private insignia", "public reveal mark", "small UI icon", "material application sheet"],
+      "visual_requirements": [
+        "Combines a bell arc, lighthouse signal wedge, and incomplete index mark",
+        "Reads clearly at small size",
+        "Can appear as ink, brass, scar-like pressure, or condensation",
+        "Private and public versions share identity without exposing unrevealed affiliation",
+        "Shape remains original and non-religious"
+      ],
+      "negative_constraints": ["No pentagram", "No real religious symbol", "No skull logo", "No generic cult eye", "No existing game-faction resemblance", "No alphabetic initials"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": ["DH-ENV-004", "DH-ENV-003"],
+      "generator_guidance": {
+        "prompt": "Original Bellmarked faction insignia for Drowned Harbor, simple high-legibility symbol combining an incomplete bell arc, a narrow lighthouse signal wedge, and one empty indexing notch, suitable for small game UI, brass stamp, feathered ink, condensation, or scar-like pressure, maritime storybook horror, elegant asymmetry, non-religious and not a cult-eye cliché.",
+        "negative_prompt": "pentagram, religious symbol, skull emblem, cult eye, occult rune, alphabet initials, existing game faction logo, ornate heraldry, photoreal tattoo",
+        "aspect_ratio": "1:1",
+        "camera_or_view": "Flat icon-family design sheet with private, revealed, stamped, and in-world material applications.",
+        "consistency_anchor": "Incomplete bell arc, narrow lighthouse wedge, one empty index notch, restrained asymmetry, and strong small-size legibility."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "similarity review", "creation date", "human edits", "approval state"]
+      },
+      "approval_boundary": "Concept insignia only; no trademark, faction reveal, UI, merchandise, or production approval."
+    },
+    {
+      "asset_id": "DH-FORM-002",
+      "title": "Bell-Witness Restless Form",
+      "category": "continuation_form",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "intended_use": "Define a defeated-seat continuation form focused on warning, observation, and bell-mediated influence.",
+      "deliverables": ["front silhouette", "three-quarter silhouette", "warning-action pose", "presentation-profile variants"],
+      "visual_requirements": [
+        "Stable-seat identity remains recognizable",
+        "Voice or mouth is displaced into bell, rope, or vibration motifs",
+        "Form suggests warning and listening rather than combat",
+        "Negative space interrupts the body silhouette",
+        "Action remains readable at board scale"
+      ],
+      "negative_constraints": ["No generic ghost", "No hooded reaper", "No floating bedsheet", "No angelic wings", "No combat-monster posture", "No sexualized body horror"],
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "dependencies": ["DH-ENV-004"],
+      "generator_guidance": {
+        "prompt": "Original Bell-Witness Restless form for Drowned Harbor, recognizable investigator silhouette interrupted by negative space, voice displaced into a small hanging bell and vibrating rope lines, listening and warning posture rather than combat, storybook-horror miniature character design, inked contours, watercolor surfaces, stable-seat marker preserved, eerie agency after defeat without a generic ghost appearance.",
+        "negative_prompt": "generic ghost, hooded reaper, bedsheet spirit, angel wings, zombie, combat monster, superhero pose, sexualized horror, branded character imitation",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Character design sheet with neutral, listening, and warning-action silhouettes.",
+        "consistency_anchor": "Recognizable seat silhouette, interrupted body, hanging bell, vibrating ropes, and active warning posture."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "profile", "reference rights", "human edits", "approval state"]
+      },
+      "approval_boundary": "Continuation-form concept only; no final anatomy, action count, animation, rating, or production approval."
+    },
+    {
+      "asset_id": "DH-FORM-003",
+      "title": "Drowned Guide Restless Form",
+      "category": "continuation_form",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "intended_use": "Define a defeated-seat continuation form focused on submerged-route knowledge and navigation support.",
+      "deliverables": ["front silhouette", "route-pointing pose", "submerged movement study", "presentation-profile variants"],
+      "visual_requirements": [
+        "Original seat silhouette remains recognizable",
+        "Lower body or shadow behaves like a directional current",
+        "One arm, lantern, or carried object clearly indicates routes",
+        "Form looks knowledgeable and intentional",
+        "Water-only movement reads without fish anatomy"
+      ],
+      "negative_constraints": ["No merperson", "No fish monster", "No generic drowned zombie", "No tentacles", "No mindless crawling posture", "No hidden-route spoiler embedded in design"],
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "dependencies": ["DH-ENV-002"],
+      "generator_guidance": {
+        "prompt": "Original Drowned Guide Restless form for Drowned Harbor, recognizable investigator upper silhouette with lower shadow flowing like a directional current, one clear route-pointing hand or lantern, submerged movement language without fish anatomy, intelligent guide posture, storybook-horror miniature character design, inked contours, watercolor water edges, stable-seat identity preserved.",
+        "negative_prompt": "merperson, fish monster, drowned zombie, tentacles, crawling corpse, generic ghost, hidden route map, superhero, photoreal underwater body, branded character imitation",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Character sheet with neutral, route-pointing, and submerged-motion silhouettes.",
+        "consistency_anchor": "Recognizable upper silhouette, current-shaped lower shadow, route-pointing gesture, and intelligent navigation posture."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "profile", "reference rights", "human edits", "approval state"]
+      },
+      "approval_boundary": "Continuation-form concept only; no final movement rule, route knowledge, animation, rating, or production approval."
+    },
+    {
+      "asset_id": "DH-FORM-004",
+      "title": "Lighthouse Guardian Restless Form",
+      "category": "continuation_form",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "intended_use": "Define a defeated-seat continuation form focused on protecting, redirecting, or sacrificing through the lighthouse mechanism.",
+      "deliverables": ["wall-shadow silhouette", "protection pose", "sacrifice pose", "presentation-profile variants"],
+      "visual_requirements": [
+        "Identity survives primarily as a shadow or light-burn outline",
+        "Connection to lens, beam, or tower wall is immediate",
+        "Protective and sacrificial actions have distinct silhouettes",
+        "Form appears anchored rather than freely floating",
+        "Stable-seat marker remains readable"
+      ],
+      "negative_constraints": ["No angel guardian", "No armored knight", "No generic shadow person", "No superhero cape", "No religious halo", "No detached combat spirit"],
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "dependencies": ["DH-ENV-003", "DH-PROP-002"],
+      "generator_guidance": {
+        "prompt": "Original Lighthouse Guardian Restless form for Drowned Harbor, recognizable investigator identity burned as an anchored shadow and pale light outline across the lantern-room wall, connected to the cracked lens and beam, distinct protective and sacrificial poses, stable-seat marker preserved, storybook-horror miniature design with inked edges and watercolor light bleed, active agency after defeat rather than an angel or knight.",
+        "negative_prompt": "angel, armored knight, superhero cape, religious halo, generic shadow person, detached combat ghost, bright holy light, photoreal apparition, branded character imitation",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Design sheet showing wall-anchored neutral, protection, and sacrifice silhouettes.",
+        "consistency_anchor": "Wall-anchored identity shadow, pale light-burn outline, cracked-lens connection, and distinct protection versus sacrifice poses."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "profile", "reference rights", "human edits", "approval state"]
+      },
+      "approval_boundary": "Continuation-form concept only; no final action behavior, sacrifice effect, animation, rating, or production approval."
+    },
+    {
+      "asset_id": "DH-ICON-002",
+      "title": "Tide-State Icon Family",
+      "category": "icon_family",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Define non-color-only public icons for Lowest Tide, Returning Tide, Flooded Streets, Harbor Claim, and Final Submergence.",
+      "deliverables": ["five-state icon family", "small-size legibility test", "single-color version", "material application sheet"],
+      "visual_requirements": [
+        "Each state differs by silhouette and internal structure",
+        "Icons share one family based on horizon, route, waterline, and lighthouse motifs",
+        "Single-color versions remain distinguishable",
+        "Progression reads in ordered sequence",
+        "No state depends on animation or color alone"
+      ],
+      "negative_constraints": ["No generic wave icons", "No weather-app appearance", "No color-only distinction", "No tiny detailed scenes", "No numbered sequence required", "No real-world hazard signage copy"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": ["DH-ENV-001", "DH-ENV-002", "DH-ENV-003"],
+      "generator_guidance": {
+        "prompt": "Original five-icon tide-state family for Drowned Harbor, Lowest Tide, Returning Tide, Flooded Streets, Harbor Claim, Final Submergence, each using distinct silhouettes built from a horizon line, route shape, rising waterline, and lighthouse wedge, strong single-color readability, carved brass-and-ink storybook UI language, simple enough for television-distance game display, clearly ordered without numbers.",
+        "negative_prompt": "generic wave symbols, weather app, color-only system, tiny scenes, numbered badges, real-world evacuation signs, glossy mobile icons, existing game UI resemblance",
+        "aspect_ratio": "1:1",
+        "camera_or_view": "Flat five-icon family sheet with small-size and single-color tests.",
+        "consistency_anchor": "Shared horizon, route, waterline, and lighthouse-wedge geometry with distinct state silhouettes."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "similarity review", "small-size test", "human edits", "approval state"]
+      },
+      "approval_boundary": "Concept icon family only; no final accessibility, localization, UI integration, or production approval."
+    },
+    {
+      "asset_id": "DH-UI-001",
+      "title": "Stable-Seat Control and Continuity Indicators",
+      "category": "ui",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Define public indicators for human control, reconnect grace, game control, reserved return, pending takeover, and completed takeover without exposing private state.",
+      "deliverables": ["six-state indicator family", "seat-panel mockup", "single-color test", "shared-board placement study"],
+      "visual_requirements": [
+        "Stable seat identity remains constant while control source changes",
+        "Human, grace, game-controlled, reserved, pending, and transferred states are distinct by shape and label",
+        "Indicators reveal no role, faction, objective, condition, or private inventory",
+        "Current actor emphasis remains separate from controller-source state",
+        "Indicators remain readable at living-room distance"
+      ],
+      "negative_constraints": ["No real usernames", "No device names", "No account avatars", "No private-role symbols", "No color-only states", "No reset or new-character implication"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": ["DH-ICON-002"],
+      "generator_guidance": {
+        "prompt": "Original stable-seat control indicator family for a shared-screen storybook horror board game, six public states for human control, reconnect grace, deterministic game control, reserved return, pending takeover, and completed takeover, constant Roman-numeral seat frame with distinct controller-source silhouettes and plain labels, carved brass, ink, salt glass, and paper UI materials, readable at television distance, no private gameplay information.",
+        "negative_prompt": "usernames, device names, account avatars, hidden role icons, color-only states, mobile social UI, reset character symbol, generic multiplayer HUD, tiny unreadable decoration",
+        "aspect_ratio": "16:9",
+        "camera_or_view": "UI component sheet with six indicators and one shared-board seat-panel mockup.",
+        "consistency_anchor": "Constant stable-seat frame, distinct control-source silhouettes, paired labels, brass-and-ink materials, and no private data."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "privacy review", "small-size test", "human edits", "approval state"]
+      },
+      "approval_boundary": "UI concept only; no final wording, accessibility, input, multiplayer, or production approval."
+    },
+    {
+      "asset_id": "DH-KEY-002",
+      "title": "Last Light Ending Composition",
+      "category": "key_art",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "intended_use": "Define the final-stage composition where lighthouse, bell, Archive, escape craft, tide, and mixed seat outcomes remain simultaneously legible.",
+      "deliverables": ["16:9 final-stage composition", "outcome-priority thumbnails", "light-direction variants", "presentation-profile variants"],
+      "visual_requirements": [
+        "Lighthouse lens and final beam dominate the composition",
+        "Bellhouse, lifeboat, Archive, and rising tide remain readable outcome anchors",
+        "Living, Restless, Tidebound, and faction results can coexist without one universal victory pose",
+        "Ordinary exploration clutter is removed",
+        "Composition supports sealed, released, escaped, or Harbor-rises interpretations through controlled variations"
+      ],
+      "negative_constraints": ["No universal heroic victory tableau", "No single-character protagonist framing", "No generic apocalypse", "No unreadable crowd", "No embedded ending text", "No guaranteed happy ending"],
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "dependencies": ["DH-ENV-002", "DH-ENV-003", "DH-ENV-004", "DH-ENV-005", "DH-PROP-004", "DH-FORM-001", "DH-FORM-002", "DH-FORM-003", "DH-FORM-004"],
+      "generator_guidance": {
+        "prompt": "Original Last Light final-stage composition for Drowned Harbor, storybook-horror diorama at final submergence, cracked lighthouse lens and one decisive amber beam dominate, Bellhouse, Drowned Archive, lifeboat, black rising tide, Living survivors, Restless continuation forms, and Tidebound figures remain separately readable, mixed outcomes rather than one heroic victory, ordinary exploration clutter removed, hand-inked contours, watercolor and gouache surfaces, controlled cel shading, elegant tragic maritime horror.",
+        "negative_prompt": "universal victory pose, single protagonist, generic apocalypse, unreadable crowd, embedded ending text, bright happy ending, photoreal disaster scene, existing game composition, heavy bloom",
+        "aspect_ratio": "16:9",
+        "camera_or_view": "Authored elevated final-stage composition with lighthouse dominance and separated outcome anchors.",
+        "consistency_anchor": "Drowned storybook diorama, cracked lens, scarce amber beam, black tide, distinct mixed-outcome silhouettes, and reduced exploration clutter."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "model or tool version", "full prompt", "profile", "source rights", "human edits", "approval state"]
+      },
+      "approval_boundary": "Composition concept only; no canonical ending, final key art, storefront, rating, or production approval."
+    }
+  ]
+}

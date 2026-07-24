@@ -1,0 +1,304 @@
+{
+  "manifest_kind": "visual_asset_briefs_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "entry_schema": "visual_asset_brief_schema_v1.json",
+  "entries": [
+    {
+      "asset_id": "DH-KEY-001",
+      "title": "Drowned Harbor Low-Tide Key Art",
+      "category": "key_art",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Establish the Tale's original visual identity and provide the master composition reference for later environment, lighting, palette, and promotional studies.",
+      "deliverables": [
+        "16:9 composition study",
+        "4:5 composition crop study",
+        "thumbnail silhouette sheet",
+        "lighting and palette callout"
+      ],
+      "visual_requirements": [
+        "Impossible harbor town exposed across black tidal mud",
+        "Lighthouse is the dominant vertical anchor",
+        "Bellhouse and lifeboat route remain readable secondary landmarks",
+        "Warm lighthouse beam is scarce and narratively dominant",
+        "Storybook diorama construction with inked contours and watercolor surface variation",
+        "Human figures are small enough to establish scale but readable as stable-seat silhouettes"
+      ],
+      "negative_constraints": [
+        "No photorealism",
+        "No recognizable commercial-game composition",
+        "No generic low-poly asset-pack appearance",
+        "No modern city skyline",
+        "No bright tropical water",
+        "No illegible fog wall",
+        "No text or logo embedded in the image"
+      ],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": ["DH-ENV-001", "DH-ENV-003", "DH-ENV-004"],
+      "generator_guidance": {
+        "prompt": "Original storybook-horror key art of an impossible drowned harbor exposed at extreme low tide, theatrical miniature-diorama composition, carved wet timber buildings, oxidized brass mechanisms, swollen paper details, black tidal mud, dominant narrow lighthouse with one restrained amber beam, visible Bellhouse and lifeboat route, hand-inked contours, watercolor and gouache surface variation, stylized controlled 3D depth, strong readable silhouettes, eerie rather than photorealistic, designed for a living-room horror board-game adventure.",
+        "negative_prompt": "photorealistic, generic low poly pack, modern harbor, tropical beach, pirate fantasy, steampunk clutter, neon cyberpunk, illegible darkness, heavy bloom, embedded typography, logo, watermark, direct imitation of any existing game or artist",
+        "aspect_ratio": "16:9",
+        "camera_or_view": "Elevated three-quarter establishing view with the lighthouse placed off-center as the dominant vertical anchor.",
+        "consistency_anchor": "Drowned storybook diorama; inked edges; watercolor surfaces; wet timber, salt glass, and oxidized brass; scarce lantern amber."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "model or tool version", "full prompt", "source references and rights", "creation date", "human edits", "approval state"]
+      },
+      "approval_boundary": "Concept candidate only. It does not approve final key art, title treatment, storefront use, or a production Tale."
+    },
+    {
+      "asset_id": "DH-ENV-001",
+      "title": "Low-Tide Harbor Board Establishing View",
+      "category": "environment",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Define the playable board composition at Lowest Tide and establish route, landmark, and scale readability.",
+      "deliverables": ["16:9 board view", "route-overlay study", "landmark silhouette sheet"],
+      "visual_requirements": [
+        "Mudflat Approach, Salt Market, Bellhouse Square, Lifeboat Shed, and lighthouse route are visually distinguishable",
+        "Routes read through shape, elevation, texture, and markers rather than color alone",
+        "The town feels exposed rather than merely abandoned",
+        "No tall scenery blocks essential spaces",
+        "Waterline is distant but visibly returning"
+      ],
+      "negative_constraints": ["No top-down flat map", "No realistic satellite view", "No dense decorative clutter", "No hidden routes", "No clean theme-park architecture"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": [],
+      "generator_guidance": {
+        "prompt": "Playable shared-screen board view of Drowned Harbor at impossible lowest tide, elevated three-quarter camera, storybook-horror miniature town in black tidal mud, clearly separated Salt Market, Bellhouse Square, Lifeboat Shed, lighthouse path, exposed routes with distinct shapes and elevation, wet carved timber, salt-stained slate, oxidized brass, inked contours and watercolor surfaces, controlled cel shading, readable at television distance, atmospheric but not obscured.",
+        "negative_prompt": "flat map, photorealistic aerial photo, generic low-poly village, hidden paths, excessive props, modern signage, saturated fantasy colors, fog covering gameplay, embedded text",
+        "aspect_ratio": "16:9",
+        "camera_or_view": "Elevated three-quarter board camera with limited perspective distortion.",
+        "consistency_anchor": "Same harbor geometry, lighthouse silhouette, inked contours, watercolor surfaces, and restrained amber lighting across all tide states."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "prompt or source list", "license status", "human transformation record", "creation date", "approval state"]
+      },
+      "approval_boundary": "Board-composition concept only; no gameplay route, camera, or television-readability claim."
+    },
+    {
+      "asset_id": "DH-ENV-002",
+      "title": "High Water Board Transformation View",
+      "category": "environment",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Show the signature Terror Turn transformation while preserving correspondence with the Low-Tide board.",
+      "deliverables": ["16:9 transformed board view", "before-and-after alignment sheet", "water-route overlay study"],
+      "visual_requirements": [
+        "Same authored geometry and camera family as DH-ENV-001",
+        "Lower streets are visibly flooded and selected water-only connectors are open",
+        "Lifeboat and rope affordances become more prominent",
+        "Drowned Archive access is suggested or revealed",
+        "Lighthouse reflection and Bellhouse pressure intensify",
+        "Board remains readable despite stronger atmosphere"
+      ],
+      "negative_constraints": ["No unrelated redesign of the town", "No complete underwater view", "No tsunami spectacle", "No route ambiguity", "No indiscriminate blue filter"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": ["DH-ENV-001"],
+      "generator_guidance": {
+        "prompt": "The exact same original Drowned Harbor storybook board after the High Water Terror Turn, same elevated three-quarter geometry and landmarks, lower streets filled with black green-gray water, land routes closed through visible shape changes, new water-only connectors and lifeboat paths, Drowned Archive access exposed, lighthouse reflection stronger, Bellhouse under pressure, moving debris and pale memory shapes used sparingly, inked contours, watercolor surfaces, controlled cel shading, high atmosphere with excellent gameplay readability.",
+        "negative_prompt": "different town layout, tsunami, fully submerged city, photoreal water simulation, uniform blue color grade, hidden gameplay routes, excessive fog, generic disaster movie",
+        "aspect_ratio": "16:9",
+        "camera_or_view": "Matched elevated three-quarter view aligned to the Lowest Tide composition.",
+        "consistency_anchor": "Preserve DH-ENV-001 geometry, landmark silhouettes, material language, and scarce amber lighthouse light."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["source relation to DH-ENV-001", "creator or generator", "prompt", "human edits", "license status", "approval state"]
+      },
+      "approval_boundary": "Transformation concept only; no finalized tide mechanics, route state, animation, or accessibility claim."
+    },
+    {
+      "asset_id": "DH-ENV-003",
+      "title": "Lighthouse Exterior and Lantern Room",
+      "category": "environment",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Define the Tale's dominant landmark, final decision space, and memory-guidance mechanism.",
+      "deliverables": ["exterior silhouette", "lantern-room cutaway", "lens mechanism callout", "beam-shape study"],
+      "visual_requirements": [
+        "Narrow tapered tower with oversized lantern room",
+        "Cracked lens mechanism is identifiable in silhouette",
+        "Interior combines ordered brass indexing with organic salt damage",
+        "Beam reads as a clean directional wedge",
+        "Final interaction area supports several distinct choices"
+      ],
+      "negative_constraints": ["No ordinary modern lighthouse", "No steampunk machine overload", "No fantasy wizard tower", "No photoreal coastal postcard", "No blinding bloom"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": [],
+      "generator_guidance": {
+        "prompt": "Original Drowned Harbor lighthouse design, narrow tapered storybook tower built from wet slate and salt-stained timber, oversized lantern room containing a cracked cloudy-glass lens in an oxidized brass radial indexing mechanism, theatrical miniature architecture, hand-inked contours, watercolor surface variation, restrained amber beam shaped as a clean readable wedge, exterior silhouette plus cutaway sense of final decision space, elegant folk horror rather than steampunk.",
+        "negative_prompt": "modern lighthouse, steampunk clutter, wizard tower, photoreal postcard, bright clean glass, sci-fi machinery, excessive bloom, generic gothic castle",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Low three-quarter exterior with a secondary cutaway or design-sheet arrangement.",
+        "consistency_anchor": "Tapered vertical silhouette, cloudy cracked glass, oxidized brass circles, wet slate, and scarce amber light."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "reference rights", "creation date", "human edits", "approval state"]
+      },
+      "approval_boundary": "Concept design only; no final model, interior layout, lighting behavior, or production approval."
+    },
+    {
+      "asset_id": "DH-ENV-004",
+      "title": "Bellhouse and Name-Indexing Mechanism",
+      "category": "environment",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Define the Bellhouse Square landmark and visually explain the relationship among the bell, ledger, rope, names, and unresolved extra position.",
+      "deliverables": ["exterior landmark view", "mechanism cutaway", "bell and rope silhouette study"],
+      "visual_requirements": [
+        "Squared lower structure with an arched or circular upper mechanism",
+        "Bell silhouette is readable from the shared-board camera",
+        "Rope lines and radial name-index marks create ordered visual rhythm",
+        "One visibly unresolved index position exists without identifying a hidden player",
+        "Salt and water damage interrupt but do not obscure the mechanism"
+      ],
+      "negative_constraints": ["No church copy", "No generic medieval bell tower", "No hidden-role hint", "No illegible dense runes", "No ornate steampunk clock"],
+      "presentation_profiles": ["profile_neutral"],
+      "dependencies": ["DH-PROP-001"],
+      "generator_guidance": {
+        "prompt": "Original Bellhouse landmark for Drowned Harbor, low squared wet-timber building supporting a large oxidized-brass bell in an arched circular indexing frame, long rope lines descending toward a swollen ledger desk, radial name marks with one clearly unresolved empty position, storybook miniature construction, hand-inked contours, watercolor and gouache surfaces, readable silhouette, elegant maritime folk horror.",
+        "negative_prompt": "generic church, European medieval tower, steampunk clockwork overload, secret-traitor clue, dense unreadable symbols, photoreal architecture, bright fantasy magic",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Three-quarter exterior with partial mechanism cutaway.",
+        "consistency_anchor": "Squared base, arched circular bell frame, vertical ropes, oxidized brass, wet timber, and one unresolved index mark."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "reference rights", "creation date", "human edits", "approval state"]
+      },
+      "approval_boundary": "Concept design only; no final Bellhouse geometry, puzzle logic, or production asset."
+    },
+    {
+      "asset_id": "DH-ENV-005",
+      "title": "Drowned Archive Interior",
+      "category": "environment",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "intended_use": "Define the submerged truth-recovery space and support the Archive-collapse decision composition.",
+      "deliverables": ["wide interior composition", "collapse-state variant", "objective-zone callout"],
+      "visual_requirements": [
+        "Partially submerged shelves and layered records",
+        "Distinct directions for truth, binding mechanism, missing name, and trapped resident",
+        "Inland lighthouse beam cuts through the space",
+        "Architecture feels buried beneath the harbor rather than built as a normal library",
+        "Collapse pressure is visible without making objectives unreadable"
+      ],
+      "negative_constraints": ["No grand fantasy library", "No modern archive", "No generic underwater ruins", "No fully opaque water", "No endless impossible shelves"],
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "dependencies": ["DH-ENV-003", "DH-PROP-001"],
+      "generator_guidance": {
+        "prompt": "Drowned Archive beneath an impossible harbor, storybook-horror chamber of swollen timber shelves, layered shipping records, brass binding machinery, and black waist-deep water, inland lighthouse beam crossing the room, four clearly readable objective directions, ceiling and shelves beginning to collapse, carved miniature architecture with inked contours and watercolor surfaces, eerie and playable rather than photorealistic.",
+        "negative_prompt": "grand magical library, modern records room, generic Atlantis ruins, opaque murky composition, endless shelves, unreadable objective zones, photoreal underwater photography",
+        "aspect_ratio": "16:9",
+        "camera_or_view": "Wide three-quarter interior showing all major decision zones.",
+        "consistency_anchor": "Swollen paper, wet timber, oxidized brass, black water, and a single clean inland lighthouse beam."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "prompt or source list", "profile", "license status", "human edits", "approval state"]
+      },
+      "approval_boundary": "Concept only; no final Archive layout, content rating, collapse timing, or production asset."
+    },
+    {
+      "asset_id": "DH-PROP-001",
+      "title": "Bellhouse Ledger",
+      "category": "prop",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "intended_use": "Define the central public record prop, its layered names, possible-state symbols, and unresolved final entry.",
+      "deliverables": ["closed silhouette", "open public spread", "layered-name detail", "profile-intensity variants"],
+      "visual_requirements": [
+        "Heavy swollen maritime ledger",
+        "Layers of names remain distinguishable without dense readable prose",
+        "Possible-state symbols are clear but not prophetic death guarantees",
+        "One unresolved entry is visibly prepared but unnamed",
+        "The object can read clearly in UI and in-world views"
+      ],
+      "negative_constraints": ["No occult spellbook", "No real player names", "No tiny legible personal data", "No generic leather fantasy tome", "No hidden-faction clue"],
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "dependencies": [],
+      "generator_guidance": {
+        "prompt": "Original Bellhouse Ledger prop for Drowned Harbor, heavy swollen maritime registry bound in dark salt-stiff leather and oxidized brass, feathered black ink, several overwritten layers of names, simple possible-state symbols, one prepared but unnamed final line, tactile storybook illustration with inked edges and watercolor fiber detail, readable silhouette for a game UI, eerie historical record rather than magical spellbook.",
+        "negative_prompt": "spellbook, glowing runes, real names, personal data, generic fantasy tome, secret-traitor symbol, photoreal product photo, embedded readable paragraphs",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Design sheet with closed three-quarter view and open public spread.",
+        "consistency_anchor": "Swollen paper, feathered ink, oxidized brass indexing, layered names, and one unresolved blank line."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "creation date", "human edits", "profile", "approval state"]
+      },
+      "approval_boundary": "Concept prop only; no final symbols, text, puzzle implementation, or production UI approval."
+    },
+    {
+      "asset_id": "DH-FORM-001",
+      "title": "Tidebound Transformation Silhouette",
+      "category": "continuation_form",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P1",
+      "status": "generation_ready",
+      "intended_use": "Define an original transformed-player language that preserves identity and agency without becoming a generic zombie.",
+      "deliverables": ["front silhouette", "three-quarter silhouette", "Living-to-Tidebound transition strip", "presentation-profile variants"],
+      "visual_requirements": [
+        "Original character identity remains recognizable",
+        "Doubled contours or layered memory faces imply several remembered lives",
+        "Water-pulled asymmetry replaces generic corpse posture",
+        "Stable-seat marker remains clearly separate from the transformation",
+        "Form appears active and strategic rather than mindless"
+      ],
+      "negative_constraints": ["No generic zombie", "No fish-person cliché", "No tentacle monster", "No loss of original silhouette", "No hidden-faction disclosure", "No sexualized body horror"],
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "dependencies": [],
+      "generator_guidance": {
+        "prompt": "Original Tidebound player transformation concept for Drowned Harbor, a recognizable living investigator silhouette pulled into graceful water-curved asymmetry, doubled ink contours and faint secondary memory faces, wet clothing and salt-glass details, active intelligent posture, stable-seat identity still readable, storybook-horror miniature character design, controlled cel shading and watercolor surfaces, unsettling but not a zombie or fish monster.",
+        "negative_prompt": "generic zombie, fish person, tentacles, deep-sea monster, superhero, sexualized body horror, unrecognizable original person, photoreal gore, branded character imitation",
+        "aspect_ratio": "4:5",
+        "camera_or_view": "Character design sheet with front, three-quarter, and transformation progression silhouettes.",
+        "consistency_anchor": "Retained human silhouette, water-curved asymmetry, doubled memory contours, salt-glass details, and intelligent posture."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human", "original_ai_assisted", "commissioned"],
+        "raw_public_distribution": "allowed",
+        "third_party_ai_input": "not_applicable",
+        "required_record": ["creator or generator", "full prompt", "reference rights", "profile", "human edits", "approval state"]
+      },
+      "approval_boundary": "Transformation concept only; no final anatomy, animation, rating, character identity, or production approval."
+    }
+  ]
+}
