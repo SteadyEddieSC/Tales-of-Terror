@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import copy
+import re
 from pathlib import Path
 
 from validate_preproduction_package_traceability import (
@@ -138,7 +139,12 @@ def main() -> int:
     target["visual_paths"] = []
     expect_trace_failure(missing_signature_visual, "signature concept without visual coverage")
 
-    incomplete_handoff = handoff.replace("Issue #39 remains open", "Issue thirty-nine")
+    incomplete_handoff = re.sub(
+        r"issue #39 remains open",
+        "issue thirty-nine",
+        handoff,
+        flags=re.IGNORECASE,
+    )
     expect_handoff_failure(incomplete_handoff, "missing issue #39 boundary")
 
     destructive_reset = handoff + "\nRun git reset --hard.\n"
