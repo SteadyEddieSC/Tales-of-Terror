@@ -1,0 +1,30 @@
+name: Preproduction music asset validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/preproduction-music-assets.yml'
+      - 'docs/tales/drowned_harbor/music/**'
+      - 'tools/validate_preproduction_music_assets.py'
+      - 'tools/test_validate_preproduction_music_assets.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preproduction-music-assets.yml'
+      - 'docs/tales/drowned_harbor/music/**'
+      - 'tools/validate_preproduction_music_assets.py'
+      - 'tools/test_validate_preproduction_music_assets.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Original-first music contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate governed music briefs
+        run: python tools/validate_preproduction_music_assets.py
+      - name: Run music validator regression tests
+        run: python tools/test_validate_preproduction_music_assets.py
