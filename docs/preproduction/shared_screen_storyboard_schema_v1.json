@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/shared-screen-storyboard-v1.json",
+  "title": "Shared-Screen Storyboard v1",
+  "description": "Closed preproduction schema for controller-first shared-screen storyboard records.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "storyboard_id",
+    "title",
+    "category",
+    "tale_id",
+    "stage_context",
+    "layout_mode",
+    "privacy_surface",
+    "entry_condition",
+    "exit_condition",
+    "purpose",
+    "required_information",
+    "layout_regions",
+    "legal_actions",
+    "confirmation_pattern",
+    "focus_order",
+    "caption_policy",
+    "transcript_policy",
+    "persistent_text_policy",
+    "seat_authority_policy",
+    "state_variants",
+    "visual_guidance",
+    "negative_constraints",
+    "source_paths",
+    "traceability_concepts",
+    "human_validation_questions",
+    "status",
+    "approval_boundary"
+  ],
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "repo_path": {
+      "type": "string",
+      "pattern": "^docs/[A-Za-z0-9_./-]+$"
+    },
+    "caption_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subtitles_supported",
+        "closed_captions_supported",
+        "maximum_lines",
+        "target_characters_per_line",
+        "speaker_labels_supported",
+        "critical_information_outside_captions"
+      ],
+      "properties": {
+        "subtitles_supported": {"type": "boolean", "const": true},
+        "closed_captions_supported": {"type": "boolean", "const": true},
+        "maximum_lines": {"type": "integer", "const": 2},
+        "target_characters_per_line": {"type": "integer", "minimum": 20, "maximum": 42},
+        "speaker_labels_supported": {"type": "boolean", "const": true},
+        "critical_information_outside_captions": {"type": "boolean", "const": true}
+      }
+    },
+    "transcript_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["public_history", "replay_supported", "private_content_excluded"],
+      "properties": {
+        "public_history": {"type": "boolean"},
+        "replay_supported": {"type": "boolean"},
+        "private_content_excluded": {"type": "boolean", "const": true}
+      }
+    },
+    "persistent_text_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "plain_system_available",
+        "survives_voice_interruption",
+        "dismissal_rule"
+      ],
+      "properties": {
+        "required": {"type": "boolean"},
+        "plain_system_available": {"type": "boolean", "const": true},
+        "survives_voice_interruption": {"type": "boolean", "const": true},
+        "dismissal_rule": {
+          "type": "string",
+          "enum": [
+            "state_change_only",
+            "state_change_or_user",
+            "acknowledgement_then_state_change",
+            "user_or_transcript"
+          ]
+        }
+      }
+    },
+    "seat_authority_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "active_seat_visible",
+        "control_source_visible",
+        "stable_seat_preserved",
+        "private_state_publicly_hidden",
+        "authority_transfer_allowed"
+      ],
+      "properties": {
+        "active_seat_visible": {"type": "boolean"},
+        "control_source_visible": {"type": "boolean"},
+        "stable_seat_preserved": {"type": "boolean", "const": true},
+        "private_state_publicly_hidden": {"type": "boolean", "const": true},
+        "authority_transfer_allowed": {"type": "boolean"}
+      }
+    }
+  },
+  "properties": {
+    "storyboard_id": {
+      "type": "string",
+      "pattern": "^DH-UI-[0-9]{3}$"
+    },
+    "title": {"type": "string", "minLength": 3},
+    "category": {
+      "type": "string",
+      "enum": [
+        "accessibility_settings",
+        "ending_attribution",
+        "lobby_and_admission",
+        "private_reveal",
+        "public_board",
+        "public_decision",
+        "seat_continuity",
+        "system_recovery",
+        "tale_entry",
+        "transcript_and_replay",
+        "transformation"
+      ]
+    },
+    "tale_id": {"type": "string", "const": "drowned_harbor"},
+    "stage_context": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "reusable_system",
+          "low_tide_arrival",
+          "bellhouse_ledger",
+          "lighthouse_council",
+          "high_water",
+          "last_light",
+          "ending_resolution"
+        ]
+      }
+    },
+    "layout_mode": {
+      "type": "string",
+      "enum": [
+        "board_first",
+        "decision_focus",
+        "outcome_attribution",
+        "private_shield",
+        "system_overlay",
+        "transformation"
+      ]
+    },
+    "privacy_surface": {
+      "type": "string",
+      "enum": [
+        "public_shared",
+        "neutral_shared_shield",
+        "controlled_private_surface"
+      ]
+    },
+    "entry_condition": {"type": "string", "minLength": 10},
+    "exit_condition": {"type": "string", "minLength": 10},
+    "purpose": {"type": "string", "minLength": 20},
+    "required_information": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 3}
+    },
+    "layout_regions": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "stage_objective_upper_left",
+          "tide_state_upper_center",
+          "host_authority_upper_right",
+          "playable_board_center",
+          "decision_panel_center",
+          "decision_drawer_right",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip",
+          "private_shield_full_screen",
+          "transcript_drawer",
+          "settings_overlay",
+          "outcome_columns",
+          "public_recap_panel"
+        ]
+      }
+    },
+    "legal_actions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/stable_id"}
+    },
+    "confirmation_pattern": {
+      "type": "string",
+      "enum": [
+        "acknowledgement_only",
+        "confirmed_commitment",
+        "none",
+        "reversible_selection"
+      ]
+    },
+    "focus_order": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 3}
+    },
+    "caption_policy": {"$ref": "#/$defs/caption_policy"},
+    "transcript_policy": {"$ref": "#/$defs/transcript_policy"},
+    "persistent_text_policy": {"$ref": "#/$defs/persistent_text_policy"},
+    "seat_authority_policy": {"$ref": "#/$defs/seat_authority_policy"},
+    "state_variants": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/stable_id"}
+    },
+    "visual_guidance": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 8}
+    },
+    "negative_constraints": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 8}
+    },
+    "source_paths": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/repo_path"}
+    },
+    "traceability_concepts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^DH-XM-[0-9]{3}$"
+      }
+    },
+    "human_validation_questions": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 10}
+    },
+    "status": {
+      "type": "string",
+      "enum": ["brief_draft", "preproduction_ready", "review_required", "deferred"]
+    },
+    "approval_boundary": {"type": "string", "minLength": 40}
+  }
+}
