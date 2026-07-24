@@ -59,7 +59,7 @@ def main() -> int:
 
     missing_source_path = copy.deepcopy(base_unit)
     missing_source_path["source_field_paths"].remove("draft_script.plain_system")
-    expect_unit_failure(missing_source_path, voice_families, "all four governed source fields are required")
+    expect_unit_failure(missing_source_path, voice_families, "must contain at least 4 item(s)")
 
     unnamed_placeholder = copy.deepcopy(base_unit)
     unnamed_placeholder["placeholder_policy"]["allowed_placeholders"] = ["{0}"]
