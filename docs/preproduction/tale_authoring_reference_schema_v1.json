@@ -1,0 +1,423 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/tale-authoring-reference-v1.json",
+  "title": "Tale Authoring Reference v1",
+  "description": "Closed preproduction schema for repository-authored Tale design references. Not a runtime Tale package.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "authoring_kind",
+    "schema_version",
+    "tale_id",
+    "reference_version",
+    "display_name",
+    "production_status",
+    "runtime_integration_authorized",
+    "production_catalog_authorized",
+    "source_authorities",
+    "compatibility",
+    "privacy_classes",
+    "stage_graph",
+    "signature_transformations",
+    "content_registry",
+    "media_sources",
+    "fallbacks",
+    "validation_obligations",
+    "open_decisions",
+    "compilation_boundary",
+    "identity_policy"
+  ],
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "repo_path": {
+      "type": "string",
+      "pattern": "^(docs|game|tools)/[A-Za-z0-9_./-]+$"
+    },
+    "mode_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "minimum_seats",
+        "maximum_seats",
+        "privacy_model",
+        "fallback_mode"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/stable_id"},
+        "status": {
+          "type": "string",
+          "enum": ["supported", "review_required", "deferred"]
+        },
+        "minimum_seats": {"type": "integer", "minimum": 1, "maximum": 8},
+        "maximum_seats": {"type": "integer", "minimum": 1, "maximum": 8},
+        "privacy_model": {
+          "type": "string",
+          "enum": [
+            "public_only",
+            "optional_hidden_faction",
+            "dynamic_faction",
+            "mixed_public_competition"
+          ]
+        },
+        "fallback_mode": {
+          "oneOf": [
+            {"$ref": "#/$defs/stable_id"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "stage_transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "from", "to", "trigger_id", "once_only"],
+      "properties": {
+        "id": {"$ref": "#/$defs/stable_id"},
+        "from": {"$ref": "#/$defs/stable_id"},
+        "to": {"$ref": "#/$defs/stable_id"},
+        "trigger_id": {"$ref": "#/$defs/stable_id"},
+        "once_only": {"type": "boolean"}
+      }
+    },
+    "signature_transformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_stage",
+        "target_stage",
+        "trigger_id",
+        "deterministic",
+        "once_only",
+        "minimum_changed_state_categories",
+        "allowed_state_categories"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/stable_id"},
+        "source_stage": {"$ref": "#/$defs/stable_id"},
+        "target_stage": {"$ref": "#/$defs/stable_id"},
+        "trigger_id": {"$ref": "#/$defs/stable_id"},
+        "deterministic": {"type": "boolean"},
+        "once_only": {"type": "boolean"},
+        "minimum_changed_state_categories": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 8
+        },
+        "allowed_state_categories": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "board",
+              "objective",
+              "faction",
+              "form",
+              "route",
+              "resource_economy",
+              "encounter_eligibility",
+              "ending_eligibility"
+            ]
+          }
+        }
+      }
+    },
+    "content_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "status",
+        "privacy",
+        "stages",
+        "tags",
+        "source_path",
+        "source_anchor",
+        "traceability_concepts",
+        "note"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/stable_id"},
+        "kind": {
+          "type": "string",
+          "enum": [
+            "stage",
+            "tide_state",
+            "space",
+            "region",
+            "mode",
+            "role",
+            "faction",
+            "form",
+            "resource",
+            "item",
+            "card",
+            "hazard",
+            "encounter",
+            "ending"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "preproduction_ready", "review_required", "deferred"]
+        },
+        "privacy": {
+          "type": "string",
+          "enum": [
+            "public",
+            "controlled_reveal_private",
+            "seat_private",
+            "faction_private"
+          ]
+        },
+        "stages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "active_continuation",
+              "authored_recovery_required",
+              "controlled_reveal_required",
+              "deterministic_consequence",
+              "explicit_outcome_attribution",
+              "generic_alternative_required",
+              "legal_choices_required",
+              "mechanical_truth_required",
+              "optional_hidden_state",
+              "public_warning_required",
+              "stable_seat_continuation",
+              "stateful_condition",
+              "transformation_preserves_agency",
+              "warning_response_recovery"
+            ]
+          }
+        },
+        "source_path": {"$ref": "#/$defs/repo_path"},
+        "source_anchor": {"type": "string", "minLength": 3},
+        "traceability_concepts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^DH-XM-[0-9]{3}$"
+          }
+        },
+        "note": {"type": "string", "minLength": 10}
+      }
+    },
+    "validation_obligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirement", "status"],
+      "properties": {
+        "id": {"$ref": "#/$defs/stable_id"},
+        "requirement": {"type": "string", "minLength": 20},
+        "status": {
+          "type": "string",
+          "enum": ["declared_preproduction", "human_validation_required"]
+        }
+      }
+    },
+    "open_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "summary", "blocks_production", "status", "source_path"],
+      "properties": {
+        "id": {"$ref": "#/$defs/stable_id"},
+        "summary": {"type": "string", "minLength": 10},
+        "blocks_production": {"type": "boolean"},
+        "status": {
+          "type": "string",
+          "enum": ["open", "review_required", "deferred"]
+        },
+        "source_path": {"$ref": "#/$defs/repo_path"}
+      }
+    }
+  },
+  "properties": {
+    "authoring_kind": {"type": "string", "const": "tale_authoring_reference"},
+    "schema_version": {"type": "integer", "const": 1},
+    "tale_id": {"$ref": "#/$defs/stable_id"},
+    "reference_version": {"type": "integer", "minimum": 1},
+    "display_name": {"type": "string", "minLength": 1},
+    "production_status": {"type": "string", "const": "design_only"},
+    "runtime_integration_authorized": {"type": "boolean", "const": false},
+    "production_catalog_authorized": {"type": "boolean", "const": false},
+    "source_authorities": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/repo_path"}
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engine_target", "minimum_seats", "maximum_seats", "modes"],
+      "properties": {
+        "engine_target": {"type": "string", "const": "godot_4_7"},
+        "minimum_seats": {"type": "integer", "const": 1},
+        "maximum_seats": {"type": "integer", "const": 8},
+        "modes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/mode_plan"}
+        }
+      }
+    },
+    "privacy_classes": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "controlled_reveal_private",
+          "faction_private",
+          "public",
+          "seat_private"
+        ]
+      }
+    },
+    "stage_graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entry_stage", "required_terminal_stage", "stage_order", "transitions"],
+      "properties": {
+        "entry_stage": {"$ref": "#/$defs/stable_id"},
+        "required_terminal_stage": {"$ref": "#/$defs/stable_id"},
+        "stage_order": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "transitions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/stage_transition"}
+        }
+      }
+    },
+    "signature_transformations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/signature_transformation"}
+    },
+    "content_registry": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/content_record"}
+    },
+    "media_sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dialogue_catalogs",
+        "visual_manifests",
+        "audio_manifests",
+        "music_manifests",
+        "voice_manifests",
+        "accessibility_manifests",
+        "traceability_path"
+      ],
+      "properties": {
+        "dialogue_catalogs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/repo_path"}},
+        "visual_manifests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/repo_path"}},
+        "audio_manifests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/repo_path"}},
+        "music_manifests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/repo_path"}},
+        "voice_manifests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/repo_path"}},
+        "accessibility_manifests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/repo_path"}},
+        "traceability_path": {"$ref": "#/$defs/repo_path"}
+      }
+    },
+    "fallbacks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cooperative_mode",
+        "no_phone",
+        "optional_companion_unavailable",
+        "voice_unavailable",
+        "music_unavailable",
+        "noncritical_media_unavailable",
+        "invalid_action",
+        "defeat_continuation",
+        "unsupported_optional_feature"
+      ],
+      "properties": {
+        "cooperative_mode": {"$ref": "#/$defs/stable_id"},
+        "no_phone": {"$ref": "#/$defs/stable_id"},
+        "optional_companion_unavailable": {"$ref": "#/$defs/stable_id"},
+        "voice_unavailable": {"$ref": "#/$defs/stable_id"},
+        "music_unavailable": {"$ref": "#/$defs/stable_id"},
+        "noncritical_media_unavailable": {"$ref": "#/$defs/stable_id"},
+        "invalid_action": {"$ref": "#/$defs/stable_id"},
+        "defeat_continuation": {"$ref": "#/$defs/stable_id"},
+        "unsupported_optional_feature": {"$ref": "#/$defs/stable_id"}
+      }
+    },
+    "validation_obligations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/validation_obligation"}
+    },
+    "open_decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/open_decision"}
+    },
+    "compilation_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_package_kind",
+        "target_schema_version",
+        "compilation_authorized",
+        "runtime_loader_input",
+        "production_catalog_entry",
+        "required_future_artifacts"
+      ],
+      "properties": {
+        "target_package_kind": {"type": "string", "const": "tale"},
+        "target_schema_version": {"type": "integer", "const": 1},
+        "compilation_authorized": {"type": "boolean", "const": false},
+        "runtime_loader_input": {"type": "boolean", "const": false},
+        "production_catalog_entry": {"type": "boolean", "const": false},
+        "required_future_artifacts": {
+          "type": "array",
+          "minItems": 6,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        }
+      }
+    },
+    "identity_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "canonicalization", "authoring_identity_only"],
+      "properties": {
+        "algorithm": {"type": "string", "const": "sha256"},
+        "canonicalization": {
+          "type": "string",
+          "const": "utf8_json_sorted_object_keys_compact_arrays_preserved"
+        },
+        "authoring_identity_only": {"type": "boolean", "const": true}
+      }
+    }
+  }
+}
