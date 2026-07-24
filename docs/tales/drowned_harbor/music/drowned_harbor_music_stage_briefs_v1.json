@@ -1,0 +1,609 @@
+{
+  "manifest_kind": "music_asset_briefs_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "entry_schema": "music_asset_brief_schema_v1.json",
+  "entries": [
+    {
+      "asset_id": "DH-MUS-CUE-001",
+      "title": "Opening Invitation",
+      "category": "cue",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "stages": ["low_tide_arrival"],
+      "public_state_inputs": ["Tale opening committed", "Public harbor board established", "Presentation profile"],
+      "forbidden_private_inputs": ["Hidden factions", "Private objectives", "Latent transformations", "Future ending state"],
+      "purpose": "Introduce the Harbor as a prepared invitation and present the first incomplete Harbor Memory phrase before exploration begins.",
+      "duration": {"minimum_seconds": 35, "target_seconds": 70, "maximum_seconds": 110},
+      "loop_mode": "phrase_bound",
+      "tempo_behavior": "Breath-led and slow, with no implied timer.",
+      "meter_behavior": "Four-position phrase with one delayed or absent position.",
+      "harmonic_behavior": "Open fifths, suspended upper tones, and an incomplete cadence.",
+      "motif_families": ["harbor_memory", "living_witness"],
+      "instrumentation": ["Prepared upright piano", "Bowed cloudy glass", "Restrained harmonium breath", "Solo low string"],
+      "stem_architecture": {
+        "required_stems": ["foundation", "memory"],
+        "optional_stems": ["witness"],
+        "reduced_density_removals": ["witness"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Begin only after the public Tale opening commits; allow two seconds of environmental sound first.",
+        "exit": "Resolve to Low-Tide foundation at a phrase boundary or cut to silence for opening speech.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Sparse enough that Underteller consonants and local conversation remain clear."
+      },
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Narrow piano and glass peaks while preserving the incomplete phrase.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original intimate opening music for a drowned storybook harbor revealed at impossible low tide: prepared upright piano, bowed cloudy glass, restrained harmonium breath, solo low string, one incomplete four-position memory phrase, cold maritime melancholy, large quiet spaces, no percussion pulse, no choir, no pirate character, no trailer scale.",
+        "negative_prompt": "sea shanty, pirate fiddle, heroic orchestra, trailer percussion, gothic choir, music box, constant minor drone, named composer imitation, copyrighted melody, jump-scare sting",
+        "consistency_anchor": "Drowned Harbor music grows from incomplete memory, lens direction, bell indexing, living witness, and the possibility of release.",
+        "human_edit_plan": "Edit generated or performed material into a clean opening, removable witness layer, dialogue-safe foundation, and phrase-bound Low-Tide transition."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Source and license record", "Human edits", "Creation date", "Review disposition"]
+      },
+      "approval_boundary": "Preproduction opening brief only; no final theme, recording, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-CUE-002",
+      "title": "Low-Tide Exploration Foundation",
+      "category": "cue",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "stages": ["low_tide_arrival"],
+      "public_state_inputs": ["Low-Tide stage active", "Public pressure band", "Public truth band", "Dialogue state"],
+      "forbidden_private_inputs": ["Hidden factions", "Private objectives", "Private inventory", "Hidden Director target"],
+      "purpose": "Provide a sparse exploration bed that can remain absent, reduce to foundation, or reveal short memory fragments as public truth develops.",
+      "duration": {"minimum_seconds": 60, "target_seconds": 120, "maximum_seconds": 240},
+      "loop_mode": "adaptive_loop_family",
+      "tempo_behavior": "Slow flexible pulse with no continuous ticking.",
+      "meter_behavior": "Asymmetric phrase lengths with occasional missing fourth position.",
+      "harmonic_behavior": "Cool open intervals with changing upper color rather than one sustained minor pad.",
+      "motif_families": ["harbor_memory", "living_witness"],
+      "instrumentation": ["Prepared piano fragments", "Low bowed strings", "Breathy reed organ", "Processed paper texture"],
+      "stem_architecture": {
+        "required_stems": ["foundation"],
+        "optional_stems": ["memory", "witness", "pressure"],
+        "reduced_density_removals": ["pressure", "memory"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Enter after opening cue or authored silence at a compatible phrase position.",
+        "exit": "Crossfade to regional or stage cue; cut to silence for controlled reveal or critical confirmation.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "No continuous melody or dense sustained chord beneath exploration discussion."
+      },
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Reduce transient piano and bowed-string contrast while retaining cool harmonic color.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original adaptive exploration music for a drowned harbor at impossible low tide: sparse prepared piano fragments, low bowed strings, breathy reed-organ foundation, subtle processed paper texture, cool open harmony with distinct upper colors, incomplete memory motif, long quiet gaps, modular stems, dialogue-friendly, no critical sound effects.",
+        "negative_prompt": "constant dark drone, sea shanty, action tempo, pirate music, trailer percussion, gothic choir, music box, full melody loop, named composer imitation, copyrighted motif",
+        "consistency_anchor": "The Low-Tide score remains curious and exposed, allowing environmental water, timber, rope, and bell sounds to define physical reality.",
+        "human_edit_plan": "Create foundation, memory, witness, and pressure stems with shared loop length, clean exits, and a music-off-safe structure."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Source licenses", "Stem map", "Human edits", "Review disposition"]
+      },
+      "approval_boundary": "Preproduction adaptive-bed brief only; no final composition, looping, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-CUE-003",
+      "title": "Salt Market Regional Color",
+      "category": "cue",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P1",
+      "status": "generation_ready",
+      "stages": ["low_tide_arrival", "bellhouse_ledger"],
+      "public_state_inputs": ["Public focus in Salt Market", "Stage", "Public pressure band"],
+      "forbidden_private_inputs": ["Private bargains", "Hidden factions", "Private item ownership", "Unrevealed objectives"],
+      "purpose": "Give the market a distinct empty-commerce color through cloth-like rhythm and interrupted exchange without crowd or merchant implication.",
+      "duration": {"minimum_seconds": 45, "target_seconds": 90, "maximum_seconds": 180},
+      "loop_mode": "adaptive_loop_family",
+      "tempo_behavior": "Loose moderate breath with sparse interrupted exchanges.",
+      "meter_behavior": "Uneven paired phrases that fail to answer once per cycle.",
+      "harmonic_behavior": "Pale suspended harmony over a low shared Harbor foundation.",
+      "motif_families": ["harbor_memory"],
+      "instrumentation": ["Muted hammered string", "Plucked wire", "Soft harmonium", "Processed canvas and paper rhythm"],
+      "stem_architecture": {
+        "required_stems": ["foundation"],
+        "optional_stems": ["memory", "mechanism"],
+        "reduced_density_removals": ["mechanism"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Blend from current stage foundation when public focus enters the market.",
+        "exit": "Return to stage foundation without a stinger when focus leaves.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Short dry gestures only; no repeated market melody beneath player planning."
+      },
+      "presentation_profiles": ["profile_neutral"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Reduce hammered and plucked transients while preserving pale suspended color.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original regional music color for an empty salt market in a drowned storybook harbor: muted hammered string, plucked wire, soft harmonium, processed canvas and paper gestures, pale suspended harmony, interrupted call-and-response with one missing answer, restrained and dialogue-friendly, no crowd, no coins, no nautical dance.",
+        "negative_prompt": "busy market music, crowd voices, coins, sea shanty, pirate tavern, circus, dance rhythm, music box, named composer imitation, copyrighted melody",
+        "consistency_anchor": "Salt Market music suggests ordered exchange abandoned mid-transaction while remaining part of the Harbor Memory family.",
+        "human_edit_plan": "Extract a low foundation and optional canvas-wire color layer that can enter and leave without a stinger."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed", "licensed_supporting"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Source licenses", "Human edits", "Review disposition"]
+      },
+      "approval_boundary": "Regional color brief only; no final market score, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-CUE-004",
+      "title": "Bellhouse Ledger Procedural Bed",
+      "category": "cue",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "stages": ["bellhouse_ledger"],
+      "public_state_inputs": ["Bellhouse stage active", "Public truth band", "Public Bellhouse state", "Dialogue state"],
+      "forbidden_private_inputs": ["Bellmarked assignments", "Private objectives", "Unrevealed seat marks", "Future bell target"],
+      "purpose": "Support procedural dread and public indexing while keeping the Bellhouse strike and Ledger commit as separate critical SFX.",
+      "duration": {"minimum_seconds": 60, "target_seconds": 120, "maximum_seconds": 240},
+      "loop_mode": "adaptive_loop_family",
+      "tempo_behavior": "Measured slow indexing pulse that can suspend completely.",
+      "meter_behavior": "Repeated positions with one extra or missing temporal slot, never tied to a hidden seat.",
+      "harmonic_behavior": "Narrow brass-colored intervals over damped string and paper-like resonance.",
+      "motif_families": ["bellhouse_index", "harbor_memory"],
+      "instrumentation": ["Bowed oxidized metal", "Damped prepared piano", "Muted hammered string", "Low reed breath"],
+      "stem_architecture": {
+        "required_stems": ["foundation", "mechanism"],
+        "optional_stems": ["memory", "pressure"],
+        "reduced_density_removals": ["pressure", "mechanism"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Begin after the first public Ledger interaction or stage establishment, never before Bellhouse state is public.",
+        "exit": "Suspend for votes, reveals, and critical Bellhouse SFX; resolve at stage change.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Index gestures remain short and leave the center channel open for narration."
+      },
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Reduce metal and piano attacks while preserving measured indexing relationships.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original adaptive procedural music for a supernatural maritime Bellhouse Ledger: bowed oxidized metal, damped prepared piano, muted hammered string, low reed breath, measured indexing positions with one extra or missing slot, narrow unsettled harmony, restrained mechanical dread, no actual bell strike, no spoken names, no secret-traitor motif.",
+        "negative_prompt": "church music, cathedral bell loop, traitor theme, spoken names, clock ticking, steampunk score, trailer percussion, choir, named composer imitation, copyrighted melody",
+        "consistency_anchor": "Bellhouse music measures public possibility without replacing the bell, revealing Bellmarked allegiance, or turning procedure into a timer.",
+        "human_edit_plan": "Separate foundation, mechanism, memory, and pressure stems; remove all critical bell transients and create clean vote/reveal silence points."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Metal and instrument sources", "Stem map", "Human edits", "Review disposition"]
+      },
+      "approval_boundary": "Signature procedural-bed brief only; no final Bellhouse music, hidden-state behavior, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-CUE-005",
+      "title": "Lighthouse Exterior Ascent",
+      "category": "cue",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P1",
+      "status": "generation_ready",
+      "stages": ["lighthouse_council"],
+      "public_state_inputs": ["Public focus on lighthouse approach", "Public lighthouse state", "Pressure band"],
+      "forbidden_private_inputs": ["Private destination preference", "Hidden ending carrier", "Private bargain", "Future Council choice"],
+      "purpose": "Support vertical approach and growing authority without becoming heroic or predicting the Council decision.",
+      "duration": {"minimum_seconds": 45, "target_seconds": 90, "maximum_seconds": 180},
+      "loop_mode": "phrase_bound",
+      "tempo_behavior": "Slow rising breath with long pauses between ascent gestures.",
+      "meter_behavior": "Rotating phrase that returns one step displaced.",
+      "harmonic_behavior": "Open lower support with a restrained rising upper interval that does not resolve.",
+      "motif_families": ["lighthouse_destination", "harbor_memory"],
+      "instrumentation": ["Solo viola or cello", "Bowed cloudy glass", "Thin reed organ", "Prepared piano harmonics"],
+      "stem_architecture": {
+        "required_stems": ["foundation", "memory"],
+        "optional_stems": ["mechanism", "pressure"],
+        "reduced_density_removals": ["pressure", "mechanism"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Enter from stage foundation when public focus commits to the lighthouse approach.",
+        "exit": "Resolve into Council bed at a phrase boundary or cut for lighthouse speech and mechanism SFX.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Solo gestures remain widely spaced and avoid sustained dialogue frequencies."
+      },
+      "presentation_profiles": ["profile_neutral"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Narrow bowed-glass and solo-string peaks while preserving upward interval direction.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original restrained ascent music toward a supernatural lighthouse above a drowned harbor: solo viola or cello, bowed cloudy glass, thin reed-organ support, prepared piano harmonics, slow rising destination interval, rotating phrase returning slightly displaced, vertical authority without heroism, no decision outcome, no score climax.",
+        "negative_prompt": "heroic ascent, adventure music, sea shanty, trailer rise, choir, triumphant brass, sci-fi lighthouse, named composer imitation, copyrighted melody, action rhythm",
+        "consistency_anchor": "The lighthouse motif represents direction and transmission, not moral correctness or a preselected ending.",
+        "human_edit_plan": "Create phrase-bound approach, foundation-only dialogue version, and clean transition into the Council cue."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed", "licensed_supporting"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Performance and source licenses", "Human edits", "Review disposition"]
+      },
+      "approval_boundary": "Regional transition brief only; no final ascent cue, destination meaning, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-CUE-006",
+      "title": "Lighthouse Council Decision Bed",
+      "category": "cue",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "stages": ["lighthouse_council"],
+      "public_state_inputs": ["Council stage active", "Public truth band", "Public lighthouse state", "Dialogue and confirmation state"],
+      "forbidden_private_inputs": ["Private votes", "Hidden faction goals", "Private destination preference", "Future ending eligibility"],
+      "purpose": "Create deliberate space around collective direction choices while allowing silence to remain the dominant state.",
+      "duration": {"minimum_seconds": 60, "target_seconds": 150, "maximum_seconds": 300},
+      "loop_mode": "adaptive_loop_family",
+      "tempo_behavior": "Very slow and suspendable; no pulse during open discussion unless a public timer exists.",
+      "meter_behavior": "Long rotating phrases with optional complete absence of meter.",
+      "harmonic_behavior": "Cloudy suspended harmony with several plausible directional resolutions withheld until commitment.",
+      "motif_families": ["lighthouse_destination", "living_witness", "harbor_memory"],
+      "instrumentation": ["Bowed glass", "Low harmonium", "Small string ensemble", "Prepared piano resonance"],
+      "stem_architecture": {
+        "required_stems": ["foundation"],
+        "optional_stems": ["memory", "witness", "mechanism", "resolution"],
+        "reduced_density_removals": ["mechanism", "memory", "resolution"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Enter after Council state is public; silence may continue indefinitely before entry.",
+        "exit": "Cut to silence for final confirmation, then allow a separate committed transition after the public choice resolves.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Foundation should be barely present; all melodic material yields during discussion and confirmation."
+      },
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Limit glass and string swells and favor foundation or silence.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original minimal adaptive music for a Lighthouse Council deciding where damaged memory should be sent: bowed cloudy glass, low harmonium, very small string ensemble, prepared piano resonance, several suspended directional possibilities, large authored silence, no timer pulse, no heroic resolution, no hint of the correct choice, dialogue-first.",
+        "negative_prompt": "countdown, decision timer, heroic council, villain theme, choir, trailer rise, emotional manipulation, named composer imitation, copyrighted melody, full orchestral score",
+        "consistency_anchor": "Council music presents possible directions without declaring one moral answer or reading private votes and faction goals.",
+        "human_edit_plan": "Author foundation, optional motif stems, indefinite silence behavior, final-confirmation cut, and post-choice transition handoff."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Source licenses", "Stem map", "Silence and transition notes", "Review disposition"]
+      },
+      "approval_boundary": "Signature decision-bed brief only; no final Council music, vote behavior, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-CUE-007",
+      "title": "High Water Post-Turn Adaptive Bed",
+      "category": "cue",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "stages": ["high_water"],
+      "public_state_inputs": ["High Water stage committed", "Public pressure band", "Public route summary", "Public revealed forms", "Public mechanism states"],
+      "forbidden_private_inputs": ["Hidden factions", "Private objectives", "Latent transformations", "Hidden route knowledge", "Future hazard targets"],
+      "purpose": "Support active flooded geography through interacting stems after the P0.4 Terror Turn cue and its authored silence.",
+      "duration": {"minimum_seconds": 75, "target_seconds": 150, "maximum_seconds": 300},
+      "loop_mode": "adaptive_loop_family",
+      "tempo_behavior": "Moderate movement created by subdivision and stem interaction rather than simple speed.",
+      "meter_behavior": "Asymmetric grouped pulses with room for route SFX and dialogue.",
+      "harmonic_behavior": "Cool shifting pedal tones with clearer separated upper colors and no featureless low drone.",
+      "motif_families": ["harbor_memory", "living_witness", "lighthouse_destination", "bellhouse_index"],
+      "instrumentation": ["Low bowed strings", "Bass clarinet color", "Plucked wire", "Prepared piano", "Bowed metal"],
+      "stem_architecture": {
+        "required_stems": ["foundation"],
+        "optional_stems": ["memory", "witness", "mechanism", "pressure", "transformation"],
+        "reduced_density_removals": ["pressure", "mechanism", "memory"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Begin only after the High Water Terror Turn and its authored post-event silence complete.",
+        "exit": "Crossfade by phrase to Last Light or cut for controlled reveal, critical speech, or major public transformation.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Motion stems must avoid masking route, rescue, bell, and Underteller information."
+      },
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Remove pressure and mechanism density first, then compress plucked and bowed attacks.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original adaptive High Water music for a drowned storybook harbor after streets become water routes: low bowed strings, bass-clarinet color, plucked wire, prepared piano, bowed metal, asymmetric grouped motion, separated cool harmonic colors, modular public-state stems, active danger without action-game tempo, no actual bell, rope, collapse, or water warning SFX.",
+        "negative_prompt": "tsunami score, action combat music, trailer percussion, constant low drone, sea shanty, pirate chase, hidden traitor motif, choir, named composer imitation, copyrighted melody",
+        "consistency_anchor": "High Water music adds motion without duplicating physical SFX, leaking private state, or turning every hazard into one loud cue.",
+        "human_edit_plan": "Produce shared-length foundation, memory, witness, mechanism, pressure, and transformation stems with deterministic phrase entries and silence exits."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Source licenses", "Stem map", "Transition edit notes", "Review disposition"]
+      },
+      "approval_boundary": "Signature adaptive-bed brief only; no final High Water score, transition timing, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-CUE-008",
+      "title": "Drowned Archive Truth Recovery",
+      "category": "cue",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "stages": ["high_water"],
+      "public_state_inputs": ["Archive publicly open", "Public truth band", "Public Archive state", "Public objective resolution"],
+      "forbidden_private_inputs": ["Private clue ownership", "Hidden ending carrier", "Private objective", "Unrevealed faction interpretation"],
+      "purpose": "Allow the Harbor Memory phrase to become more continuous as public truth is recovered while preserving several valid interpretations.",
+      "duration": {"minimum_seconds": 40, "target_seconds": 85, "maximum_seconds": 150},
+      "loop_mode": "phrase_bound",
+      "tempo_behavior": "Slow page-like unfolding with no urgency unless Archive collapse is public.",
+      "meter_behavior": "Fragments align into a longer phrase as truth advances.",
+      "harmonic_behavior": "Opaque clusters separate into clearer suspended harmony without a simple major resolution.",
+      "motif_families": ["harbor_memory", "drowned_release", "living_witness"],
+      "instrumentation": ["Prepared piano", "Bowed paper or wire texture", "Solo low woodwind", "Small string harmonics"],
+      "stem_architecture": {
+        "required_stems": ["foundation", "memory"],
+        "optional_stems": ["witness", "resolution", "pressure"],
+        "reduced_density_removals": ["pressure", "resolution"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Enter after public truth recovery commits; do not prefigure the discovered content.",
+        "exit": "Return to High Water foundation, transition to Last Light, or cut for Archive collapse SFX.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Truth motif should not compete with text reading or Underteller explanation."
+      },
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Reduce piano, wire, and string-harmonic peaks while preserving phrase completion.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original truth-recovery music inside a drowned archive: prepared piano, bowed paper or wire texture, solo low woodwind, small string harmonics, fragmented Harbor Memory phrase gradually aligning as public truth becomes substantial, opaque clusters separating into suspended clarity, no triumphant major resolution, no spoken memories, no collapse sound.",
+        "negative_prompt": "magical library music, revelation fanfare, choir, spoken voices, triumphant major key, hidden correct answer, trailer swell, named composer imitation, copyrighted melody",
+        "consistency_anchor": "Archive music clarifies public memory without declaring one faction interpretation or replacing textual evidence.",
+        "human_edit_plan": "Create fragmented, substantial, and complete public-truth edits plus foundation-only reading and collapse-safe exits."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Source licenses", "Truth-state edit map", "Human edits", "Review disposition"]
+      },
+      "approval_boundary": "Signature truth-recovery brief only; no final Archive music, interpretation, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-CUE-009",
+      "title": "Last Light Decision Bed",
+      "category": "cue",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "stages": ["last_light"],
+      "public_state_inputs": ["Last Light stage active", "Public truth band", "Public mechanism states", "Public final options", "Dialogue and confirmation state"],
+      "forbidden_private_inputs": ["Private votes", "Hidden ending carrier", "Private objective success", "Unrevealed faction outcome"],
+      "purpose": "Narrow the score to final public mechanisms and consequences while preserving silence and multiple costly valid choices.",
+      "duration": {"minimum_seconds": 75, "target_seconds": 180, "maximum_seconds": 360},
+      "loop_mode": "adaptive_loop_family",
+      "tempo_behavior": "Very slow, with no implied timer unless an explicit public timer is active.",
+      "meter_behavior": "Long phrases separated by authored quiet intervals.",
+      "harmonic_behavior": "Several partially compatible motif colors held without universal resolution.",
+      "motif_families": ["harbor_memory", "lighthouse_destination", "living_witness", "drowned_release", "harbor_propagation"],
+      "instrumentation": ["Small string ensemble", "Bowed cloudy glass", "Low reed organ", "Prepared piano", "Bowed metal"],
+      "stem_architecture": {
+        "required_stems": ["foundation"],
+        "optional_stems": ["memory", "witness", "mechanism", "transformation", "resolution"],
+        "reduced_density_removals": ["mechanism", "memory", "transformation"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Enter after Last Light establishes public final options; authored silence may precede indefinitely.",
+        "exit": "Cut to silence for irreversible confirmation, then hand off to P0.4 ending punctuation and committed ending treatment.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": true,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Final discussions and attribution remain fully intelligible; melody enters only when public truth supports it."
+      },
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Favor foundation and silence; compress glass, metal, and string swells.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original minimal adaptive Last Light decision music for a drowned harbor finale: small string ensemble, bowed cloudy glass, low reed organ, prepared piano, bowed metal, several incomplete motif families held in tension, large deliberate silence, moral weight without universal victory or defeat, dialogue-first, no countdown unless public, no credits theme.",
+        "negative_prompt": "final battle music, victory theme, defeat theme, countdown, choir, trailer climax, emotional manipulation, named composer imitation, copyrighted melody, continuous drone",
+        "consistency_anchor": "Last Light music presents public final mechanisms and several costly endings without reading private votes or declaring one correct outcome.",
+        "human_edit_plan": "Create public-option stem combinations, long discussion-safe foundation, irreversible-confirmation silence, and clean handoffs to each ending treatment."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Source licenses", "Option and stem map", "Human edits", "Review disposition"]
+      },
+      "approval_boundary": "Signature final-decision brief only; no final Last Light score, ending logic, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-MUS-STM-001",
+      "title": "Public Pressure Stem Family",
+      "category": "adaptive_stem",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "stages": ["low_tide_arrival", "bellhouse_ledger", "lighthouse_council", "high_water", "last_light"],
+      "public_state_inputs": ["Public pressure band", "Stage", "Public route and rescue summaries", "Dialogue state"],
+      "forbidden_private_inputs": ["Hidden faction count", "Private objective urgency", "Hidden Director target", "Latent transformation", "Future random outcome"],
+      "purpose": "Provide compatible quiet, watchful, strained, and critical pressure layers without adding private knowledge, false timers, or loudness-only escalation.",
+      "duration": {"minimum_seconds": 60, "target_seconds": 120, "maximum_seconds": 240},
+      "loop_mode": "adaptive_loop_family",
+      "tempo_behavior": "Pressure grows through subdivision, articulation, register, and density rather than large BPM jumps.",
+      "meter_behavior": "Stage-compatible asymmetric cells that never encode player or seat count.",
+      "harmonic_behavior": "Adds tension tones and friction while preserving stage harmony and speech space.",
+      "motif_families": ["none"],
+      "instrumentation": ["Low bowed string pulses", "Muted plucked wire", "Breathy low woodwind", "Restrained bowed metal"],
+      "stem_architecture": {
+        "required_stems": ["pressure"],
+        "optional_stems": [],
+        "reduced_density_removals": ["pressure"],
+        "contains_critical_sfx": false
+      },
+      "transition_policy": {
+        "entry": "Enter or change at a phrase boundary after the public pressure band commits.",
+        "exit": "Remove immediately for controlled reveal or silence authority; otherwise fade by phrase when pressure falls.",
+        "silence_allowed": true,
+        "deterministic_replay_required": true
+      },
+      "dialogue_policy": {
+        "duck_under_dialogue": true,
+        "may_drop_to_foundation": false,
+        "may_cut_to_silence": true,
+        "midrange_density_limit": "Pressure material stays below narration and never masks public hazard SFX."
+      },
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "accessibility": {
+        "music_off_safe": true,
+        "mono_safe": true,
+        "reduced_density_supported": true,
+        "reduced_dynamics_behavior": "Remove pressure stem first or compress articulation and register spread.",
+        "contains_required_gameplay_information": false
+      },
+      "generator_guidance": {
+        "prompt": "Original modular public-pressure music stems for a drowned storybook harbor: quiet, watchful, strained, and critical variants using low bowed-string pulse, muted plucked wire, breathy low woodwind, restrained bowed metal, tension through articulation and density rather than loudness or tempo, no melody, no timer, no critical SFX, compatible with sparse stage foundations.",
+        "negative_prompt": "countdown, heartbeat cliché, trailer percussion, action combat rhythm, loudness escalation, hidden traitor cue, seat-count rhythm, choir, named composer imitation, copyrighted loop",
+        "consistency_anchor": "Pressure stems represent only public aggregate danger and can be removed entirely without losing mechanics or musical coherence.",
+        "human_edit_plan": "Create four phrase-compatible levels, verify no hidden-state encoding, and provide removal-first reduced-density behavior."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_human_composition", "original_performance", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "content_id_policy": "prohibited",
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["Composer or generator", "Tool and model", "Full prompt", "Source licenses", "Pressure-level map", "Human edits", "Review disposition"]
+      },
+      "approval_boundary": "Signature pressure-stem brief only; no final thresholds, runtime selection, mix, implementation, or production approval."
+    }
+  ]
+}
