@@ -1,0 +1,47 @@
+name: Preproduction accessible narrative validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/preproduction-accessible-narrative.yml'
+      - 'docs/accessibility/**'
+      - 'docs/tales/drowned_harbor/accessibility/**'
+      - 'docs/tales/drowned_harbor/voice/**'
+      - 'tools/validate_accessible_narrative_registry.py'
+      - 'tools/test_validate_accessible_narrative_registry.py'
+      - 'tools/pseudolocalize_narrative.py'
+      - 'tools/test_pseudolocalize_narrative.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preproduction-accessible-narrative.yml'
+      - 'docs/accessibility/**'
+      - 'docs/tales/drowned_harbor/accessibility/**'
+      - 'docs/tales/drowned_harbor/voice/**'
+      - 'tools/validate_accessible_narrative_registry.py'
+      - 'tools/test_validate_accessible_narrative_registry.py'
+      - 'tools/pseudolocalize_narrative.py'
+      - 'tools/test_pseudolocalize_narrative.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Captions, localization, and narrative accessibility contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate accessible narrative registry against voice sources
+        run: python tools/validate_accessible_narrative_registry.py
+      - name: Run accessible narrative registry regression tests
+        run: python tools/test_validate_accessible_narrative_registry.py
+      - name: Run pseudolocalization regression tests
+        run: python tools/test_pseudolocalize_narrative.py
+      - name: Generate bounded pseudolocalized test package
+        run: python tools/pseudolocalize_narrative.py --output "$RUNNER_TEMP/drowned_harbor_qps_ploc.json"
+      - name: Confirm pseudolocalized output remains outside the repository
+        run: |
+          test -s "$RUNNER_TEMP/drowned_harbor_qps_ploc.json"
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
