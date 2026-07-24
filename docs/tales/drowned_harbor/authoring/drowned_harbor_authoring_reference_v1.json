@@ -162,8 +162,8 @@
       "docs/tales/drowned_harbor/voice/drowned_harbor_voice_reveal_continuity_families_v1.json"
     ],
     "accessibility_manifests": [
-      "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_narrative_reveal_continuity_units_v1.json",
-      "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_narrative_stage_units_v1.json"
+      "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_narrative_stage_units_v1.json",
+      "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_reveal_continuity_units_v1.json"
     ],
     "traceability_path": "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
   },
