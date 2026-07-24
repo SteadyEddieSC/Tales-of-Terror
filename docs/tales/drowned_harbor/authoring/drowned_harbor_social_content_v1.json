@@ -1,0 +1,100 @@
+{
+  "manifest_kind": "tale_authoring_content_groups",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "manifest_id": "drowned_harbor_social_content",
+  "production_status": "design_only",
+  "groups": [
+    {
+      "kind": "faction",
+      "status": "preproduction_ready",
+      "privacy": "faction_private",
+      "stages": [],
+      "tags": ["controlled_reveal_required", "mechanical_truth_required", "optional_hidden_state"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "### Bellmarked",
+      "traceability_concepts": ["DH-XM-009"],
+      "ids": ["bellmarked"],
+      "note": "Optional preservation-aligned faction; allegiance remains private until a legal reveal."
+    },
+    {
+      "kind": "faction",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": [],
+      "tags": ["mechanical_truth_required", "stable_seat_continuation"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 8. Bellmarked, Tidebound, and Restless",
+      "traceability_concepts": ["DH-XM-001", "DH-XM-010", "DH-XM-011"],
+      "ids": ["living", "restless", "tidebound"],
+      "note": "Public faction identities after authoritative state or transformation has committed."
+    },
+    {
+      "kind": "form",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": ["high_water", "last_light"],
+      "tags": ["active_continuation", "mechanical_truth_required", "stable_seat_continuation", "transformation_preserves_agency"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 23. Restless and replacement forms",
+      "traceability_concepts": ["DH-XM-011"],
+      "ids": ["bell_witness", "drowned_guide", "lighthouse_guardian"],
+      "note": "Active Restless continuation forms retain the stable seat and legal action or pass."
+    },
+    {
+      "kind": "form",
+      "status": "deferred",
+      "privacy": "controlled_reveal_private",
+      "stages": ["high_water", "last_light"],
+      "tags": ["controlled_reveal_required", "mechanical_truth_required", "optional_hidden_state", "stable_seat_continuation"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "### Drowned Keeper",
+      "traceability_concepts": [],
+      "ids": ["drowned_keeper"],
+      "note": "Deferred Hunted-mode form pending separate mode, balance, privacy, and human review."
+    },
+    {
+      "kind": "form",
+      "status": "review_required",
+      "privacy": "public",
+      "stages": ["high_water", "last_light"],
+      "tags": ["authored_recovery_required", "mechanical_truth_required", "stable_seat_continuation"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "### Lifeboat Survivor",
+      "traceability_concepts": ["DH-XM-001", "DH-XM-011"],
+      "ids": ["lifeboat_survivor"],
+      "note": "Replacement Living form preserves seat participation history but still requires exact entry and objective rules."
+    },
+    {
+      "kind": "form",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": ["high_water", "last_light"],
+      "tags": ["mechanical_truth_required", "stable_seat_continuation", "transformation_preserves_agency"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "### Tidebound form",
+      "traceability_concepts": ["DH-XM-010"],
+      "ids": ["tidebound_form"],
+      "note": "Tidebound transformation retains stable-seat agency, history, and normally inventory."
+    },
+    {
+      "kind": "role",
+      "status": "draft",
+      "privacy": "seat_private",
+      "stages": [],
+      "tags": ["generic_alternative_required", "mechanical_truth_required"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 21. Primary Living roles",
+      "traceability_concepts": [],
+      "ids": [
+        "bellhouse_archivist",
+        "fog_listener",
+        "lantern_surveyor",
+        "lifeboat_keeper",
+        "tide_chapel_warden",
+        "wreckers_heir"
+      ],
+      "note": "Draft Living role identities; no ending may require one named role without a generic authored alternative."
+    }
+  ]
+}
