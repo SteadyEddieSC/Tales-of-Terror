@@ -1,0 +1,383 @@
+{
+  "traceability_kind": "cross_media_preproduction_traceability",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "tale_status": "design_only",
+  "implementation_authorized": false,
+  "entries": [
+    {
+      "concept_id": "DH-XM-001",
+      "title": "Stable Seat Continuity",
+      "criticality": "foundational",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drop_In_Drop_Out_Seat_Continuity_Contract_v1.0.md",
+        "docs/tales/drowned_harbor/Multiplayer_Session_Admission_and_Seat_Reclaim_Contract_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": [
+        "DH-AUD-SYS-001",
+        "DH-AUD-SYS-002",
+        "DH-AUD-SYS-003",
+        "DH-AUD-SYS-004"
+      ],
+      "music_asset_ids": [],
+      "voice_family_ids": [
+        "DH-VO-SYS-003",
+        "DH-VO-SYS-004",
+        "DH-VO-SYS-005",
+        "DH-VO-SYS-006"
+      ],
+      "accessible_unit_ids": [
+        "DH-LOC-VO-018",
+        "DH-LOC-VO-019",
+        "DH-LOC-VO-020",
+        "DH-LOC-VO-021"
+      ],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "Controller source may change; the stable seat, its evolved state, private identity, and outcome history do not reset or get replaced."
+    },
+    {
+      "concept_id": "DH-XM-002",
+      "title": "Low-Tide Arrival and Public Geography",
+      "criticality": "signature",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Foundation_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_World_Bible_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Palette_and_Contrast_Guardrails_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-AMB-001"],
+      "music_asset_ids": ["DH-MUS-CUE-001", "DH-MUS-CUE-002"],
+      "voice_family_ids": ["DH-VO-NAR-001", "DH-VO-NAR-002"],
+      "accessible_unit_ids": ["DH-LOC-VO-001", "DH-LOC-VO-002"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "The town, causeway, landmarks, routes, and returning waterline remain publicly understandable without relying on audio, dark grading, or English narration."
+    },
+    {
+      "concept_id": "DH-XM-003",
+      "title": "Bellhouse Ledger and Public Indexing",
+      "criticality": "signature",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": [
+        "DH-AUD-AMB-003",
+        "DH-AUD-SFX-001",
+        "DH-AUD-SFX-003"
+      ],
+      "music_asset_ids": ["DH-MUS-CUE-004"],
+      "voice_family_ids": ["DH-VO-NAR-003"],
+      "accessible_unit_ids": ["DH-LOC-VO-003"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "The Ledger records governed public state and possibilities; it does not reveal hidden allegiance or guarantee prophecy."
+    },
+    {
+      "concept_id": "DH-XM-004",
+      "title": "Unresolved Extra Ring",
+      "criticality": "signature",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-SFX-002"],
+      "music_asset_ids": ["DH-MUS-CUE-004"],
+      "voice_family_ids": ["DH-VO-NAR-004"],
+      "accessible_unit_ids": ["DH-LOC-VO-004"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "One unresolved public position is added without identifying a seat, proving betrayal, or creating a new character."
+    },
+    {
+      "concept_id": "DH-XM-005",
+      "title": "Lighthouse Council and Direction Choice",
+      "criticality": "signature",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": [
+        "DH-AUD-AMB-004",
+        "DH-AUD-AMB-005",
+        "DH-AUD-SFX-004"
+      ],
+      "music_asset_ids": ["DH-MUS-CUE-005", "DH-MUS-CUE-006"],
+      "voice_family_ids": ["DH-VO-NAR-005"],
+      "accessible_unit_ids": ["DH-LOC-VO-005"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "All displayed legal directions remain discussable and mechanically neutral until explicit confirmation commits one public choice."
+    },
+    {
+      "concept_id": "DH-XM-006",
+      "title": "High Water Terror Turn",
+      "criticality": "signature",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Palette_and_Contrast_Guardrails_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-AMB-007", "DH-AUD-TRN-001"],
+      "music_asset_ids": ["DH-MUS-CUE-007"],
+      "voice_family_ids": ["DH-VO-NAR-006"],
+      "accessible_unit_ids": ["DH-LOC-VO-006"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "High Water commits one deterministic public board transformation; the new land and water routes become authoritative without implying universal loss."
+    },
+    {
+      "concept_id": "DH-XM-007",
+      "title": "Drowned Archive Truth Recovery",
+      "criticality": "signature",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_World_Bible_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-AMB-006", "DH-AUD-SFX-009"],
+      "music_asset_ids": ["DH-MUS-CUE-008"],
+      "voice_family_ids": ["DH-VO-NAR-007"],
+      "accessible_unit_ids": ["DH-LOC-VO-007"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "The Archive exposes several governed public records and objectives without labeling one interpretation as automatically correct."
+    },
+    {
+      "concept_id": "DH-XM-008",
+      "title": "Harbor Bargain Lifecycle",
+      "criticality": "foundational",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": [
+        "DH-AUD-TRN-004",
+        "DH-AUD-TRN-005",
+        "DH-AUD-TRN-006",
+        "DH-AUD-TRN-007"
+      ],
+      "music_asset_ids": [],
+      "voice_family_ids": ["DH-VO-NAR-009", "DH-VO-NAR-010"],
+      "accessible_unit_ids": ["DH-LOC-VO-009", "DH-LOC-VO-010"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "Offers are optional, terms remain on authorized surfaces, acceptance binds exactly the displayed contract, refusal is legal, and collection adds no unstated cost."
+    },
+    {
+      "concept_id": "DH-XM-009",
+      "title": "Bellmarked Public Reveal",
+      "criticality": "foundational",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-TRN-002"],
+      "music_asset_ids": ["DH-MUS-CUE-010"],
+      "voice_family_ids": ["DH-VO-REV-001"],
+      "accessible_unit_ids": ["DH-LOC-VO-011"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "No medium may identify Bellmarked allegiance before public commitment; after reveal, allegiance is public but motive remains unproven and the seat remains active."
+    },
+    {
+      "concept_id": "DH-XM-010",
+      "title": "Tidebound Public Transformation",
+      "criticality": "foundational",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-TRN-003"],
+      "music_asset_ids": ["DH-MUS-CUE-011"],
+      "voice_family_ids": ["DH-VO-REV-002"],
+      "accessible_unit_ids": ["DH-LOC-VO-012"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "Tidebound is a public form change that preserves the stable seat, intelligence, agency, history, and private-state boundaries."
+    },
+    {
+      "concept_id": "DH-XM-011",
+      "title": "Restless Continuation Forms",
+      "criticality": "foundational",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": [
+        "DH-AUD-TRN-008",
+        "DH-AUD-TRN-009",
+        "DH-AUD-TRN-010"
+      ],
+      "music_asset_ids": ["DH-MUS-CUE-012"],
+      "voice_family_ids": [
+        "DH-VO-REV-003",
+        "DH-VO-REV-004",
+        "DH-VO-REV-005"
+      ],
+      "accessible_unit_ids": [
+        "DH-LOC-VO-013",
+        "DH-LOC-VO-014",
+        "DH-LOC-VO-015"
+      ],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "Defeat changes the stable seat into an active Bell-Witness, Drowned Guide, or Lighthouse Guardian form; it does not remove the player, create a spectator, or precommit a target or sacrifice."
+    },
+    {
+      "concept_id": "DH-XM-012",
+      "title": "Last Light and Final Choice",
+      "criticality": "signature",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-AMB-008"],
+      "music_asset_ids": ["DH-MUS-CUE-009"],
+      "voice_family_ids": ["DH-VO-NAR-008"],
+      "accessible_unit_ids": ["DH-LOC-VO-008"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "Only currently legal final options are displayed; public consequences remain reviewable, discussion is not coerced, and confirmation is required before commitment."
+    },
+    {
+      "concept_id": "DH-XM-013",
+      "title": "Mixed Outcome Attribution",
+      "criticality": "foundational",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-TRN-011"],
+      "music_asset_ids": ["DH-MUS-END-007"],
+      "voice_family_ids": ["DH-VO-END-001"],
+      "accessible_unit_ids": ["DH-LOC-VO-022"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "Public seat, form, faction, and Harbor outcomes remain separately attributable; no medium may flatten a mixed result into one universal victory, defeat, or moral verdict."
+    },
+    {
+      "concept_id": "DH-XM-014",
+      "title": "Public Route Instability and Recovery",
+      "criticality": "foundational",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md"
+      ],
+      "visual_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "audio_asset_ids": ["DH-AUD-SFX-008"],
+      "music_asset_ids": ["DH-MUS-STM-001"],
+      "voice_family_ids": ["DH-VO-SYS-002"],
+      "accessible_unit_ids": ["DH-LOC-VO-017"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "The public warning state is distinguishable from committed collapse, legal responses remain visible, and no hidden solution or automatic defeat is implied."
+    },
+    {
+      "concept_id": "DH-XM-015",
+      "title": "Invalid Action and Player-Safe Recovery",
+      "criticality": "foundational",
+      "design_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "visual_paths": [],
+      "audio_asset_ids": [],
+      "music_asset_ids": [],
+      "voice_family_ids": ["DH-VO-SYS-001"],
+      "accessible_unit_ids": ["DH-LOC-VO-016"],
+      "automation_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      ],
+      "human_validation_required": true,
+      "implementation_status": "preproduction_only",
+      "non_negotiable": "Invalid input is corrected without mockery, hidden penalty, private explanation, input lock, or loss of the currently legal alternatives."
+    }
+  ]
+}
