@@ -1,0 +1,36 @@
+name: Preproduction package traceability validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/preproduction-package-traceability.yml'
+      - 'docs/preproduction/**'
+      - 'docs/tales/drowned_harbor/**'
+      - 'docs/voice/**'
+      - 'docs/accessibility/**'
+      - 'tools/validate_preproduction_package_traceability.py'
+      - 'tools/test_validate_preproduction_package_traceability.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preproduction-package-traceability.yml'
+      - 'docs/preproduction/**'
+      - 'docs/tales/drowned_harbor/**'
+      - 'docs/voice/**'
+      - 'docs/accessibility/**'
+      - 'tools/validate_preproduction_package_traceability.py'
+      - 'tools/test_validate_preproduction_package_traceability.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Package index and cross-media contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate package index, traceability, and Codex handoff
+        run: python tools/validate_preproduction_package_traceability.py
+      - name: Run package traceability regression tests
+        run: python tools/test_validate_preproduction_package_traceability.py

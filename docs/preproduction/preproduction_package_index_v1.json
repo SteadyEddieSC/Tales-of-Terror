@@ -1,0 +1,207 @@
+{
+  "index_kind": "preproduction_package_index",
+  "schema_version": 1,
+  "project": "Tales of Terror repository",
+  "working_title": "Terror Turn",
+  "working_host_name": "The Underteller",
+  "name_status": "provisional_pending_issue_7",
+  "production_tale": "lantern_house_vertical_slice",
+  "future_tale": "drowned_harbor",
+  "future_tale_status": "design_only",
+  "runtime_implementation_authorized": false,
+  "production_catalog_authorized": false,
+  "packages": [
+    {
+      "release_id": "P0.1",
+      "title": "Preproduction Narrative & Continuity Foundation",
+      "pull_request": 65,
+      "status": "merged",
+      "merged_main_sha": "53a9db5ba1c665ae6ba42873c8aed6e84806890c",
+      "merge_reference": "Protected-main squash for PR #65.",
+      "release_summary": "docs/preproduction/P0.1_Release_Summary.md",
+      "primary_paths": [
+        "docs/narrative/Underteller_Voice_Bible.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md",
+        "docs/assets/AI_Media_Production_Guide.md",
+        "docs/preproduction/README.md"
+      ],
+      "governed_outputs": [
+        "Provisional Underteller voice and truthfulness foundation",
+        "Drowned Harbor premise, stages, landmarks, roles, hazards, and ending candidates",
+        "Stable-seat continuity and admission direction",
+        "P0.x preproduction roadmap",
+        "AI-media provenance and original-first production guidance"
+      ],
+      "implementation_authorized": false,
+      "production_assets_approved": false
+    },
+    {
+      "release_id": "P0.2",
+      "title": "Drowned Harbor Dialogue and Localization Corpus",
+      "pull_request": 66,
+      "status": "merged",
+      "merged_main_sha": "cd78cc68f80c5546ea91bd0a9431642eba1e4d30",
+      "merge_reference": "Protected-main squash for PR #66.",
+      "release_summary": "docs/preproduction/P0.2_Release_Summary.md",
+      "primary_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/assets/AI_and_Creative_Tooling_Shortlist_2026-07.md",
+        "docs/assets/Bundle_and_Marketplace_Procurement_Guide.md",
+        "docs/assets/Audio_Hero_Bundle_License_Review_2026-07.md",
+        "docs/assets/Original_First_Visual_Asset_Policy.md",
+        "docs/tales/drowned_harbor/dialogue/dialogue_entry_schema_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1_encounters.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_admission_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_items_hazards_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_private_bargains_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_handoffs_endings_cards_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/underteller_voice_audition_manifest_v1.json"
+      ],
+      "governed_outputs": [
+        "104 governed English dialogue entries across seven catalogs",
+        "Public, seat-private, faction-private, and controlled-private classifications",
+        "Spooky, Grim, Gore & Dread, and plain-fallback equivalence",
+        "Admission, continuity, encounter, item, hazard, bargain, faction, afterlife, and ending language",
+        "24-selection Underteller voice-audition manifest and export tooling",
+        "AI-tooling, bundle-procurement, licensing, and original-first asset policies"
+      ],
+      "implementation_authorized": false,
+      "production_assets_approved": false
+    },
+    {
+      "release_id": "P0.3",
+      "title": "Drowned Harbor Visual Development and Asset Brief Pack",
+      "pull_request": 67,
+      "status": "merged",
+      "merged_main_sha": "e0cc8932904569f2b4b9b918da7d2727984464de",
+      "merge_reference": "Protected-main squash for PR #67.",
+      "release_summary": "docs/preproduction/P0.3_Release_Summary.md",
+      "primary_paths": [
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Palette_and_Contrast_Guardrails_v1.md",
+        "docs/tales/drowned_harbor/visual/drowned_harbor_visual_asset_briefs_v1.json",
+        "docs/tales/drowned_harbor/visual/drowned_harbor_visual_asset_briefs_wave2_v1.json"
+      ],
+      "governed_outputs": [
+        "Original-first drowned storybook diorama direction",
+        "Cool-dark Grim palette and non-muddy material separation",
+        "18 Tier A visual briefs",
+        "External candidate provenance and review governance"
+      ],
+      "implementation_authorized": false,
+      "production_assets_approved": false
+    },
+    {
+      "release_id": "P0.4",
+      "title": "Drowned Harbor Audio Direction and SFX Brief Pack",
+      "pull_request": 68,
+      "status": "merged",
+      "merged_main_sha": "8270b2d322321c2cee28404794780e012477ffcb",
+      "merge_reference": "Protected-main squash for PR #68.",
+      "release_summary": "docs/preproduction/P0.4_Release_Summary.md",
+      "primary_paths": [
+        "docs/tales/drowned_harbor/audio/Drowned_Harbor_Audio_Direction_v1.md",
+        "docs/tales/drowned_harbor/audio/drowned_harbor_audio_ambience_briefs_v1.json",
+        "docs/tales/drowned_harbor/audio/drowned_harbor_audio_event_briefs_v1.json",
+        "docs/tales/drowned_harbor/audio/drowned_harbor_audio_continuity_briefs_v1.json"
+      ],
+      "governed_outputs": [
+        "Mechanical-truth sound direction",
+        "Public and private audio boundaries",
+        "36 ambience, SFX, transition, and system briefs",
+        "Caption, mono-safety, reduced-dynamics, and provenance requirements"
+      ],
+      "implementation_authorized": false,
+      "production_assets_approved": false
+    },
+    {
+      "release_id": "P0.5",
+      "title": "Drowned Harbor Music Direction and Adaptive Score Brief Pack",
+      "pull_request": 69,
+      "status": "merged",
+      "merged_main_sha": "dc64c864cd4c334c958aff1d104aa903ec109131",
+      "merge_reference": "Protected-main squash for PR #69.",
+      "release_summary": "docs/preproduction/P0.5_Release_Summary.md",
+      "primary_paths": [
+        "docs/tales/drowned_harbor/music/Drowned_Harbor_Music_Direction_v1.md",
+        "docs/tales/drowned_harbor/music/Drowned_Harbor_Adaptive_Music_State_Contract_v1.md",
+        "docs/tales/drowned_harbor/music/drowned_harbor_music_stage_briefs_v1.json",
+        "docs/tales/drowned_harbor/music/drowned_harbor_music_resolution_briefs_v1.json"
+      ],
+      "governed_outputs": [
+        "Public-only adaptive music state contract",
+        "Six motif and seven stem families",
+        "20 stage, form, pressure, and ending music briefs",
+        "Music-off, silence, privacy, Content ID, and provenance boundaries"
+      ],
+      "implementation_authorized": false,
+      "production_assets_approved": false
+    },
+    {
+      "release_id": "P0.6",
+      "title": "Underteller Voice Direction, Casting, and Recorded Dialogue Preparation",
+      "pull_request": 70,
+      "status": "merged",
+      "merged_main_sha": "9c477561ba4cd9de9244ac29ff30e3da16ed0e44",
+      "merge_reference": "Protected-main squash for PR #70.",
+      "release_summary": "docs/preproduction/P0.6_Release_Summary.md",
+      "primary_paths": [
+        "docs/voice/Underteller_Voice_Direction_v1.md",
+        "docs/voice/Underteller_Casting_and_Audition_Protocol_v1.md",
+        "docs/tales/drowned_harbor/voice/Drowned_Harbor_Underteller_Performance_Addendum_v1.md",
+        "docs/tales/drowned_harbor/voice/drowned_harbor_voice_narrative_families_v1.json",
+        "docs/tales/drowned_harbor/voice/drowned_harbor_voice_reveal_continuity_families_v1.json"
+      ],
+      "governed_outputs": [
+        "Mechanically truthful Underteller performance identity",
+        "Human and synthetic audition rights and consent protocol",
+        "22 audition-ready voice line families",
+        "Plain-system, privacy, stable-seat, caption, replay, and cloning boundaries"
+      ],
+      "implementation_authorized": false,
+      "production_assets_approved": false
+    },
+    {
+      "release_id": "P0.7",
+      "title": "Localization, Captions, and Accessible Narrative Presentation",
+      "pull_request": 71,
+      "status": "merged",
+      "merged_main_sha": "6ea08389f09e5dc6162f63abe65105860b36f22e",
+      "merge_reference": "Protected-main squash for PR #71.",
+      "release_summary": "docs/preproduction/P0.7_Release_Summary.md",
+      "primary_paths": [
+        "docs/accessibility/Localization_Captions_and_Accessible_Narrative_Direction_v1.md",
+        "docs/tales/drowned_harbor/accessibility/Drowned_Harbor_Caption_and_Localization_Style_v1.md",
+        "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_narrative_stage_units_v1.json",
+        "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_reveal_continuity_units_v1.json"
+      ],
+      "governed_outputs": [
+        "Localization-ready source and placeholder rules",
+        "22 one-to-one accessible narrative registry units",
+        "Captions, transcript, persistent text, announcements, and reading order",
+        "Deterministic 88-string pseudolocalization harness"
+      ],
+      "implementation_authorized": false,
+      "production_assets_approved": false
+    }
+  ],
+  "current_protected_main_at_index_creation": "6ea08389f09e5dc6162f63abe65105860b36f22e",
+  "known_external_gates": [
+    {
+      "issue": 7,
+      "summary": "Working title and host name legal clearance remains open."
+    },
+    {
+      "issue": 39,
+      "summary": "Human household and remote playtest remains open and automation is not human evidence."
+    },
+    {
+      "issue": 44,
+      "summary": "Companion dependency vulnerability remediation remains open and may not be suppressed."
+    }
+  ]
+}
