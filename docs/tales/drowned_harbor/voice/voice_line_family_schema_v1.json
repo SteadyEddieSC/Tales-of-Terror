@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-voice-line-family-v1.json",
+  "title": "Drowned Harbor voice line family",
+  "description": "Preproduction schema for governed Underteller and plain-system line families. It is not a production recording or runtime contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "family_id",
+    "title",
+    "category",
+    "delivery_mode",
+    "intensity_range",
+    "priority",
+    "status",
+    "privacy_class",
+    "stages",
+    "trigger",
+    "required_public_facts",
+    "forbidden_private_inputs",
+    "prohibited_implications",
+    "mechanical_equivalence_key",
+    "draft_script",
+    "performance_notes",
+    "timing",
+    "playback_policy",
+    "pronunciation_terms",
+    "take_plan",
+    "candidate_guidance",
+    "provenance_policy",
+    "approval_boundary"
+  ],
+  "properties": {
+    "family_id": {
+      "type": "string",
+      "pattern": "^DH-VO-(NAR|SYS|REV|END)-[0-9]{3}$"
+    },
+    "title": {"type": "string", "minLength": 1},
+    "category": {
+      "type": "string",
+      "enum": ["narrative", "system", "reveal", "ending"]
+    },
+    "delivery_mode": {
+      "type": "string",
+      "enum": ["host", "witness", "tempter", "adjudicator", "mourner", "revelator", "plain_system"]
+    },
+    "intensity_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "target", "maximum"],
+      "properties": {
+        "minimum": {"type": "integer", "minimum": 1, "maximum": 5},
+        "target": {"type": "integer", "minimum": 1, "maximum": 5},
+        "maximum": {"type": "integer", "minimum": 1, "maximum": 5}
+      }
+    },
+    "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+    "status": {
+      "type": "string",
+      "enum": [
+        "brief_draft",
+        "brief_reviewed",
+        "audition_ready",
+        "candidate_recorded",
+        "candidate_reviewed",
+        "production_candidate",
+        "approved",
+        "rejected",
+        "deferred"
+      ]
+    },
+    "privacy_class": {
+      "type": "string",
+      "enum": ["public_shared", "plain_system", "private_surface_deferred"]
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "low_tide_arrival",
+          "bellhouse_ledger",
+          "lighthouse_council",
+          "high_water",
+          "last_light",
+          "ending_resolution",
+          "reusable_system"
+        ]
+      }
+    },
+    "trigger": {"type": "string", "minLength": 1},
+    "required_public_facts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "forbidden_private_inputs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "prohibited_implications": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "mechanical_equivalence_key": {"type": "string", "minLength": 1},
+    "draft_script": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["spooky", "grim", "gore_and_dread", "plain_system"],
+      "properties": {
+        "spooky": {"type": "string", "minLength": 1},
+        "grim": {"type": "string", "minLength": 1},
+        "gore_and_dread": {"type": "string", "minLength": 1},
+        "plain_system": {"type": "string", "minLength": 1}
+      }
+    },
+    "performance_notes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum_seconds", "target_seconds", "maximum_seconds"],
+      "properties": {
+        "minimum_seconds": {"type": "number", "minimum": 0.2, "maximum": 60},
+        "target_seconds": {"type": "number", "minimum": 0.2, "maximum": 60},
+        "maximum_seconds": {"type": "number", "minimum": 0.2, "maximum": 60}
+      }
+    },
+    "playback_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["interruptible", "replayable", "caption_required", "text_persists_after_interruption", "blocks_input"],
+      "properties": {
+        "interruptible": {"type": "boolean"},
+        "replayable": {"type": "boolean"},
+        "caption_required": {"type": "boolean"},
+        "text_persists_after_interruption": {"type": "boolean"},
+        "blocks_input": {"type": "boolean"}
+      }
+    },
+    "pronunciation_terms": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "take_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical", "alternate_b", "alternate_c", "pickup_allowed"],
+      "properties": {
+        "canonical": {"type": "string", "minLength": 1},
+        "alternate_b": {"type": "string", "minLength": 1},
+        "alternate_c": {"type": "string", "minLength": 1},
+        "pickup_allowed": {"type": "boolean"}
+      }
+    },
+    "candidate_guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["human_direction", "synthetic_direction", "negative_direction", "human_edit_plan"],
+      "properties": {
+        "human_direction": {"type": "string", "minLength": 1},
+        "synthetic_direction": {"type": "string", "minLength": 1},
+        "negative_direction": {"type": "string", "minLength": 1},
+        "human_edit_plan": {"type": "string", "minLength": 1}
+      }
+    },
+    "provenance_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_source_kinds", "voice_clone_consent", "raw_public_distribution", "required_record"],
+      "properties": {
+        "allowed_source_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["human_performer", "synthetic_consented", "synthetic_original", "temporary_placeholder"]
+          }
+        },
+        "voice_clone_consent": {
+          "type": "string",
+          "enum": ["prohibited", "separate_explicit_agreement_required", "not_applicable"]
+        },
+        "raw_public_distribution": {
+          "type": "string",
+          "enum": ["allowed", "prohibited", "agreement_dependent"]
+        },
+        "required_record": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "approval_boundary": {"type": "string", "minLength": 1}
+  }
+}
