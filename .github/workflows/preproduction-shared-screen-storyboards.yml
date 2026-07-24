@@ -1,0 +1,60 @@
+name: Preproduction shared-screen storyboard validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/preproduction-shared-screen-storyboards.yml'
+      - 'docs/preproduction/shared_screen_storyboard_schema_v1.json'
+      - 'docs/technical/Shared_Screen_Storyboard_Contract_v1.md'
+      - 'docs/tales/drowned_harbor/ui/**'
+      - 'docs/design/Seat_Continuity_and_Admission.md'
+      - 'docs/accessibility/**'
+      - 'docs/tales/drowned_harbor/accessibility/**'
+      - 'docs/tales/drowned_harbor/visual/**'
+      - 'docs/preproduction/drowned_harbor_cross_media_traceability_v1.json'
+      - 'tools/validate_shared_screen_storyboards.py'
+      - 'tools/test_validate_shared_screen_storyboards.py'
+      - 'tools/render_shared_screen_storyboards.py'
+      - 'tools/test_render_shared_screen_storyboards.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preproduction-shared-screen-storyboards.yml'
+      - 'docs/preproduction/shared_screen_storyboard_schema_v1.json'
+      - 'docs/technical/Shared_Screen_Storyboard_Contract_v1.md'
+      - 'docs/tales/drowned_harbor/ui/**'
+      - 'docs/design/Seat_Continuity_and_Admission.md'
+      - 'docs/accessibility/**'
+      - 'docs/tales/drowned_harbor/accessibility/**'
+      - 'docs/tales/drowned_harbor/visual/**'
+      - 'docs/preproduction/drowned_harbor_cross_media_traceability_v1.json'
+      - 'tools/validate_shared_screen_storyboards.py'
+      - 'tools/test_validate_shared_screen_storyboards.py'
+      - 'tools/render_shared_screen_storyboards.py'
+      - 'tools/test_render_shared_screen_storyboards.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Controller-first storyboard contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate storyboard records
+        run: python tools/validate_shared_screen_storyboards.py --identity
+      - name: Run storyboard contract mutations
+        run: python tools/test_validate_shared_screen_storyboards.py
+      - name: Run offline renderer tests
+        run: python tools/test_render_shared_screen_storyboards.py
+      - name: Render temporary review file
+        run: python tools/render_shared_screen_storyboards.py --output "$RUNNER_TEMP/drowned_harbor_storyboards.html"
+      - name: Verify offline and clean output
+        run: |
+          test -s "$RUNNER_TEMP/drowned_harbor_storyboards.html"
+          test "$(grep -c 'class="storyboard"' "$RUNNER_TEMP/drowned_harbor_storyboards.html")" = "22"
+          ! grep -Eiq 'https?://|<script|src=' "$RUNNER_TEMP/drowned_harbor_storyboards.html"
+          test ! -e game/data/tales/drowned_harbor
+          test "$(find game/data/tales -mindepth 1 -maxdepth 1 -type d | sort)" = "game/data/tales/lantern_house"
+          test -z "$(git status --porcelain)"
