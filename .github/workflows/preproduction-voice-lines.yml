@@ -1,0 +1,32 @@
+name: Preproduction voice line validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/preproduction-voice-lines.yml'
+      - 'docs/voice/**'
+      - 'docs/tales/drowned_harbor/voice/**'
+      - 'tools/validate_preproduction_voice_lines.py'
+      - 'tools/test_validate_preproduction_voice_lines.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preproduction-voice-lines.yml'
+      - 'docs/voice/**'
+      - 'docs/tales/drowned_harbor/voice/**'
+      - 'tools/validate_preproduction_voice_lines.py'
+      - 'tools/test_validate_preproduction_voice_lines.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Mechanical-truth voice contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate governed voice line families
+        run: python tools/validate_preproduction_voice_lines.py
+      - name: Run voice-line validator regression tests
+        run: python tools/test_validate_preproduction_voice_lines.py
