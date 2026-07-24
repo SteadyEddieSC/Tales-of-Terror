@@ -10,7 +10,7 @@
       "candidate_id": "DH-CAND-001-A",
       "asset_id": "DH-KEY-001",
       "generator": "chatgpt",
-      "model_or_tool": "OpenAI image generation via ChatGPT",
+      "model_or_tool": "OpenAI image generation via ChatGPT; gen_id ef4235ab-e564-49a1-a243-6440887cb359",
       "status": "generated_external",
       "source_kind": "original_ai_assisted",
       "prompt_source": "governed_brief",
@@ -21,8 +21,8 @@
       "third_party_inputs": false,
       "expected_outputs": 1,
       "repository_disposition": "external_candidate_pending_upload",
-      "review_status": "unreviewed",
-      "approval_boundary": "Concept candidate only. Generation does not approve key art, title treatment, storefront use, production integration, or a Drowned Harbor production Tale."
+      "review_status": "needs_revision",
+      "approval_boundary": "Concept candidate only. The generated result is retained as a visual-development reference, but it did not satisfy the registered key-art composition because it became a multi-panel presentation board. It does not approve key art, title treatment, storefront use, production integration, or a Drowned Harbor production Tale."
     },
     {
       "candidate_id": "DH-CAND-002-A",
