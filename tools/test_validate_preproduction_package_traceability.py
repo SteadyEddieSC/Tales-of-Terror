@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import copy
 import re
-from pathlib import Path
 
 from validate_preproduction_package_traceability import (
     HANDOFF_PATH,
@@ -19,12 +18,6 @@ from validate_preproduction_package_traceability import (
     validate_traceability,
 )
 
-FAILURE_PATH = Path("p0.8-regression-failure.txt")
-
-
-def record_unrejected(case: str) -> None:
-    FAILURE_PATH.write_text(case + "\n", encoding="utf-8")
-
 
 def expect_index_failure(data: dict, case: str) -> None:
     try:
@@ -32,7 +25,6 @@ def expect_index_failure(data: dict, case: str) -> None:
     except TraceabilityValidationError as exc:
         assert str(exc).strip(), f"{case}: failure diagnostic must not be empty"
     else:
-        record_unrejected(case)
         raise AssertionError(f"Expected package-index rejection: {case}")
 
 
@@ -42,7 +34,6 @@ def expect_trace_failure(data: dict, case: str) -> None:
     except TraceabilityValidationError as exc:
         assert str(exc).strip(), f"{case}: failure diagnostic must not be empty"
     else:
-        record_unrejected(case)
         raise AssertionError(f"Expected traceability rejection: {case}")
 
 
@@ -52,12 +43,10 @@ def expect_handoff_failure(content: str, case: str) -> None:
     except TraceabilityValidationError as exc:
         assert str(exc).strip(), f"{case}: failure diagnostic must not be empty"
     else:
-        record_unrejected(case)
         raise AssertionError(f"Expected handoff rejection: {case}")
 
 
 def main() -> int:
-    FAILURE_PATH.unlink(missing_ok=True)
     index = read_json(INDEX_PATH)
     trace = read_json(TRACE_PATH)
     handoff = HANDOFF_PATH.read_text(encoding="utf-8")
