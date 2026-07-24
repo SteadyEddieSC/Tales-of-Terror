@@ -1,0 +1,791 @@
+{
+  "manifest_kind": "audio_asset_briefs_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "entry_schema": "audio_asset_brief_schema_v1.json",
+  "entries": [
+    {
+      "asset_id": "DH-AUD-SFX-001",
+      "title": "Bellhouse Ordinary Public Strike",
+      "category": "sound_effect",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["bellhouse_ledger", "high_water", "last_light"],
+      "trigger": "An authorized public Bellhouse strike commits through a visible mechanism or event.",
+      "purpose": "Establish the recognizable Bellhouse family and confirm a public strike without implying automatic defeat or hidden faction state.",
+      "duration": {"minimum_seconds": 2.5, "target_seconds": 6, "maximum_seconds": 12},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Oxidized bronze or brass impact",
+        "Tower timber and fastener response",
+        "Rope and clapper movement",
+        "Controlled maritime decay tail"
+      ],
+      "sonic_requirements": [
+        "Recognizable on modest television speakers",
+        "Long resonance remains duckable under dialogue",
+        "Pitch identity must support related extra-ring and warning variants",
+        "The strike does not imply death, prophecy certainty, or hidden allegiance"
+      ],
+      "negative_constraints": [
+        "No cathedral grandeur",
+        "No stock church bell used unchanged",
+        "No musical chord",
+        "No extreme sub-bass impact",
+        "No hidden-role cue",
+        "No automatic-death implication"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 82,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 4,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce impact-to-tail contrast and low resonance while retaining the bell's harmonic identity and public strike timing."
+      },
+      "generator_guidance": {
+        "prompt": "Original maritime Bellhouse strike: aged oxidized bronze or brass bell, firm but restrained clapper impact, swollen timber tower response, rope movement, unstable salt-air harmonics, controlled six-second decay, ominous and tactile rather than grand, no music, no church service, designed for television speakers.",
+        "negative_prompt": "cathedral bell, church service, musical chord, cinematic boom, stock bell unchanged, extreme sub bass, hidden traitor cue, death knell cliché, speech",
+        "consistency_anchor": "Every Bellhouse sound shares oxidized brass, rope, wet timber, indexed names, and a mechanically ordered but damaged resonance."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "bell source provenance", "full prompt when generated", "pitch and layering notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature SFX brief only; no final bell identity, loudness, spatialization, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-002",
+      "title": "Unresolved Extra Ring",
+      "category": "sound_effect",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["bellhouse_ledger", "high_water"],
+      "trigger": "The public Bellhouse count exceeds the visible active-seat count through the authored unresolved-position event.",
+      "purpose": "Communicate one additional unresolved index position without identifying a hidden player or using a simple louder or reversed bell.",
+      "duration": {"minimum_seconds": 3, "target_seconds": 7, "maximum_seconds": 14},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Related Bellhouse brass body",
+        "Partial or absent impact transient",
+        "Wet glass or rope replacement harmonic",
+        "Second decay arriving from an impossible reflection"
+      ],
+      "sonic_requirements": [
+        "Clearly related to DH-AUD-SFX-001",
+        "Mechanically wrong without becoming comic or synthetic",
+        "No spatial or tonal feature identifies one stable seat",
+        "Spooky emphasizes mystery; Grim emphasizes pressure; Gore & Dread adds localized wet resonance without added loudness"
+      ],
+      "negative_constraints": [
+        "No simple reverse audio",
+        "No louder copy of the ordinary bell",
+        "No hidden-player location cue",
+        "No spoken name",
+        "No musical sting",
+        "No extreme jump-scare peak"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 88,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Preserve the wrong harmonic and double-decay relationship while reducing peak and tail contrast."
+      },
+      "generator_guidance": {
+        "prompt": "Original unresolved extra ring derived from an aged maritime Bellhouse bell: same oxidized brass body as the ordinary strike, but with a partial impact arriving before itself, one missing harmonic replaced by wet cloudy glass and tensioned rope, a second decay reflecting from an impossible direction, elegant supernatural wrongness, no speech, no music, no jump-scare loudness.",
+        "negative_prompt": "simple reverse bell, louder duplicate, spoken name, hidden player cue, musical sting, comedy, sci-fi effect, extreme jump scare, cathedral bell",
+        "consistency_anchor": "The extra ring is the Bellhouse family behaving incorrectly around one unresolved index position, never a secret-traitor identifier."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "relationship to ordinary bell source", "full prompt when generated", "harmonic and decay notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature SFX brief only; no final extra-ring identity, hidden-state behavior, mix, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-003",
+      "title": "Ledger Name Index Commit",
+      "category": "sound_effect",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["bellhouse_ledger", "high_water", "last_light"],
+      "trigger": "A public seat name or public state marker is authoritatively indexed into the Bellhouse Ledger.",
+      "purpose": "Confirm a public ledger mutation through paper, ink, brass, and rope without representing guaranteed prophecy or revealing private state.",
+      "duration": {"minimum_seconds": 1.2, "target_seconds": 3.5, "maximum_seconds": 7},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Swollen page flex",
+        "Feathered ink or scraping motion",
+        "Brass index tab movement",
+        "Short rope or tower response"
+      ],
+      "sonic_requirements": [
+        "Readable as a record change rather than magic",
+        "Short enough not to interrupt repeated public indexing",
+        "Supports controlled variation",
+        "Never includes a spoken name or private marker"
+      ],
+      "negative_constraints": [
+        "No quill-writing cliché",
+        "No magical sparkle",
+        "No spoken name",
+        "No secret objective cue",
+        "No long bell strike",
+        "No menu cash-register sound"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 74,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 3,
+        "minimum_variation_count": 5,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce scrape and tab transient contrast while retaining the paper-to-brass record-change sequence."
+      },
+      "generator_guidance": {
+        "prompt": "Short original sound of a public name being indexed into a swollen maritime ledger: thick wet paper flex, feathered dark ink scraping through fibers, one oxidized-brass index tab moving, restrained rope and tower response, tactile historical mechanism rather than magic, no speech, no bell toll, no music.",
+        "negative_prompt": "quill writing cliché, magical sparkle, spoken name, secret clue, cash register, UI beep, full bell strike, music, fantasy spellbook",
+        "consistency_anchor": "The Ledger records public possibilities through swollen paper, feathered ink, oxidized brass, and Bellhouse rope mechanics."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "paper and mechanism source provenance", "full prompt when generated", "edit notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature SFX brief only; no final Ledger symbols, UI, timing, mix, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-004",
+      "title": "Lighthouse Lens Rotation Commit",
+      "category": "sound_effect",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["lighthouse_council", "high_water", "last_light"],
+      "trigger": "A public lighthouse direction or operation change commits.",
+      "purpose": "Confirm that the memory-guidance lens has begun or completed an authorized rotation without sounding technological or musical.",
+      "duration": {"minimum_seconds": 2, "target_seconds": 5, "maximum_seconds": 10},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Thick cloudy-glass pressure",
+        "Oxidized brass ring movement",
+        "Indexed mechanical clicks",
+        "Old bearing friction",
+        "Short directional beam texture"
+      ],
+      "sonic_requirements": [
+        "Supports start and stop edit points",
+        "Mechanism sounds heavy and deliberate",
+        "Beam texture remains tactile rather than electronic",
+        "No hidden ending result is implied"
+      ],
+      "negative_constraints": [
+        "No laser",
+        "No sci-fi servo",
+        "No steampunk clockwork overload",
+        "No musical chord",
+        "No hidden ending cue",
+        "No excessive glass squeal"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 80,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce glass-pressure and click peaks while retaining the heavy rotation and directional completion."
+      },
+      "generator_guidance": {
+        "prompt": "Original lighthouse lens rotation sound for a storybook memory-guidance mechanism: thick cloudy cracked glass under pressure, heavy oxidized-brass rings moving, sparse indexed clicks, old bearing friction, a restrained tactile beam sweep, deliberate and ominous, no electronics, no music, no hidden ending reveal.",
+        "negative_prompt": "laser, sci-fi servo, reactor, steampunk clockwork overload, musical chord, glass screech, hidden ending clue, trailer rise, speech",
+        "consistency_anchor": "The lighthouse guides memory through thick damaged glass, ordered brass indexes, old bearings, and restrained directional amber light."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "glass and mechanism source provenance", "full prompt when generated", "edit and timing notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature SFX brief only; no final lens behavior, ending meaning, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-005",
+      "title": "Rope Rescue Under Load",
+      "category": "sound_effect",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P1",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["low_tide_arrival", "high_water"],
+      "trigger": "A validated public rope rescue or stabilization action commits.",
+      "purpose": "Confirm load, strain, and successful support without implying that all future route risk is removed.",
+      "duration": {"minimum_seconds": 1.5, "target_seconds": 4, "maximum_seconds": 8},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Salt-stiff rope tightening",
+        "Wet timber anchor response",
+        "Short human or load movement without speech",
+        "Controlled release or successful hold"
+      ],
+      "sonic_requirements": [
+        "Successful hold is distinguishable from imminent failure",
+        "Several variations prevent repeated-action fatigue",
+        "No cue implies permanent route stabilization unless the public state confirms it"
+      ],
+      "negative_constraints": [
+        "No rope snap on success",
+        "No shouted dialogue",
+        "No superhero rescue flourish",
+        "No permanent-safety implication",
+        "No musical sting"
+      ],
+      "mix_policy": {
+        "bus": "interaction_sfx",
+        "foreground_priority": 66,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 3,
+        "minimum_variation_count": 6,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce rope and anchor transient contrast while preserving the successful-load sequence."
+      },
+      "generator_guidance": {
+        "prompt": "Short tactile rescue sound: salt-stiff rope tightening under heavy load, wet timber anchor responding, restrained body or cargo movement, then a controlled successful hold, maritime storybook horror, practical rather than heroic, no speech, no music, multiple editable variations.",
+        "negative_prompt": "rope snapping, shouting, heroic flourish, musical sting, comedy, dry nylon rope, permanent safety cue, extreme impact",
+        "consistency_anchor": "Rope actions use salt-stiff fiber, wet timber, visible load, and mechanically honest success or danger states."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed", "licensed_supporting"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "rope and timber source licenses", "full prompt when generated", "variation notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Interaction SFX brief only; no final rescue timing, route state, mix, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-006",
+      "title": "Lifeboat Launch Commit",
+      "category": "sound_effect",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P1",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water", "last_light", "ending_resolution"],
+      "trigger": "A public lifeboat launch action commits with valid capacity and route state.",
+      "purpose": "Confirm that the prepared craft enters its authorized water route without implying escape has already succeeded.",
+      "duration": {"minimum_seconds": 3, "target_seconds": 7, "maximum_seconds": 14},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Wet hull shifting on supports",
+        "Ramp and timber load",
+        "Rope release",
+        "First water displacement",
+        "Short continuing hull strain"
+      ],
+      "sonic_requirements": [
+        "Launch is distinct from final escape",
+        "Capacity or passenger information remains visual",
+        "No triumphant resolution",
+        "Supports route-specific tail editing"
+      ],
+      "negative_constraints": [
+        "No victory fanfare",
+        "No automatic escape implication",
+        "No motorboat engine",
+        "No shouted crew dialogue",
+        "No massive ship launch",
+        "No musical score"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 72,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce hull and ramp impacts while preserving rope release and first-water contact."
+      },
+      "generator_guidance": {
+        "prompt": "Original small wooden lifeboat launch in a drowned harbor: swollen hull shifts down wet timber supports, launch ramp strains, mooring rope releases, the boat meets black water with restrained displacement, practical and ominous, no engine, no voices, no victory music, not a completed escape.",
+        "negative_prompt": "victory fanfare, motorboat, large ship launch, cheering, shouting, completed escape cue, music, trailer impact, comedy",
+        "consistency_anchor": "The lifeboat is a small wet wooden rescue craft under rope, capacity, and route pressure, never an automatic victory symbol."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed", "licensed_supporting"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "boat, rope, water, and timber source licenses", "full prompt when generated", "edit notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Interaction SFX brief only; no final launch, escape, capacity, mix, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-007",
+      "title": "Current Takes Public Item",
+      "category": "sound_effect",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P1",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water"],
+      "trigger": "A validated current hazard moves a named public item from its prior location.",
+      "purpose": "Support the visible item relocation with water, object, and route motion without suggesting destruction when recovery remains possible.",
+      "duration": {"minimum_seconds": 1, "target_seconds": 3.5, "maximum_seconds": 7},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["profile_neutral"],
+      "layers": [
+        "Localized current surge",
+        "Object-specific scrape or lift",
+        "Short movement through water",
+        "Recoverable distant contact"
+      ],
+      "sonic_requirements": [
+        "Movement direction may support the visible route but is never the only locator",
+        "Cue does not imply destruction unless a separate public effect commits",
+        "Object category variations remain governable"
+      ],
+      "negative_constraints": [
+        "No item-shatter assumption",
+        "No magical teleport",
+        "No hidden destination cue",
+        "No spoken item name",
+        "No oversized wave",
+        "No comedic splash"
+      ],
+      "mix_policy": {
+        "bus": "environment_sfx",
+        "foreground_priority": 62,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 4,
+        "minimum_variation_count": 5,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce surge and contact peaks while preserving the object-movement sequence."
+      },
+      "generator_guidance": {
+        "prompt": "Short localized sound of a recoverable public object being taken by a current in a flooded timber street: restrained water surge, object scrape or lift, movement through shallow black water, distant recoverable contact, clear but not destructive, no speech, no magic, no oversized wave.",
+        "negative_prompt": "object shatter, teleport, giant wave, spoken item name, comedy splash, magical sparkle, destruction cue, music",
+        "consistency_anchor": "Water moves public objects through authored routes while preserving recoverability unless a separate visible state destroys them."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed", "licensed_supporting"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "water and object source licenses", "full prompt when generated", "object variation notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Hazard SFX brief only; no final item movement, route, destruction, mix, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-008",
+      "title": "Street Gives Way Warning and Collapse",
+      "category": "sound_effect",
+      "signature_asset": false,
+      "originality_tier": "B",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water"],
+      "trigger": "A named public space enters the authored instability warning or collapse resolution.",
+      "purpose": "Provide separable warning and resolution components so players can distinguish imminent danger from committed collapse.",
+      "duration": {"minimum_seconds": 2, "target_seconds": 6, "maximum_seconds": 12},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Stone crack and wet timber shift warning",
+        "Water pressure through opening",
+        "Optional committed debris collapse",
+        "Short route-state tail"
+      ],
+      "sonic_requirements": [
+        "Warning component is editable and clearly precedes resolution",
+        "A legal response window is never masked by a premature destruction sound",
+        "Profile variants alter physical detail rather than timing or volume",
+        "No active seat is implied defeated solely by the collapse cue"
+      ],
+      "negative_constraints": [
+        "No immediate collapse before warning",
+        "No building-demolition spectacle",
+        "No automatic player death",
+        "No jump-scare loudness",
+        "No musical sting",
+        "No hidden route information"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 86,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 4,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Compress collapse impacts and preserve the warning-to-resolution distinction."
+      },
+      "generator_guidance": {
+        "prompt": "Two-part editable hazard sound for a flooded storybook harbor street: first a clear warning of stone cracking, wet timber shifting, and water pressure entering; then an optional committed collapse with restrained debris and route-state tail, tense but not explosively loud, no music, no automatic death cue.",
+        "negative_prompt": "instant demolition, explosion, jump scare, player death scream, musical sting, hidden route clue, skyscraper collapse, excessive sub bass",
+        "consistency_anchor": "Public hazards warn before irreversible resolution whenever authored rules allow a response window."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed", "licensed_supporting"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "stone, timber, water, and debris source licenses", "full prompt when generated", "warning and resolution edit points", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Hazard SFX brief only; no final warning window, collapse result, loudness, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-SFX-009",
+      "title": "Drowned Archive Collapse",
+      "category": "sound_effect",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water"],
+      "trigger": "The authored Drowned Archive collapse window begins or resolves publicly.",
+      "purpose": "Represent shelves, paper, water, brass, and overhead structure failing around several still-readable objectives.",
+      "duration": {"minimum_seconds": 4, "target_seconds": 10, "maximum_seconds": 18},
+      "loop_mode": "none",
+      "spatial_mode": "environment_bed",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Shelf and ceiling load warning",
+        "Swollen records falling into water",
+        "Brass binding mechanism distortion",
+        "Interior water displacement",
+        "Recoverable objective-space tail"
+      ],
+      "sonic_requirements": [
+        "Supports a warning phase and a committed collapse phase",
+        "Does not imply every objective was lost",
+        "Paper remains audible within structural failure",
+        "Gore & Dread may add body-adjacent detail only when a public trapped-resident state exists"
+      ],
+      "negative_constraints": [
+        "No magical library destruction",
+        "No automatic total objective failure",
+        "No constant screaming",
+        "No cinematic explosion",
+        "No musical climax",
+        "No hidden correct-choice cue"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 90,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce structural peaks and debris density while preserving paper, brass, water, and collapse-phase timing."
+      },
+      "generator_guidance": {
+        "prompt": "Original two-phase collapse sound inside a Drowned Archive: wet shelves and ceiling strain, swollen maritime records falling into black water, oxidized-brass binding mechanism distorting, restrained interior water displacement, several objectives still physically present, storybook folk horror, no magic, no music, no total-failure implication.",
+        "negative_prompt": "magical library explosion, total objective failure, screaming crowd, cinematic detonation, music, choir, hidden correct choice, excessive sub bass",
+        "consistency_anchor": "The Archive fails through swollen paper, wet timber, black water, and ordered brass while preserving mechanically honest remaining choices."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "paper, structure, water, and brass source provenance", "full prompt when generated", "phase edit notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature collapse brief only; no final objective result, mix, content intensity, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-001",
+      "title": "High Water Terror Turn Signature",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water"],
+      "trigger": "The High Water Terror Turn validates and commits before the transformed public board becomes active.",
+      "purpose": "Create the Tale's defining audio transition from exposed low-tide town to active flooded route network without relying on a generic trailer impact.",
+      "duration": {"minimum_seconds": 5, "target_seconds": 11, "maximum_seconds": 18},
+      "loop_mode": "none",
+      "spatial_mode": "environment_bed",
+      "source_channel_layout": "stereo",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Bellhouse strike family under pressure",
+        "Water entering streets in an impossible directional sequence",
+        "Rope, dock, and structure load",
+        "Lighthouse glass and brass response",
+        "Brief silence before transformed ambience begins"
+      ],
+      "sonic_requirements": [
+        "Unique enough to identify Drowned Harbor's signature Terror Turn",
+        "Mechanically communicates committed board transformation",
+        "Ends with room for the Underteller's post-turn line",
+        "Profiles alter texture and body detail without changing transition duration or loudness hierarchy"
+      ],
+      "negative_constraints": [
+        "No generic trailer boom",
+        "No tsunami roar",
+        "No musical drop",
+        "No automatic player defeat",
+        "No hidden route detail",
+        "No excessive loudness used as the primary scare"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 100,
+        "duck_under_dialogue": false,
+        "maximum_simultaneous_instances": 1,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Compress peak transitions, reduce concurrent debris layers, and preserve the bell-water-lighthouse sequence and final silence."
+      },
+      "generator_guidance": {
+        "prompt": "Original eleven-second signature Terror Turn for Drowned Harbor: oxidized Bellhouse strike under pressure, water entering exposed streets in an impossible ordered sequence, salt-stiff ropes and docks taking load, cloudy lighthouse glass and brass answering, then a brief authored silence before flooded-street ambience begins, tactile storybook maritime horror, no music, no trailer boom, no tsunami, no speech.",
+        "negative_prompt": "trailer boom, cinematic braam, musical drop, tsunami, screaming crowd, automatic death, hidden route clue, extreme loudness, sci-fi effect, copyrighted melody",
+        "consistency_anchor": "High Water joins every signature material family—bell, water, rope, timber, glass, and brass—into one mechanically truthful board-transformation event."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "all source provenance", "full prompt when generated", "profile and edit variants", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature transition brief only; no final Terror Turn timing, mix, animation synchronization, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-002",
+      "title": "Bellmarked Public Reveal",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["bellhouse_ledger", "high_water", "last_light"],
+      "trigger": "A Bellmarked allegiance reveal commits through an authorized public mechanism.",
+      "purpose": "Reveal public Bellmarked allegiance using the bell, ledger, and Harbor signal families without exposing any faction state before commitment.",
+      "duration": {"minimum_seconds": 2.5, "target_seconds": 6, "maximum_seconds": 11},
+      "loop_mode": "none",
+      "spatial_mode": "global_nonspatial",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Contained Bellhouse harmonic opening",
+        "Ledger index or mark activation",
+        "Short Harbor signal resonance",
+        "Public reveal completion tail"
+      ],
+      "sonic_requirements": [
+        "Never plays before public reveal commitment",
+        "Does not imply all Bellmarked share the same objective",
+        "Readable without overwhelming the reveal text",
+        "No seat location is encoded beyond the visible public state"
+      ],
+      "negative_constraints": [
+        "No traitor alarm",
+        "No villain fanfare",
+        "No secret pre-reveal motif",
+        "No spoken faction name",
+        "No automatic hostile-action implication",
+        "No musical sting"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 84,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 3,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce harmonic and mark transients while preserving the bell-ledger-signal reveal sequence."
+      },
+      "generator_guidance": {
+        "prompt": "Original public Bellmarked reveal cue after authorized commitment: a contained oxidized Bellhouse harmonic opens, a swollen ledger mark indexes, and a restrained Harbor signal answers, elegant and morally ambiguous rather than villainous, short and readable beneath public reveal text, no speech, no music, no traitor alarm.",
+        "negative_prompt": "traitor alarm, villain fanfare, secret motif, spoken faction name, musical sting, hostile attack cue, jump scare, sci-fi alert",
+        "consistency_anchor": "Bellmarked preservation is revealed through the same bell, ledger, and signal mechanism, with moral ambiguity rather than a generic evil cue."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "source provenance", "full prompt when generated", "relationship to bell and ledger family", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature reveal brief only; no final faction identity, hidden-state behavior, mix, implementation, or production approval."
+    },
+    {
+      "asset_id": "DH-AUD-TRN-003",
+      "title": "Tidebound Public Transformation",
+      "category": "transition",
+      "signature_asset": true,
+      "originality_tier": "A",
+      "priority": "P0",
+      "status": "generation_ready",
+      "privacy_class": "public",
+      "gameplay_information": "critical_redundant",
+      "stages": ["high_water", "last_light"],
+      "trigger": "An eligible Tidebound transformation commits and becomes public.",
+      "purpose": "Communicate preserved stable-seat continuity and altered public form through water, breath, clothing, and doubled memory without generic zombie or sea-monster audio.",
+      "duration": {"minimum_seconds": 4, "target_seconds": 9, "maximum_seconds": 16},
+      "loop_mode": "none",
+      "spatial_mode": "board_localized",
+      "source_channel_layout": "mono",
+      "presentation_profiles": ["spooky", "grim", "gore_and_dread"],
+      "layers": [
+        "Water leaving or entering the body in an impossible direction",
+        "Retained clothing and stable-seat movement",
+        "Doubled nonverbal breath or body timing",
+        "Short Harbor memory resonance",
+        "Active post-transformation posture completion"
+      ],
+      "sonic_requirements": [
+        "Transformation sounds active and agentic rather than mindless",
+        "Original seat identity remains represented through retained material cues",
+        "No intelligible memory dialogue",
+        "Profiles add physical intensity without louder scare peaks or longer timing"
+      ],
+      "negative_constraints": [
+        "No zombie growl",
+        "No fish-monster roar",
+        "No tentacle sound cliché",
+        "No spoken memories",
+        "No automatic villain cue",
+        "No sexualized body audio"
+      ],
+      "mix_policy": {
+        "bus": "critical_tale_sfx",
+        "foreground_priority": 92,
+        "duck_under_dialogue": true,
+        "maximum_simultaneous_instances": 2,
+        "minimum_variation_count": 4,
+        "reduced_density_supported": true
+      },
+      "accessibility": {
+        "caption_key_required": true,
+        "visual_redundancy_required": true,
+        "mono_safe": true,
+        "reduced_dynamics_behavior": "Reduce body and water peak contrast while preserving retained-seat, doubled-memory, and active-form completion cues."
+      },
+      "generator_guidance": {
+        "prompt": "Original Tidebound public transformation cue: water moves through a living body in an impossible direction, wet clothing and familiar movement preserve the original seat identity, doubled nonverbal breath and body timing suggest several trapped memories, a restrained Harbor resonance settles into an active intelligent posture, storybook maritime body horror, no speech, no music, no zombie or fish-monster sound.",
+        "negative_prompt": "zombie growl, fish monster, tentacles, spoken memories, villain sting, sexualized body horror, jump scare peak, musical transformation, superhero power-up",
+        "consistency_anchor": "Tidebound forms remain strategic stable seats whose retained human materials are layered with water-pulled memory rather than replaced by generic monsters."
+      },
+      "provenance_policy": {
+        "allowed_source_kinds": ["original_recording", "original_synthesis", "original_ai_assisted", "commissioned", "licensed_transformed"],
+        "raw_public_distribution": "license_dependent",
+        "third_party_ai_input": "explicit_permission_required",
+        "required_record": ["creator or generator", "water, clothing, breath, and body source provenance", "full prompt when generated", "profile intensity notes", "creation date", "review disposition"]
+      },
+      "approval_boundary": "Signature transformation brief only; no final anatomy, content rating, mix, implementation, or production approval."
+    }
+  ]
+}
