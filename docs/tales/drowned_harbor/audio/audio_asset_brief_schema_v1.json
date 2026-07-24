@@ -1,0 +1,364 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-audio-asset-brief-v1.json",
+  "title": "Drowned Harbor audio asset brief",
+  "description": "Preproduction schema for ambience, SFX, transition, UI, and public system-audio briefs. It is not a production import or mix contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_id",
+    "title",
+    "category",
+    "signature_asset",
+    "originality_tier",
+    "priority",
+    "status",
+    "privacy_class",
+    "gameplay_information",
+    "stages",
+    "trigger",
+    "purpose",
+    "duration",
+    "loop_mode",
+    "spatial_mode",
+    "source_channel_layout",
+    "presentation_profiles",
+    "layers",
+    "sonic_requirements",
+    "negative_constraints",
+    "mix_policy",
+    "accessibility",
+    "generator_guidance",
+    "provenance_policy",
+    "approval_boundary"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "pattern": "^DH-AUD-(AMB|SFX|UI|TRN|SYS)-[0-9]{3}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "ambience",
+        "sound_effect",
+        "ui",
+        "transition",
+        "system"
+      ]
+    },
+    "signature_asset": {
+      "type": "boolean"
+    },
+    "originality_tier": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D"]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3"]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "brief_draft",
+        "brief_reviewed",
+        "generation_ready",
+        "candidate_generated",
+        "candidate_reviewed",
+        "production_candidate",
+        "approved",
+        "rejected",
+        "deferred"
+      ]
+    },
+    "privacy_class": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private_surface_deferred",
+        "diagnostic_only"
+      ]
+    },
+    "gameplay_information": {
+      "type": "string",
+      "enum": [
+        "none",
+        "redundant",
+        "critical_redundant"
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "low_tide_arrival",
+          "bellhouse_ledger",
+          "lighthouse_council",
+          "high_water",
+          "last_light",
+          "reusable_system",
+          "ending_resolution"
+        ]
+      }
+    },
+    "trigger": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "duration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_seconds",
+        "target_seconds",
+        "maximum_seconds"
+      ],
+      "properties": {
+        "minimum_seconds": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 600
+        },
+        "target_seconds": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 600
+        },
+        "maximum_seconds": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 600
+        }
+      }
+    },
+    "loop_mode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "seamless_loop",
+        "layered_bed"
+      ]
+    },
+    "spatial_mode": {
+      "type": "string",
+      "enum": [
+        "global_nonspatial",
+        "board_localized",
+        "environment_bed",
+        "private_surface_deferred"
+      ]
+    },
+    "source_channel_layout": {
+      "type": "string",
+      "enum": [
+        "mono",
+        "stereo"
+      ]
+    },
+    "presentation_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "spooky",
+          "grim",
+          "gore_and_dread",
+          "profile_neutral"
+        ]
+      }
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "sonic_requirements": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "negative_constraints": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "mix_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bus",
+        "foreground_priority",
+        "duck_under_dialogue",
+        "maximum_simultaneous_instances",
+        "minimum_variation_count",
+        "reduced_density_supported"
+      ],
+      "properties": {
+        "bus": {
+          "type": "string",
+          "enum": [
+            "critical_ui",
+            "critical_tale_sfx",
+            "interaction_sfx",
+            "environment_sfx",
+            "ambience",
+            "system"
+          ]
+        },
+        "foreground_priority": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "duck_under_dialogue": {
+          "type": "boolean"
+        },
+        "maximum_simultaneous_instances": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "minimum_variation_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "reduced_density_supported": {
+          "type": "boolean"
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "caption_key_required",
+        "visual_redundancy_required",
+        "mono_safe",
+        "reduced_dynamics_behavior"
+      ],
+      "properties": {
+        "caption_key_required": {
+          "type": "boolean"
+        },
+        "visual_redundancy_required": {
+          "type": "boolean"
+        },
+        "mono_safe": {
+          "type": "boolean"
+        },
+        "reduced_dynamics_behavior": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "generator_guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prompt",
+        "negative_prompt",
+        "consistency_anchor"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "negative_prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consistency_anchor": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "provenance_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_source_kinds",
+        "raw_public_distribution",
+        "third_party_ai_input",
+        "required_record"
+      ],
+      "properties": {
+        "allowed_source_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "original_recording",
+              "original_synthesis",
+              "original_ai_assisted",
+              "commissioned",
+              "licensed_transformed",
+              "licensed_supporting",
+              "placeholder"
+            ]
+          }
+        },
+        "raw_public_distribution": {
+          "type": "string",
+          "enum": [
+            "allowed",
+            "prohibited",
+            "license_dependent"
+          ]
+        },
+        "third_party_ai_input": {
+          "type": "string",
+          "enum": [
+            "prohibited",
+            "explicit_permission_required",
+            "not_applicable"
+          ]
+        },
+        "required_record": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "approval_boundary": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
