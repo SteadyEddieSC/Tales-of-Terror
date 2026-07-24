@@ -9,10 +9,11 @@ import tempfile
 from pathlib import Path
 
 from validate_preproduction_dialogue import (
-    DEFAULT_CATALOG,
+    DEFAULT_CATALOGS,
     DialogueValidationError,
     load_and_validate,
     validate_catalog,
+    validate_catalogs,
 )
 
 
@@ -22,11 +23,24 @@ def expect_failure(data: dict, expected_fragment: str) -> None:
     except DialogueValidationError as exc:
         assert expected_fragment in str(exc), (expected_fragment, str(exc))
     else:
-        raise AssertionError(f"Expected validation failure containing: {expected_fragment}")
+        raise AssertionError(
+            f"Expected validation failure containing: {expected_fragment}"
+        )
+
+
+def expect_catalog_failure(paths: list[Path], expected_fragment: str) -> None:
+    try:
+        validate_catalogs(paths)
+    except DialogueValidationError as exc:
+        assert expected_fragment in str(exc), (expected_fragment, str(exc))
+    else:
+        raise AssertionError(
+            f"Expected catalog validation failure containing: {expected_fragment}"
+        )
 
 
 def main() -> int:
-    valid = load_and_validate(DEFAULT_CATALOG)
+    valid = load_and_validate(DEFAULT_CATALOGS[0])
     assert len(valid["entries"]) >= 20
 
     duplicate = copy.deepcopy(valid)
@@ -45,11 +59,35 @@ def main() -> int:
             "visibility": "public_safe",
         }
     ]
-    leaked_placeholder["entries"][0]["variants"]["spooky"] += " {private_objective}"
-    leaked_placeholder["entries"][0]["variants"]["grim"] += " {private_objective}"
-    leaked_placeholder["entries"][0]["variants"]["gore_and_dread"] += " {private_objective}"
+    leaked_placeholder["entries"][0]["variants"]["spooky"] += (
+        " {private_objective}"
+    )
+    leaked_placeholder["entries"][0]["variants"]["grim"] += (
+        " {private_objective}"
+    )
+    leaked_placeholder["entries"][0]["variants"]["gore_and_dread"] += (
+        " {private_objective}"
+    )
     leaked_placeholder["entries"][0]["fallback"] += " {private_objective}"
     expect_failure(leaked_placeholder, "forbidden public placeholder")
+
+    private_type_in_public = copy.deepcopy(valid)
+    private_type_in_public["entries"][0]["placeholders"] = [
+        {
+            "name": "secret_summary",
+            "type": "governed_private_text",
+            "visibility": "public_safe",
+        }
+    ]
+    for profile in ("spooky", "grim", "gore_and_dread"):
+        private_type_in_public["entries"][0]["variants"][profile] += (
+            " {secret_summary}"
+        )
+    private_type_in_public["entries"][0]["fallback"] += " {secret_summary}"
+    expect_failure(
+        private_type_in_public,
+        "public entries may not use private placeholder types",
+    )
 
     undeclared = copy.deepcopy(valid)
     undeclared["entries"][0]["variants"]["spooky"] += " {seat}"
@@ -74,10 +112,19 @@ def main() -> int:
     expect_failure(malformed_key, "invalid format")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        path = Path(temp_dir) / "catalog.json"
-        path.write_text(json.dumps(valid), encoding="utf-8")
-        loaded = load_and_validate(path)
+        temp = Path(temp_dir)
+        first = temp / "catalog_a.json"
+        second = temp / "catalog_b.json"
+        first.write_text(json.dumps(valid), encoding="utf-8")
+        second.write_text(json.dumps(valid), encoding="utf-8")
+
+        loaded = load_and_validate(first)
         assert loaded["tale_id"] == "drowned_harbor"
+
+        expect_catalog_failure(
+            [first, second],
+            "duplicate dialogue key across catalogs",
+        )
 
     print("Preproduction dialogue validator tests passed")
     return 0
