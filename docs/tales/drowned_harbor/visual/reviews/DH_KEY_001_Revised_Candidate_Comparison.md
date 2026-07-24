@@ -1,8 +1,8 @@
 # DH-KEY-001 Revised Candidate Comparison
 
-**Asset:** `DH-KEY-001` — Drowned Harbor Low-Tide Key Art  
-**Batch:** `DH-CB-001`  
-**Status:** Preproduction comparison only  
+**Asset:** `DH-KEY-001` — Drowned Harbor Low-Tide Key Art
+**Batch:** `DH-CB-001`
+**Status:** Preproduction comparison only
 **Production approval:** None
 
 ## Source files
