@@ -19,7 +19,7 @@
     "privacy_classes",
     "stage_graph",
     "signature_transformations",
-    "content_registry",
+    "content_groups",
     "media_sources",
     "fallbacks",
     "validation_obligations",
@@ -39,36 +39,18 @@
     "mode_plan": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "status",
-        "minimum_seats",
-        "maximum_seats",
-        "privacy_model",
-        "fallback_mode"
-      ],
+      "required": ["id", "status", "minimum_seats", "maximum_seats", "privacy_model", "fallback_mode"],
       "properties": {
         "id": {"$ref": "#/$defs/stable_id"},
-        "status": {
-          "type": "string",
-          "enum": ["supported", "review_required", "deferred"]
-        },
+        "status": {"type": "string", "enum": ["supported", "review_required", "deferred"]},
         "minimum_seats": {"type": "integer", "minimum": 1, "maximum": 8},
         "maximum_seats": {"type": "integer", "minimum": 1, "maximum": 8},
         "privacy_model": {
           "type": "string",
-          "enum": [
-            "public_only",
-            "optional_hidden_faction",
-            "dynamic_faction",
-            "mixed_public_competition"
-          ]
+          "enum": ["public_only", "optional_hidden_faction", "dynamic_faction", "mixed_public_competition"]
         },
         "fallback_mode": {
-          "oneOf": [
-            {"$ref": "#/$defs/stable_id"},
-            {"type": "null"}
-          ]
+          "oneOf": [{"$ref": "#/$defs/stable_id"}, {"type": "null"}]
         }
       }
     },
@@ -104,11 +86,7 @@
         "trigger_id": {"$ref": "#/$defs/stable_id"},
         "deterministic": {"type": "boolean"},
         "once_only": {"type": "boolean"},
-        "minimum_changed_state_categories": {
-          "type": "integer",
-          "minimum": 2,
-          "maximum": 8
-        },
+        "minimum_changed_state_categories": {"type": "integer", "minimum": 2, "maximum": 8},
         "allowed_state_categories": {
           "type": "array",
           "minItems": 2,
@@ -129,11 +107,10 @@
         }
       }
     },
-    "content_record": {
+    "content_group": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "id",
         "kind",
         "status",
         "privacy",
@@ -142,10 +119,10 @@
         "source_path",
         "source_anchor",
         "traceability_concepts",
+        "ids",
         "note"
       ],
       "properties": {
-        "id": {"$ref": "#/$defs/stable_id"},
         "kind": {
           "type": "string",
           "enum": [
@@ -165,18 +142,10 @@
             "ending"
           ]
         },
-        "status": {
-          "type": "string",
-          "enum": ["draft", "preproduction_ready", "review_required", "deferred"]
-        },
+        "status": {"type": "string", "enum": ["draft", "preproduction_ready", "review_required", "deferred"]},
         "privacy": {
           "type": "string",
-          "enum": [
-            "public",
-            "controlled_reveal_private",
-            "seat_private",
-            "faction_private"
-          ]
+          "enum": ["public", "controlled_reveal_private", "seat_private", "faction_private"]
         },
         "stages": {
           "type": "array",
@@ -211,10 +180,13 @@
         "traceability_concepts": {
           "type": "array",
           "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "pattern": "^DH-XM-[0-9]{3}$"
-          }
+          "items": {"type": "string", "pattern": "^DH-XM-[0-9]{3}$"}
+        },
+        "ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
         },
         "note": {"type": "string", "minLength": 10}
       }
@@ -226,10 +198,7 @@
       "properties": {
         "id": {"$ref": "#/$defs/stable_id"},
         "requirement": {"type": "string", "minLength": 20},
-        "status": {
-          "type": "string",
-          "enum": ["declared_preproduction", "human_validation_required"]
-        }
+        "status": {"type": "string", "enum": ["declared_preproduction", "human_validation_required"]}
       }
     },
     "open_decision": {
@@ -240,10 +209,7 @@
         "id": {"$ref": "#/$defs/stable_id"},
         "summary": {"type": "string", "minLength": 10},
         "blocks_production": {"type": "boolean"},
-        "status": {
-          "type": "string",
-          "enum": ["open", "review_required", "deferred"]
-        },
+        "status": {"type": "string", "enum": ["open", "review_required", "deferred"]},
         "source_path": {"$ref": "#/$defs/repo_path"}
       }
     }
@@ -271,11 +237,7 @@
         "engine_target": {"type": "string", "const": "godot_4_7"},
         "minimum_seats": {"type": "integer", "const": 1},
         "maximum_seats": {"type": "integer", "const": 8},
-        "modes": {
-          "type": "array",
-          "minItems": 1,
-          "items": {"$ref": "#/$defs/mode_plan"}
-        }
+        "modes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/mode_plan"}}
       }
     },
     "privacy_classes": {
@@ -285,12 +247,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "enum": [
-          "controlled_reveal_private",
-          "faction_private",
-          "public",
-          "seat_private"
-        ]
+        "enum": ["controlled_reveal_private", "faction_private", "public", "seat_private"]
       }
     },
     "stage_graph": {
@@ -300,29 +257,12 @@
       "properties": {
         "entry_stage": {"$ref": "#/$defs/stable_id"},
         "required_terminal_stage": {"$ref": "#/$defs/stable_id"},
-        "stage_order": {
-          "type": "array",
-          "minItems": 2,
-          "uniqueItems": true,
-          "items": {"$ref": "#/$defs/stable_id"}
-        },
-        "transitions": {
-          "type": "array",
-          "minItems": 1,
-          "items": {"$ref": "#/$defs/stage_transition"}
-        }
+        "stage_order": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/stable_id"}},
+        "transitions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/stage_transition"}}
       }
     },
-    "signature_transformations": {
-      "type": "array",
-      "minItems": 1,
-      "items": {"$ref": "#/$defs/signature_transformation"}
-    },
-    "content_registry": {
-      "type": "array",
-      "minItems": 1,
-      "items": {"$ref": "#/$defs/content_record"}
-    },
+    "signature_transformations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/signature_transformation"}},
+    "content_groups": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/content_group"}},
     "media_sources": {
       "type": "object",
       "additionalProperties": false,
@@ -371,16 +311,8 @@
         "unsupported_optional_feature": {"$ref": "#/$defs/stable_id"}
       }
     },
-    "validation_obligations": {
-      "type": "array",
-      "minItems": 1,
-      "items": {"$ref": "#/$defs/validation_obligation"}
-    },
-    "open_decisions": {
-      "type": "array",
-      "minItems": 1,
-      "items": {"$ref": "#/$defs/open_decision"}
-    },
+    "validation_obligations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/validation_obligation"}},
+    "open_decisions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/open_decision"}},
     "compilation_boundary": {
       "type": "object",
       "additionalProperties": false,
@@ -398,12 +330,7 @@
         "compilation_authorized": {"type": "boolean", "const": false},
         "runtime_loader_input": {"type": "boolean", "const": false},
         "production_catalog_entry": {"type": "boolean", "const": false},
-        "required_future_artifacts": {
-          "type": "array",
-          "minItems": 6,
-          "uniqueItems": true,
-          "items": {"$ref": "#/$defs/stable_id"}
-        }
+        "required_future_artifacts": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"$ref": "#/$defs/stable_id"}}
       }
     },
     "identity_policy": {
@@ -412,10 +339,7 @@
       "required": ["algorithm", "canonicalization", "authoring_identity_only"],
       "properties": {
         "algorithm": {"type": "string", "const": "sha256"},
-        "canonicalization": {
-          "type": "string",
-          "const": "utf8_json_sorted_object_keys_compact_arrays_preserved"
-        },
+        "canonicalization": {"type": "string", "const": "utf8_json_sorted_object_keys_compact_arrays_preserved"},
         "authoring_identity_only": {"type": "boolean", "const": true}
       }
     }
