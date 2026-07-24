@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-visual-asset-brief-v1.json",
+  "title": "Drowned Harbor visual asset brief",
+  "description": "Preproduction schema for original-first visual asset briefs. It is not a production import contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_id",
+    "title",
+    "category",
+    "signature_asset",
+    "originality_tier",
+    "priority",
+    "status",
+    "intended_use",
+    "deliverables",
+    "visual_requirements",
+    "negative_constraints",
+    "presentation_profiles",
+    "dependencies",
+    "generator_guidance",
+    "provenance_policy",
+    "approval_boundary"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "pattern": "^DH-(ENV|PROP|CHAR|FORM|UI|ICON|KEY)-[0-9]{3}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "environment",
+        "prop",
+        "character",
+        "continuation_form",
+        "ui",
+        "icon_family",
+        "key_art"
+      ]
+    },
+    "signature_asset": {
+      "type": "boolean"
+    },
+    "originality_tier": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D"]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3"]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "brief_draft",
+        "brief_reviewed",
+        "generation_ready",
+        "candidate_generated",
+        "candidate_reviewed",
+        "production_candidate",
+        "approved",
+        "rejected",
+        "deferred"
+      ]
+    },
+    "intended_use": {
+      "type": "string",
+      "minLength": 1
+    },
+    "deliverables": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "visual_requirements": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "negative_constraints": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "presentation_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["spooky", "grim", "gore_and_dread", "profile_neutral"]
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^DH-(ENV|PROP|CHAR|FORM|UI|ICON|KEY)-[0-9]{3}$"
+      }
+    },
+    "generator_guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prompt",
+        "negative_prompt",
+        "aspect_ratio",
+        "camera_or_view",
+        "consistency_anchor"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "negative_prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "aspect_ratio": {
+          "type": "string",
+          "pattern": "^[0-9]+:[0-9]+$"
+        },
+        "camera_or_view": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consistency_anchor": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "provenance_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_source_kinds",
+        "raw_public_distribution",
+        "third_party_ai_input",
+        "required_record"
+      ],
+      "properties": {
+        "allowed_source_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "original_human",
+              "original_ai_assisted",
+              "commissioned",
+              "licensed_transformed",
+              "licensed_supporting",
+              "placeholder"
+            ]
+          }
+        },
+        "raw_public_distribution": {
+          "type": "string",
+          "enum": ["allowed", "prohibited", "license_dependent"]
+        },
+        "third_party_ai_input": {
+          "type": "string",
+          "enum": ["prohibited", "explicit_permission_required", "not_applicable"]
+        },
+        "required_record": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "approval_boundary": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
