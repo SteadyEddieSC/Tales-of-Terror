@@ -1,0 +1,30 @@
+name: Preproduction visual asset validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/preproduction-visual-assets.yml'
+      - 'docs/tales/drowned_harbor/visual/**'
+      - 'tools/validate_preproduction_visual_assets.py'
+      - 'tools/test_validate_preproduction_visual_assets.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preproduction-visual-assets.yml'
+      - 'docs/tales/drowned_harbor/visual/**'
+      - 'tools/validate_preproduction_visual_assets.py'
+      - 'tools/test_validate_preproduction_visual_assets.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Original-first visual contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate governed visual asset briefs
+        run: python tools/validate_preproduction_visual_assets.py
+      - name: Run visual asset validator regression tests
+        run: python tools/test_validate_preproduction_visual_assets.py
