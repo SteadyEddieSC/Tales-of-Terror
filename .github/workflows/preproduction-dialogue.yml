@@ -7,6 +7,7 @@ on:
       - 'docs/tales/drowned_harbor/dialogue/**'
       - 'tools/validate_preproduction_dialogue.py'
       - 'tools/test_validate_preproduction_dialogue.py'
+      - 'tools/export_preproduction_voice_audition.py'
   push:
     branches: [main]
     paths:
@@ -14,6 +15,7 @@ on:
       - 'docs/tales/drowned_harbor/dialogue/**'
       - 'tools/validate_preproduction_dialogue.py'
       - 'tools/test_validate_preproduction_dialogue.py'
+      - 'tools/export_preproduction_voice_audition.py'
 
 permissions:
   contents: read
@@ -42,3 +44,5 @@ jobs:
           python tools/validate_preproduction_dialogue.py "${catalogs[@]}"
       - name: Run dialogue validator regression tests
         run: python tools/test_validate_preproduction_dialogue.py
+      - name: Validate Underteller voice audition manifest
+        run: python tools/export_preproduction_voice_audition.py --check
