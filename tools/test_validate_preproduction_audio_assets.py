@@ -23,13 +23,22 @@ def expect_failure(data: dict, fragment: str) -> None:
         raise AssertionError(f"Expected failure containing: {fragment}")
 
 
+def manifest_with_entry(manifests: list[dict], predicate) -> dict:
+    return next(
+        manifest
+        for manifest in manifests
+        if any(predicate(entry) for entry in manifest["entries"])
+    )
+
+
 def main() -> int:
     paths = discover_default_manifests()
     manifest_count, entry_count = validate_manifests(paths)
     assert manifest_count >= 3
     assert entry_count >= 36
 
-    base = read_manifest(paths[0])
+    manifests = [read_manifest(path) for path in paths]
+    base = manifests[0]
 
     duplicate = copy.deepcopy(base)
     duplicate["entries"].append(copy.deepcopy(duplicate["entries"][0]))
@@ -60,7 +69,11 @@ def main() -> int:
     short_loop["entries"][0]["duration"]["minimum_seconds"] = 5
     expect_failure(short_loop, "looped assets require at least 15 target seconds")
 
-    missing_caption = copy.deepcopy(base)
+    critical_source = manifest_with_entry(
+        manifests,
+        lambda entry: entry["gameplay_information"] == "critical_redundant",
+    )
+    missing_caption = copy.deepcopy(critical_source)
     critical = next(
         entry
         for entry in missing_caption["entries"]
@@ -73,7 +86,11 @@ def main() -> int:
     hidden_private["entries"][0]["privacy_class"] = "private_surface_deferred"
     expect_failure(hidden_private, "must use private_surface_deferred spatial mode")
 
-    system_spatial = copy.deepcopy(read_manifest(paths[-1]))
+    system_source = manifest_with_entry(
+        manifests,
+        lambda entry: entry["category"] == "system",
+    )
+    system_spatial = copy.deepcopy(system_source)
     system_entry = next(
         entry for entry in system_spatial["entries"] if entry["category"] == "system"
     )
@@ -86,7 +103,12 @@ def main() -> int:
     )
     expect_failure(imitation, "disallowed imitation phrase")
 
-    licensed_distribution = copy.deepcopy(base)
+    licensed_source = manifest_with_entry(
+        manifests,
+        lambda entry: "licensed_transformed"
+        in entry["provenance_policy"]["allowed_source_kinds"],
+    )
+    licensed_distribution = copy.deepcopy(licensed_source)
     licensed_entry = next(
         entry
         for entry in licensed_distribution["entries"]
