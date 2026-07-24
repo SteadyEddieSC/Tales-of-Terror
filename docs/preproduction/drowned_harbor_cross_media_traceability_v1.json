@@ -10,34 +10,18 @@
       "title": "Stable Seat Continuity",
       "criticality": "foundational",
       "design_paths": [
-        "docs/tales/drowned_harbor/Drop_In_Drop_Out_Seat_Continuity_Contract_v1.0.md",
-        "docs/tales/drowned_harbor/Multiplayer_Session_Admission_and_Seat_Reclaim_Contract_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md"
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
       ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
-      "audio_asset_ids": [
-        "DH-AUD-SYS-001",
-        "DH-AUD-SYS-002",
-        "DH-AUD-SYS-003",
-        "DH-AUD-SYS-004"
-      ],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
+      "audio_asset_ids": ["DH-AUD-SYS-001", "DH-AUD-SYS-002", "DH-AUD-SYS-003", "DH-AUD-SYS-004"],
       "music_asset_ids": [],
-      "voice_family_ids": [
-        "DH-VO-SYS-003",
-        "DH-VO-SYS-004",
-        "DH-VO-SYS-005",
-        "DH-VO-SYS-006"
-      ],
-      "accessible_unit_ids": [
-        "DH-LOC-VO-018",
-        "DH-LOC-VO-019",
-        "DH-LOC-VO-020",
-        "DH-LOC-VO-021"
-      ],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "voice_family_ids": ["DH-VO-SYS-003", "DH-VO-SYS-004", "DH-VO-SYS-005", "DH-VO-SYS-006"],
+      "accessible_unit_ids": ["DH-LOC-VO-018", "DH-LOC-VO-019", "DH-LOC-VO-020", "DH-LOC-VO-021"],
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_admission_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_handoffs_endings_cards_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -47,11 +31,7 @@
       "concept_id": "DH-XM-002",
       "title": "Low-Tide Arrival and Public Geography",
       "criticality": "signature",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Foundation_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_World_Bible_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
       "visual_paths": [
         "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md",
         "docs/tales/drowned_harbor/visual/Drowned_Harbor_Palette_and_Contrast_Guardrails_v1.md"
@@ -60,8 +40,9 @@
       "music_asset_ids": ["DH-MUS-CUE-001", "DH-MUS-CUE-002"],
       "voice_family_ids": ["DH-VO-NAR-001", "DH-VO-NAR-002"],
       "accessible_unit_ids": ["DH-LOC-VO-001", "DH-LOC-VO-002"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -71,23 +52,15 @@
       "concept_id": "DH-XM-003",
       "title": "Bellhouse Ledger and Public Indexing",
       "criticality": "signature",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
-      "audio_asset_ids": [
-        "DH-AUD-AMB-003",
-        "DH-AUD-SFX-001",
-        "DH-AUD-SFX-003"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
+      "audio_asset_ids": ["DH-AUD-AMB-003", "DH-AUD-SFX-001", "DH-AUD-SFX-003"],
       "music_asset_ids": ["DH-MUS-CUE-004"],
       "voice_family_ids": ["DH-VO-NAR-003"],
       "accessible_unit_ids": ["DH-LOC-VO-003"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -97,19 +70,15 @@
       "concept_id": "DH-XM-004",
       "title": "Unresolved Extra Ring",
       "criticality": "signature",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
       "audio_asset_ids": ["DH-AUD-SFX-002"],
       "music_asset_ids": ["DH-MUS-CUE-004"],
       "voice_family_ids": ["DH-VO-NAR-004"],
       "accessible_unit_ids": ["DH-LOC-VO-004"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -119,23 +88,15 @@
       "concept_id": "DH-XM-005",
       "title": "Lighthouse Council and Direction Choice",
       "criticality": "signature",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
-      "audio_asset_ids": [
-        "DH-AUD-AMB-004",
-        "DH-AUD-AMB-005",
-        "DH-AUD-SFX-004"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
+      "audio_asset_ids": ["DH-AUD-AMB-004", "DH-AUD-AMB-005", "DH-AUD-SFX-004"],
       "music_asset_ids": ["DH-MUS-CUE-005", "DH-MUS-CUE-006"],
       "voice_family_ids": ["DH-VO-NAR-005"],
       "accessible_unit_ids": ["DH-LOC-VO-005"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -145,11 +106,7 @@
       "concept_id": "DH-XM-006",
       "title": "High Water Terror Turn",
       "criticality": "signature",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
       "visual_paths": [
         "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md",
         "docs/tales/drowned_harbor/visual/Drowned_Harbor_Palette_and_Contrast_Guardrails_v1.md"
@@ -158,8 +115,10 @@
       "music_asset_ids": ["DH-MUS-CUE-007"],
       "voice_family_ids": ["DH-VO-NAR-006"],
       "accessible_unit_ids": ["DH-LOC-VO-006"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1_encounters.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -169,20 +128,16 @@
       "concept_id": "DH-XM-007",
       "title": "Drowned Archive Truth Recovery",
       "criticality": "signature",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_World_Bible_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
       "audio_asset_ids": ["DH-AUD-AMB-006", "DH-AUD-SFX-009"],
       "music_asset_ids": ["DH-MUS-CUE-008"],
       "voice_family_ids": ["DH-VO-NAR-007"],
       "accessible_unit_ids": ["DH-LOC-VO-007"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1_encounters.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -192,24 +147,15 @@
       "concept_id": "DH-XM-008",
       "title": "Harbor Bargain Lifecycle",
       "criticality": "foundational",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
-      "audio_asset_ids": [
-        "DH-AUD-TRN-004",
-        "DH-AUD-TRN-005",
-        "DH-AUD-TRN-006",
-        "DH-AUD-TRN-007"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
+      "audio_asset_ids": ["DH-AUD-TRN-004", "DH-AUD-TRN-005", "DH-AUD-TRN-006", "DH-AUD-TRN-007"],
       "music_asset_ids": [],
       "voice_family_ids": ["DH-VO-NAR-009", "DH-VO-NAR-010"],
       "accessible_unit_ids": ["DH-LOC-VO-009", "DH-LOC-VO-010"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_private_bargains_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -219,19 +165,15 @@
       "concept_id": "DH-XM-009",
       "title": "Bellmarked Public Reveal",
       "criticality": "foundational",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
       "audio_asset_ids": ["DH-AUD-TRN-002"],
       "music_asset_ids": ["DH-MUS-CUE-010"],
       "voice_family_ids": ["DH-VO-REV-001"],
       "accessible_unit_ids": ["DH-LOC-VO-011"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -241,19 +183,15 @@
       "concept_id": "DH-XM-010",
       "title": "Tidebound Public Transformation",
       "criticality": "foundational",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
       "audio_asset_ids": ["DH-AUD-TRN-003"],
       "music_asset_ids": ["DH-MUS-CUE-011"],
       "voice_family_ids": ["DH-VO-REV-002"],
       "accessible_unit_ids": ["DH-LOC-VO-012"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -264,30 +202,18 @@
       "title": "Restless Continuation Forms",
       "criticality": "foundational",
       "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md"
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/design/Seat_Continuity_and_Admission.md"
       ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
-      "audio_asset_ids": [
-        "DH-AUD-TRN-008",
-        "DH-AUD-TRN-009",
-        "DH-AUD-TRN-010"
-      ],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
+      "audio_asset_ids": ["DH-AUD-TRN-008", "DH-AUD-TRN-009", "DH-AUD-TRN-010"],
       "music_asset_ids": ["DH-MUS-CUE-012"],
-      "voice_family_ids": [
-        "DH-VO-REV-003",
-        "DH-VO-REV-004",
-        "DH-VO-REV-005"
-      ],
-      "accessible_unit_ids": [
-        "DH-LOC-VO-013",
-        "DH-LOC-VO-014",
-        "DH-LOC-VO-015"
-      ],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "voice_family_ids": ["DH-VO-REV-003", "DH-VO-REV-004", "DH-VO-REV-005"],
+      "accessible_unit_ids": ["DH-LOC-VO-013", "DH-LOC-VO-014", "DH-LOC-VO-015"],
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_handoffs_endings_cards_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -297,19 +223,16 @@
       "concept_id": "DH-XM-012",
       "title": "Last Light and Final Choice",
       "criticality": "signature",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
       "audio_asset_ids": ["DH-AUD-AMB-008"],
       "music_asset_ids": ["DH-MUS-CUE-009"],
       "voice_family_ids": ["DH-VO-NAR-008"],
       "accessible_unit_ids": ["DH-LOC-VO-008"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -319,19 +242,16 @@
       "concept_id": "DH-XM-013",
       "title": "Mixed Outcome Attribution",
       "criticality": "foundational",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_State_and_Ending_Matrix_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Roles_and_Objectives_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
       "audio_asset_ids": ["DH-AUD-TRN-011"],
       "music_asset_ids": ["DH-MUS-END-007"],
       "voice_family_ids": ["DH-VO-END-001"],
       "accessible_unit_ids": ["DH-LOC-VO-022"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_handoffs_endings_cards_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -341,19 +261,16 @@
       "concept_id": "DH-XM-014",
       "title": "Public Route Instability and Recovery",
       "criticality": "foundational",
-      "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Mechanics_and_Content_Pack_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md"
-      ],
-      "visual_paths": [
-        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
-      ],
+      "design_paths": ["docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"],
+      "visual_paths": ["docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"],
       "audio_asset_ids": ["DH-AUD-SFX-008"],
       "music_asset_ids": ["DH-MUS-STM-001"],
       "voice_family_ids": ["DH-VO-SYS-002"],
       "accessible_unit_ids": ["DH-LOC-VO-017"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_items_hazards_en_v1.json",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1_encounters.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
@@ -364,16 +281,17 @@
       "title": "Invalid Action and Player-Safe Recovery",
       "criticality": "foundational",
       "design_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Implementation_Contract_v1.0.md",
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
       ],
       "visual_paths": [],
       "audio_asset_ids": [],
       "music_asset_ids": [],
       "voice_family_ids": ["DH-VO-SYS-001"],
       "accessible_unit_ids": ["DH-LOC-VO-016"],
-      "automation_paths": [
-        "docs/tales/drowned_harbor/Drowned_Harbor_Automation_Specification_v1.0.md"
+      "governance_paths": [
+        "docs/preproduction/Operating_Mode_and_Artifact_Record.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json"
       ],
       "human_validation_required": true,
       "implementation_status": "preproduction_only",
