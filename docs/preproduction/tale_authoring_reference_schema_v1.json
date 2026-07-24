@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://steadyeddiesc.example/schemas/tale-authoring-reference-v1.json",
   "title": "Tale Authoring Reference v1",
-  "description": "Closed preproduction schema for repository-authored Tale design references. Not a runtime Tale package.",
+  "description": "Closed preproduction envelope for repository-authored Tale design references. Not a runtime Tale package.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -19,7 +19,7 @@
     "privacy_classes",
     "stage_graph",
     "signature_transformations",
-    "content_groups",
+    "content_manifests",
     "media_sources",
     "fallbacks",
     "validation_obligations",
@@ -39,7 +39,14 @@
     "mode_plan": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "status", "minimum_seats", "maximum_seats", "privacy_model", "fallback_mode"],
+      "required": [
+        "id",
+        "status",
+        "minimum_seats",
+        "maximum_seats",
+        "privacy_model",
+        "fallback_mode"
+      ],
       "properties": {
         "id": {"$ref": "#/$defs/stable_id"},
         "status": {"type": "string", "enum": ["supported", "review_required", "deferred"]},
@@ -50,7 +57,10 @@
           "enum": ["public_only", "optional_hidden_faction", "dynamic_faction", "mixed_public_competition"]
         },
         "fallback_mode": {
-          "oneOf": [{"$ref": "#/$defs/stable_id"}, {"type": "null"}]
+          "oneOf": [
+            {"$ref": "#/$defs/stable_id"},
+            {"type": "null"}
+          ]
         }
       }
     },
@@ -105,90 +115,6 @@
             ]
           }
         }
-      }
-    },
-    "content_group": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "kind",
-        "status",
-        "privacy",
-        "stages",
-        "tags",
-        "source_path",
-        "source_anchor",
-        "traceability_concepts",
-        "ids",
-        "note"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "stage",
-            "tide_state",
-            "space",
-            "region",
-            "mode",
-            "role",
-            "faction",
-            "form",
-            "resource",
-            "item",
-            "card",
-            "hazard",
-            "encounter",
-            "ending"
-          ]
-        },
-        "status": {"type": "string", "enum": ["draft", "preproduction_ready", "review_required", "deferred"]},
-        "privacy": {
-          "type": "string",
-          "enum": ["public", "controlled_reveal_private", "seat_private", "faction_private"]
-        },
-        "stages": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {"$ref": "#/$defs/stable_id"}
-        },
-        "tags": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "active_continuation",
-              "authored_recovery_required",
-              "controlled_reveal_required",
-              "deterministic_consequence",
-              "explicit_outcome_attribution",
-              "generic_alternative_required",
-              "legal_choices_required",
-              "mechanical_truth_required",
-              "optional_hidden_state",
-              "public_warning_required",
-              "stable_seat_continuation",
-              "stateful_condition",
-              "transformation_preserves_agency",
-              "warning_response_recovery"
-            ]
-          }
-        },
-        "source_path": {"$ref": "#/$defs/repo_path"},
-        "source_anchor": {"type": "string", "minLength": 3},
-        "traceability_concepts": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {"type": "string", "pattern": "^DH-XM-[0-9]{3}$"}
-        },
-        "ids": {
-          "type": "array",
-          "minItems": 1,
-          "uniqueItems": true,
-          "items": {"$ref": "#/$defs/stable_id"}
-        },
-        "note": {"type": "string", "minLength": 10}
       }
     },
     "validation_obligation": {
@@ -262,7 +188,12 @@
       }
     },
     "signature_transformations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/signature_transformation"}},
-    "content_groups": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/content_group"}},
+    "content_manifests": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/repo_path"}
+    },
     "media_sources": {
       "type": "object",
       "additionalProperties": false,
