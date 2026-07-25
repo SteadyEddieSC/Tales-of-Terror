@@ -245,7 +245,7 @@
           {
             "event_key": "stable_seat_setup_changed",
             "classification": "public",
-            "exactly_once": false,
+            "exactly_once": true,
             "idempotent_reprojection": true,
             "includes_source_revision": true,
             "includes_result_revision": true,
