@@ -1,8 +1,8 @@
 # Drowned Harbor Shared-Screen Storyboards
 
-**Release stream:** P0.10  
-**Status:** Design-only preproduction  
-**Tale status:** Drowned Harbor is not a production Tale  
+**Release stream:** P0.10
+**Status:** Design-only preproduction
+**Tale status:** Drowned Harbor is not a production Tale
 **Production inventory:** Lantern House remains the sole production Tale
 
 ## Purpose
