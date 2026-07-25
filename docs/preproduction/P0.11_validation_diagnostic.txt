@@ -1,1 +1,0 @@
-Interaction-state trace validation failed: DH-IS-007: confirmation pattern differs from storyboard
