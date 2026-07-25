@@ -1,0 +1,38 @@
+name: P0.11 one-time confirmation correction
+
+on:
+  push:
+    branches: [docs/p0.11-interaction-state-traceability]
+    paths:
+      - '.github/workflows/p0.11-one-time-confirmation-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: docs/p0.11-interaction-state-traceability
+      - name: Align private bargain confirmation pattern
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_resolution_traces_v1.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          entry = next(item for item in data['entries'] if item['trace_id'] == 'DH-IS-007')
+          assert entry['presentation_obligations']['confirmation_pattern'] == 'safe_handoff_confirmation'
+          entry['presentation_obligations']['confirmation_pattern'] = 'confirmed_commitment'
+          path.write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Commit correction
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_resolution_traces_v1.json
+          git commit -m "content: align private bargain confirmation"
+          git push origin HEAD:docs/p0.11-interaction-state-traceability
