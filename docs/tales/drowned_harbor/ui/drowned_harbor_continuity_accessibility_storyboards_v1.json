@@ -1,0 +1,804 @@
+{
+  "manifest_kind": "shared_screen_storyboards_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "record_schema": "docs/preproduction/shared_screen_storyboard_schema_v1.json",
+  "entries": [
+    {
+      "storyboard_id": "DH-UI-013",
+      "title": "Stable Seat Reconnecting",
+      "category": "seat_continuity",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A local or approved remote human controller disconnects from an existing stable seat and reconnect grace behavior begins.",
+      "exit_condition": "The same controller reconnects to the reserved seat or deterministic game control activates at a safe handoff after the configured grace rule.",
+      "purpose": "Show that the same stable seat remains reserved and unchanged while reconnecting, without implying defeat, removal, replacement, reset, or immediate surrogate action.",
+      "required_information": [
+        "Stable seat identity",
+        "RECONNECTING control-source label",
+        "Current public seat state",
+        "Grace behavior when active",
+        "Current atomic action remains protected",
+        "Private state remains preserved"
+      ],
+      "layout_regions": [
+        "host_authority_upper_right",
+        "playable_board_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["facilitator_review", "open_transcript", "pause_if_authorized", "reconnect_same_seat"],
+      "confirmation_pattern": "none",
+      "focus_order": ["Reconnecting seat tile", "Grace and current-action status", "Facilitator options", "Transcript"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["atomic_action_pending", "grace_active", "grace_not_required", "same_controller_returned"],
+      "visual_guidance": [
+        "Retain the same seat tile, public character or form, location, condition, and item count while changing only the control-source state.",
+        "Use a text label and neutral reconnect icon rather than color or alarm animation alone.",
+        "Keep the board and current decision visible unless the current action is privately shielded."
+      ],
+      "negative_constraints": [
+        "No defeat, eliminated, left the Tale, character lost, respawn, or replacement language.",
+        "No irreversible surrogate decision immediately after a brief controller interruption.",
+        "No public narration of private state acquired by the disconnected seat."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_reveal_continuity_units_v1.json",
+        "docs/technical/Shared_Screen_Storyboard_Contract_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-001"],
+      "human_validation_questions": [
+        "Do players understand that the seat and character remain present while only the controller is reconnecting?",
+        "Is grace behavior clear without creating panic, blame, or a false countdown during protected atomic actions?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no reconnect timing, controller detection, network behavior, pause rule, surrogate activation, or runtime continuity is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-014",
+      "title": "Stable Seat Under Game Control",
+      "category": "seat_continuity",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "Reconnect grace has ended or an authorized departure has committed, and deterministic game control assumes the same seat at a safe handoff.",
+      "exit_condition": "Game control continues, the seat reaches a terminal result, or an authorized human takeover completes at another safe handoff.",
+      "purpose": "Confirm game control of the unchanged stable seat while keeping the seat active, eligible for ordinary play, and available for authorized takeover.",
+      "required_information": [
+        "Stable seat identity",
+        "GAME CONTROL label",
+        "Same public state and history",
+        "Current legal action ownership",
+        "Human takeover remains available",
+        "Strategy profile remains private-safe"
+      ],
+      "layout_regions": [
+        "host_authority_upper_right",
+        "playable_board_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["facilitator_review", "inspect_public_seat", "open_transcript", "request_human_takeover"],
+      "confirmation_pattern": "none",
+      "focus_order": ["Game-controlled seat tile", "Current public seat state", "Takeover availability", "Facilitator details", "Transcript"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": true
+      },
+      "state_variants": ["action_pending", "ordinary_game_control", "takeover_requested", "transformed_game_control"],
+      "visual_guidance": [
+        "Keep the same seat marker and public silhouette; change only the control-source label and neutral controller glyph.",
+        "Show active turn, vote, response, or pass ownership exactly as for a human-controlled seat.",
+        "Use no robot face, AI personality portrait, or faction-revealing strategy label."
+      ],
+      "negative_constraints": [
+        "No bot character, NPC replacement, hostile AI, inactive seat, abandoned seat, or automatic pass implication.",
+        "No public strategy profile that reveals hidden allegiance, objective, role, or willingness to bargain.",
+        "No special advantage, disadvantage, free action, or delayed rule simply because game control is active."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/audio/drowned_harbor_audio_continuity_briefs_v1.json",
+        "docs/tales/drowned_harbor/voice/drowned_harbor_voice_reveal_continuity_families_v1.json"
+      ],
+      "traceability_concepts": ["DH-XM-001"],
+      "human_validation_questions": [
+        "Do players perceive game control as temporary authority over the same seat rather than a new character?",
+        "Does the seat remain socially and mechanically present without exposing the surrogate's private decision profile?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no surrogate strategy, action-selection logic, delay, takeover availability, or runtime authority behavior is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-015",
+      "title": "Public Takeover Seat Selection",
+      "category": "seat_continuity",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A joining human is authorized to request control and one or more game-controlled seats are eligible at or after a safe handoff.",
+      "exit_condition": "The requester backs out, the host assigns one eligible seat, or the selected seat enters takeover-pending state without revealing private information.",
+      "purpose": "Present only public-safe summaries for eligible seats, prevent private-seat shopping, and queue one selected seat for shielded inherited-state acknowledgement.",
+      "required_information": [
+        "Eligible game-controlled seats",
+        "Public seat identity and location",
+        "Public condition and form",
+        "Public item count or critical-object marker",
+        "Safe-handoff availability",
+        "Private state disclosed only after assignment",
+        "No browsing of several private seats"
+      ],
+      "layout_regions": [
+        "host_authority_upper_right",
+        "decision_panel_center",
+        "public_recap_panel",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["back", "inspect_public_summary", "request_selected_seat", "select_eligible_seat"],
+      "confirmation_pattern": "confirmed_commitment",
+      "focus_order": ["Eligibility summary", "Stable seats in public order", "Selected public summary", "Takeover consequence", "Request seat", "Back"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": true
+      },
+      "state_variants": ["assignment_confirmed", "multiple_eligible_seats", "safe_handoff_pending", "single_eligible_seat"],
+      "visual_guidance": [
+        "Show public-safe examples such as injured, Restless, Tidebound publicly revealed, current location, and public item count.",
+        "Keep every eligible seat tile visually equal and sorted by stable seat identity or the configured public assignment rule.",
+        "After one seat is assigned, replace selection with TAKEOVER PENDING rather than exposing another seat's details."
+      ],
+      "negative_constraints": [
+        "No private faction, role, objective, hidden inventory, infection, bargain, route knowledge, or future form preview.",
+        "No opening several private summaries and choosing the most attractive seat.",
+        "No fresh character, healing, reroll, immunity, new inventory, or objective reset offered with takeover."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_admission_en_v1.json",
+        "docs/tales/drowned_harbor/voice/drowned_harbor_voice_reveal_continuity_families_v1.json"
+      ],
+      "traceability_concepts": ["DH-XM-001"],
+      "human_validation_questions": [
+        "Can a joining player make an informed choice or accept an assignment using only public-safe seat summaries?",
+        "Does the flow prevent private-seat shopping while still making transformed, injured, or Restless seats understandable?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no eligibility algorithm, facilitator policy, remote identity, assignment rule, or runtime takeover implementation is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-016",
+      "title": "Inherited Private State Handoff",
+      "category": "private_reveal",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "private_shield",
+      "privacy_surface": "controlled_private_surface",
+      "entry_condition": "One stable seat has been assigned, a safe handoff has been reached, and the public screen is under a neutral private-handoff shield.",
+      "exit_condition": "The assigned human acknowledges all inherited private state and authority transfer commits before the public board is restored.",
+      "purpose": "Reveal the selected seat's inherited private role, faction, objective, condition, inventory, knowledge, available actions, and surrogate recap only to the authorized controller.",
+      "required_information": [
+        "Assigned stable seat",
+        "Inherited private role and faction",
+        "Private objective and conditions",
+        "Private inventory and knowledge",
+        "Relevant surrogate actions",
+        "Current legal actions",
+        "Acknowledgement before authority transfer"
+      ],
+      "layout_regions": [
+        "private_shield_full_screen",
+        "decision_panel_center",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["acknowledge_private_state", "review_private_inventory", "review_private_objective", "review_surrogate_recap"],
+      "confirmation_pattern": "confirmed_commitment",
+      "focus_order": ["Assigned seat identity", "Role and faction", "Objective and conditions", "Inventory and knowledge", "Surrogate recap", "Legal actions", "Acknowledge"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": false,
+        "replay_supported": false,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "acknowledgement_then_state_change"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": false,
+        "control_source_visible": false,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": true
+      },
+      "state_variants": ["acknowledgement_pending", "private_inventory_open", "private_objective_open", "surrogate_recap_open"],
+      "visual_guidance": [
+        "Use the neutral shared shield throughout and show inherited details only on the authorized private surface.",
+        "Separate state inherited before absence from surrogate actions taken during absence.",
+        "Conclude with a clear statement that control changes but the evolved stable seat does not reset."
+      ],
+      "negative_constraints": [
+        "No private text, icon, voice, caption, transcript, reflection, or mirrored content on the public display.",
+        "No authority transfer before acknowledgement and no transfer during an exposed private projection.",
+        "No option to reject the inherited state and reroll, heal, restore inventory, or choose another private seat."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/accessibility/Drowned_Harbor_Caption_and_Localization_Style_v1.md",
+        "docs/technical/Shared_Screen_Storyboard_Contract_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-001"],
+      "human_validation_questions": [
+        "Can the assigned player understand inherited private state and surrogate history without exposing it to the room?",
+        "Is acknowledgement clearly separate from public seat selection and actual authority transfer?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no private-display technology, controller authorization, security guarantee, inherited-state UI, or runtime handoff is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-017",
+      "title": "Returning Player Recap",
+      "category": "seat_continuity",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A returning human is authorized to reclaim the same reserved stable seat and the handoff can begin without interrupting an atomic action.",
+      "exit_condition": "The public recap is reviewed, any new private information is acknowledged on the authorized surface, and human control resumes for the same evolved seat.",
+      "purpose": "Summarize public changes during absence, preserve all surrogate decisions, and route new private knowledge to a shielded surface before returning authority.",
+      "required_information": [
+        "Same reserved stable seat",
+        "Current location and public condition",
+        "Public items gained or lost",
+        "Public stage and transformation changes",
+        "Important public surrogate actions",
+        "Private recap required when applicable",
+        "No rollback or restoration"
+      ],
+      "layout_regions": [
+        "host_authority_upper_right",
+        "public_recap_panel",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["continue_to_private_recap", "inspect_public_recap", "open_transcript", "replay_recap", "resume_control"],
+      "confirmation_pattern": "confirmed_commitment",
+      "focus_order": ["Reserved seat identity", "Public location and condition", "Public changes", "Surrogate actions", "Private-recap notice", "Resume control", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "acknowledgement_then_state_change"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": true
+      },
+      "state_variants": ["private_recap_required", "public_recap_only", "resume_confirmation", "surrogate_action_details"],
+      "visual_guidance": [
+        "Use before-and-now public summaries without implying rollback, rewind, or restoration.",
+        "Keep the same seat tile visible and change GAME CONTROL to TAKEOVER PENDING only after authorization.",
+        "Move private recap content behind a neutral shield before human control resumes."
+      ],
+      "negative_constraints": [
+        "No rewind, undo, healing, inventory restoration, objective reset, reroll, or free-action promise.",
+        "No private information belonging to another seat in either public or private recap.",
+        "No authority transfer during ending calculation, random generation, transaction commit, snapshot restore, or private projection."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_handoffs_endings_cards_en_v1.json",
+        "docs/tales/drowned_harbor/voice/drowned_harbor_voice_reveal_continuity_families_v1.json"
+      ],
+      "traceability_concepts": ["DH-XM-001"],
+      "human_validation_questions": [
+        "Can a returning player understand meaningful public changes without feeling that game-controlled actions were undone or hidden?",
+        "Does the flow clearly separate public recap, private recap, acknowledgement, and actual control transfer?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no recap generation, event-history retention, private delivery, control timing, or runtime return behavior is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-018",
+      "title": "Restless Continuation Activation",
+      "category": "transformation",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["high_water", "last_light"],
+      "layout_mode": "transformation",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A stable seat's prior form is defeated and one authored Restless continuation form has authoritatively committed.",
+      "exit_condition": "The same stable seat, selected Restless form, public continuation actions, and current authority state are acknowledged.",
+      "purpose": "Present Bell-Witness, Drowned Guide, or Lighthouse Guardian as active stable-seat continuation rather than death, elimination, or spectator mode.",
+      "required_information": [
+        "Stable seat identity",
+        "Prior form defeated",
+        "Restless continuation form",
+        "Public continuation actions",
+        "Current location or mechanism",
+        "Action or pass ownership",
+        "Private objective and faction remain protected"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "playable_board_center",
+        "decision_panel_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["acknowledge_continuation", "inspect_public_form", "open_transcript", "replay_summary"],
+      "confirmation_pattern": "acknowledgement_only",
+      "focus_order": ["Stable seat identity", "Defeated prior form", "Restless form", "Public actions", "Current authority", "Acknowledge", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "acknowledgement_then_state_change"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["bell_witness", "drowned_guide", "lighthouse_guardian", "game_controlled_restless", "human_controlled_restless"],
+      "visual_guidance": [
+        "Retain the same stable seat tile and add the continuation-function motif rather than replacing the identity.",
+        "Use interrupted silhouettes, negative space, and form-specific Bellhouse, route, or lighthouse motifs.",
+        "Show active actions and intentional pass availability immediately after the public form summary."
+      ],
+      "negative_constraints": [
+        "No dead player, ghost spectator, eliminated seat, waiting room, or inactive-seat presentation.",
+        "No preselected warning target, route answer, sacrifice, objective, or hidden allegiance.",
+        "No removal from action ownership, votes, ending attribution, or takeover eligibility."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/accessibility/Drowned_Harbor_Caption_and_Localization_Style_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-001", "DH-XM-011"],
+      "human_validation_questions": [
+        "Do players understand that the seat remains active and strategically meaningful after defeat?",
+        "Are Bell-Witness, Drowned Guide, and Lighthouse Guardian distinguishable without implying a hidden target or automatic sacrifice?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no defeat trigger, form assignment, action set, balance, visual asset, or runtime continuation is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-019",
+      "title": "Invalid Action Recovery",
+      "category": "system_recovery",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "An input proposes an invalid, stale, unavailable, wrong-seat, or otherwise rejected action before authoritative mutation.",
+      "exit_condition": "The rejection is acknowledged or times out safely, focus returns to the preserved legal alternatives, and state and RNG remain unchanged.",
+      "purpose": "Explain the public-safe reason for rejection, preserve the active decision and legal alternatives, and recover focus without punishment, mockery, or hidden-state leakage.",
+      "required_information": [
+        "Rejected action",
+        "Public-safe reason",
+        "No state or RNG change",
+        "Currently legal alternatives",
+        "Active seat remains the decision owner",
+        "Help or details access"
+      ],
+      "layout_regions": [
+        "host_authority_upper_right",
+        "decision_drawer_right",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["acknowledge_rejection", "inspect_legal_options", "open_help", "open_transcript", "select_legal_action"],
+      "confirmation_pattern": "acknowledgement_only",
+      "focus_order": ["Rejection summary", "Public-safe reason", "Legal alternatives", "Help", "Return to prior decision"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_or_user"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["stale_action", "unavailable_action", "wrong_seat_input", "legal_options_refocused"],
+      "visual_guidance": [
+        "Use a contained nonpunitive panel that leaves the prior decision and legal choices visible.",
+        "Refocus the previously selected legal option or first valid alternative according to deterministic rules.",
+        "Use neutral system language before any optional Underteller flavor."
+      ],
+      "negative_constraints": [
+        "No buzzer, ridicule, blame, jump scare, score penalty, timer loss, or hidden consequence.",
+        "No explanation that reveals another seat's private state or a hidden future condition.",
+        "No input lock, state mutation, RNG consumption, focus reset to unrelated UI, or silent deadlock."
+      ],
+      "source_paths": [
+        "docs/accessibility/Localization_Captions_and_Accessible_Narrative_Direction_v1.md",
+        "docs/tales/drowned_harbor/accessibility/drowned_harbor_accessible_reveal_continuity_units_v1.json",
+        "docs/tales/drowned_harbor/voice/drowned_harbor_voice_reveal_continuity_families_v1.json"
+      ],
+      "traceability_concepts": ["DH-XM-015"],
+      "human_validation_questions": [
+        "Can players recover from invalid input without losing track of the original decision or feeling punished?",
+        "Does the public-safe explanation remain useful without revealing hidden state or the correct future answer?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no validation code, error taxonomy, focus restoration, timing, audio, or runtime recovery behavior is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-020",
+      "title": "Transcript and Replay Drawer",
+      "category": "transcript_and_replay",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A player opens public transcript or replay during a state where doing so does not expose private content or interrupt an atomic action.",
+      "exit_condition": "The player closes the drawer and focus returns to the exact prior public decision, board position, or system overlay.",
+      "purpose": "Provide searchable public narrative and system history, replay governed public lines, and preserve the active decision without collecting private text into public history.",
+      "required_information": [
+        "Public event sequence",
+        "Localizable speaker and event labels",
+        "Rendered public text",
+        "Current versus historical state",
+        "Replay availability",
+        "Interrupted-line indicator when useful",
+        "Return-to-prior-focus state"
+      ],
+      "layout_regions": [
+        "host_authority_upper_right",
+        "transcript_drawer",
+        "caption_lower_center",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["close_transcript", "filter_public_events", "move_transcript_focus", "replay_public_line", "review_event_details"],
+      "confirmation_pattern": "reversible_selection",
+      "focus_order": ["Transcript heading", "Event filters", "Current event", "Chronological entries", "Replay action", "Close and restore prior focus"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "user_or_transcript"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["current_event_only", "filter_open", "history_scrolled", "replay_active"],
+      "visual_guidance": [
+        "Use a high-contrast reading surface distinct from decorative Tale typography and keep prior context dimly visible when safe.",
+        "Group entries by public event labels such as Stage Change, Warning, Reveal, Control Change, Decision, and Ending Result.",
+        "Return focus to the exact control that opened the drawer."
+      ],
+      "negative_constraints": [
+        "No seat-private, faction-private, controlled-private, account, credential, or restricted performer content in public history.",
+        "No replay that re-executes a game action, consumes RNG, or changes authoritative state.",
+        "No loss of current decision, controller ownership, or focus when opening or closing history."
+      ],
+      "source_paths": [
+        "docs/accessibility/Localization_Captions_and_Accessible_Narrative_Direction_v1.md",
+        "docs/tales/drowned_harbor/accessibility/README.md",
+        "docs/technical/Shared_Screen_Storyboard_Contract_v1.md"
+      ],
+      "traceability_concepts": [],
+      "human_validation_questions": [
+        "Can players find and replay an important public line without abandoning or accidentally changing the active decision?",
+        "Does the history remain readable at enlarged text scales while clearly excluding private content?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no transcript storage, search, replay engine, assistive-technology behavior, or runtime drawer is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-021",
+      "title": "Narrative Accessibility Settings",
+      "category": "accessibility_settings",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A player opens narrative presentation settings from lobby, pause, transcript, or another authorized non-atomic state.",
+      "exit_condition": "Settings are applied as presentation state only and focus returns to the exact prior context without changing gameplay authority.",
+      "purpose": "Preview and configure subtitles, full closed captions, speaker labels, text scale, line spacing, caption background, position preference, plain-language presentation, music, voice, and reduced-density behavior.",
+      "required_information": [
+        "Live caption preview",
+        "Subtitles and full captions distinction",
+        "Speaker-label setting",
+        "Text scale and line spacing",
+        "Caption background opacity",
+        "Caption position preference",
+        "Plain-language or plain-system mode",
+        "Voice and music controls",
+        "Presentation-only guarantee"
+      ],
+      "layout_regions": [
+        "settings_overlay",
+        "caption_lower_center",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["adjust_setting", "back", "preview_caption", "reset_presentation_defaults", "select_setting_group"],
+      "confirmation_pattern": "reversible_selection",
+      "focus_order": ["Settings heading", "Caption group", "Text group", "Plain-language group", "Audio presentation group", "Live preview", "Reset", "Back"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": false,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_or_user"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": false,
+        "control_source_visible": false,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["caption_preview", "large_text", "plain_language", "reduced_density", "voice_off"],
+      "visual_guidance": [
+        "Use a live preview containing representative speech, non-speech caption, long localized text, and controller prompt conflicts.",
+        "Allow decorative margins to reduce before readable scale or legal controls are clipped.",
+        "Keep settings terminology direct and nonpatronizing, especially plain-language mode."
+      ],
+      "negative_constraints": [
+        "No setting may alter mechanics, difficulty, RNG, privacy, authority, legal actions, or ending eligibility.",
+        "No claim of compliance, suitability, comfort, or accessibility without human testing.",
+        "No font file, final typeface, final caption speed, or final layout is approved by the preview."
+      ],
+      "source_paths": [
+        "docs/accessibility/Localization_Captions_and_Accessible_Narrative_Direction_v1.md",
+        "docs/tales/drowned_harbor/accessibility/README.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Palette_and_Contrast_Guardrails_v1.md"
+      ],
+      "traceability_concepts": [],
+      "human_validation_questions": [
+        "Can players understand the difference between subtitles, full closed captions, and plain-language presentation?",
+        "Do enlarged text, line spacing, background, and position changes remain usable without clipping essential controls?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no settings storage, font, final range, caption engine, accessibility claim, or runtime presentation behavior is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-022",
+      "title": "Remote Join Request and Admission Queue",
+      "category": "lobby_and_admission",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A future authorized remote requester enters the host review queue under a policy that requires approval or an explicit invitation decision.",
+      "exit_condition": "The host rejects, approves public spectator access, or approves player admission without yet granting a stable seat or private information.",
+      "purpose": "Separate admission authority from seat authority, show compatibility and public identity, and prevent join code possession or approval from silently granting a seat.",
+      "required_information": [
+        "Requester display identity",
+        "Relationship or invitation status",
+        "Requested player or spectator role",
+        "Session compatibility warnings",
+        "Current seat availability",
+        "Approve or reject admission",
+        "Admission does not grant a seat",
+        "Higher-risk policy warning when relevant"
+      ],
+      "layout_regions": [
+        "host_authority_upper_right",
+        "decision_drawer_right",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["approve_player_admission", "approve_spectator_admission", "defer_request", "inspect_compatibility", "reject_request"],
+      "confirmation_pattern": "confirmed_commitment",
+      "focus_order": ["Admission policy", "Requester identity", "Requested role", "Compatibility and seat availability", "Approve spectator", "Approve player admission", "Defer", "Reject"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": false,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["compatibility_warning", "invite_only", "open_with_approval", "request_to_join", "spectator_requested"],
+      "visual_guidance": [
+        "Use a low-priority queue that does not obscure a critical Tale decision and may defer notifications safely.",
+        "Separate admission approval, spectator access, eligible-seat review, and later private handoff as distinct steps.",
+        "Mark Open With Approval or other higher-risk policies with text and shape rather than warning color alone."
+      ],
+      "negative_constraints": [
+        "No join code, invitation, friend status, request approval, or spectator entry may grant a stable seat automatically.",
+        "No hidden role, faction, objective, private inventory, infection, bargain, or seat-private history in the admission queue.",
+        "No unrestricted open join default, silent host bypass, or notification cascade over critical gameplay."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_admission_en_v1.json",
+        "docs/tales/drowned_harbor/voice/drowned_harbor_voice_reveal_continuity_families_v1.json"
+      ],
+      "traceability_concepts": ["DH-XM-001"],
+      "human_validation_questions": [
+        "Can the host distinguish admission approval, spectator access, eligible-seat selection, and actual authority transfer?",
+        "Does the queue remain understandable and safe without interrupting critical local play or exposing private seat data?"
+      ],
+      "status": "deferred",
+      "approval_boundary": "Storyboard only; no network service, account identity, invitation, admission policy, security control, spectator mode, or runtime remote flow is approved."
+    }
+  ]
+}
