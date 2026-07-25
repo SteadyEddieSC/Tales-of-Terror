@@ -12,9 +12,25 @@
       "storyboard_id": "DH-UI-007",
       "criticality": "critical",
       "privacy_surface": "controlled_private_surface",
-      "read_domains": ["session_public", "seat_public", "seat_private", "tale_private", "accessibility_public"],
-      "write_domains": ["seat_private", "tale_private", "tale_public", "session_public"],
-      "allowed_actors": ["active_stable_seat", "approved_takeover_controller", "returning_reserved_controller", "system"],
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "seat_private",
+        "tale_private",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "seat_private",
+        "tale_private",
+        "tale_public",
+        "session_public"
+      ],
+      "allowed_actors": [
+        "active_stable_seat",
+        "approved_takeover_controller",
+        "returning_reserved_controller",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "private_bargain_terms_authorized",
@@ -25,8 +41,23 @@
           "description": "The shared display is covered by a neutral shield before private terms are projected."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "confirming", "committed", "projected", "settled"],
-      "input_intents": ["navigate_focus", "inspect_private_state", "confirm_action", "cancel_or_back", "acknowledge_private_state"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_private_state",
+        "confirm_action",
+        "cancel_or_back",
+        "acknowledge_private_state"
+      ],
       "action_guards": [
         {
           "rule_id": "private_actor_authorized",
@@ -138,7 +169,11 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["private_shield_full_screen", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "private_shield_full_screen",
+          "decision_panel_center",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return private focus only to the authorized stable seat; otherwise clear content and retain the neutral shield.",
         "confirmation_pattern": "safe_handoff_confirmation",
@@ -167,7 +202,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-008"],
+      "traceability_concepts": [
+        "DH-XM-008"
+      ],
       "human_validation_questions": [
         "Can a living-room group verify that the shared display reveals no private bargain terms?",
         "Can the authorized seat review and clear private terms without accidental commitment or controller confusion?"
@@ -182,9 +219,21 @@
       "storyboard_id": "DH-UI-008",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "board_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["session_public", "board_public", "tale_public"],
-      "allowed_actors": ["system"],
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "board_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "high_water_trigger_committed",
@@ -195,8 +244,19 @@
           "description": "The public before-state and deterministic transformation input are available at one source revision."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "committed", "projected", "settled"],
-      "input_intents": ["inspect_public_state", "skip_animation", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "inspect_public_state",
+        "skip_animation",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "high_water_not_previously_committed",
@@ -284,7 +344,15 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "tide_state_upper_center", "playable_board_center", "public_recap_panel", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "tide_state_upper_center",
+          "playable_board_center",
+          "public_recap_panel",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": false,
         "focus_restoration_rule": "After projection settles, focus moves deterministically to the active stable seat on the transformed board.",
         "confirmation_pattern": "no_commit",
@@ -310,7 +378,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-006"],
+      "traceability_concepts": [
+        "DH-XM-006"
+      ],
       "human_validation_questions": [
         "Can players explain which route and hazard categories changed after High Water?",
         "Does skipping the transformation preserve the same understanding and stable-seat orientation as watching it?"
@@ -325,9 +395,24 @@
       "storyboard_id": "DH-UI-009",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "board_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["session_public", "board_public", "seat_public", "tale_public"],
-      "allowed_actors": ["active_stable_seat", "game_control", "system"],
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "active_stable_seat",
+        "game_control",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "high_water_stage_active",
@@ -338,8 +423,25 @@
           "description": "Current transformed-board legal actions and public routes are available for the active stable seat."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "confirming", "committed", "projected", "settled"],
-      "input_intents": ["navigate_focus", "inspect_public_state", "preview_action", "confirm_action", "cancel_or_back", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "preview_action",
+        "confirm_action",
+        "cancel_or_back",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "transformed_action_current",
@@ -427,7 +529,15 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "tide_state_upper_center", "host_authority_upper_right", "playable_board_center", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "tide_state_upper_center",
+          "host_authority_upper_right",
+          "playable_board_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return focus to the current transformed space or first current legal action after refresh.",
         "confirmation_pattern": "reversible_selection",
@@ -456,7 +566,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-006"],
+      "traceability_concepts": [
+        "DH-XM-006"
+      ],
       "human_validation_questions": [
         "Can players distinguish land and water routes and current hazards without relying on animation or audio?",
         "Does action recovery preserve orientation after the transformed board changes during a preview?"
@@ -471,9 +583,21 @@
       "storyboard_id": "DH-UI-010",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "board_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["seat_public", "tale_public", "session_public"],
-      "allowed_actors": ["system"],
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "seat_public",
+        "tale_public",
+        "session_public"
+      ],
+      "allowed_actors": [
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "tidebound_public_transform_committed",
@@ -484,8 +608,19 @@
           "description": "The transformed public form, capabilities, restrictions, and stable-seat identity are available."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "committed", "projected", "settled"],
-      "input_intents": ["inspect_public_state", "acknowledge_public_state", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "inspect_public_state",
+        "acknowledge_public_state",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "transformation_not_previously_projected",
@@ -564,7 +699,14 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "playable_board_center", "public_recap_panel", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "playable_board_center",
+          "public_recap_panel",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "After acknowledgement, return focus to the same stable seat under its displayed Tidebound actions.",
         "confirmation_pattern": "acknowledgement_only",
@@ -591,7 +733,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-010"],
+      "traceability_concepts": [
+        "DH-XM-010"
+      ],
       "human_validation_questions": [
         "Do players understand that Tidebound changes the form and rules but not the stable seat or participation rights?",
         "Can the transformation be understood through persistent text when voice, music, and animation are disabled?"
@@ -606,9 +750,22 @@
       "storyboard_id": "DH-UI-011",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "board_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["session_public", "tale_public"],
-      "allowed_actors": ["host", "active_stable_seat", "system"],
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "host",
+        "active_stable_seat",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "last_light_stage_active",
@@ -619,8 +776,25 @@
           "description": "Each displayed final option includes its current authorized public consequence."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "confirming", "committed", "projected", "settled"],
-      "input_intents": ["navigate_focus", "inspect_public_state", "preview_action", "confirm_action", "cancel_or_back", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "preview_action",
+        "confirm_action",
+        "cancel_or_back",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "final_option_current",
@@ -707,7 +881,14 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "host_authority_upper_right", "decision_panel_center", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "host_authority_upper_right",
+          "decision_panel_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return focus to the selected final option or first current legal option after refresh.",
         "confirmation_pattern": "confirmed_commitment",
@@ -735,7 +916,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-012"],
+      "traceability_concepts": [
+        "DH-XM-012"
+      ],
       "human_validation_questions": [
         "Can players compare public final consequences without perceiving a hidden correct ending?",
         "Does the final confirmation prevent accidental commitment while preserving group discussion and accessibility?"
@@ -750,9 +933,21 @@
       "storyboard_id": "DH-UI-012",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "board_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["session_public", "tale_public"],
-      "allowed_actors": ["system", "host"],
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "system",
+        "host"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "ending_resolution_committed",
@@ -763,8 +958,20 @@
           "description": "Each authorized public result segment is available without unresolved private content."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "projected", "focused", "settled"],
-      "input_intents": ["navigate_focus", "inspect_public_state", "acknowledge_public_state", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "projected",
+        "focused",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "acknowledge_public_state",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "ending_segments_authoritative",
@@ -852,7 +1059,13 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["outcome_columns", "public_recap_panel", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "outcome_columns",
+          "public_recap_panel",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": false,
         "focus_restoration_rule": "Return focus to the first public outcome column or the previously inspected segment after replay.",
         "confirmation_pattern": "acknowledgement_only",
@@ -877,7 +1090,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-013"],
+      "traceability_concepts": [
+        "DH-XM-013"
+      ],
       "human_validation_questions": [
         "Can players identify each public seat, form, faction, and Harbor outcome without assuming one universal result?",
         "Does the attribution remain understandable with voice and music disabled and after replay or transcript recovery?"
