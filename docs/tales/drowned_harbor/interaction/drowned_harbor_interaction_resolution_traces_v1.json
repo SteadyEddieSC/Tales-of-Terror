@@ -176,7 +176,7 @@
         ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return private focus only to the authorized stable seat; otherwise clear content and retain the neutral shield.",
-        "confirmation_pattern": "safe_handoff_confirmation",
+        "confirmation_pattern": "confirmed_commitment",
         "persistent_text_required": true,
         "plain_system_required": true,
         "caption_support_required": true,
