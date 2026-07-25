@@ -12,7 +12,6 @@ from typing import Any
 
 import validate_shared_screen_storyboards as validator
 
-
 REGION_LABELS = {
     "stage_objective_upper_left": "STAGE + OBJECTIVE",
     "tide_state_upper_center": "TIDE + TRANSFORMATION",
@@ -37,6 +36,13 @@ def esc(value: Any) -> str:
 
 def list_items(values: list[str]) -> str:
     return "".join(f"<li>{esc(value)}</li>" for value in values)
+
+
+def definition_items(values: dict[str, Any]) -> str:
+    return "".join(
+        f"<dt>{esc(key.replace('_', ' ').title())}</dt><dd>{esc(value)}</dd>"
+        for key, value in values.items()
+    )
 
 
 def region_class(region: str) -> str:
@@ -71,11 +77,9 @@ def render_frame(record: dict[str, Any]) -> str:
         )
     blocks: list[str] = []
     for region in regions:
-        label = REGION_LABELS[region]
-        class_name = region_class(region)
         blocks.append(
-            f'<div class="region {class_name}" data-region="{esc(region)}">'
-            f"<strong>{esc(label)}</strong>"
+            f'<div class="region {region_class(region)}" data-region="{esc(region)}">'
+            f"<strong>{esc(REGION_LABELS[region])}</strong>"
             f"<span>{esc(record['title'])}</span>"
             "</div>"
         )
@@ -86,6 +90,20 @@ def render_record(record: dict[str, Any]) -> str:
     status = record["status"].replace("_", " ").upper()
     stages = ", ".join(record["stage_context"])
     trace = ", ".join(record["traceability_concepts"]) or "None"
+    policy_blocks = (
+        '<section class="policy"><h4>Caption policy</h4><dl>'
+        + definition_items(record["caption_policy"])
+        + "</dl></section>"
+        '<section class="policy"><h4>Transcript policy</h4><dl>'
+        + definition_items(record["transcript_policy"])
+        + "</dl></section>"
+        '<section class="policy"><h4>Persistent text</h4><dl>'
+        + definition_items(record["persistent_text_policy"])
+        + "</dl></section>"
+        '<section class="policy"><h4>Stable-seat authority</h4><dl>'
+        + definition_items(record["seat_authority_policy"])
+        + "</dl></section>"
+    )
     return f"""
 <section class="storyboard" id="{esc(record['storyboard_id'])}">
   <header class="storyboard-header">
@@ -105,13 +123,21 @@ def render_record(record: dict[str, Any]) -> str:
         <span><b>Stages:</b> {esc(stages)}</span>
         <span><b>Confirmation:</b> {esc(record['confirmation_pattern'])}</span>
       </div>
+      <div class="conditions">
+        <p><b>Entry:</b> {esc(record['entry_condition'])}</p>
+        <p><b>Exit:</b> {esc(record['exit_condition'])}</p>
+      </div>
+      <div class="policy-grid">{policy_blocks}</div>
     </div>
     <aside>
       <details open><summary>Required information</summary><ul>{list_items(record['required_information'])}</ul></details>
+      <details><summary>Layout regions</summary><ul>{list_items(record['layout_regions'])}</ul></details>
       <details><summary>Legal actions</summary><ul>{list_items(record['legal_actions'])}</ul></details>
       <details><summary>Focus order</summary><ol>{list_items(record['focus_order'])}</ol></details>
+      <details><summary>State variants</summary><ul>{list_items(record['state_variants'])}</ul></details>
       <details><summary>Visual guidance</summary><ul>{list_items(record['visual_guidance'])}</ul></details>
       <details><summary>Negative constraints</summary><ul>{list_items(record['negative_constraints'])}</ul></details>
+      <details><summary>Source authorities</summary><ul>{list_items(record['source_paths'])}</ul></details>
       <details><summary>Human validation questions</summary><ul>{list_items(record['human_validation_questions'])}</ul></details>
       <p class="trace"><b>Traceability:</b> {esc(trace)}</p>
     </aside>
@@ -135,11 +161,11 @@ def render_html(records: list[dict[str, Any]], identity: str) -> str:
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Drowned Harbor Shared-Screen Storyboards</title>
 <style>
-:root {{ color-scheme: dark; font-family: system-ui, sans-serif; background:#10191d; color:#eef1ec; }}
+:root {{ color-scheme:dark; font-family:system-ui,sans-serif; background:#10191d; color:#eef1ec; }}
 * {{ box-sizing:border-box; }}
 body {{ margin:0; background:linear-gradient(180deg,#142126,#0d1518); }}
 .top {{ padding:2rem max(5vw,1rem); border-bottom:1px solid #526166; background:#17252a; position:sticky; top:0; z-index:5; }}
-h1,h2,p {{ margin-top:0; }}
+h1,h2,h4,p {{ margin-top:0; }}
 .warning {{ color:#ffe4a8; font-weight:700; }}
 .identity {{ font-family:ui-monospace,monospace; font-size:.78rem; color:#aab9bc; word-break:break-all; }}
 nav {{ display:flex; gap:.45rem; overflow:auto; padding:.75rem max(5vw,1rem); background:#0d1518; position:sticky; top:151px; z-index:4; }}
@@ -149,7 +175,7 @@ main {{ max-width:1500px; margin:auto; padding:1rem; }}
 .storyboard-header {{ display:flex; justify-content:space-between; gap:1rem; padding:1.25rem; border-bottom:1px solid #526166; }}
 .eyebrow,.status {{ color:#d0b174; text-transform:uppercase; letter-spacing:.08em; font-size:.75rem; }}
 .status {{ border:1px solid #7c8b8e; border-radius:999px; padding:.4rem .7rem; height:max-content; }}
-.content-grid {{ display:grid; grid-template-columns:minmax(0,2fr) minmax(280px,1fr); gap:1rem; padding:1rem; }}
+.content-grid {{ display:grid; grid-template-columns:minmax(0,2fr) minmax(300px,1fr); gap:1rem; padding:1rem; }}
 .wireframe {{ aspect-ratio:16/9; background:#27363a; border:2px solid #7c8b8e; border-radius:10px; padding:2.5%; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:12% 1fr 12% 14% 8%; gap:1.4%; position:relative; overflow:hidden; }}
 .region {{ background:#d9ded8; color:#172024; border:2px solid #26363a; border-radius:6px; padding:.35rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-size:clamp(.45rem,1vw,.85rem); }}
 .region span {{ font-size:.72em; opacity:.7; }}
@@ -165,13 +191,20 @@ main {{ max-width:1500px; margin:auto; padding:1rem; }}
 .private-shield span {{ margin-top:.6rem; color:#a9b8b5; }}
 .facts {{ display:flex; flex-wrap:wrap; gap:.5rem; padding:.75rem 0; }}
 .facts span {{ border:1px solid #526166; border-radius:999px; padding:.35rem .6rem; font-size:.75rem; }}
-aside {{ max-height:70vh; overflow:auto; }}
+.conditions {{ border:1px solid #526166; border-radius:10px; padding:.8rem; background:#111c20; font-size:.86rem; }}
+.conditions p:last-child {{ margin-bottom:0; }}
+.policy-grid {{ display:grid; grid-template-columns:1fr 1fr; gap:.65rem; margin-top:.75rem; }}
+.policy {{ border:1px solid #526166; border-radius:10px; padding:.7rem; background:#111c20; }}
+.policy h4 {{ color:#e2c98d; }}
+dl {{ display:grid; grid-template-columns:1fr 1fr; gap:.25rem .5rem; margin:0; font-size:.76rem; }}
+dt {{ color:#aab9bc; }} dd {{ margin:0; text-align:right; word-break:break-word; }}
+aside {{ max-height:90vh; overflow:auto; }}
 details {{ border-bottom:1px solid #526166; padding:.5rem 0; }}
 summary {{ cursor:pointer; font-weight:700; color:#e2c98d; }}
 li {{ margin:.35rem 0; line-height:1.35; }}
 .trace {{ color:#aab9bc; font-size:.85rem; }}
 .storyboard footer {{ border-top:1px solid #526166; padding:1rem; color:#bac7c7; font-size:.82rem; }}
-@media (max-width:900px) {{ .content-grid {{ grid-template-columns:1fr; }} nav {{ top:178px; }} aside {{ max-height:none; }} }}
+@media (max-width:900px) {{ .content-grid,.policy-grid {{ grid-template-columns:1fr; }} nav {{ top:178px; }} aside {{ max-height:none; }} }}
 @media print {{ .top,nav {{ position:static; }} .storyboard {{ break-inside:avoid; box-shadow:none; }} details {{ display:block; }} }}
 </style>
 </head>
