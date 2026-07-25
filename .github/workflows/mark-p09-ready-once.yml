@@ -1,8 +1,7 @@
 name: Mark P0.9 ready once
 
 on:
-  push:
-    branches: [docs/p0.10-shared-screen-storyboards]
+  pull_request:
     paths:
       - '.github/workflows/mark-p09-ready-once.yml'
 
