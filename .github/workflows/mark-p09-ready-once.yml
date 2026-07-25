@@ -1,0 +1,21 @@
+name: Mark P0.9 ready once
+
+on:
+  push:
+    branches: [docs/p0.10-shared-screen-storyboards]
+    paths:
+      - '.github/workflows/mark-p09-ready-once.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ready:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark validated P0.9 pull request ready
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh pr ready 74
