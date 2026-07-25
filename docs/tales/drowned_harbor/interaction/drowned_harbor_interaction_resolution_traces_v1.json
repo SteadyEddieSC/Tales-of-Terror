@@ -348,14 +348,13 @@
           "stage_objective_upper_left",
           "tide_state_upper_center",
           "playable_board_center",
-          "public_recap_panel",
           "caption_lower_center",
           "seat_rail_bottom",
           "controller_prompt_strip"
         ],
         "focus_owner_visible": false,
         "focus_restoration_rule": "After projection settles, focus moves deterministically to the active stable seat on the transformed board.",
-        "confirmation_pattern": "no_commit",
+        "confirmation_pattern": "acknowledgement_only",
         "persistent_text_required": true,
         "plain_system_required": true,
         "caption_support_required": true,
@@ -702,7 +701,7 @@
         "required_layout_regions": [
           "stage_objective_upper_left",
           "playable_board_center",
-          "public_recap_panel",
+          "decision_panel_center",
           "caption_lower_center",
           "seat_rail_bottom",
           "controller_prompt_strip"
@@ -883,7 +882,7 @@
       "presentation_obligations": {
         "required_layout_regions": [
           "stage_objective_upper_left",
-          "host_authority_upper_right",
+          "tide_state_upper_center",
           "decision_panel_center",
           "caption_lower_center",
           "seat_rail_bottom",
@@ -1060,8 +1059,8 @@
       ],
       "presentation_obligations": {
         "required_layout_regions": [
+          "stage_objective_upper_left",
           "outcome_columns",
-          "public_recap_panel",
           "caption_lower_center",
           "seat_rail_bottom",
           "controller_prompt_strip"
