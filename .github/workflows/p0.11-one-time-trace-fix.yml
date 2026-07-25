@@ -1,0 +1,58 @@
+name: P0.11 one-time trace data fix
+
+on:
+  push:
+    branches: [docs/p0.11-interaction-state-traceability]
+    paths:
+      - '.github/workflows/p0.11-one-time-trace-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: docs/p0.11-interaction-state-traceability
+      - name: Apply asserted DH-IS-006 correction
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_core_traces_v1.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          entry = next(item for item in data['entries'] if item['trace_id'] == 'DH-IS-006')
+
+          old_regions = entry['presentation_obligations']['required_layout_regions']
+          expected_regions = [
+              'stage_objective_upper_left',
+              'host_authority_upper_right',
+              'decision_panel_center',
+              'caption_lower_center',
+              'seat_rail_bottom',
+              'controller_prompt_strip',
+          ]
+          assert old_regions == expected_regions, old_regions
+          assert entry['presentation_obligations']['confirmation_pattern'] == 'confirmed_commitment'
+
+          entry['presentation_obligations']['required_layout_regions'] = [
+              'stage_objective_upper_left',
+              'decision_panel_center',
+              'caption_lower_center',
+              'seat_rail_bottom',
+              'controller_prompt_strip',
+          ]
+          entry['presentation_obligations']['confirmation_pattern'] = 'reversible_selection'
+
+          path.write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Commit correction
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_core_traces_v1.json
+          git commit -m "content: align public bargain trace with storyboard"
+          git push origin HEAD:docs/p0.11-interaction-state-traceability
