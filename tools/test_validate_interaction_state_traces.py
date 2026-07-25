@@ -124,7 +124,6 @@ def main() -> int:
 
     duplicate_trace_manifests = copy.deepcopy(manifests)
     duplicate = copy.deepcopy(duplicate_trace_manifests[0]["entries"][0])
-    duplicate["storyboard_id"] = "DH-UI-022"
     duplicate_trace_manifests[0]["entries"].append(duplicate)
     expect_manifest_failure(duplicate_trace_manifests, storyboards, concepts, "duplicate interaction trace ID")
 
