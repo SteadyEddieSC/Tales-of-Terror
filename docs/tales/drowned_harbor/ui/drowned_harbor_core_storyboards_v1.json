@@ -1,0 +1,970 @@
+{
+  "manifest_kind": "shared_screen_storyboards_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "record_schema": "docs/preproduction/shared_screen_storyboard_schema_v1.json",
+  "entries": [
+    {
+      "storyboard_id": "DH-UI-001",
+      "title": "Drowned Harbor Tale Preview",
+      "category": "tale_entry",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "decision_focus",
+      "privacy_surface": "public_shared",
+      "entry_condition": "The host highlights the design-only Drowned Harbor Tale preview in a future authorized Tale-selection flow.",
+      "exit_condition": "The host backs out or confirms a future authorized session setup path; P0.10 itself performs neither action.",
+      "purpose": "Present the Tale identity, intended seat range, content profile, public premise, accessibility availability, and design-only status without implying production availability.",
+      "required_information": [
+        "Design-only preproduction label",
+        "Intended 1–8 stable-seat range",
+        "Public Tale premise",
+        "Supported presentation profiles",
+        "Voice-off and caption availability",
+        "Working-name legal status"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "decision_panel_center",
+        "caption_lower_center",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["back", "details", "review_accessibility"],
+      "confirmation_pattern": "reversible_selection",
+      "focus_order": ["Tale title", "Design-only status", "Premise and seat range", "Accessibility summary", "Details", "Back"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": false,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_or_user"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": false,
+        "control_source_visible": false,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["details_open", "profile_spooky", "profile_grim", "profile_gore_and_dread"],
+      "visual_guidance": [
+        "Use a clean Low-Tide key-art crop with lighthouse authority and readable landmark silhouettes.",
+        "Keep the design-only label and seat range on a plain high-contrast surface rather than distressed art.",
+        "Use scarce Lantern Amber only for the current focus and active accessibility affordance."
+      ],
+      "negative_constraints": [
+        "No Play or Start action in this design-only package.",
+        "No storefront, release-date, legal-name, production-readiness, or final-rating claim.",
+        "No muddy sepia treatment that collapses the board and text into one value range."
+      ],
+      "source_paths": [
+        "docs/preproduction/P0.9_Release_Summary.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-002"],
+      "human_validation_questions": [
+        "Can viewers distinguish Tale premise, design-only status, and accessibility options from living-room distance?",
+        "Does the preview feel original and atmospheric without implying that Drowned Harbor is playable?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no Tale-selection implementation, final key art, legal title, rating, store presentation, or production availability is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-002",
+      "title": "Local Stable-Seat Lobby",
+      "category": "lobby_and_admission",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["reusable_system"],
+      "layout_mode": "system_overlay",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A future authorized local session reaches seat setup before any private role, faction, objective, or inventory assignment.",
+      "exit_condition": "The host backs out or all required public seat and mode settings are confirmed for an authorized future session.",
+      "purpose": "Show 1–8 stable seats, connected controllers, public seat ownership, mode compatibility, fallback behavior, and accessibility entry points without exposing future private assignments.",
+      "required_information": [
+        "Stable seat numbers",
+        "Connected or waiting controller state",
+        "Selected mode and seat-count compatibility",
+        "Cooperative fallback when a mode is unsupported",
+        "Local play requires no account or phone",
+        "Accessibility and content-profile entry points"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "decision_panel_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["assign_controller", "back", "change_mode", "open_accessibility", "review_seat", "unassign_controller"],
+      "confirmation_pattern": "reversible_selection",
+      "focus_order": ["Session mode", "Seat grid", "Selected seat public state", "Accessibility", "Content profile", "Back"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": false,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": true
+      },
+      "state_variants": ["one_seat", "four_seats", "eight_seats", "controller_waiting", "mode_fallback_required"],
+      "visual_guidance": [
+        "Use a stable eight-position seat grid that collapses gracefully for fewer seats without changing identity order.",
+        "Supplement controller color with seat number, controller glyph, and text state.",
+        "Keep mode incompatibility and fallback explanation adjacent to the affected selection."
+      ],
+      "negative_constraints": [
+        "No hidden role, faction, objective, inventory, infection, or future form preview.",
+        "No requirement for account, internet, phone, invitation, join code, or remote approval in local play.",
+        "No character reroll or fresh-seat implication when reusing a stable seat."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json",
+        "docs/technical/Shared_Screen_Storyboard_Contract_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-001"],
+      "human_validation_questions": [
+        "Can eight local players identify their seat and controller without relying on color alone?",
+        "Are unsupported-mode fallbacks understandable without making cooperative play feel like an error state?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no lobby scene, controller mapping, mode implementation, account flow, or seat-assignment algorithm is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-003",
+      "title": "Low-Tide Arrival Board",
+      "category": "public_board",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["low_tide_arrival"],
+      "layout_mode": "board_first",
+      "privacy_surface": "public_shared",
+      "entry_condition": "The public Tale state enters Low-Tide Arrival and all seat-private introductions have cleared their authorized surfaces.",
+      "exit_condition": "The public record threshold commits the transition to Bellhouse Ledger or the session leaves the Tale.",
+      "purpose": "Establish causeway, landmarks, open routes, distant returning waterline, seat positions, first public objective, captions, and action ownership at television distance.",
+      "required_information": [
+        "Low Tide stage",
+        "Current public objective",
+        "Causeway and landmark silhouettes",
+        "Open route hierarchy",
+        "Distant returning waterline",
+        "Stable seat positions and current actor",
+        "Public resource and objective markers"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "tide_state_upper_center",
+        "host_authority_upper_right",
+        "playable_board_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["inspect_space", "move_preview", "open_transcript", "replay_narration", "select_legal_action"],
+      "confirmation_pattern": "reversible_selection",
+      "focus_order": ["Current objective", "Active seat", "Current space", "Reachable routes", "Legal action preview", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["active_move_preview", "first_record_found", "objective_details", "returning_tide_warning"],
+      "visual_guidance": [
+        "Use elevated three-quarter board framing with lighthouse as dominant vertical anchor.",
+        "Separate causeway, Bellhouse, Salt Market, lifeboat shed, and lighthouse through silhouette and value rather than labels alone.",
+        "Render tide evidence through route edges, reflections, waterline, debris, and markers rather than a single color overlay."
+      ],
+      "negative_constraints": [
+        "No uncontrolled fog, scenery, caption, or UI panel may hide an essential route or seat.",
+        "No essential route state may depend on blue versus green alone.",
+        "No continuous low-value brown or gray wash that makes timber, mud, slate, water, canvas, and brass indistinguishable."
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/accessibility/Drowned_Harbor_Caption_and_Localization_Style_v1.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-002"],
+      "human_validation_questions": [
+        "Can viewers identify landmarks, seats, open routes, and returning water from representative television distance?",
+        "Does the cool-dark atmosphere preserve material and local-color separation instead of becoming muddy?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no board camera, route renderer, seat rail, objective UI, animation, or readability claim is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-004",
+      "title": "Bellhouse Ledger Decision",
+      "category": "public_decision",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["bellhouse_ledger"],
+      "layout_mode": "decision_focus",
+      "privacy_surface": "public_shared",
+      "entry_condition": "The Bellhouse Ledger presents an authoritative public record, unresolved position, or legal public priority decision.",
+      "exit_condition": "The active authority cancels a reversible preview or confirms one displayed legal priority and the result commits once.",
+      "purpose": "Present Ledger evidence, public counts, unresolved positions, legal priorities, consequence previews, and confirmation without implying prophecy or hidden allegiance.",
+      "required_information": [
+        "Bellhouse Ledger stage",
+        "Public record and count",
+        "Unresolved extra-ring position when active",
+        "Legal priorities",
+        "Public consequence preview",
+        "Confirm and cancel state",
+        "Current authority owner"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "host_authority_upper_right",
+        "playable_board_center",
+        "decision_drawer_right",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["cancel", "confirm_priority", "inspect_record", "open_transcript", "replay_narration", "select_priority"],
+      "confirmation_pattern": "confirmed_commitment",
+      "focus_order": ["Ledger public state", "Unresolved position", "Legal priorities", "Selected consequence", "Confirm", "Cancel", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["extra_ring_active", "priority_preview", "record_details", "confirmation_pending"],
+      "visual_guidance": [
+        "Use swollen paper, readable index marks, oxidized brass, vertical ropes, and one clear bell silhouette.",
+        "Separate record evidence from selectable priorities through shape, spacing, and focus treatment.",
+        "Keep public count and unresolved position persistent when browsing consequences."
+      ],
+      "negative_constraints": [
+        "No hidden-seat highlight, traitor hint, private faction motif, or correct-answer glow.",
+        "No cinematic bell effect may cover the public count or legal priorities.",
+        "No selection may commit on first focus movement without a separate confirm action."
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-003", "DH-XM-004"],
+      "human_validation_questions": [
+        "Can players distinguish record evidence, unresolved positions, and legal priorities without assuming one is prophecy?",
+        "Is the confirmation boundary clear under local group discussion and interrupted narration?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no Ledger mechanics, final copy, controller behavior, animation, timing, or privacy claim is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-005",
+      "title": "Lighthouse Council Direction Choice",
+      "category": "public_decision",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["lighthouse_council"],
+      "layout_mode": "decision_focus",
+      "privacy_surface": "public_shared",
+      "entry_condition": "The public Tale reaches Lighthouse Council with a validated set of currently legal direction options.",
+      "exit_condition": "The group cancels a preview or confirms one public option and the deterministic High Water transition becomes pending.",
+      "purpose": "Support group discussion of several plausible lighthouse directions, showing public consequences and confirmation without moralizing or foreshadowing hidden outcomes.",
+      "required_information": [
+        "Lighthouse Council stage",
+        "Current public truth and mechanism state",
+        "Displayed legal directions",
+        "Public consequence preview for each direction",
+        "No public timer unless separately active",
+        "Confirm and cancel state"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "host_authority_upper_right",
+        "playable_board_center",
+        "decision_panel_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["cancel", "confirm_direction", "inspect_direction", "open_transcript", "replay_narration", "select_direction"],
+      "confirmation_pattern": "confirmed_commitment",
+      "focus_order": ["Council context", "Public mechanism state", "Direction options", "Selected consequence", "Confirm", "Cancel", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["direction_preview", "details_expanded", "group_discussion", "confirmation_pending"],
+      "visual_guidance": [
+        "Use lighthouse lens and directional wedge motifs without turning one option into a brighter correct path.",
+        "Allow the board and relevant route geography to remain visible behind or beside the options.",
+        "Use silence and reduced panel density during discussion-heavy moments."
+      ],
+      "negative_constraints": [
+        "No good, bad, heroic, evil, recommended, or correct-answer styling unless an authoritative public rule states it.",
+        "No hidden Bellmarked, Tidebound, bargain, or ending state may alter the shared options or music before reveal.",
+        "No forced countdown or urgency indicator when no public timer exists."
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_en_v1.json",
+        "docs/tales/drowned_harbor/music/Drowned_Harbor_Music_Direction_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-005"],
+      "human_validation_questions": [
+        "Do all legal directions feel plausible enough to support genuine group discussion?",
+        "Can players review consequences and cancel without losing board context or mistaking preview for commitment?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no Council option set, final consequence, voting rule, timer, controller flow, or implementation is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-006",
+      "title": "Public Harbor Bargain Offer",
+      "category": "public_decision",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["bellhouse_ledger", "high_water", "last_light"],
+      "layout_mode": "decision_focus",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A governed Harbor bargain becomes available and its authorized public terms can be shown without exposing private cost or target data.",
+      "exit_condition": "The offer is refused, deferred where legal, or the active seat proceeds to the authorized private terms surface.",
+      "purpose": "State that an optional bargain exists, identify public terms, and present accept-for-review or refuse actions without sales pressure or acceptance implication.",
+      "required_information": [
+        "Bargain availability",
+        "Authorized public terms",
+        "Private terms remain hidden",
+        "Accept-for-review action",
+        "Refuse action",
+        "No consequence has committed"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "decision_panel_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["inspect_public_terms", "open_transcript", "proceed_to_private_terms", "refuse_bargain", "replay_narration"],
+      "confirmation_pattern": "reversible_selection",
+      "focus_order": ["Bargain availability", "Public terms", "Proceed to private review", "Refuse", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["public_terms_expanded", "private_review_available", "refusal_focused"],
+      "visual_guidance": [
+        "Use water, cloudy glass, brass, and record motifs to communicate a precise transaction rather than a generic evil offer.",
+        "Keep Proceed to Private Review and Refuse equal in visual weight.",
+        "State explicitly that no bargain has committed on this screen."
+      ],
+      "negative_constraints": [
+        "No private cost, hidden objective, target, infection, role, or faction information on the shared screen.",
+        "No demonic, cash-register, limited-time, reward-glow, or punishment-threat sales language.",
+        "No first selection may count as acceptance."
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_private_bargains_en_v1.json",
+        "docs/tales/drowned_harbor/voice/drowned_harbor_voice_narrative_families_v1.json"
+      ],
+      "traceability_concepts": ["DH-XM-008"],
+      "human_validation_questions": [
+        "Do players understand that proceeding opens private review rather than accepting the bargain?",
+        "Are refusal and private review equally legible without social or visual coercion?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no bargain terms, private-device flow, acceptance rule, consequence, or runtime implementation is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-007",
+      "title": "Private Harbor Bargain Terms",
+      "category": "private_reveal",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["bellhouse_ledger", "high_water", "last_light"],
+      "layout_mode": "private_shield",
+      "privacy_surface": "controlled_private_surface",
+      "entry_condition": "The active seat legally requests private bargain review at a safe handoff and the shared-screen neutral shield has committed.",
+      "exit_condition": "The seat refuses or confirms the exact private terms, acknowledges the result, and the public shield is restored before shared play resumes.",
+      "purpose": "Present exact private benefit, cost, affected seat state, and confirmation on the authorized private surface while the shared screen reveals nothing beyond private review in progress.",
+      "required_information": [
+        "Exact private benefit",
+        "Exact private cost",
+        "Affected stable seat",
+        "Irreversibility state",
+        "Confirm and refuse actions",
+        "Shared screen remains neutral"
+      ],
+      "layout_regions": [
+        "private_shield_full_screen",
+        "decision_panel_center",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["confirm_private_bargain", "refuse_private_bargain", "review_private_terms"],
+      "confirmation_pattern": "confirmed_commitment",
+      "focus_order": ["Private surface identity", "Benefit", "Cost", "Affected seat state", "Confirm", "Refuse"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": false,
+        "replay_supported": false,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "acknowledgement_then_state_change"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": false,
+        "control_source_visible": false,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["confirmation_pending", "private_terms_review", "refusal_pending", "shared_shield_active"],
+      "visual_guidance": [
+        "Use a neutral shared shield with no icon, color, sound, or wording that hints at the private terms.",
+        "On the authorized private surface, separate benefit, cost, affected state, and irreversible confirmation.",
+        "Clear the private presentation immediately on interruption before restoring the neutral shield."
+      ],
+      "negative_constraints": [
+        "No private content in shared captions, public transcript, public audio, mirrored display, or other seat summaries.",
+        "No auto-accept, timeout acceptance, default-confirm focus, or hidden cost.",
+        "No authority transfer while the private surface is exposed."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_private_bargains_en_v1.json",
+        "docs/technical/Shared_Screen_Storyboard_Contract_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-008"],
+      "human_validation_questions": [
+        "Does the neutral shared shield avoid leaking the existence, type, desirability, or target of private terms?",
+        "Can the active player review and refuse exact terms without accidentally committing or exposing the surface?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no private-surface technology, bargain terms, timeout, mirroring behavior, or security claim is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-008",
+      "title": "High Water Commitment and Transition",
+      "category": "transformation",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["lighthouse_council", "high_water"],
+      "layout_mode": "transformation",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A Lighthouse Council direction has committed and authoritative High Water transformation state is ready to apply once.",
+      "exit_condition": "The transformation summary, changed route categories, affected public mechanisms, and current seat positions are visible and acknowledged.",
+      "purpose": "Separate the committed before-state, optional cinematic transition, and authoritative after-state so High Water is understood as a deterministic board and rule transformation rather than a visual overlay.",
+      "required_information": [
+        "Committed Council direction",
+        "Final pre-transform board state",
+        "High Water activation",
+        "Changed state categories",
+        "Skip animation action",
+        "No player input changes the committed result"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "tide_state_upper_center",
+        "playable_board_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["acknowledge_transformation", "open_transcript", "replay_summary", "skip_animation"],
+      "confirmation_pattern": "acknowledgement_only",
+      "focus_order": ["Committed direction", "High Water state", "Changed categories summary", "Skip animation", "Acknowledge", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "acknowledgement_then_state_change"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["animation_playing", "animation_skipped", "before_state", "summary_pending"],
+      "visual_guidance": [
+        "Use advancing water, route distortion, moving debris, altered silhouettes, and lighthouse response while preserving seat and landmark readability.",
+        "Show changed categories as plain persistent text before returning control.",
+        "Skipping animation must arrive at the same after-state and summary."
+      ],
+      "negative_constraints": [
+        "No gameplay choice, random result, or authority transfer during the transformation presentation.",
+        "No route, objective, form, resource, or ending change may exist only in animation or audio.",
+        "No screen-filling wave, fog, bloom, shake, or darkness that prevents understanding the committed result."
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json",
+        "docs/tales/drowned_harbor/audio/Drowned_Harbor_Audio_Direction_v1.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-006"],
+      "human_validation_questions": [
+        "Do players understand which public state categories changed before control returns?",
+        "Does skipping the presentation preserve comprehension and emotional weight without altering the result?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no High Water runtime mutation, cinematic, timing, camera, input lock, or human comprehension claim is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-009",
+      "title": "High Water Transformed Board",
+      "category": "public_board",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["high_water"],
+      "layout_mode": "board_first",
+      "privacy_surface": "public_shared",
+      "entry_condition": "The deterministic High Water transformation has committed, its summary has been acknowledged, and no private surface is exposed.",
+      "exit_condition": "The Tale advances to Last Light, ends, pauses, or enters another authorized public or private decision surface.",
+      "purpose": "Present the transformed board with land, water, blocked, damaged, and recovery routes; current seat locations; active rescue crises; public forms; and newly legal actions.",
+      "required_information": [
+        "High Water stage and tide state",
+        "Land and water route types",
+        "Blocked and damaged routes",
+        "Current stable seat positions",
+        "Public form and faction reveals",
+        "Active rescue and hazard windows",
+        "Current legal actions"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "tide_state_upper_center",
+        "host_authority_upper_right",
+        "playable_board_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["inspect_route", "inspect_seat", "move_preview", "open_transcript", "replay_summary", "select_legal_action"],
+      "confirmation_pattern": "reversible_selection",
+      "focus_order": ["High Water objective", "Active seat", "Current space", "Reachable route types", "Hazard or rescue window", "Legal action preview", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["harbor_claim_pressure", "public_form_revealed", "rescue_window_active", "route_warning_active"],
+      "visual_guidance": [
+        "Use clear water-only connectors, partially submerged landmarks, rope and boat affordances, and altered silhouettes.",
+        "Retain recognizable Low-Tide geography so transformation reads as the same board under changed authority.",
+        "Keep dark and stormy color distinct through cool water, slate, timber, canvas, brass, clothing, and scarce amber."
+      ],
+      "negative_constraints": [
+        "No generic full-screen blue overlay or muddy black-brown grade may substitute for transformed geometry and routes.",
+        "No transformed or Restless seat may disappear from the seat rail or active-action sequence.",
+        "No hidden faction, private objective, latent form, or private route knowledge may appear publicly."
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/authoring/drowned_harbor_world_content_v1.json",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-006", "DH-XM-014"],
+      "human_validation_questions": [
+        "Can players map Low-Tide geography to the transformed High Water board and identify changed route types?",
+        "Are rescue windows, hazards, forms, seat positions, and current authority legible without color or audio alone?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no transformed board authority, route renderer, hazard timing, movement rule, or living-room readability claim is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-010",
+      "title": "Tidebound Public Transformation",
+      "category": "transformation",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["high_water", "last_light"],
+      "layout_mode": "transformation",
+      "privacy_surface": "public_shared",
+      "entry_condition": "A stable seat's Tidebound transformation has authoritatively committed and may now be publicly revealed.",
+      "exit_condition": "The same stable seat, new public form, displayed capabilities and restrictions, and current legal actions are acknowledged.",
+      "purpose": "Reveal a Tidebound form as an active continuation of the same stable seat, preserving identity, agency, history, position, and privacy while showing public rule changes.",
+      "required_information": [
+        "Stable seat identity",
+        "Prior public form",
+        "Tidebound public form",
+        "Public capabilities",
+        "Public restrictions",
+        "Current location and action ownership",
+        "Private state remains hidden"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "playable_board_center",
+        "decision_panel_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["acknowledge_transformation", "inspect_public_form", "open_transcript", "replay_summary"],
+      "confirmation_pattern": "acknowledgement_only",
+      "focus_order": ["Seat identity", "Form change", "Capabilities", "Restrictions", "Current action state", "Acknowledge", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "acknowledgement_then_state_change"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["public_capabilities_open", "public_restrictions_open", "seat_rail_updated", "transformation_summary"],
+      "visual_guidance": [
+        "Retain recognizable evidence of the original character through seat marker, silhouette anchor, carried object, or posture.",
+        "Use curved water-pulled contours and layered memory shapes without generic zombie anatomy.",
+        "Update the existing seat tile rather than replacing it with a new identity."
+      ],
+      "negative_constraints": [
+        "No player-eliminated, dead-player, monster-player, zombie, possession, or replacement language.",
+        "No automatic faction, objective, betrayal, cure, spread, or ending implication beyond displayed public rules.",
+        "No loss of turn ownership or seat rail presence merely because the form changed."
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/accessibility/Drowned_Harbor_Caption_and_Localization_Style_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-001", "DH-XM-010"],
+      "human_validation_questions": [
+        "Do players recognize the transformed figure as the same stable seat rather than a replacement or enemy NPC?",
+        "Are the new public capabilities and restrictions understandable without revealing private allegiance or objectives?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no Tidebound trigger, conversion rule, visual asset, ability set, privacy behavior, or runtime transformation is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-011",
+      "title": "Last Light Final Decision",
+      "category": "public_decision",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["last_light"],
+      "layout_mode": "decision_focus",
+      "privacy_surface": "public_shared",
+      "entry_condition": "The Tale enters Last Light with a validated set of currently legal final options and public consequence summaries.",
+      "exit_condition": "The group cancels a preview or confirms one legal final option and authoritative ending calculation begins once.",
+      "purpose": "Present final options, public consequences, unresolved private-attribution note, and irreversible confirmation without labeling one route as universally good or bad.",
+      "required_information": [
+        "Last Light stage",
+        "Current public Harbor state",
+        "Currently legal final options",
+        "Public consequence preview",
+        "Private attribution follows on authorized surfaces",
+        "Irreversible confirmation",
+        "No public timer unless active"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "tide_state_upper_center",
+        "decision_panel_center",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["cancel", "confirm_final_option", "inspect_final_option", "open_transcript", "replay_narration", "select_final_option"],
+      "confirmation_pattern": "confirmed_commitment",
+      "focus_order": ["Last Light public state", "Legal final options", "Selected public consequence", "Private-attribution notice", "Confirm", "Cancel", "Transcript and replay"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "state_change_only"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["confirmation_pending", "details_expanded", "group_discussion", "option_preview"],
+      "visual_guidance": [
+        "Reduce density and preserve board, lighthouse, Bellhouse, lifeboat, and Harbor mechanism context behind the final options.",
+        "Use separate material and mechanism motifs for each option without universal victory or defeat color coding.",
+        "Allow silence, plain-system text, transcript, and consequence review throughout discussion."
+      ],
+      "negative_constraints": [
+        "No good-ending, bad-ending, heroic, cowardly, true-ending, recommended, or correct-choice labels.",
+        "No auto-selection, majority assumption, hidden countdown, or first-focus commitment.",
+        "No private role, faction, objective, bargain, or ending-carrier result on the shared option screen."
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_factions_endings_en_v1.json",
+        "docs/tales/drowned_harbor/music/Drowned_Harbor_Music_Direction_v1.md"
+      ],
+      "traceability_concepts": ["DH-XM-012", "DH-XM-013"],
+      "human_validation_questions": [
+        "Can players compare final options and consequences without being visually pushed toward one moral verdict?",
+        "Is irreversible confirmation unmistakable while still allowing group discussion, replay, and transcript access?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no final option eligibility, voting, consequence, ending calculation, controller rule, or runtime implementation is approved."
+    },
+    {
+      "storyboard_id": "DH-UI-012",
+      "title": "Mixed Public Outcome Attribution",
+      "category": "ending_attribution",
+      "tale_id": "drowned_harbor",
+      "stage_context": ["ending_resolution"],
+      "layout_mode": "outcome_attribution",
+      "privacy_surface": "public_shared",
+      "entry_condition": "Authoritative ending calculation has completed and public seat, form, faction, and Harbor results are available for separate attribution.",
+      "exit_condition": "All public segments are acknowledged and any controlled-private results have been delivered on authorized surfaces before session closure or future Chronicle handling.",
+      "purpose": "Present mixed outcomes as separate seat, faction, form, and Harbor results without flattening them into one universal victory, defeat, score, or moral verdict.",
+      "required_information": [
+        "Ending family",
+        "Public result for each stable seat",
+        "Public form result",
+        "Public faction result",
+        "Shared Harbor result",
+        "Controlled-private results remain separate",
+        "Transcript and future Chronicle note"
+      ],
+      "layout_regions": [
+        "stage_objective_upper_left",
+        "outcome_columns",
+        "caption_lower_center",
+        "seat_rail_bottom",
+        "controller_prompt_strip"
+      ],
+      "legal_actions": ["acknowledge_outcomes", "inspect_outcome_segment", "open_transcript", "replay_ending_summary"],
+      "confirmation_pattern": "acknowledgement_only",
+      "focus_order": ["Ending family", "Seat outcomes in stable order", "Faction outcomes", "Harbor result", "Private-result notice", "Transcript and replay", "Acknowledge"],
+      "caption_policy": {
+        "subtitles_supported": true,
+        "closed_captions_supported": true,
+        "maximum_lines": 2,
+        "target_characters_per_line": 42,
+        "speaker_labels_supported": true,
+        "critical_information_outside_captions": true
+      },
+      "transcript_policy": {
+        "public_history": true,
+        "replay_supported": true,
+        "private_content_excluded": true
+      },
+      "persistent_text_policy": {
+        "required": true,
+        "plain_system_available": true,
+        "survives_voice_interruption": true,
+        "dismissal_rule": "user_or_transcript"
+      },
+      "seat_authority_policy": {
+        "active_seat_visible": true,
+        "control_source_visible": true,
+        "stable_seat_preserved": true,
+        "private_state_publicly_hidden": true,
+        "authority_transfer_allowed": false
+      },
+      "state_variants": ["all_public_results", "controlled_private_pending", "faction_results_expanded", "seat_result_expanded"],
+      "visual_guidance": [
+        "Use separate columns or cards for stable-seat, faction, and Harbor results with stable seat ordering preserved.",
+        "Allow incompatible visual motifs to coexist rather than resolving into one victory color or banner.",
+        "Keep public result text plain, persistent, and available after voice or music ends."
+      ],
+      "negative_constraints": [
+        "No universal Victory, Defeat, Winner, Loser, score, star rating, or moral grade over mixed outcomes.",
+        "No private objective, bargain term, unrevealed faction detail, or controlled-private result in public history.",
+        "No seat result may be omitted because the seat transformed, became Restless, disconnected, or changed controller."
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/accessibility/Drowned_Harbor_Caption_and_Localization_Style_v1.md",
+        "docs/tales/drowned_harbor/dialogue/drowned_harbor_dialogue_handoffs_endings_cards_en_v1.json"
+      ],
+      "traceability_concepts": ["DH-XM-013"],
+      "human_validation_questions": [
+        "Can every player identify the public result for their stable seat, form, faction, and the Harbor?",
+        "Does the layout preserve mixed or incompatible outcomes without implying one universal winner or moral verdict?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Storyboard only; no final ending text, attribution algorithm, Chronicle integration, private delivery, credits flow, or runtime UI is approved."
+    }
+  ]
+}
