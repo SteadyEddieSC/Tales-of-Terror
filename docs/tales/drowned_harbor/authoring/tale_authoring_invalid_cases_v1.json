@@ -1,0 +1,130 @@
+{
+  "fixture_kind": "tale_authoring_invalid_cases",
+  "schema_version": 1,
+  "reference_path": "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json",
+  "cases": [
+    {
+      "case_id": "authorize_catalog",
+      "operation": "set_reference_field",
+      "arguments": {
+        "field": "production_catalog_authorized",
+        "value": true
+      },
+      "expected_code": "production_boundary"
+    },
+    {
+      "case_id": "authorize_compilation",
+      "operation": "set_compilation_field",
+      "arguments": {
+        "field": "compilation_authorized",
+        "value": true
+      },
+      "expected_code": "production_boundary"
+    },
+    {
+      "case_id": "authorize_runtime",
+      "operation": "set_reference_field",
+      "arguments": {
+        "field": "runtime_integration_authorized",
+        "value": true
+      },
+      "expected_code": "production_boundary"
+    },
+    {
+      "case_id": "duplicate_content_id",
+      "operation": "duplicate_content_id",
+      "arguments": {},
+      "expected_code": "duplicate_id"
+    },
+    {
+      "case_id": "ending_without_attribution",
+      "operation": "remove_group_tag",
+      "arguments": {
+        "kind": "ending",
+        "tag": "explicit_outcome_attribution"
+      },
+      "expected_code": "missing_semantic_obligation"
+    },
+    {
+      "case_id": "form_without_seat_continuity",
+      "operation": "remove_group_tag",
+      "arguments": {
+        "kind": "form",
+        "tag": "stable_seat_continuation"
+      },
+      "expected_code": "missing_semantic_obligation"
+    },
+    {
+      "case_id": "hazard_without_recovery",
+      "operation": "remove_group_tag",
+      "arguments": {
+        "kind": "hazard",
+        "tag": "warning_response_recovery"
+      },
+      "expected_code": "missing_semantic_obligation"
+    },
+    {
+      "case_id": "missing_human_review",
+      "operation": "remove_human_validation_obligations",
+      "arguments": {},
+      "expected_code": "human_evidence_required"
+    },
+    {
+      "case_id": "nondeterministic_high_water",
+      "operation": "set_transformation_field",
+      "arguments": {
+        "id": "high_water_transform",
+        "field": "deterministic",
+        "value": false
+      },
+      "expected_code": "nondeterministic_transition"
+    },
+    {
+      "case_id": "remove_open_blockers",
+      "operation": "clear_production_blockers",
+      "arguments": {},
+      "expected_code": "production_boundary"
+    },
+    {
+      "case_id": "remove_stage_content",
+      "operation": "remove_stage_content",
+      "arguments": {
+        "id": "last_light"
+      },
+      "expected_code": "unresolved_stage"
+    },
+    {
+      "case_id": "unknown_top_level_field",
+      "operation": "add_reference_field",
+      "arguments": {
+        "field": "runtime_script",
+        "value": "res://danger.gd"
+      },
+      "expected_code": "unsupported_schema"
+    },
+    {
+      "case_id": "unknown_traceability_concept",
+      "operation": "replace_traceability_concept",
+      "arguments": {
+        "value": "DH-XM-999"
+      },
+      "expected_code": "unresolved_traceability"
+    },
+    {
+      "case_id": "unreachable_terminal",
+      "operation": "remove_transition",
+      "arguments": {
+        "id": "advance_high_water_to_last_light"
+      },
+      "expected_code": "unreachable_stage"
+    },
+    {
+      "case_id": "unsafe_source_path",
+      "operation": "set_group_source_path",
+      "arguments": {
+        "value": "C:/Users/example/private.md"
+      },
+      "expected_code": "unsafe_path"
+    }
+  ]
+}

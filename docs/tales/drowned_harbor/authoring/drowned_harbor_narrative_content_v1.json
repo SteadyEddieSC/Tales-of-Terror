@@ -1,0 +1,101 @@
+{
+  "manifest_kind": "tale_authoring_content_groups",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "manifest_id": "drowned_harbor_narrative_content",
+  "production_status": "design_only",
+  "groups": [
+    {
+      "kind": "encounter",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": ["bellhouse_ledger"],
+      "tags": ["legal_choices_required", "mechanical_truth_required"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 30. Bellhouse encounters",
+      "traceability_concepts": ["DH-XM-003", "DH-XM-004", "DH-XM-008"],
+      "ids": [
+        "bell_counts_wrong",
+        "first_harbor_bargain",
+        "missing_name_door",
+        "names_beneath_names"
+      ],
+      "note": "Bellhouse encounter identities preserving public indexing and authorized private bargain surfaces."
+    },
+    {
+      "kind": "encounter",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": ["high_water"],
+      "tags": ["legal_choices_required", "mechanical_truth_required"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 32. High Water encounters",
+      "traceability_concepts": ["DH-XM-006", "DH-XM-007", "DH-XM-010", "DH-XM-011", "DH-XM-014"],
+      "ids": [
+        "bell_rings_living_name",
+        "drowned_archive_opens",
+        "lifeboat_breaks_free_encounter",
+        "one_more_passenger_encounter",
+        "street_becomes_river",
+        "tidebound_offer"
+      ],
+      "note": "High Water encounter identities covering rescue, route, Archive, bell, capacity, and transformation pressure."
+    },
+    {
+      "kind": "encounter",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": ["lighthouse_council"],
+      "tags": ["legal_choices_required", "mechanical_truth_required"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 31. Lighthouse Council encounters",
+      "traceability_concepts": ["DH-XM-005"],
+      "ids": ["council_beneath_turning_light", "lens_shows_four_futures"],
+      "note": "Lighthouse Council encounters preserve plausible options and explicit confirmation before commitment."
+    },
+    {
+      "kind": "encounter",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": ["low_tide_arrival"],
+      "tags": ["legal_choices_required", "mechanical_truth_required"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 29. Low-Tide encounters",
+      "traceability_concepts": ["DH-XM-002", "DH-XM-008", "DH-XM-014"],
+      "ids": ["empty_lifeboat", "harbor_office_manifest", "market_of_shadows", "mudflat_mile"],
+      "note": "Low-Tide encounter identities with explicit legal choices and state-valid consequences."
+    },
+    {
+      "kind": "encounter",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": ["last_light"],
+      "tags": ["legal_choices_required", "mechanical_truth_required"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "## 33. Last Light encounters",
+      "traceability_concepts": ["DH-XM-008", "DH-XM-012", "DH-XM-013"],
+      "ids": ["final_harbor_bargain", "last_seat_on_boat", "lighthouse_mechanism"],
+      "note": "Last Light encounter identities generate only state-valid choices and preserve explicit outcome attribution."
+    },
+    {
+      "kind": "ending",
+      "status": "preproduction_ready",
+      "privacy": "public",
+      "stages": ["last_light"],
+      "tags": ["deterministic_consequence", "explicit_outcome_attribution", "mechanical_truth_required"],
+      "source_path": "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "source_anchor": "# Endings",
+      "traceability_concepts": ["DH-XM-012", "DH-XM-013"],
+      "ids": [
+        "drowned_released",
+        "harbor_rises",
+        "harbor_sealed",
+        "last_lifeboat",
+        "light_comes_home",
+        "mixed_outcomes",
+        "names_erased"
+      ],
+      "note": "Deterministic ending families; every seat and faction requires public or controlled-private attribution."
+    }
+  ]
+}

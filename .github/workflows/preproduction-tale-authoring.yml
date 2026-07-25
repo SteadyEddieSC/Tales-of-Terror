@@ -1,0 +1,45 @@
+name: Preproduction Tale authoring validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/preproduction-tale-authoring.yml'
+      - 'docs/preproduction/tale_authoring_*_schema_v1.json'
+      - 'docs/technical/Tale_Authoring_Reference_Contract_v1.md'
+      - 'docs/tales/drowned_harbor/authoring/**'
+      - 'docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md'
+      - 'docs/design/Seat_Continuity_and_Admission.md'
+      - 'docs/preproduction/drowned_harbor_cross_media_traceability_v1.json'
+      - 'tools/validate_tale_authoring_reference.py'
+      - 'tools/test_validate_tale_authoring_reference.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preproduction-tale-authoring.yml'
+      - 'docs/preproduction/tale_authoring_*_schema_v1.json'
+      - 'docs/technical/Tale_Authoring_Reference_Contract_v1.md'
+      - 'docs/tales/drowned_harbor/authoring/**'
+      - 'docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md'
+      - 'docs/design/Seat_Continuity_and_Admission.md'
+      - 'docs/preproduction/drowned_harbor_cross_media_traceability_v1.json'
+      - 'tools/validate_tale_authoring_reference.py'
+      - 'tools/test_validate_tale_authoring_reference.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Design-only Tale authoring contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate Drowned Harbor authoring reference
+        run: python tools/validate_tale_authoring_reference.py --identity
+      - name: Run authoring regression fixtures
+        run: python tools/test_validate_tale_authoring_reference.py
+      - name: Confirm production Tale boundaries remain unchanged
+        run: |
+          test ! -e game/data/tales/drowned_harbor
+          test "$(find game/data/tales -mindepth 1 -maxdepth 1 -type d | sort)" = "game/data/tales/lantern_house"
+          git diff --exit-code -- game/data/tales game/src/session tools/tale_package.py tools/tale_catalog.py
