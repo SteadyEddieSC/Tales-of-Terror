@@ -12,9 +12,15 @@
       "storyboard_id": "DH-UI-001",
       "criticality": "important",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "accessibility_public"],
+      "read_domains": [
+        "session_public",
+        "accessibility_public"
+      ],
       "write_domains": [],
-      "allowed_actors": ["host", "system"],
+      "allowed_actors": [
+        "host",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "drowned_harbor_preview_available",
@@ -25,8 +31,19 @@
           "description": "No production Play or Start action is exposed for the design-only Tale."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "settled"],
-      "input_intents": ["navigate_focus", "inspect_public_state", "open_accessibility", "cancel_or_back"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "open_accessibility",
+        "cancel_or_back"
+      ],
       "action_guards": [
         {
           "rule_id": "selected_action_current",
@@ -101,7 +118,12 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "decision_panel_center", "caption_lower_center", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "decision_panel_center",
+          "caption_lower_center",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return focus to the previously selected preview action when details or accessibility close.",
         "confirmation_pattern": "reversible_selection",
@@ -126,7 +148,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-002"],
+      "traceability_concepts": [
+        "DH-XM-002"
+      ],
       "human_validation_questions": [
         "Can players distinguish the reviewable Tale premise from unavailable production play?",
         "Can accessibility options and the design-only status be identified from living-room distance?"
@@ -141,9 +165,21 @@
       "storyboard_id": "DH-UI-002",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "seat_public", "accessibility_public"],
-      "write_domains": ["session_public", "seat_public", "accessibility_public"],
-      "allowed_actors": ["host", "specific_public_seat", "system"],
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "seat_public",
+        "accessibility_public"
+      ],
+      "allowed_actors": [
+        "host",
+        "specific_public_seat",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "session_setup_active",
@@ -154,8 +190,26 @@
           "description": "The stable-seat grid and current controller connection states are authoritative and available."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "confirming", "committed", "projected", "settled"],
-      "input_intents": ["navigate_focus", "assign_controller", "unassign_controller", "change_mode", "open_accessibility", "inspect_public_state", "cancel_or_back", "confirm_action"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "assign_controller",
+        "unassign_controller",
+        "change_mode",
+        "open_accessibility",
+        "inspect_public_state",
+        "cancel_or_back",
+        "confirm_action"
+      ],
       "action_guards": [
         {
           "rule_id": "seat_identity_stable",
@@ -243,7 +297,12 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "decision_panel_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "decision_panel_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return focus to the affected stable seat after assignment, disconnection, or compatibility recovery.",
         "confirmation_pattern": "reversible_selection",
@@ -271,7 +330,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-001"],
+      "traceability_concepts": [
+        "DH-XM-001"
+      ],
       "human_validation_questions": [
         "Can up to eight players identify stable-seat ownership and controller state without relying on color?",
         "Do disconnection and unsupported-mode recovery preserve confidence that no character was lost or replaced?"
@@ -286,9 +347,24 @@
       "storyboard_id": "DH-UI-003",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "board_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["session_public", "board_public", "seat_public", "tale_public"],
-      "allowed_actors": ["active_stable_seat", "game_control", "system"],
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "active_stable_seat",
+        "game_control",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "low_tide_stage_active",
@@ -299,8 +375,25 @@
           "description": "All required private introductions have cleared their authorized surfaces before public board control resumes."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "confirming", "committed", "projected", "settled"],
-      "input_intents": ["navigate_focus", "inspect_public_state", "preview_action", "confirm_action", "cancel_or_back", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "preview_action",
+        "confirm_action",
+        "cancel_or_back",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "active_seat_authority_current",
@@ -396,7 +489,15 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "tide_state_upper_center", "host_authority_upper_right", "playable_board_center", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "tide_state_upper_center",
+          "host_authority_upper_right",
+          "playable_board_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return focus to the current space or first current legal action after a public board refresh.",
         "confirmation_pattern": "reversible_selection",
@@ -425,7 +526,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-002"],
+      "traceability_concepts": [
+        "DH-XM-002"
+      ],
       "human_validation_questions": [
         "Can players identify the current actor, public objective, routes, and returning waterline at television distance?",
         "Does stale-action and controller-disconnection recovery preserve the active stable seat without confusing the group?"
@@ -440,9 +543,23 @@
       "storyboard_id": "DH-UI-004",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "board_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["board_public", "tale_public", "session_public"],
-      "allowed_actors": ["active_stable_seat", "host", "system"],
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "board_public",
+        "tale_public",
+        "session_public"
+      ],
+      "allowed_actors": [
+        "active_stable_seat",
+        "host",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "bellhouse_decision_available",
@@ -453,8 +570,25 @@
           "description": "The visible Ledger, ring count, unresolved position, and public consequences share one authoritative revision."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "confirming", "committed", "projected", "settled"],
-      "input_intents": ["navigate_focus", "inspect_public_state", "preview_action", "confirm_action", "cancel_or_back", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "preview_action",
+        "confirm_action",
+        "cancel_or_back",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "bellhouse_option_current",
@@ -541,7 +675,15 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "host_authority_upper_right", "playable_board_center", "decision_drawer_right", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "host_authority_upper_right",
+          "playable_board_center",
+          "decision_drawer_right",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return focus to the selected Bellhouse option or the first current legal option after refresh.",
         "confirmation_pattern": "confirmed_commitment",
@@ -569,7 +711,10 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-003", "DH-XM-004"],
+      "traceability_concepts": [
+        "DH-XM-003",
+        "DH-XM-004"
+      ],
       "human_validation_questions": [
         "Can players distinguish public Ledger evidence from prophecy or hidden-seat accusation?",
         "Does confirmation make the Bellhouse consequence clear without making routine decisions cumbersome?"
@@ -584,9 +729,22 @@
       "storyboard_id": "DH-UI-005",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "board_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["session_public", "tale_public"],
-      "allowed_actors": ["host", "active_stable_seat", "system"],
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "host",
+        "active_stable_seat",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "lighthouse_council_active",
@@ -597,8 +755,25 @@
           "description": "Each displayed direction includes its authorized public consequence preview."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "confirming", "committed", "projected", "settled"],
-      "input_intents": ["navigate_focus", "inspect_public_state", "preview_action", "confirm_action", "cancel_or_back", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "preview_action",
+        "confirm_action",
+        "cancel_or_back",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "direction_option_current",
@@ -685,7 +860,15 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "host_authority_upper_right", "playable_board_center", "decision_panel_center", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "host_authority_upper_right",
+          "playable_board_center",
+          "decision_panel_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return focus to the selected direction or first current legal direction after refresh.",
         "confirmation_pattern": "confirmed_commitment",
@@ -713,7 +896,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-005"],
+      "traceability_concepts": [
+        "DH-XM-005"
+      ],
       "human_validation_questions": [
         "Can players compare lighthouse directions and public consequences without perceiving a hidden correct choice?",
         "Does exactly-once confirmation prevent accidental commitment while preserving group discussion?"
@@ -728,9 +913,21 @@
       "storyboard_id": "DH-UI-006",
       "criticality": "critical",
       "privacy_surface": "public_shared",
-      "read_domains": ["session_public", "seat_public", "tale_public", "accessibility_public"],
-      "write_domains": ["session_public", "seat_public", "tale_public"],
-      "allowed_actors": ["active_stable_seat", "system"],
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "seat_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "active_stable_seat",
+        "system"
+      ],
       "entry_preconditions": [
         {
           "rule_id": "public_bargain_offer_available",
@@ -741,8 +938,25 @@
           "description": "Any private bargain terms remain absent from the shared projection until an authorized private handoff."
         }
       ],
-      "lifecycle_steps": ["eligible", "presented", "focused", "previewed", "confirming", "committed", "projected", "settled"],
-      "input_intents": ["navigate_focus", "inspect_public_state", "preview_action", "confirm_action", "cancel_or_back", "open_transcript", "replay_narration"],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "preview_action",
+        "confirm_action",
+        "cancel_or_back",
+        "open_transcript",
+        "replay_narration"
+      ],
       "action_guards": [
         {
           "rule_id": "bargain_offer_current",
@@ -829,10 +1043,16 @@
         }
       ],
       "presentation_obligations": {
-        "required_layout_regions": ["stage_objective_upper_left", "host_authority_upper_right", "decision_panel_center", "caption_lower_center", "seat_rail_bottom", "controller_prompt_strip"],
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "decision_panel_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
         "focus_owner_visible": true,
         "focus_restoration_rule": "Return focus to the current public bargain response after any unavailable private handoff.",
-        "confirmation_pattern": "confirmed_commitment",
+        "confirmation_pattern": "reversible_selection",
         "persistent_text_required": true,
         "plain_system_required": true,
         "caption_support_required": true,
@@ -858,7 +1078,9 @@
         "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
         "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
       ],
-      "traceability_concepts": ["DH-XM-008"],
+      "traceability_concepts": [
+        "DH-XM-008"
+      ],
       "human_validation_questions": [
         "Can players distinguish public offer availability from private bargain terms and committed acceptance?",
         "Does private-surface unavailability preserve a clear legal refusal without pressuring the active seat?"
