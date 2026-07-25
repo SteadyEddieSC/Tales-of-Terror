@@ -248,6 +248,7 @@
             "confirmed_commitment",
             "hold_to_confirm",
             "host_approval",
+            "none",
             "no_commit",
             "reversible_selection",
             "safe_handoff_confirmation"
@@ -392,7 +393,6 @@
     },
     "traceability_concepts": {
       "type": "array",
-      "minItems": 1,
       "uniqueItems": true,
       "items": {
         "type": "string",
