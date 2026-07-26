@@ -125,11 +125,13 @@ func _test_development_manifest_is_fail_closed() -> void:
 			"declares no %s dependency" % dependency,
 		)
 	_expect(
-		manifest.get("completed_work_issues") == [80, 81, 82],
+		PackedInt32Array(manifest.get("completed_work_issues", []))
+		== PackedInt32Array([80, 81, 82]),
 		"records issues #80 through #82 as completed bounded packages",
 	)
 	_expect(
-		manifest.get("future_work_issues") == [83, 84, 85, 86],
+		PackedInt32Array(manifest.get("future_work_issues", []))
+		== PackedInt32Array([83, 84, 85, 86]),
 		"keeps issues #83 through #86 blocked for future releases",
 	)
 	_expect(
