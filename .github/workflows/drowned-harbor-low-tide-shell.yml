@@ -180,7 +180,7 @@ jobs:
 
       - name: Remove generated validation evidence
         if: always()
-        run: rm -rf artifacts/p015-godot
+        run: rm -rf artifacts/p015-godot .godot-bin godot.zip
 
       - name: Confirm validation leaves the repository clean
         if: always()
