@@ -1,0 +1,94 @@
+name: Drowned Harbor deterministic projection fixtures
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/drowned-harbor-projection-fixtures.yml'
+      - 'docs/preproduction/P0.14_Release_Summary.md'
+      - 'docs/technical/Drowned_Harbor_Deterministic_State_Projection_Fixtures_v1.md'
+      - 'game/tests/drowned_harbor_dev_only/**'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'tools/validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-projection-fixtures.yml'
+      - 'docs/preproduction/P0.14_Release_Summary.md'
+      - 'docs/technical/Drowned_Harbor_Deterministic_State_Projection_Fixtures_v1.md'
+      - 'game/tests/drowned_harbor_dev_only/**'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'tools/validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Deterministic state and projection contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Enforce exact P0.14 release boundary
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.head_ref == 'agent/p0.14-drowned-harbor-state-fixtures'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          python - <<'PY'
+          import os
+          import subprocess
+
+          expected = {
+              '.github/workflows/drowned-harbor-projection-fixtures.yml',
+              'docs/preproduction/P0.14_Release_Summary.md',
+              'docs/technical/Drowned_Harbor_Deterministic_State_Projection_Fixtures_v1.md',
+              'game/tests/drowned_harbor_dev_only/README.md',
+              'game/tests/drowned_harbor_dev_only/state_projection_fixture_schema_v1.json',
+              'game/tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json',
+              'game/tests/drowned_harbor_prototype_manifest_v1.json',
+              'tools/test_validate_drowned_harbor_projection_fixtures.py',
+              'tools/test_validate_drowned_harbor_prototype_isolation.py',
+              'tools/validate_drowned_harbor_projection_fixtures.py',
+              'tools/validate_drowned_harbor_prototype_isolation.py',
+          }
+          base_ref = os.environ['BASE_REF']
+          output = subprocess.check_output(
+              ['git', 'diff', '--name-only', f'origin/{base_ref}...HEAD'],
+              text=True,
+          )
+          actual = {line for line in output.splitlines() if line}
+          if actual != expected:
+              missing = sorted(expected - actual)
+              unexpected = sorted(actual - expected)
+              raise SystemExit(
+                  f'P0.14 path boundary mismatch; missing={missing}; '
+                  f'unexpected={unexpected}'
+              )
+          print('Validated exact 11-path P0.14 release boundary')
+          PY
+
+      - name: Validate deterministic projection fixtures
+        run: python tools/validate_drowned_harbor_projection_fixtures.py
+
+      - name: Run projection fixture regression suite
+        run: python tools/test_validate_drowned_harbor_projection_fixtures.py
+
+      - name: Validate prototype isolation and package linkage
+        run: python tools/validate_drowned_harbor_prototype_isolation.py
+
+      - name: Run prototype isolation regression suite
+        run: python tools/test_validate_drowned_harbor_prototype_isolation.py
+
+      - name: Confirm validation leaves the repository clean
+        run: git diff --exit-code
