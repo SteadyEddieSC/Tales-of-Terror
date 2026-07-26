@@ -6,9 +6,7 @@ const ADAPTER_SCRIPT: Script = preload(
 const SHELL_SCRIPT: Script = preload(
 	"res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd"
 )
-const SHELL_SCENE_PATH: String = (
-	"res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.tscn"
-)
+const SHELL_SCENE_PATH: String = "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.tscn"
 const PRIVATE_MARKERS: PackedStringArray = [
 	"PRIVATE_",
 	"archive_culvert",
@@ -256,8 +254,7 @@ func _test_transcript_replay_and_recovery_are_public_safe() -> void:
 		for marker: String in PRIVATE_MARKERS:
 			_expect(marker not in text, "public-safe output excludes %s" % marker)
 	_expect(
-		"No state, seat, or RNG change occurred."
-		in shell.render_snapshot().get("status", ""),
+		"No state, seat, or RNG change occurred." in shell.render_snapshot().get("status", ""),
 		"recovery message states the no-mutation boundary",
 	)
 	shell.free()
@@ -278,9 +275,7 @@ func _test_controller_and_keyboard_fallback_mappings() -> void:
 		for event: InputEvent in InputMap.action_get_events(action):
 			has_key = has_key or event is InputEventKey
 			has_controller = (
-				has_controller
-				or event is InputEventJoypadButton
-				or event is InputEventJoypadMotion
+				has_controller or event is InputEventJoypadButton or event is InputEventJoypadMotion
 			)
 		_expect(has_key, "%s retains keyboard fallback" % action)
 		_expect(has_controller, "%s retains controller mapping" % action)
