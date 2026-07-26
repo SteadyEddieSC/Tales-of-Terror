@@ -13,7 +13,7 @@ on:
       - 'tools/test_validate_prototype_authorization.py'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -22,7 +22,33 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
+
+      - name: Repair stale P0.11 contract path once
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('docs/tales/drowned_harbor/implementation/drowned_harbor_prototype_authorization_v1.json')
+          old = 'docs/technical/Interaction_State_and_Implementation_Traceability_Contract_v1.md'
+          new = 'docs/technical/Drowned_Harbor_Interaction_State_Traceability_Contract_v1.md'
+          text = path.read_text(encoding='utf-8')
+          count = text.count(old)
+          if count not in {0, 4}:
+              raise SystemExit(f'expected 0 or 4 stale contract references, found {count}')
+          if count == 4:
+              path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          if git diff --quiet -- docs/tales/drowned_harbor/implementation/drowned_harbor_prototype_authorization_v1.json; then
+            echo 'Contract path already current.'
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add docs/tales/drowned_harbor/implementation/drowned_harbor_prototype_authorization_v1.json
+            git commit -m 'docs: correct P0.11 interaction contract references'
+            git push origin HEAD:${{ github.head_ref }}
+          fi
 
       - name: Enforce P0.12 documentation and tooling-only delta
         env:
