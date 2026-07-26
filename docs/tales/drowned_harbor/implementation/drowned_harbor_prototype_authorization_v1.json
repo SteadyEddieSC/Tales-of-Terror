@@ -127,7 +127,7 @@
         "stale_action_fail_closed"
       ],
       "source_paths": [
-        "docs/technical/Interaction_State_and_Implementation_Traceability_Contract_v1.md",
+        "docs/technical/Drowned_Harbor_Interaction_State_Traceability_Contract_v1.md",
         "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_core_traces_v1.json",
         "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_resolution_traces_v1.json",
         "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_continuity_traces_v1.json"
@@ -248,7 +248,7 @@
       "source_paths": [
         "docs/design/Seat_Continuity_and_Admission.md",
         "docs/technical/Shared_Screen_Storyboard_Contract_v1.md",
-        "docs/technical/Interaction_State_and_Implementation_Traceability_Contract_v1.md",
+        "docs/technical/Drowned_Harbor_Interaction_State_Traceability_Contract_v1.md",
         "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_continuity_traces_v1.json"
       ]
     },
@@ -376,7 +376,7 @@
     "docs/technical/Tale_Catalog_Contract.md",
     "docs/technical/Tale_Package_Contract.md",
     "docs/technical/Shared_Screen_Storyboard_Contract_v1.md",
-    "docs/technical/Interaction_State_and_Implementation_Traceability_Contract_v1.md",
+    "docs/technical/Drowned_Harbor_Interaction_State_Traceability_Contract_v1.md",
     "docs/design/Seat_Continuity_and_Admission.md"
   ],
   "approval_boundary": "P0.12 conditionally approves only the future isolated prototype concept and blocked issue decomposition; it authorizes no runtime file, production Tale registration, provider or catalog change, playable export, production asset, human evidence claim, or public release activity."
