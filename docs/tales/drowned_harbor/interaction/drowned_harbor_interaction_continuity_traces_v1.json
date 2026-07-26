@@ -1,0 +1,1689 @@
+{
+  "manifest_kind": "interaction_state_traces_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "record_schema": "docs/preproduction/interaction_state_trace_schema_v1.json",
+  "entries": [
+    {
+      "trace_id": "DH-IS-013",
+      "title": "Stable Seat Reconnecting Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-013",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "seat_public"
+      ],
+      "allowed_actors": [
+        "specific_public_seat",
+        "host",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "human_controller_disconnected",
+          "description": "A human controller disconnected from an existing stable seat and reconnect handling is authorized."
+        },
+        {
+          "rule_id": "stable_seat_reservation_preserved",
+          "description": "The same stable seat, public state, private state, and current atomic action remain reserved."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "reconnect_same_seat",
+        "inspect_public_state",
+        "open_transcript",
+        "pause_if_authorized"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "reconnecting_controller_matches_reservation",
+          "description": "The reconnecting controller is authorized for the same reserved stable seat."
+        },
+        {
+          "rule_id": "atomic_action_not_interrupted",
+          "description": "Reconnect handling does not partially commit or replace a protected atomic action."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": false,
+        "retry_behavior": "requery_and_present_current_state"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "RECONNECTING control-source state",
+          "Same stable-seat identity and public state",
+          "Grace and protected-action status"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "stable_seat_reconnecting_state_changed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Stable-seat identity",
+          "Reconnect state",
+          "Public condition and location",
+          "Grace behavior"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "No private role, faction, objective, inventory, strategy, or route knowledge enters reconnect projection.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "controller_disconnected",
+          "authoritative_mutation": "none",
+          "focus_destination": "reconnecting_seat_tile",
+          "player_message": "The controller remains disconnected. The same stable seat is still reserved.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "authority_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "seat_control_status",
+          "player_message": "Control authority changed at a safe handoff. The stable seat and state remain unchanged.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "host_authority_upper_right",
+          "playable_board_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the same stable-seat tile or protected active action after reconnection.",
+        "confirmation_pattern": "none",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "public_projection_builder",
+        "focus_coordinator",
+        "controller_authority_adapter",
+        "caption_transcript_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-001"
+      ],
+      "human_validation_questions": [
+        "Do players understand that only the controller is reconnecting while the seat remains present?",
+        "Does grace behavior avoid panic or a false countdown during protected actions?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no reconnect timing, controller detection, pause behavior, network logic, or runtime continuity is approved."
+    },
+    {
+      "trace_id": "DH-IS-014",
+      "title": "Stable Seat Under Game Control Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-014",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "seat_private",
+        "tale_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "seat_public"
+      ],
+      "allowed_actors": [
+        "game_control",
+        "host",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "safe_game_control_handoff",
+          "description": "Reconnect grace ended or authorized departure committed and a safe handoff is available."
+        },
+        {
+          "rule_id": "stable_seat_state_preserved",
+          "description": "The game-controlled seat retains all public and private evolved state and history."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "inspect_public_state",
+        "request_human_takeover",
+        "open_transcript",
+        "facilitator_review"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "game_control_authority_current",
+          "description": "Game control remains authoritative for the same stable seat at the current safe state."
+        },
+        {
+          "rule_id": "private_strategy_not_public",
+          "description": "No private strategy profile, allegiance, objective, or bargain willingness enters public projection."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": false,
+        "retry_behavior": "requery_and_present_current_state"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "GAME CONTROL label",
+          "Same public seat state and history",
+          "Current action ownership",
+          "Public takeover availability"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "stable_seat_game_control_activated",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Stable-seat identity",
+          "GAME CONTROL state",
+          "Public form, location, condition, and ownership",
+          "Takeover availability"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Game-control strategy and inherited seat-private state remain inaccessible to the shared projection.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "authority_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "game_controlled_seat_tile",
+          "player_message": "Authority changed at a safe handoff. The same stable seat and evolved state remain authoritative.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "legal_action_set_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "current_public_seat_state",
+          "player_message": "The seat state changed. Current public actions and takeover availability are shown.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "host_authority_upper_right",
+          "playable_board_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the same game-controlled seat tile after public review closes.",
+        "confirmation_pattern": "none",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "legal_action_query",
+        "public_projection_builder",
+        "controller_authority_adapter",
+        "caption_transcript_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-001"
+      ],
+      "human_validation_questions": [
+        "Do players perceive game control as authority over the same seat rather than a replacement character?",
+        "Does the seat remain socially present without exposing private strategy?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no surrogate strategy, decision logic, delay, takeover behavior, or runtime authority is approved."
+    },
+    {
+      "trace_id": "DH-IS-015",
+      "title": "Public Takeover Seat Selection Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-015",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "admission_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "seat_public",
+        "admission_public"
+      ],
+      "allowed_actors": [
+        "host",
+        "approved_takeover_controller",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "takeover_request_authorized",
+          "description": "A joining human is authorized to request control and at least one game-controlled seat is eligible."
+        },
+        {
+          "rule_id": "public_safe_summaries_available",
+          "description": "Eligible seats expose only public-safe summaries and safe-handoff availability."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "select_eligible_seat",
+        "request_selected_seat",
+        "confirm_action",
+        "cancel_or_back"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "selected_seat_still_eligible",
+          "description": "The selected stable seat remains game-controlled and eligible at the safe handoff."
+        },
+        {
+          "rule_id": "private_seat_shopping_prohibited",
+          "description": "No private seat information is shown before one public assignment commits."
+        },
+        {
+          "rule_id": "assignment_does_not_transfer_authority",
+          "description": "Public assignment creates takeover-pending state but does not yet grant control or private information."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": true,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "requery_and_present_current_state"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Eligible public-safe seat summaries",
+          "Selected stable seat",
+          "TAKEOVER PENDING state",
+          "Safe-handoff status"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "stable_seat_takeover_assignment_committed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Eligible stable-seat identities",
+          "Public location, condition, form, and item count",
+          "Safe-handoff state",
+          "Takeover pending assignment"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "No private seat state is loaded until one seat is assigned and the controlled-private handoff begins.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "stale_action",
+          "authoritative_mutation": "none",
+          "focus_destination": "eligible_seat_list",
+          "player_message": "Eligibility changed. Current public-safe takeover options are shown.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "authority_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "takeover_request_status",
+          "player_message": "Host or seat authority changed. No takeover assignment was committed.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "host_authority_upper_right",
+          "decision_panel_center",
+          "public_recap_panel",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the selected eligible seat or first current eligible seat after refresh.",
+        "confirmation_pattern": "confirmed_commitment",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "legal_action_query",
+        "command_validator",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "focus_coordinator",
+        "controller_authority_adapter",
+        "admission_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-001"
+      ],
+      "human_validation_questions": [
+        "Can a joining player understand transformed or injured seats from public-safe summaries alone?",
+        "Does the flow prevent private-seat shopping while making the assignment consequence clear?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no eligibility algorithm, identity service, assignment policy, private lookup, or runtime takeover is approved."
+    },
+    {
+      "trace_id": "DH-IS-016",
+      "title": "Inherited Private State Handoff Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-016",
+      "criticality": "critical",
+      "privacy_surface": "controlled_private_surface",
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "seat_private",
+        "tale_private"
+      ],
+      "write_domains": [
+        "session_public",
+        "seat_public"
+      ],
+      "allowed_actors": [
+        "approved_takeover_controller",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "one_stable_seat_assigned",
+          "description": "Exactly one stable seat has been assigned to the approved takeover controller."
+        },
+        {
+          "rule_id": "safe_handoff_and_shield_ready",
+          "description": "A safe handoff is active and the shared display is covered by a neutral privacy shield."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_private_state",
+        "review_private_inventory",
+        "review_private_objective",
+        "review_surrogate_recap",
+        "acknowledge_private_state",
+        "confirm_action"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "assigned_controller_authorized",
+          "description": "The controller remains authorized for the assigned stable seat and current handoff revision."
+        },
+        {
+          "rule_id": "all_required_private_sections_acknowledged",
+          "description": "Required role, faction, objective, inventory, knowledge, and surrogate recap sections are acknowledged."
+        },
+        {
+          "rule_id": "public_screen_remains_neutral",
+          "description": "No private text, icon, voice, caption, reflection, or mirrored content reaches the shared display."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": true,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "reproject_existing_result"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Neutral private-handoff state",
+          "Public control transfer after clearing"
+        ],
+        "private_outputs": [
+          "Inherited role and faction",
+          "Private objective and conditions",
+          "Private inventory and knowledge",
+          "Surrogate action recap",
+          "Current private legal actions"
+        ],
+        "emitted_events": [
+          {
+            "event_key": "inherited_private_state_acknowledged",
+            "classification": "private",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          },
+          {
+            "event_key": "stable_seat_human_takeover_committed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Neutral handoff shield",
+          "Assigned stable-seat identity where public",
+          "Public transfer completion"
+        ],
+        "private_content": [
+          "Role",
+          "Faction",
+          "Objective",
+          "Conditions",
+          "Inventory",
+          "Knowledge",
+          "Surrogate recap",
+          "Private actions"
+        ],
+        "neutral_shield_required": true,
+        "authorized_private_actor_required": true,
+        "private_clearing_rule": "Clear all inherited private content before the public board is restored and human authority commits.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "private_surface_unavailable",
+          "authoritative_mutation": "none",
+          "focus_destination": "neutral_shared_shield",
+          "player_message": "Private inherited state cannot be shown safely. Authority was not transferred.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "authority_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "neutral_shared_shield",
+          "player_message": "Authorization changed. Private content was cleared and the takeover remains uncommitted.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "confirmation_expired",
+          "authoritative_mutation": "none",
+          "focus_destination": "private_handoff_summary",
+          "player_message": "Acknowledgement expired. Review the current inherited state before transfer.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "private_shield_full_screen",
+          "decision_panel_center",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Private focus returns only to the authorized controller; otherwise clear content and retain the neutral shield.",
+        "confirmation_pattern": "confirmed_commitment",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "not_required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "command_validator",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "private_projection_builder",
+        "focus_coordinator",
+        "controller_authority_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-001"
+      ],
+      "human_validation_questions": [
+        "Can the assigned player understand inherited state and surrogate history without exposing it to the room?",
+        "Is acknowledgement clearly separate from seat assignment and actual authority transfer?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no private-display technology, security guarantee, controller authorization, inherited-state UI, or runtime handoff is approved."
+    },
+    {
+      "trace_id": "DH-IS-017",
+      "title": "Returning Player Recap Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-017",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "seat_private",
+        "tale_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "seat_public"
+      ],
+      "allowed_actors": [
+        "returning_reserved_controller",
+        "host",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "returning_controller_authorized",
+          "description": "A returning human is authorized for the same reserved stable seat."
+        },
+        {
+          "rule_id": "safe_return_handoff_available",
+          "description": "No atomic action, ending calculation, transaction commit, snapshot restore, or private projection blocks handoff."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "replay_narration",
+        "open_transcript",
+        "continue_to_private_recap",
+        "resume_control",
+        "confirm_action"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "reserved_seat_identity_matches",
+          "description": "The returning controller matches the same reserved stable seat and current evolved state."
+        },
+        {
+          "rule_id": "private_recap_completed_when_required",
+          "description": "Any new private state is acknowledged through an authorized private handoff before control resumes."
+        },
+        {
+          "rule_id": "surrogate_history_preserved",
+          "description": "Game-controlled decisions remain authoritative and are not rolled back, restored, or rerolled."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": true,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "requery_and_present_current_state"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Same reserved stable seat",
+          "Public before-and-now recap",
+          "Public surrogate actions",
+          "Private recap required state",
+          "Human control resumed"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "returning_player_recap_presented",
+            "classification": "public",
+            "exactly_once": false,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          },
+          {
+            "event_key": "reserved_player_control_resumed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Reserved seat identity",
+          "Public location and condition",
+          "Public items and stage changes",
+          "Public surrogate actions"
+        ],
+        "private_content": [
+          "New private knowledge or inherited private state for the returning seat"
+        ],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": true,
+        "private_clearing_rule": "Any required private recap uses a separate neutral-shielded handoff before human control resumes.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "authority_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "returning_seat_status",
+          "player_message": "Return authority changed. The same stable seat and evolved state remain preserved.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "private_surface_unavailable",
+          "authoritative_mutation": "none",
+          "focus_destination": "public_recap_panel",
+          "player_message": "Private recap cannot be shown safely. Human control has not resumed.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "host_authority_upper_right",
+          "public_recap_panel",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the public recap or resume-control confirmation after any private recap.",
+        "confirmation_pattern": "confirmed_commitment",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "command_validator",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "private_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "replay_adapter",
+        "controller_authority_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-001"
+      ],
+      "human_validation_questions": [
+        "Can a returning player understand meaningful public changes without feeling that surrogate actions were undone?",
+        "Does the flow clearly separate public recap, private recap, acknowledgement, and control transfer?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no recap generation, event retention, private delivery, return timing, or runtime control behavior is approved."
+    },
+    {
+      "trace_id": "DH-IS-018",
+      "title": "Restless Continuation Activation Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-018",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public"
+      ],
+      "write_domains": [
+        "seat_public",
+        "tale_public",
+        "session_public"
+      ],
+      "allowed_actors": [
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "prior_form_defeated",
+          "description": "A stable seat's prior public form is defeated under an authored continuation rule."
+        },
+        {
+          "rule_id": "restless_form_committed",
+          "description": "One Bell-Witness, Drowned Guide, or Lighthouse Guardian continuation form has committed."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "committed",
+        "projected",
+        "focused",
+        "settled"
+      ],
+      "input_intents": [
+        "inspect_public_state",
+        "acknowledge_continuation",
+        "open_transcript",
+        "replay_narration"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "stable_seat_identity_unchanged",
+          "description": "The same stable seat, history, authority, ending identity, and takeover eligibility remain."
+        },
+        {
+          "rule_id": "public_form_rules_complete",
+          "description": "The selected Restless form and its public action set are complete and authoritative."
+        },
+        {
+          "rule_id": "hidden_targets_not_projected",
+          "description": "No target, route answer, sacrifice, private objective, or hidden allegiance is preselected or exposed."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "reproject_existing_result"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Same stable-seat identity",
+          "Defeated prior form",
+          "Restless continuation form",
+          "Public continuation actions",
+          "Current authority and location"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "restless_continuation_committed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Stable-seat identity",
+          "Public Restless form",
+          "Public continuation actions",
+          "Current control source"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Private objectives, faction state, hidden targets, route answers, and sacrifice intentions remain excluded.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "projection_data_invalid",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "restless_public_summary",
+          "player_message": "Continuation committed. Plain-system form rules and the same stable-seat identity remain authoritative.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "voice_or_caption_interrupted",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "restless_public_summary",
+          "player_message": "The Restless form and public actions remain in persistent text and transcript.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "playable_board_center",
+          "decision_panel_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "After acknowledgement, return focus to the same stable seat under its continuation action set.",
+        "confirmation_pattern": "acknowledgement_only",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "replay_adapter",
+        "controller_authority_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json",
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md"
+      ],
+      "traceability_concepts": [
+        "DH-XM-001",
+        "DH-XM-011"
+      ],
+      "human_validation_questions": [
+        "Do players understand that the seat remains active and strategically meaningful after defeat?",
+        "Are the three Restless forms distinguishable without implying a hidden target or automatic sacrifice?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no defeat trigger, form assignment, action set, balance, visual asset, or runtime continuation is approved."
+    },
+    {
+      "trace_id": "DH-IS-019",
+      "title": "Invalid Action Recovery Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-019",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [],
+      "allowed_actors": [
+        "active_stable_seat",
+        "game_control",
+        "host",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "action_rejected_before_mutation",
+          "description": "An invalid, stale, unavailable, or wrong-seat action was rejected before authoritative mutation."
+        },
+        {
+          "rule_id": "legal_alternatives_available",
+          "description": "Current public-safe legal alternatives and deterministic focus recovery are available."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "acknowledge_rejection",
+        "inspect_public_state",
+        "inspect_legal_options",
+        "open_help",
+        "open_transcript",
+        "select_legal_action"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "state_and_rng_unchanged",
+          "description": "The rejected action did not mutate authoritative state or consume deterministic randomness."
+        },
+        {
+          "rule_id": "public_safe_reason_only",
+          "description": "The rejection explanation does not reveal another seat's private state or hidden future condition."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": false,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": false,
+        "retry_behavior": "no_authoritative_change"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Rejected action",
+          "Public-safe reason",
+          "No state or RNG change",
+          "Current legal alternatives",
+          "Restored focus owner"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "invalid_action_recovery_projected",
+            "classification": "diagnostic",
+            "exactly_once": false,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Rejected public action",
+          "Public-safe reason",
+          "Legal alternatives",
+          "Active seat ownership"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Hidden legality causes are summarized without exposing private roles, objectives, routes, or future state.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "stale_action",
+          "authoritative_mutation": "none",
+          "focus_destination": "previous_legal_option_or_first_current",
+          "player_message": "The action is stale. Current legal alternatives are shown and no state changed.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "authority_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "current_authority_status",
+          "player_message": "Action authority changed. Current owner and legal alternatives are shown.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "host_authority_upper_right",
+          "decision_drawer_right",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Restore the previously selected legal option or first deterministic current alternative.",
+        "confirmation_pattern": "acknowledgement_only",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "legal_action_query",
+        "command_validator",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json",
+        "docs/accessibility/Localization_Captions_and_Accessible_Narrative_Direction_v1.md"
+      ],
+      "traceability_concepts": [
+        "DH-XM-015"
+      ],
+      "human_validation_questions": [
+        "Can players recover without losing the original decision or feeling punished?",
+        "Does the public-safe explanation help without revealing hidden state or the correct future answer?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no validation code, error taxonomy, focus timing, audio, or runtime recovery behavior is approved."
+    },
+    {
+      "trace_id": "DH-IS-020",
+      "title": "Transcript and Replay Drawer Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-020",
+      "criticality": "important",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "accessibility_public",
+        "diagnostic_nonplayer"
+      ],
+      "write_domains": [],
+      "allowed_actors": [
+        "active_stable_seat",
+        "specific_public_seat",
+        "host",
+        "spectator",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "public_history_available",
+          "description": "A public transcript history exists and may be opened without interrupting an atomic action."
+        },
+        {
+          "rule_id": "private_history_excluded",
+          "description": "Seat-private, faction-private, controlled-private, credential, and restricted content are absent."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "filter_public_events",
+        "replay_narration",
+        "inspect_public_state",
+        "cancel_or_back"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "replay_is_projection_only",
+          "description": "Replay does not re-execute a game action, consume randomness, or mutate authoritative state."
+        },
+        {
+          "rule_id": "return_focus_anchor_available",
+          "description": "The exact public control that opened history remains a valid focus-return anchor or has a safe fallback."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": false,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": false,
+        "retry_behavior": "no_authoritative_change"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Public event history",
+          "Localizable speaker and event labels",
+          "Rendered public text",
+          "Replay availability",
+          "Current versus historical state"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "public_transcript_viewed",
+            "classification": "diagnostic",
+            "exactly_once": false,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Public narrative and system history",
+          "Public event labels",
+          "Public replayable text"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Public history is built from public projections only and never aggregates private content.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "transcript_or_replay_unavailable",
+          "authoritative_mutation": "none",
+          "focus_destination": "prior_public_control",
+          "player_message": "Transcript or replay is temporarily unavailable. The active public decision remains unchanged.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "voice_or_caption_interrupted",
+          "authoritative_mutation": "none",
+          "focus_destination": "current_transcript_entry",
+          "player_message": "The selected public entry remains available as persistent text.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "host_authority_upper_right",
+          "transcript_drawer",
+          "caption_lower_center",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the exact control that opened the transcript or the nearest safe public anchor.",
+        "confirmation_pattern": "reversible_selection",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "public_when_applicable",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "replay_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/accessibility/Localization_Captions_and_Accessible_Narrative_Direction_v1.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json"
+      ],
+      "traceability_concepts": [],
+      "human_validation_questions": [
+        "Can players find and replay an important public line without changing the active decision?",
+        "Does enlarged history remain readable while clearly excluding private content?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no transcript storage, search, replay engine, assistive behavior, or runtime drawer is approved."
+    },
+    {
+      "trace_id": "DH-IS-021",
+      "title": "Narrative Accessibility Settings Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-021",
+      "criticality": "important",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "accessibility_public"
+      ],
+      "allowed_actors": [
+        "host",
+        "specific_public_seat",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "non_atomic_settings_entry",
+          "description": "Presentation settings are opened from an authorized non-atomic lobby, pause, transcript, or review state."
+        },
+        {
+          "rule_id": "presentation_settings_available",
+          "description": "Caption, text, plain-language, music, voice, and reduced-density preferences are available for preview."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "change_accessibility_setting",
+        "preview_caption",
+        "reset_presentation_defaults",
+        "cancel_or_back"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "presentation_only_change",
+          "description": "The setting changes presentation only and does not alter mechanics, privacy, authority, randomness, legal actions, or ending eligibility."
+        },
+        {
+          "rule_id": "prior_focus_context_preserved",
+          "description": "The exact prior public context and focus-return anchor remain available."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": false,
+        "retry_behavior": "requery_and_present_current_state"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Live caption preview",
+          "Text scale and spacing",
+          "Caption background and position",
+          "Plain-language mode",
+          "Voice, music, and reduced-density state"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "narrative_presentation_settings_changed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Presentation settings",
+          "Representative public preview content",
+          "Presentation-only guarantee"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Preview text is synthetic public-safe sample content and never reflects seat-private state.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "projection_data_invalid",
+          "authoritative_mutation": "none",
+          "focus_destination": "current_setting_group",
+          "player_message": "The preview could not render. The prior presentation setting remains active.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "voice_or_caption_interrupted",
+          "authoritative_mutation": "none",
+          "focus_destination": "live_caption_preview",
+          "player_message": "The setting and plain-system preview remain available without voice.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "settings_overlay",
+          "caption_lower_center",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the exact prior public control when settings close.",
+        "confirmation_pattern": "reversible_selection",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "not_required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/accessibility/Localization_Captions_and_Accessible_Narrative_Direction_v1.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json"
+      ],
+      "traceability_concepts": [],
+      "human_validation_questions": [
+        "Can players distinguish subtitles, full captions, and plain-language presentation?",
+        "Do enlarged text and caption layout changes preserve essential controls without clipping?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no settings storage, final ranges, fonts, caption engine, accessibility claim, or runtime presentation behavior is approved."
+    },
+    {
+      "trace_id": "DH-IS-022",
+      "title": "Remote Join Request and Admission Queue Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-022",
+      "criticality": "important",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "admission_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "admission_public",
+        "session_public"
+      ],
+      "allowed_actors": [
+        "host",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "remote_request_pending",
+          "description": "A future authorized remote requester is pending under a host-review admission policy."
+        },
+        {
+          "rule_id": "admission_does_not_grant_seat",
+          "description": "Admission approval remains separate from spectator access, seat eligibility, private handoff, and control authority."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_compatibility",
+        "approve_player_admission",
+        "approve_spectator_admission",
+        "defer_request",
+        "reject_request",
+        "confirm_action"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "host_authority_current",
+          "description": "The acting host remains authorized to resolve the current request revision."
+        },
+        {
+          "rule_id": "requested_role_and_compatibility_current",
+          "description": "The requested role, compatibility warnings, and seat availability remain current."
+        },
+        {
+          "rule_id": "seat_authority_not_granted",
+          "description": "Approval does not assign a stable seat, reveal private state, or grant control authority."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": true,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "requery_and_present_current_state"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Requester public identity",
+          "Requested player or spectator role",
+          "Compatibility and seat availability",
+          "Admission resolution",
+          "No-seat-authority statement"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "remote_admission_request_resolved",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Requester display identity",
+          "Requested role",
+          "Compatibility warnings",
+          "Admission result",
+          "Public seat availability"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Admission projection excludes account credentials, private seat state, roles, factions, objectives, inventory, infection, bargains, and history.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "stale_action",
+          "authoritative_mutation": "none",
+          "focus_destination": "admission_queue",
+          "player_message": "The request changed. Current admission options and compatibility are shown.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "projection_data_invalid",
+          "authoritative_mutation": "none",
+          "focus_destination": "admission_request_summary",
+          "player_message": "The request cannot be reviewed completely. No admission decision was committed.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "host_authority_upper_right",
+          "decision_drawer_right",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the current request or next pending request after resolution.",
+        "confirmation_pattern": "confirmed_commitment",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "legal_action_query",
+        "command_validator",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "focus_coordinator",
+        "admission_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-001"
+      ],
+      "human_validation_questions": [
+        "Can the host distinguish admission, spectator access, eligible-seat review, and actual authority transfer?",
+        "Does the queue remain safe and understandable without interrupting critical local play or exposing private data?"
+      ],
+      "status": "deferred",
+      "approval_boundary": "Traceability record only; no network service, identity system, invitation policy, spectator mode, security control, or runtime remote flow is approved."
+    }
+  ]
+}

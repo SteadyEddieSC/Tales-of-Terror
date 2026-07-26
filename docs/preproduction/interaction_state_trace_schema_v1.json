@@ -1,0 +1,423 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/interaction-state-trace-v1.json",
+  "title": "Drowned Harbor Interaction-State Trace v1",
+  "description": "Closed preproduction schema binding one P0.10 storyboard to authoritative state, interaction, privacy, recovery, presentation, and future implementation responsibilities.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "trace_id",
+    "title",
+    "tale_id",
+    "storyboard_id",
+    "criticality",
+    "privacy_surface",
+    "read_domains",
+    "write_domains",
+    "allowed_actors",
+    "entry_preconditions",
+    "lifecycle_steps",
+    "input_intents",
+    "action_guards",
+    "commit_contract",
+    "projection_contract",
+    "privacy_contract",
+    "recovery_contract",
+    "presentation_obligations",
+    "implementation_seams",
+    "source_paths",
+    "traceability_concepts",
+    "human_validation_questions",
+    "status",
+    "approval_boundary"
+  ],
+  "$defs": {
+    "repo_path": {
+      "type": "string",
+      "pattern": "^docs/[A-Za-z0-9_./-]+$"
+    },
+    "stable_key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "state_domain": {
+      "type": "string",
+      "enum": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "seat_private",
+        "tale_public",
+        "tale_private",
+        "accessibility_public",
+        "admission_public",
+        "diagnostic_nonplayer"
+      ]
+    },
+    "actor": {
+      "type": "string",
+      "enum": [
+        "host",
+        "active_stable_seat",
+        "specific_public_seat",
+        "returning_reserved_controller",
+        "approved_takeover_controller",
+        "game_control",
+        "spectator",
+        "system"
+      ]
+    },
+    "lifecycle_step": {
+      "type": "string",
+      "enum": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ]
+    },
+    "typed_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "description"],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stable_key"},
+        "description": {"type": "string", "minLength": 12}
+      }
+    },
+    "event_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_key",
+        "classification",
+        "exactly_once",
+        "idempotent_reprojection",
+        "includes_source_revision",
+        "includes_result_revision",
+        "raw_identity_prohibited"
+      ],
+      "properties": {
+        "event_key": {"$ref": "#/$defs/stable_key"},
+        "classification": {
+          "type": "string",
+          "enum": ["public", "private", "diagnostic"]
+        },
+        "exactly_once": {"type": "boolean"},
+        "idempotent_reprojection": {"type": "boolean", "const": true},
+        "includes_source_revision": {"type": "boolean", "const": true},
+        "includes_result_revision": {"type": "boolean", "const": true},
+        "raw_identity_prohibited": {"type": "boolean", "const": true}
+      }
+    },
+    "projection_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "public_outputs",
+        "private_outputs",
+        "emitted_events",
+        "public_payload_private_data_prohibited",
+        "projection_after_authoritative_commit"
+      ],
+      "properties": {
+        "public_outputs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 3}
+        },
+        "private_outputs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 3}
+        },
+        "emitted_events": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/event_contract"}
+        },
+        "public_payload_private_data_prohibited": {"type": "boolean", "const": true},
+        "projection_after_authoritative_commit": {"type": "boolean", "const": true}
+      }
+    },
+    "privacy_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "public_shared_content",
+        "private_content",
+        "neutral_shield_required",
+        "authorized_private_actor_required",
+        "private_clearing_rule",
+        "public_transcript_private_content_prohibited",
+        "public_audio_private_content_prohibited",
+        "mirrored_private_content_prohibited"
+      ],
+      "properties": {
+        "public_shared_content": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 3}
+        },
+        "private_content": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 3}
+        },
+        "neutral_shield_required": {"type": "boolean"},
+        "authorized_private_actor_required": {"type": "boolean"},
+        "private_clearing_rule": {"type": "string", "minLength": 10},
+        "public_transcript_private_content_prohibited": {"type": "boolean", "const": true},
+        "public_audio_private_content_prohibited": {"type": "boolean", "const": true},
+        "mirrored_private_content_prohibited": {"type": "boolean", "const": true}
+      }
+    },
+    "recovery_case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "failure",
+        "authoritative_mutation",
+        "focus_destination",
+        "player_message",
+        "private_data_exposure",
+        "stable_seat_reset"
+      ],
+      "properties": {
+        "failure": {
+          "type": "string",
+          "enum": [
+            "stale_action",
+            "authority_changed",
+            "controller_disconnected",
+            "private_surface_unavailable",
+            "companion_unavailable",
+            "voice_or_caption_interrupted",
+            "legal_action_set_changed",
+            "confirmation_expired",
+            "route_or_target_invalid",
+            "unsupported_mode",
+            "projection_data_invalid",
+            "transcript_or_replay_unavailable"
+          ]
+        },
+        "authoritative_mutation": {
+          "type": "string",
+          "enum": ["none", "committed_once_before_failure"]
+        },
+        "focus_destination": {"type": "string", "minLength": 3},
+        "player_message": {"type": "string", "minLength": 12},
+        "private_data_exposure": {"type": "boolean", "const": false},
+        "stable_seat_reset": {"type": "boolean", "const": false}
+      }
+    },
+    "presentation_obligations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_layout_regions",
+        "focus_owner_visible",
+        "focus_restoration_rule",
+        "confirmation_pattern",
+        "persistent_text_required",
+        "plain_system_required",
+        "caption_support_required",
+        "transcript_private_exclusion_required",
+        "active_seat_identity_preserved",
+        "control_source_visibility",
+        "no_audio_operation_required"
+      ],
+      "properties": {
+        "required_layout_regions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_key"}
+        },
+        "focus_owner_visible": {"type": "boolean"},
+        "focus_restoration_rule": {"type": "string", "minLength": 10},
+        "confirmation_pattern": {
+          "type": "string",
+          "enum": [
+            "acknowledgement_only",
+            "confirmed_commitment",
+            "hold_to_confirm",
+            "host_approval",
+            "none",
+            "no_commit",
+            "reversible_selection",
+            "safe_handoff_confirmation"
+          ]
+        },
+        "persistent_text_required": {"type": "boolean"},
+        "plain_system_required": {"type": "boolean", "const": true},
+        "caption_support_required": {"type": "boolean", "const": true},
+        "transcript_private_exclusion_required": {"type": "boolean", "const": true},
+        "active_seat_identity_preserved": {"type": "boolean", "const": true},
+        "control_source_visibility": {
+          "type": "string",
+          "enum": ["required", "not_required", "public_when_applicable"]
+        },
+        "no_audio_operation_required": {"type": "boolean", "const": true}
+      }
+    }
+  },
+  "properties": {
+    "trace_id": {
+      "type": "string",
+      "pattern": "^DH-IS-[0-9]{3}$"
+    },
+    "title": {"type": "string", "minLength": 5},
+    "tale_id": {"type": "string", "const": "drowned_harbor"},
+    "storyboard_id": {
+      "type": "string",
+      "pattern": "^DH-UI-[0-9]{3}$"
+    },
+    "criticality": {
+      "type": "string",
+      "enum": ["critical", "important", "contextual"]
+    },
+    "privacy_surface": {
+      "type": "string",
+      "enum": ["public_shared", "neutral_shared_shield", "controlled_private_surface"]
+    },
+    "read_domains": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/state_domain"}
+    },
+    "write_domains": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/state_domain"}
+    },
+    "allowed_actors": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/actor"}
+    },
+    "entry_preconditions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/typed_rule"}
+    },
+    "lifecycle_steps": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/lifecycle_step"}
+    },
+    "input_intents": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/stable_key"}
+    },
+    "action_guards": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/typed_rule"}
+    },
+    "commit_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authoritative_commit",
+        "deterministic",
+        "confirmation_revision_required",
+        "partial_commit_prohibited",
+        "once_only_transition",
+        "retry_behavior"
+      ],
+      "properties": {
+        "authoritative_commit": {"type": "boolean"},
+        "deterministic": {"type": "boolean", "const": true},
+        "confirmation_revision_required": {"type": "boolean"},
+        "partial_commit_prohibited": {"type": "boolean", "const": true},
+        "once_only_transition": {"type": "boolean"},
+        "retry_behavior": {
+          "type": "string",
+          "enum": [
+            "no_authoritative_change",
+            "reproject_existing_result",
+            "requery_and_present_current_state"
+          ]
+        }
+      }
+    },
+    "projection_contract": {"$ref": "#/$defs/projection_contract"},
+    "privacy_contract": {"$ref": "#/$defs/privacy_contract"},
+    "recovery_contract": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/recovery_case"}
+    },
+    "presentation_obligations": {"$ref": "#/$defs/presentation_obligations"},
+    "implementation_seams": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "authoritative_state_reader",
+          "legal_action_query",
+          "command_validator",
+          "deterministic_reducer",
+          "public_projection_builder",
+          "private_projection_builder",
+          "focus_coordinator",
+          "caption_transcript_adapter",
+          "replay_adapter",
+          "controller_authority_adapter",
+          "admission_adapter",
+          "diagnostic_recorder"
+        ]
+      }
+    },
+    "source_paths": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/repo_path"}
+    },
+    "traceability_concepts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^DH-XM-[0-9]{3}$"
+      }
+    },
+    "human_validation_questions": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 20}
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "brief_draft",
+        "preproduction_ready",
+        "implementation_planning_candidate",
+        "implementation_authorized",
+        "production_candidate",
+        "approved",
+        "rejected",
+        "deferred"
+      ]
+    },
+    "approval_boundary": {"type": "string", "minLength": 40}
+  }
+}

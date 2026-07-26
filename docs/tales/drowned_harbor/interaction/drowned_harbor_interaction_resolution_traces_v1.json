@@ -1,0 +1,1103 @@
+{
+  "manifest_kind": "interaction_state_traces_preproduction",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "record_schema": "docs/preproduction/interaction_state_trace_schema_v1.json",
+  "entries": [
+    {
+      "trace_id": "DH-IS-007",
+      "title": "Controlled-Private Harbor Bargain Terms Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-007",
+      "criticality": "critical",
+      "privacy_surface": "controlled_private_surface",
+      "read_domains": [
+        "session_public",
+        "seat_public",
+        "seat_private",
+        "tale_private",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "seat_private",
+        "tale_private",
+        "tale_public",
+        "session_public"
+      ],
+      "allowed_actors": [
+        "active_stable_seat",
+        "approved_takeover_controller",
+        "returning_reserved_controller",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "private_bargain_terms_authorized",
+          "description": "The active stable seat has requested an authorized private bargain review and private terms exist for that seat."
+        },
+        {
+          "rule_id": "neutral_shared_shield_active",
+          "description": "The shared display is covered by a neutral shield before private terms are projected."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_private_state",
+        "confirm_action",
+        "cancel_or_back",
+        "acknowledge_private_state"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "private_actor_authorized",
+          "description": "The acknowledging controller remains authorized for the same stable seat and private handoff."
+        },
+        {
+          "rule_id": "private_term_revision_current",
+          "description": "The private bargain term and consequence revision match the preview presented to the stable seat."
+        },
+        {
+          "rule_id": "shared_projection_neutral",
+          "description": "No private term, cost, objective, faction, inventory, or inferred choice appears on the shared display."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": true,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "reproject_existing_result"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Neutral private-handoff status",
+          "Public acknowledgement that the bargain resolved",
+          "Public consequence only when authorized"
+        ],
+        "private_outputs": [
+          "Exact private bargain term",
+          "Exact private cost and consequence",
+          "Private accept or refuse action",
+          "Private committed result"
+        ],
+        "emitted_events": [
+          {
+            "event_key": "harbor_bargain_private_term_committed",
+            "classification": "private",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          },
+          {
+            "event_key": "harbor_bargain_public_resolution_projected",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Stable seat receiving a private handoff where publicly authorized",
+          "Neutral waiting state",
+          "Publicly authorized resolution only"
+        ],
+        "private_content": [
+          "Bargain term",
+          "Bargain cost",
+          "Private consequence",
+          "Private response"
+        ],
+        "neutral_shield_required": true,
+        "authorized_private_actor_required": true,
+        "private_clearing_rule": "Clear all private bargain content after acknowledgement and before the shared board is restored.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "private_surface_unavailable",
+          "authoritative_mutation": "none",
+          "focus_destination": "private_handoff_unavailable",
+          "player_message": "Private terms cannot be shown safely. No bargain was committed.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "companion_unavailable",
+          "authoritative_mutation": "none",
+          "focus_destination": "local_private_handoff_option",
+          "player_message": "The Companion is unavailable. Use the authorized local private handoff or refuse the bargain.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "authority_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "neutral_shared_shield",
+          "player_message": "Control authority changed. Private content was cleared and must be reopened by the authorized seat.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "confirmation_expired",
+          "authoritative_mutation": "none",
+          "focus_destination": "private_bargain_terms",
+          "player_message": "Confirmation expired. Review the current private term before committing.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "private_shield_full_screen",
+          "decision_panel_center",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return private focus only to the authorized stable seat; otherwise clear content and retain the neutral shield.",
+        "confirmation_pattern": "confirmed_commitment",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "public_when_applicable",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "legal_action_query",
+        "command_validator",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "private_projection_builder",
+        "focus_coordinator",
+        "controller_authority_adapter",
+        "caption_transcript_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-008"
+      ],
+      "human_validation_questions": [
+        "Can a living-room group verify that the shared display reveals no private bargain terms?",
+        "Can the authorized seat review and clear private terms without accidental commitment or controller confusion?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no private display implementation, Companion dependency, bargain term, reducer, event payload, or production mechanic is approved."
+    },
+    {
+      "trace_id": "DH-IS-008",
+      "title": "High Water Board Transformation Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-008",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "board_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "high_water_trigger_committed",
+          "description": "The authoritative public High Water trigger has committed and has not previously transformed the board."
+        },
+        {
+          "rule_id": "before_state_snapshot_available",
+          "description": "The public before-state and deterministic transformation input are available at one source revision."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "inspect_public_state",
+        "skip_animation",
+        "open_transcript",
+        "replay_narration"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "high_water_not_previously_committed",
+          "description": "The once-only High Water transformation has not already committed for this Tale state."
+        },
+        {
+          "rule_id": "deterministic_transform_input_complete",
+          "description": "All required route, landmark, hazard, seat, and public objective inputs are complete."
+        },
+        {
+          "rule_id": "skip_preserves_result",
+          "description": "Skipping animation produces the identical authoritative transformed board and public summary."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "reproject_existing_result"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Committed High Water stage",
+          "Before-and-after board comparison",
+          "Changed route and hazard categories",
+          "Preserved stable-seat locations or governed relocations",
+          "Skip-equivalent public recap"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "high_water_transformation_committed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Public board transformation",
+          "Public route and hazard changes",
+          "Public stage and objective changes",
+          "Public stable-seat state"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Hidden roles, objectives, future forms, private bargains, and Director targets are absent from the transformation projection.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "projection_data_invalid",
+          "authoritative_mutation": "none",
+          "focus_destination": "high_water_transition_status",
+          "player_message": "The transformed board cannot be projected completely. No partial transformation was committed.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "voice_or_caption_interrupted",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "high_water_public_recap",
+          "player_message": "High Water is active. The transformed board and changed categories remain in persistent text.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "transcript_or_replay_unavailable",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "high_water_public_recap",
+          "player_message": "The current transformed board remains authoritative. Replay is temporarily unavailable.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "tide_state_upper_center",
+          "playable_board_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": false,
+        "focus_restoration_rule": "After projection settles, focus moves deterministically to the active stable seat on the transformed board.",
+        "confirmation_pattern": "acknowledgement_only",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "replay_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-006"
+      ],
+      "human_validation_questions": [
+        "Can players explain which route and hazard categories changed after High Water?",
+        "Does skipping the transformation preserve the same understanding and stable-seat orientation as watching it?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no High Water reducer, animation, board resource, runtime stage, camera behavior, or production transformation is approved."
+    },
+    {
+      "trace_id": "DH-IS-009",
+      "title": "High Water Transformed Board Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-009",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "active_stable_seat",
+        "game_control",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "high_water_stage_active",
+          "description": "High Water has committed and the authoritative transformed public board has settled."
+        },
+        {
+          "rule_id": "transformed_legal_actions_available",
+          "description": "Current transformed-board legal actions and public routes are available for the active stable seat."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "preview_action",
+        "confirm_action",
+        "cancel_or_back",
+        "open_transcript",
+        "replay_narration"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "transformed_action_current",
+          "description": "The proposed action remains legal under the current transformed-board revision."
+        },
+        {
+          "rule_id": "active_seat_authority_current",
+          "description": "The acting human or game-control source still owns authority for the active stable seat."
+        },
+        {
+          "rule_id": "transformed_route_current",
+          "description": "The selected land or water route and target remain publicly available at confirmation."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": true,
+        "partial_commit_prohibited": true,
+        "once_only_transition": false,
+        "retry_behavior": "requery_and_present_current_state"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Updated transformed public board",
+          "Public land and water route changes",
+          "Stable-seat public state",
+          "Public hazards and objectives",
+          "Current legal actions"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "high_water_public_action_committed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Transformed geography",
+          "Public routes and hazards",
+          "Public seat forms and locations",
+          "Current legal actions"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Private objectives, latent forms, bargains, roles, and hidden route knowledge remain excluded from the public board.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "route_or_target_invalid",
+          "authoritative_mutation": "none",
+          "focus_destination": "current_transformed_routes",
+          "player_message": "That transformed route or target is no longer available. Current options are shown.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "legal_action_set_changed",
+          "authoritative_mutation": "none",
+          "focus_destination": "current_legal_actions",
+          "player_message": "The High Water board changed. Current legal actions are shown.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "controller_disconnected",
+          "authoritative_mutation": "none",
+          "focus_destination": "active_seat_status",
+          "player_message": "Human control ended. The same stable seat remains active under the continuity policy.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "tide_state_upper_center",
+          "host_authority_upper_right",
+          "playable_board_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the current transformed space or first current legal action after refresh.",
+        "confirmation_pattern": "reversible_selection",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "legal_action_query",
+        "command_validator",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "replay_adapter",
+        "controller_authority_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-006"
+      ],
+      "human_validation_questions": [
+        "Can players distinguish land and water routes and current hazards without relying on animation or audio?",
+        "Does action recovery preserve orientation after the transformed board changes during a preview?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no transformed-board runtime, movement system, route reducer, input map, or production gameplay is approved."
+    },
+    {
+      "trace_id": "DH-IS-010",
+      "title": "Tidebound Public Transformation Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-010",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "seat_public",
+        "tale_public",
+        "session_public"
+      ],
+      "allowed_actors": [
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "tidebound_public_transform_committed",
+          "description": "A public Tidebound transformation has committed for an eligible stable seat and has not been projected previously."
+        },
+        {
+          "rule_id": "public_form_rules_available",
+          "description": "The transformed public form, capabilities, restrictions, and stable-seat identity are available."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "inspect_public_state",
+        "acknowledge_public_state",
+        "open_transcript",
+        "replay_narration"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "transformation_not_previously_projected",
+          "description": "The same Tidebound transformation has not already committed or been attributed to another seat."
+        },
+        {
+          "rule_id": "stable_seat_identity_unchanged",
+          "description": "The transformation preserves the same stable seat, public history, controller authority, and participation rights."
+        },
+        {
+          "rule_id": "latent_private_state_not_projected",
+          "description": "Only publicly committed form information appears; latent or inherited private state remains hidden."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "reproject_existing_result"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Public Tidebound form",
+          "Same stable-seat identity",
+          "Displayed public capabilities and restrictions",
+          "Current public actions and location"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "tidebound_transformation_committed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Public transformed form",
+          "Stable-seat identity",
+          "Displayed capabilities and restrictions",
+          "Public current actions"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Private objectives, inherited faction state, latent causes, and unrevealed ending information remain excluded.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "projection_data_invalid",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "tidebound_public_summary",
+          "player_message": "The transformation committed. Plain-system form rules and the same stable-seat identity remain authoritative.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "voice_or_caption_interrupted",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "tidebound_public_summary",
+          "player_message": "The Tidebound form rules remain in persistent text and transcript.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "playable_board_center",
+          "decision_panel_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "After acknowledgement, return focus to the same stable seat under its displayed Tidebound actions.",
+        "confirmation_pattern": "acknowledgement_only",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "replay_adapter",
+        "controller_authority_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-010"
+      ],
+      "human_validation_questions": [
+        "Do players understand that Tidebound changes the form and rules but not the stable seat or participation rights?",
+        "Can the transformation be understood through persistent text when voice, music, and animation are disabled?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no Tidebound runtime form, transformation system, controller behavior, final rules, or production mechanic is approved."
+    },
+    {
+      "trace_id": "DH-IS-011",
+      "title": "Last Light Final Choice Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-011",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "host",
+        "active_stable_seat",
+        "system"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "last_light_stage_active",
+          "description": "The authoritative public stage is Last Light and at least one final option is legal."
+        },
+        {
+          "rule_id": "final_public_consequences_available",
+          "description": "Each displayed final option includes its current authorized public consequence."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "focused",
+        "previewed",
+        "confirming",
+        "committed",
+        "projected",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "preview_action",
+        "confirm_action",
+        "cancel_or_back",
+        "open_transcript",
+        "replay_narration"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "final_option_current",
+          "description": "The selected ending option remains legal at the confirmation revision."
+        },
+        {
+          "rule_id": "public_consequence_revision_current",
+          "description": "The confirmed consequence matches the public preview reviewed by the group."
+        },
+        {
+          "rule_id": "no_unrevealed_outcome_hint",
+          "description": "The projection does not expose hidden seat, faction, objective, or carrier outcomes before commitment."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": true,
+        "deterministic": true,
+        "confirmation_revision_required": true,
+        "partial_commit_prohibited": true,
+        "once_only_transition": true,
+        "retry_behavior": "reproject_existing_result"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Committed final option",
+          "Public Tale ending state",
+          "Public mechanism result",
+          "Transition to ending attribution"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "last_light_final_choice_committed",
+            "classification": "public",
+            "exactly_once": true,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Legal final options",
+          "Public consequence previews",
+          "Committed final option",
+          "Public Tale mechanism result"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Unrevealed private seat and faction outcomes remain excluded until their authorized ending attribution segment.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "stale_action",
+          "authoritative_mutation": "none",
+          "focus_destination": "last_light_legal_options",
+          "player_message": "The final state changed. Current legal options and consequences are shown.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "confirmation_expired",
+          "authoritative_mutation": "none",
+          "focus_destination": "last_light_selected_option",
+          "player_message": "Confirmation expired. Review the current final consequence before committing.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "projection_data_invalid",
+          "authoritative_mutation": "none",
+          "focus_destination": "last_light_root",
+          "player_message": "A complete legal final choice cannot be displayed. No ending was committed.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "tide_state_upper_center",
+          "decision_panel_center",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": true,
+        "focus_restoration_rule": "Return focus to the selected final option or first current legal option after refresh.",
+        "confirmation_pattern": "confirmed_commitment",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "legal_action_query",
+        "command_validator",
+        "deterministic_reducer",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "replay_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-012"
+      ],
+      "human_validation_questions": [
+        "Can players compare public final consequences without perceiving a hidden correct ending?",
+        "Does the final confirmation prevent accidental commitment while preserving group discussion and accessibility?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no Last Light runtime, ending reducer, final option set, scene, audio, or production ending is approved."
+    },
+    {
+      "trace_id": "DH-IS-012",
+      "title": "Mixed Public Ending Attribution Interaction",
+      "tale_id": "drowned_harbor",
+      "storyboard_id": "DH-UI-012",
+      "criticality": "critical",
+      "privacy_surface": "public_shared",
+      "read_domains": [
+        "session_public",
+        "board_public",
+        "seat_public",
+        "tale_public",
+        "accessibility_public"
+      ],
+      "write_domains": [
+        "session_public",
+        "tale_public"
+      ],
+      "allowed_actors": [
+        "system",
+        "host"
+      ],
+      "entry_preconditions": [
+        {
+          "rule_id": "ending_resolution_committed",
+          "description": "The authoritative final choice and all eligible public seat, form, faction, and Harbor results have committed."
+        },
+        {
+          "rule_id": "public_attribution_segments_available",
+          "description": "Each authorized public result segment is available without unresolved private content."
+        }
+      ],
+      "lifecycle_steps": [
+        "eligible",
+        "presented",
+        "projected",
+        "focused",
+        "settled"
+      ],
+      "input_intents": [
+        "navigate_focus",
+        "inspect_public_state",
+        "acknowledge_public_state",
+        "open_transcript",
+        "replay_narration"
+      ],
+      "action_guards": [
+        {
+          "rule_id": "ending_segments_authoritative",
+          "description": "Every displayed attribution segment matches the committed ending result revision."
+        },
+        {
+          "rule_id": "private_results_excluded",
+          "description": "Unrevealed or unauthorized private outcomes remain outside public attribution."
+        },
+        {
+          "rule_id": "universal_verdict_prohibited",
+          "description": "Mixed results remain separately attributed and are not flattened into one victory, defeat, or moral verdict."
+        }
+      ],
+      "commit_contract": {
+        "authoritative_commit": false,
+        "deterministic": true,
+        "confirmation_revision_required": false,
+        "partial_commit_prohibited": true,
+        "once_only_transition": false,
+        "retry_behavior": "reproject_existing_result"
+      },
+      "projection_contract": {
+        "public_outputs": [
+          "Public ending family",
+          "Separate public stable-seat outcomes",
+          "Separate public form and faction outcomes",
+          "Shared Harbor result",
+          "Persistent transcript-ready attribution"
+        ],
+        "private_outputs": [],
+        "emitted_events": [
+          {
+            "event_key": "mixed_ending_attribution_projected",
+            "classification": "public",
+            "exactly_once": false,
+            "idempotent_reprojection": true,
+            "includes_source_revision": true,
+            "includes_result_revision": true,
+            "raw_identity_prohibited": true
+          }
+        ],
+        "public_payload_private_data_prohibited": true,
+        "projection_after_authoritative_commit": true
+      },
+      "privacy_contract": {
+        "public_shared_content": [
+          "Public seat outcomes",
+          "Public form and faction outcomes",
+          "Public Harbor result",
+          "Mixed ending family"
+        ],
+        "private_content": [],
+        "neutral_shield_required": false,
+        "authorized_private_actor_required": false,
+        "private_clearing_rule": "Only authorized public ending results enter shared attribution, captions, transcript, replay, and Chronicle-facing summaries.",
+        "public_transcript_private_content_prohibited": true,
+        "public_audio_private_content_prohibited": true,
+        "mirrored_private_content_prohibited": true
+      },
+      "recovery_contract": [
+        {
+          "failure": "projection_data_invalid",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "ending_public_summary",
+          "player_message": "The ending is committed. Available public outcomes are shown without inventing missing attribution.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "voice_or_caption_interrupted",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "ending_outcome_columns",
+          "player_message": "Public ending outcomes remain available in persistent text, transcript, and replay.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        },
+        {
+          "failure": "transcript_or_replay_unavailable",
+          "authoritative_mutation": "committed_once_before_failure",
+          "focus_destination": "ending_outcome_columns",
+          "player_message": "The public ending attribution remains visible. Transcript or replay is temporarily unavailable.",
+          "private_data_exposure": false,
+          "stable_seat_reset": false
+        }
+      ],
+      "presentation_obligations": {
+        "required_layout_regions": [
+          "stage_objective_upper_left",
+          "outcome_columns",
+          "caption_lower_center",
+          "seat_rail_bottom",
+          "controller_prompt_strip"
+        ],
+        "focus_owner_visible": false,
+        "focus_restoration_rule": "Return focus to the first public outcome column or the previously inspected segment after replay.",
+        "confirmation_pattern": "acknowledgement_only",
+        "persistent_text_required": true,
+        "plain_system_required": true,
+        "caption_support_required": true,
+        "transcript_private_exclusion_required": true,
+        "active_seat_identity_preserved": true,
+        "control_source_visibility": "not_required",
+        "no_audio_operation_required": true
+      },
+      "implementation_seams": [
+        "authoritative_state_reader",
+        "public_projection_builder",
+        "focus_coordinator",
+        "caption_transcript_adapter",
+        "replay_adapter",
+        "diagnostic_recorder"
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/preproduction/drowned_harbor_cross_media_traceability_v1.json"
+      ],
+      "traceability_concepts": [
+        "DH-XM-013"
+      ],
+      "human_validation_questions": [
+        "Can players identify each public seat, form, faction, and Harbor outcome without assuming one universal result?",
+        "Does the attribution remain understandable with voice and music disabled and after replay or transcript recovery?"
+      ],
+      "status": "preproduction_ready",
+      "approval_boundary": "Traceability record only; no ending runtime, outcome computation, Chronicle integration, final text, media, or production result is approved."
+    }
+  ]
+}
