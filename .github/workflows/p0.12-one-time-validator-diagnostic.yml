@@ -1,0 +1,31 @@
+name: P0.12 one-time validator diagnostic
+
+on:
+  push:
+    branches: [docs/p0.12-prototype-authorization]
+    paths:
+      - '.github/workflows/p0.12-one-time-validator-diagnostic.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: docs/p0.12-prototype-authorization
+      - name: Capture exact validator output
+        run: |
+          set +e
+          python3 tools/validate_prototype_authorization.py > /tmp/p0.12-validator.txt 2>&1
+          status=$?
+          set -e
+          printf 'exit_status=%s\n' "$status" > docs/preproduction/P0.12_validator_result.txt
+          cat /tmp/p0.12-validator.txt >> docs/preproduction/P0.12_validator_result.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/preproduction/P0.12_validator_result.txt
+          git commit -m 'docs: capture temporary P0.12 validator diagnostic'
+          git push origin HEAD:docs/p0.12-prototype-authorization
