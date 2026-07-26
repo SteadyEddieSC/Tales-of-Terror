@@ -1,0 +1,51 @@
+{
+  "prototype_kind": "isolated_tale_prototype",
+  "schema_version": 1,
+  "prototype_id": "drowned_harbor_dev_only",
+  "tale_id": "drowned_harbor",
+  "display_name": "Drowned Harbor — Development Fixture (Not Shipped)",
+  "status": "development_only_export_excluded",
+  "launch_policy": "explicit_test_script_only",
+  "allowed_entry_points": [
+    "res://tests/drowned_harbor_prototype_isolation_test.gd"
+  ],
+  "production_catalog_path": "res://data/tales/tale_catalog_v1.json",
+  "production_catalog_sha256": "2b478fd0d11fa075c2050409193aa06e6b9ca4dcf6efd4e4c550a9f3a5ff9db6",
+  "production_tale_id": "lantern_house_vertical_slice",
+  "production_catalog_registered": false,
+  "production_provider_registered": false,
+  "normal_tale_library_visible": false,
+  "playable_export_authorized": false,
+  "runtime_authority_created": false,
+  "dependencies": {
+    "network": false,
+    "companion": false,
+    "credentials": false,
+    "telemetry": false,
+    "cloud": false,
+    "production_assets": false
+  },
+  "export_policy": {
+    "required_exclusion_pattern": "tests/*",
+    "internal_windows_preset": "Internal Windows x86_64",
+    "internal_linux_preset": "Internal Linux x86_64",
+    "ordinary_exports_include_prototype": false
+  },
+  "source_authorities": [
+    "docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md",
+    "docs/technical/Tale_Catalog_Contract.md",
+    "docs/technical/Tale_Package_Contract.md",
+    "docs/gdd/Terror_Turn_GDD.md"
+  ],
+  "future_work_issues": [
+    81,
+    82,
+    83,
+    84,
+    85,
+    86
+  ],
+  "human_validation_required": true,
+  "human_evidence_claimed": false,
+  "notes": "This manifest proves only an isolated development boundary. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, or accessibility-compliant."
+}
