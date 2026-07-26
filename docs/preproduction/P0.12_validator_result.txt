@@ -1,0 +1,2 @@
+exit_status=1
+Prototype authorization validation failed: DH-PROT-002: source path does not exist: docs/technical/Interaction_State_and_Implementation_Traceability_Contract_v1.md
