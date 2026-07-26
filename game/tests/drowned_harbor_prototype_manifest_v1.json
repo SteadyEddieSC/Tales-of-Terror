@@ -7,6 +7,7 @@
   "status": "development_only_export_excluded",
   "launch_policy": "explicit_test_script_only",
   "allowed_entry_points": [
+    "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd"
   ],
   "production_catalog_path": "res://data/tales/tale_catalog_v1.json",
@@ -36,14 +37,15 @@
     "docs/technical/Tale_Catalog_Contract.md",
     "docs/technical/Tale_Package_Contract.md",
     "docs/gdd/Terror_Turn_GDD.md",
-    "docs/technical/Drowned_Harbor_Deterministic_State_Projection_Fixtures_v1.md"
+    "docs/technical/Drowned_Harbor_Deterministic_State_Projection_Fixtures_v1.md",
+    "docs/technical/Drowned_Harbor_Low_Tide_Shared_Screen_Shell_v1.md"
   ],
   "completed_work_issues": [
     80,
-    81
+    81,
+    82
   ],
   "future_work_issues": [
-    82,
     83,
     84,
     85,
@@ -52,7 +54,12 @@
   "fixture_packages": [
     "res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"
   ],
+  "prototype_components": [
+    "res://tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd",
+    "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.tscn"
+  ],
   "human_validation_required": true,
   "human_evidence_claimed": false,
-  "notes": "This manifest proves only an isolated development boundary and six synthetic deterministic state/projection fixtures. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, accessibility-compliant, or production-ready. The fixtures provide test data and pure reprojection evidence only; they do not create a reducer, provider, Tale package, final mechanic, production save, network behavior, or runtime authority."
+  "notes": "This manifest proves only an isolated development boundary, six synthetic deterministic state/projection fixtures, and one fixture-backed Low Tide shared-screen shell. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, accessibility-compliant, or production-ready. The shell uses placeholder geometry and emits public prototype intents only. The fixtures and shell do not create a reducer, provider, Tale package, final mechanic, production save, network behavior, Companion behavior, runtime authority, or ordinary playable export."
 }
