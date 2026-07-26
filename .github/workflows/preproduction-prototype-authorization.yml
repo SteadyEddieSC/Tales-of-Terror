@@ -35,9 +35,9 @@ jobs:
           new = 'docs/technical/Drowned_Harbor_Interaction_State_Traceability_Contract_v1.md'
           text = path.read_text(encoding='utf-8')
           count = text.count(old)
-          if count not in {0, 4}:
-              raise SystemExit(f'expected 0 or 4 stale contract references, found {count}')
-          if count == 4:
+          if count not in {0, 3}:
+              raise SystemExit(f'expected 0 or 3 stale contract references, found {count}')
+          if count == 3:
               path.write_text(text.replace(old, new), encoding='utf-8')
           PY
           if git diff --quiet -- docs/tales/drowned_harbor/implementation/drowned_harbor_prototype_authorization_v1.json; then
