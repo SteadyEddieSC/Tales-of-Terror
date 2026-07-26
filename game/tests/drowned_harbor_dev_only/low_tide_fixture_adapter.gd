@@ -1,9 +1,7 @@
 class_name DrownedHarborLowTideFixtureAdapter
 extends RefCounted
 
-const FIXTURE_PATH: String = (
-	"res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"
-)
+const FIXTURE_PATH: String = "res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"
 const FIXTURE_ID: String = "DH-FIX-001"
 const TRACE_ID: String = "DH-IS-003"
 const STORYBOARD_ID: String = "DH-UI-003"
@@ -39,8 +37,7 @@ func load_fixture(path: String = FIXTURE_PATH) -> Dictionary:
 		return _rejected("malformed_fixture_package", "fixture package root must be an object")
 	var package: Dictionary = parsed
 	if (
-		package.get("fixture_package_kind")
-		!= "drowned_harbor_state_projection_fixtures"
+		package.get("fixture_package_kind") != "drowned_harbor_state_projection_fixtures"
 		or package.get("schema_version") != 1
 		or package.get("prototype_id") != "drowned_harbor_dev_only"
 		or package.get("status") != "synthetic_test_only_export_excluded"
@@ -152,7 +149,8 @@ func _build_public_result() -> Dictionary:
 		"classification": "public",
 		"event_key": "low_tide_public_action_committed",
 		"exactly_once": true,
-		"payload": {
+		"payload":
+		{
 			"location": seat_public.get("location", ""),
 			"result_revision": result_revision(),
 			"seat_id": seat_public.get("seat_id", ""),
@@ -162,11 +160,13 @@ func _build_public_result() -> Dictionary:
 	var transcript: Array[String] = [
 		str(public_state.get("objective", "")),
 		str(public_state.get("caption", "")),
-		"Active %s at %s"
-		% [
-			seat_public.get("seat_id", ""),
-			seat_public.get("location", ""),
-		],
+		(
+			"Active %s at %s"
+			% [
+				seat_public.get("seat_id", ""),
+				seat_public.get("location", ""),
+			]
+		),
 	]
 	var replay: Dictionary = {
 		"classification": "public",
@@ -276,11 +276,7 @@ static func _fingerprint(value: Variant) -> String:
 
 static func _contains_private_marker(value: Variant) -> bool:
 	var text: String = JSON.stringify(value, "", true)
-	return (
-		"PRIVATE_" in text
-		or "bellmarked_candidate" in text
-		or "archive_culvert" in text
-	)
+	return "PRIVATE_" in text or "bellmarked_candidate" in text or "archive_culvert" in text
 
 
 static func _rejected(code: String, message: String) -> Dictionary:
