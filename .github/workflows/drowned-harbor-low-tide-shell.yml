@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/drowned-harbor-low-tide-shell.yml'
+      - '.github/workflows/drowned-harbor-projection-fixtures.yml'
       - 'docs/preproduction/P0.15_Release_Summary.md'
       - 'docs/technical/Drowned_Harbor_Low_Tide_Shared_Screen_Shell_v1.md'
       - 'game/tests/drowned_harbor_dev_only/README.md'
@@ -17,13 +18,16 @@ on:
       - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
       - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
       - 'tools/test_validate_drowned_harbor_low_tide_shell.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p015.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
       - 'tools/validate_drowned_harbor_low_tide_shell.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p015.py'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
   push:
     branches: [main]
     paths:
       - '.github/workflows/drowned-harbor-low-tide-shell.yml'
+      - '.github/workflows/drowned-harbor-projection-fixtures.yml'
       - 'docs/preproduction/P0.15_Release_Summary.md'
       - 'docs/technical/Drowned_Harbor_Low_Tide_Shared_Screen_Shell_v1.md'
       - 'game/tests/drowned_harbor_dev_only/README.md'
@@ -37,8 +41,10 @@ on:
       - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
       - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
       - 'tools/test_validate_drowned_harbor_low_tide_shell.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p015.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
       - 'tools/validate_drowned_harbor_low_tide_shell.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p015.py'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
 
 permissions:
@@ -68,6 +74,7 @@ jobs:
 
           expected = {
               '.github/workflows/drowned-harbor-low-tide-shell.yml',
+              '.github/workflows/drowned-harbor-projection-fixtures.yml',
               'docs/preproduction/P0.15_Release_Summary.md',
               'docs/technical/Drowned_Harbor_Low_Tide_Shared_Screen_Shell_v1.md',
               'game/tests/drowned_harbor_dev_only/README.md',
@@ -81,8 +88,10 @@ jobs:
               'game/tests/drowned_harbor_prototype_isolation_test.gd',
               'game/tests/drowned_harbor_prototype_manifest_v1.json',
               'tools/test_validate_drowned_harbor_low_tide_shell.py',
+              'tools/test_validate_drowned_harbor_projection_fixtures_p015.py',
               'tools/test_validate_drowned_harbor_prototype_isolation.py',
               'tools/validate_drowned_harbor_low_tide_shell.py',
+              'tools/validate_drowned_harbor_projection_fixtures_p015.py',
               'tools/validate_drowned_harbor_prototype_isolation.py',
           }
           base_ref = os.environ['BASE_REF']
@@ -98,7 +107,7 @@ jobs:
                   f'P0.15 path boundary mismatch; missing={missing}; '
                   f'unexpected={unexpected}'
               )
-          print('Validated exact 17-path P0.15 release boundary')
+          print('Validated exact 20-path P0.15 release boundary')
           PY
 
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
@@ -112,10 +121,10 @@ jobs:
         run: python tools/test_validate_drowned_harbor_low_tide_shell.py
 
       - name: Validate inherited deterministic projection fixtures
-        run: python tools/validate_drowned_harbor_projection_fixtures.py
+        run: python tools/validate_drowned_harbor_projection_fixtures_p015.py
 
       - name: Run inherited projection fixture regressions
-        run: python tools/test_validate_drowned_harbor_projection_fixtures.py
+        run: python tools/test_validate_drowned_harbor_projection_fixtures_p015.py
 
       - name: Validate updated prototype isolation
         run: python tools/validate_drowned_harbor_prototype_isolation.py
