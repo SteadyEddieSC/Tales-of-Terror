@@ -6,7 +6,8 @@ const ADAPTER_SCRIPT: Script = preload(
 const SHELL_SCRIPT: Script = preload(
 	"res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd"
 )
-const SHELL_SCENE_PATH: String = "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.tscn"
+const DEV_ONLY_SCENE_PATH: String = "res://tests/drowned_harbor_dev_only/"
+const SHELL_SCENE_PATH: String = DEV_ONLY_SCENE_PATH + "low_tide_shared_screen_shell.tscn"
 const PRIVATE_MARKERS: PackedStringArray = [
 	"PRIVATE_",
 	"archive_culvert",
