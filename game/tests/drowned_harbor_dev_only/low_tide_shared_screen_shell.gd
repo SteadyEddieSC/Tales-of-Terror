@@ -164,9 +164,7 @@ func confirm_pending(current_revision: int, stable_seat_id: String) -> Dictionar
 	}
 	_pending_confirmation.clear()
 	_mode = SurfaceMode.PREVIEW
-	_status_message = (
-		"Confirmation seam emitted. Final movement and gameplay authority are not implemented."
-	)
+	_status_message = ("Confirmation seam emitted. Final movement and gameplay authority are not implemented.")
 	return _emit_public_intent(payload)
 
 
@@ -190,24 +188,28 @@ func render_snapshot() -> Dictionary:
 		focused_action = str(legal_actions[_focus_index])
 	return {
 		"accepted": true,
-		"active_seat_label": (
+		"active_seat_label":
+		(
 			"ACTIVE %s • HUMAN • %s"
 			% [
 				str(active_seat.get("seat_id", "")).to_upper(),
 				str(active_seat.get("location", "")).to_upper(),
 			]
 		),
-		"board_geometry": {
+		"board_geometry":
+		{
 			"kind": "placeholder_geometry_not_final",
 			"landmarks": Array(LANDMARKS),
 			"route_states": projection.get("routes", {}).duplicate(true),
 		},
 		"caption": projection.get("caption", ""),
-		"controller_prompts": (
+		"controller_prompts":
+		(
 			"D-PAD / WASD: FOCUS  •  A / SPACE: CONFIRM  •  "
 			+ "B / ESC: CANCEL  •  X / H: TRANSCRIPT  •  T: REPLAY"
 		),
-		"focus_label": (
+		"focus_label":
+		(
 			"FOCUS %d OF %d • %s"
 			% [
 				_focus_index + 1,
@@ -220,7 +222,8 @@ func render_snapshot() -> Dictionary:
 		"legal_actions": legal_actions.duplicate(true),
 		"mode": mode_name(),
 		"objective": projection.get("objective", ""),
-		"persistent_text_when_voice_off": (
+		"persistent_text_when_voice_off":
+		(
 			not _voice_enabled
 			and not str(projection.get("objective", "")).is_empty()
 			and not str(projection.get("caption", "")).is_empty()
@@ -334,9 +337,9 @@ func _enter_recovery(code: String) -> Dictionary:
 	_pending_confirmation.clear()
 	_mode = SurfaceMode.RECOVERY
 	_status_message = (
-		"RECOVERY • Request rejected safely (%s). "
-		+ "No state, seat, or RNG change occurred."
-	) % code
+		("RECOVERY • Request rejected safely (%s). " + "No state, seat, or RNG change occurred.")
+		% code
+	)
 	_refresh_ui()
 	return {
 		"accepted": false,
@@ -414,14 +417,20 @@ func _refresh_ui() -> void:
 	var snapshot: Dictionary = render_snapshot()
 	_title_label.text = "DROWNED HARBOR • LOW TIDE ARRIVAL • DEV-ONLY SHELL"
 	_objective_label.text = "OBJECTIVE • %s" % snapshot.get("objective", "")
-	_seat_label.text = "%s\n%s" % [
-		snapshot.get("host_authority", ""),
-		snapshot.get("active_seat_label", ""),
-	]
-	_focus_label.text = "%s\nLEGAL • %s" % [
-		snapshot.get("focus_label", ""),
-		", ".join(PackedStringArray(snapshot.get("legal_actions", []))),
-	]
+	_seat_label.text = (
+		"%s\n%s"
+		% [
+			snapshot.get("host_authority", ""),
+			snapshot.get("active_seat_label", ""),
+		]
+	)
+	_focus_label.text = (
+		"%s\nLEGAL • %s"
+		% [
+			snapshot.get("focus_label", ""),
+			", ".join(PackedStringArray(snapshot.get("legal_actions", []))),
+		]
+	)
 	_caption_label.text = "CAPTION • %s" % snapshot.get("caption", "")
 	_prompt_label.text = snapshot.get("controller_prompts", "")
 	_status_label.text = "STATUS • %s" % snapshot.get("status", "")
