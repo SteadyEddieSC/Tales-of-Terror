@@ -62,7 +62,9 @@
       "github_issue": 80,
       "title": "Prototype isolation boundary",
       "status": "blocked_pending_explicit_reopen",
-      "depends_on_issues": [79],
+      "depends_on_issues": [
+        79
+      ],
       "trace_ids": [],
       "objective": "Create an unmistakable development-only boundary that cannot enter normal Tale selection, production catalog identity, or ordinary exports.",
       "allowed_outputs": [
@@ -93,8 +95,19 @@
       "github_issue": 81,
       "title": "Deterministic state and projection fixtures",
       "status": "blocked_pending_explicit_reopen",
-      "depends_on_issues": [79, 80],
-      "trace_ids": ["DH-IS-003", "DH-IS-004", "DH-IS-007", "DH-IS-008", "DH-IS-009", "DH-IS-016", "DH-IS-019"],
+      "depends_on_issues": [
+        79,
+        80
+      ],
+      "trace_ids": [
+        "DH-IS-003",
+        "DH-IS-004",
+        "DH-IS-007",
+        "DH-IS-008",
+        "DH-IS-009",
+        "DH-IS-016",
+        "DH-IS-019"
+      ],
       "objective": "Provide synthetic authoritative source and result revisions for representative public, private, transition, and recovery interactions.",
       "allowed_outputs": [
         "Synthetic deterministic fixture records",
@@ -125,8 +138,14 @@
       "github_issue": 82,
       "title": "Low-Tide shared-screen prototype shell",
       "status": "blocked_pending_explicit_reopen",
-      "depends_on_issues": [79, 80, 81],
-      "trace_ids": ["DH-IS-003"],
+      "depends_on_issues": [
+        79,
+        80,
+        81
+      ],
+      "trace_ids": [
+        "DH-IS-003"
+      ],
       "objective": "Project the Low-Tide shared-screen contract with synthetic public state, controller-first focus, persistent text, captions, and stable-seat ownership.",
       "allowed_outputs": [
         "Development-only shared-screen layout shell",
@@ -157,8 +176,16 @@
       "github_issue": 83,
       "title": "Bellhouse decision and invalid-action recovery",
       "status": "blocked_pending_explicit_reopen",
-      "depends_on_issues": [79, 80, 81, 82],
-      "trace_ids": ["DH-IS-004", "DH-IS-019"],
+      "depends_on_issues": [
+        79,
+        80,
+        81,
+        82
+      ],
+      "trace_ids": [
+        "DH-IS-004",
+        "DH-IS-019"
+      ],
       "objective": "Prove one public Bellhouse decision can preview, cancel, commit once, and recover from invalid input without mutation or leakage.",
       "allowed_outputs": [
         "Bellhouse decision projection and focus flow",
@@ -169,7 +196,8 @@
         "Final Ledger mechanics or narrative timing",
         "Hidden-state hint, correct-answer glow, or moral recommendation",
         "Penalty, ridicule, deadlock, RNG consumption, or seat reset on rejection",
-        "Human comprehension or fun claim"
+        "Human comprehension or fun claim",
+        "Production Tale integration or registration"
       ],
       "required_checks": [
         "valid_commit_exactly_once",
@@ -189,8 +217,16 @@
       "github_issue": 84,
       "title": "Controlled-private neutral shield proof",
       "status": "blocked_pending_explicit_reopen",
-      "depends_on_issues": [79, 80, 81, 83],
-      "trace_ids": ["DH-IS-007", "DH-IS-016"],
+      "depends_on_issues": [
+        79,
+        80,
+        81,
+        83
+      ],
+      "trace_ids": [
+        "DH-IS-007",
+        "DH-IS-016"
+      ],
       "objective": "Prove neutral shared shielding, authorized private delivery, acknowledgement, clearing, and safe fallback with synthetic private data.",
       "allowed_outputs": [
         "Neutral shared-screen shield state",
@@ -221,8 +257,17 @@
       "github_issue": 85,
       "title": "High Water deterministic transformation proof",
       "status": "blocked_pending_explicit_reopen",
-      "depends_on_issues": [79, 80, 81, 82, 83],
-      "trace_ids": ["DH-IS-008", "DH-IS-009"],
+      "depends_on_issues": [
+        79,
+        80,
+        81,
+        82,
+        83
+      ],
+      "trace_ids": [
+        "DH-IS-008",
+        "DH-IS-009"
+      ],
       "objective": "Prove the committed before-state, exactly-once High Water transformation, skip-equivalent presentation, and transformed public board projection.",
       "allowed_outputs": [
         "Deterministic High Water reducer seam",
@@ -233,7 +278,8 @@
         "Final water simulation, camera, animation, art, or audio",
         "Player input, RNG branch, or authority transfer during transition",
         "Hidden-state leak or stable-seat replacement",
-        "Human comprehension, pacing, or balance claim"
+        "Human comprehension, pacing, or balance claim",
+        "Production Tale integration or registration"
       ],
       "required_checks": [
         "transition_exactly_once",
@@ -252,8 +298,24 @@
       "github_issue": 86,
       "title": "Prototype automation and export exclusion",
       "status": "blocked_pending_explicit_reopen",
-      "depends_on_issues": [79, 80, 81, 82, 83, 84, 85],
-      "trace_ids": ["DH-IS-003", "DH-IS-004", "DH-IS-007", "DH-IS-008", "DH-IS-009", "DH-IS-016", "DH-IS-019"],
+      "depends_on_issues": [
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85
+      ],
+      "trace_ids": [
+        "DH-IS-003",
+        "DH-IS-004",
+        "DH-IS-007",
+        "DH-IS-008",
+        "DH-IS-009",
+        "DH-IS-016",
+        "DH-IS-019"
+      ],
       "objective": "Create exact-head automated evidence for deterministic behavior, privacy, deadlock resistance, catalog integrity, and ordinary-export exclusion.",
       "allowed_outputs": [
         "Headless deterministic and privacy regression tests",
@@ -264,7 +326,8 @@
         "Suppression or reinterpretation of issue 44",
         "Closure or substitution of issue 39 human evidence",
         "Public release or ordinary portable prototype bundle",
-        "Claims of controller, television, accessibility, privacy, fun, fairness, or balance validation"
+        "Claims of controller, television, accessibility, privacy, fun, fairness, or balance validation",
+        "Production Tale integration or registration"
       ],
       "required_checks": [
         "repository_and_godot_green",
