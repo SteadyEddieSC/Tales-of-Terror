@@ -7,6 +7,15 @@ const EXPORT_PRESETS_PATH: String = "res://export_presets.cfg"
 const DROWNED_HARBOR_PRODUCTION_PACKAGE: String = (
 	"res://data/tales/drowned_harbor/" + "tale_package_v1.json"
 )
+const EXPECTED_ENTRY_POINTS: PackedStringArray = [
+	"res://tests/drowned_harbor_low_tide_shell_test.gd",
+	"res://tests/drowned_harbor_prototype_isolation_test.gd",
+]
+const EXPECTED_COMPONENTS: PackedStringArray = [
+	"res://tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd",
+	"res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd",
+	"res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.tscn",
+]
 
 var _failures: int = 0
 
@@ -58,12 +67,30 @@ func _test_development_manifest_is_fail_closed() -> void:
 		"requires an explicit test-only entry path",
 	)
 	var entry_points: Array = manifest.get("allowed_entry_points", [])
-	_expect(entry_points.size() == 1, "declares one bounded entry point")
+	_expect(
+		PackedStringArray(entry_points) == EXPECTED_ENTRY_POINTS,
+		"declares the exact two bounded test entry points",
+	)
 	for entry_point: Variant in entry_points:
 		_expect(
 			str(entry_point).begins_with("res://tests/"),
 			"keeps every prototype entry point under res://tests/",
 		)
+		_expect(
+			FileAccess.file_exists(str(entry_point)),
+			"every prototype entry point exists",
+		)
+	var components: Array = manifest.get("prototype_components", [])
+	_expect(
+		PackedStringArray(components) == EXPECTED_COMPONENTS,
+		"declares the exact Low Tide shell component set",
+	)
+	for component: Variant in components:
+		_expect(
+			str(component).begins_with("res://tests/"),
+			"keeps every prototype component under res://tests/",
+		)
+		_expect(FileAccess.file_exists(str(component)), "every prototype component exists")
 	_expect(
 		not manifest.get("production_catalog_registered", true),
 		"does not register a production catalog entry",
@@ -82,7 +109,7 @@ func _test_development_manifest_is_fail_closed() -> void:
 	)
 	_expect(
 		not manifest.get("runtime_authority_created", true),
-		"creates no runtime authority",
+		"creates no production runtime authority",
 	)
 	var dependencies: Dictionary = manifest.get("dependencies", {})
 	for dependency: String in [
@@ -97,6 +124,14 @@ func _test_development_manifest_is_fail_closed() -> void:
 			not dependencies.get(dependency, true),
 			"declares no %s dependency" % dependency,
 		)
+	_expect(
+		manifest.get("completed_work_issues") == [80, 81, 82],
+		"records issues #80 through #82 as completed bounded packages",
+	)
+	_expect(
+		manifest.get("future_work_issues") == [83, 84, 85, 86],
+		"keeps issues #83 through #86 blocked for future releases",
+	)
 	_expect(
 		manifest.get("human_validation_required") == true,
 		"retains future human-validation requirement",
@@ -170,14 +205,18 @@ func _test_windows_and_linux_exports_exclude_tests() -> void:
 		preset_text.count("tests/*") == 2,
 		"both export presets exclude the test tree",
 	)
-	_expect(
-		"drowned_harbor_prototype_manifest_v1.json" not in preset_text,
-		"no export include rule names the prototype manifest",
-	)
-	_expect(
-		"drowned_harbor_prototype_isolation_test.gd" not in preset_text,
-		"no export include rule names the prototype test",
-	)
+	for filename: String in [
+		"drowned_harbor_prototype_manifest_v1.json",
+		"drowned_harbor_prototype_isolation_test.gd",
+		"drowned_harbor_low_tide_shell_test.gd",
+		"low_tide_fixture_adapter.gd",
+		"low_tide_shared_screen_shell.gd",
+		"low_tide_shared_screen_shell.tscn",
+	]:
+		_expect(
+			filename not in preset_text,
+			"no export include rule names %s" % filename,
+		)
 
 
 func _expect(condition: bool, message: String) -> void:
