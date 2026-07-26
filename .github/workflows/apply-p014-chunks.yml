@@ -1,0 +1,41 @@
+name: Apply P0.14 package once
+
+on:
+  push:
+    branches:
+      - agent/p0.14-drowned-harbor-state-fixtures
+    paths:
+      - '.p014/**'
+      - '.github/workflows/apply-p014-chunks.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Materialize exact P0.14 package
+        run: |
+          cat .p014/chunk-* > "$RUNNER_TEMP/p014-package.b64"
+          base64 --decode "$RUNNER_TEMP/p014-package.b64" > "$RUNNER_TEMP/p014-package.zip"
+          unzip -q -o "$RUNNER_TEMP/p014-package.zip" -d .
+          rm -rf .p014 .github/workflows/apply-p014-chunks.yml
+      - name: Validate materialized package before commit
+        run: |
+          python tools/validate_drowned_harbor_projection_fixtures.py
+          python tools/test_validate_drowned_harbor_projection_fixtures.py
+          python tools/validate_drowned_harbor_prototype_isolation.py
+          python tools/test_validate_drowned_harbor_prototype_isolation.py
+      - name: Commit exact package and remove bootstrap files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m 'test: add Drowned Harbor deterministic projection fixtures'
+          git push origin HEAD:agent/p0.14-drowned-harbor-state-fixtures
