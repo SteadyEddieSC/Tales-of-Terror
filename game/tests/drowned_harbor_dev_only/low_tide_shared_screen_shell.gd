@@ -3,6 +3,15 @@ extends Control
 
 signal prototype_intent_emitted(payload: Dictionary)
 
+enum SurfaceMode {
+	BOARD,
+	INSPECT,
+	PREVIEW,
+	CONFIRMATION,
+	TRANSCRIPT,
+	RECOVERY,
+}
+
 const SHELL_THEME: Theme = preload("res://assets/theme/terror_lab_theme.tres")
 const ADAPTER_SCRIPT: Script = preload(
 	"res://tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd"
@@ -25,15 +34,6 @@ const SUPPORTED_ACTIONS: PackedStringArray = [
 	"ui_navigate_right",
 	"ui_navigate_up",
 ]
-
-enum SurfaceMode {
-	BOARD,
-	INSPECT,
-	PREVIEW,
-	CONFIRMATION,
-	TRANSCRIPT,
-	RECOVERY,
-}
 
 var _adapter: DrownedHarborLowTideFixtureAdapter = ADAPTER_SCRIPT.new()
 var _projection_result: Dictionary = {}
@@ -81,27 +81,29 @@ func initialize_from_fixture(
 func dispatch_semantic_action(action: String) -> Dictionary:
 	if not SUPPORTED_ACTIONS.has(action):
 		return _enter_recovery("unsupported_input")
+	var result: Dictionary = {}
 	match action:
 		"ui_navigate_left", "ui_navigate_up":
-			return _move_focus(-1)
+			result = _move_focus(-1)
 		"ui_navigate_right", "ui_navigate_down":
-			return _move_focus(1)
+			result = _move_focus(1)
 		"interact":
-			return _open_inspect()
+			result = _open_inspect()
 		"ui_confirm":
 			if _mode == SurfaceMode.CONFIRMATION:
-				return confirm_pending(
+				result = confirm_pending(
 					_adapter.source_revision(),
 					_adapter.stable_seat_id(),
 				)
-			return _request_confirmation()
+			else:
+				result = _request_confirmation()
 		"ui_cancel_action":
-			return cancel()
+			result = cancel()
 		"help_accessibility":
-			return open_transcript()
+			result = open_transcript()
 		"diagnostic_test":
-			return request_replay()
-	return _enter_recovery("unsupported_input")
+			result = request_replay()
+	return result
 
 
 func cancel() -> Dictionary:
