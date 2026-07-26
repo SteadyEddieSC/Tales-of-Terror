@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/prototype-authorization-v1.json",
+  "title": "Drowned Harbor Prototype Authorization Decision v1",
+  "description": "Closed preproduction schema for a conditionally authorized but execution-blocked isolated prototype decision and issue set.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision_id",
+    "release_id",
+    "tale_id",
+    "production_status",
+    "authorization_decision",
+    "execution_status",
+    "parent_issue",
+    "baseline_main_sha",
+    "production_catalog_path",
+    "production_tale",
+    "runtime_changes_in_release",
+    "production_catalog_change_authorized",
+    "provider_change_authorized",
+    "playable_export_authorized",
+    "human_evidence_claimed",
+    "unlock_gates",
+    "work_packages",
+    "external_gates",
+    "promotion_requirements",
+    "source_paths",
+    "approval_boundary"
+  ],
+  "$defs": {
+    "repo_path": {
+      "type": "string",
+      "pattern": "^(docs|game|tools|\\.github)/[A-Za-z0-9_./-]+$"
+    },
+    "stable_key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "unlock_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_id", "description", "satisfied_in_p0_12"],
+      "properties": {
+        "gate_id": {"$ref": "#/$defs/stable_key"},
+        "description": {"type": "string", "minLength": 20},
+        "satisfied_in_p0_12": {"type": "boolean"}
+      }
+    },
+    "external_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issue", "summary", "may_be_suppressed"],
+      "properties": {
+        "issue": {"type": "integer", "enum": [7, 39, 44]},
+        "summary": {"type": "string", "minLength": 20},
+        "may_be_suppressed": {"type": "boolean", "const": false}
+      }
+    },
+    "work_package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "github_issue",
+        "title",
+        "status",
+        "depends_on_issues",
+        "trace_ids",
+        "objective",
+        "allowed_outputs",
+        "prohibited_outputs",
+        "required_checks",
+        "source_paths"
+      ],
+      "properties": {
+        "package_id": {
+          "type": "string",
+          "pattern": "^DH-PROT-[0-9]{3}$"
+        },
+        "github_issue": {"type": "integer", "minimum": 80},
+        "title": {"type": "string", "minLength": 10},
+        "status": {
+          "type": "string",
+          "const": "blocked_pending_explicit_reopen"
+        },
+        "depends_on_issues": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 79}
+        },
+        "trace_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^DH-IS-[0-9]{3}$"
+          }
+        },
+        "objective": {"type": "string", "minLength": 30},
+        "allowed_outputs": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 10}
+        },
+        "prohibited_outputs": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 10}
+        },
+        "required_checks": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_key"}
+        },
+        "source_paths": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/repo_path"}
+        }
+      }
+    }
+  },
+  "properties": {
+    "decision_id": {"type": "string", "const": "DH-PA-001"},
+    "release_id": {"type": "string", "const": "P0.12"},
+    "tale_id": {"type": "string", "const": "drowned_harbor"},
+    "production_status": {"type": "string", "const": "design_only"},
+    "authorization_decision": {
+      "type": "string",
+      "const": "conditional_authorization_in_principle"
+    },
+    "execution_status": {
+      "type": "string",
+      "const": "blocked_pending_explicit_reopen"
+    },
+    "parent_issue": {"type": "integer", "const": 79},
+    "baseline_main_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "production_catalog_path": {
+      "type": "string",
+      "const": "game/data/tales/tale_catalog_v1.json"
+    },
+    "production_tale": {
+      "type": "string",
+      "const": "lantern_house_vertical_slice"
+    },
+    "runtime_changes_in_release": {"type": "boolean", "const": false},
+    "production_catalog_change_authorized": {"type": "boolean", "const": false},
+    "provider_change_authorized": {"type": "boolean", "const": false},
+    "playable_export_authorized": {"type": "boolean", "const": false},
+    "human_evidence_claimed": {"type": "boolean", "const": false},
+    "unlock_gates": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/unlock_gate"}
+    },
+    "work_packages": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/work_package"}
+    },
+    "external_gates": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/external_gate"}
+    },
+    "promotion_requirements": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 15}
+    },
+    "source_paths": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/repo_path"}
+    },
+    "approval_boundary": {"type": "string", "minLength": 80}
+  }
+}

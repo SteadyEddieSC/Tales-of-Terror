@@ -1,0 +1,65 @@
+name: Preproduction prototype authorization validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/preproduction-prototype-authorization.yml'
+      - 'docs/preproduction/P0.12_Implementation_Issue_Set.md'
+      - 'docs/preproduction/P0.12_Release_Summary.md'
+      - 'docs/preproduction/prototype_authorization_schema_v1.json'
+      - 'docs/tales/drowned_harbor/implementation/**'
+      - 'docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md'
+      - 'tools/validate_prototype_authorization.py'
+      - 'tools/test_validate_prototype_authorization.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Authorization, isolation, issue graph, and production boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Enforce P0.12 documentation and tooling-only delta
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import subprocess
+
+          allowed = {
+              ".github/workflows/preproduction-prototype-authorization.yml",
+              "docs/preproduction/P0.12_Implementation_Issue_Set.md",
+              "docs/preproduction/P0.12_Release_Summary.md",
+              "docs/preproduction/prototype_authorization_schema_v1.json",
+              "docs/tales/drowned_harbor/implementation/README.md",
+              "docs/tales/drowned_harbor/implementation/drowned_harbor_prototype_authorization_v1.json",
+              "docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md",
+              "tools/validate_prototype_authorization.py",
+              "tools/test_validate_prototype_authorization.py",
+          }
+          output = subprocess.check_output(
+              ["git", "diff", "--name-only", os.environ["BASE_SHA"], os.environ["HEAD_SHA"]],
+              text=True,
+          )
+          changed = {line.strip() for line in output.splitlines() if line.strip()}
+          unexpected = sorted(changed - allowed)
+          missing = sorted(allowed - changed)
+          if unexpected:
+              raise SystemExit("P0.12 contains unauthorized paths: " + ", ".join(unexpected))
+          if missing:
+              raise SystemExit("P0.12 is missing required package paths: " + ", ".join(missing))
+          print(f"Validated exact P0.12 path set: {len(changed)} documentation/tooling files; zero runtime files")
+          PY
+
+      - name: Validate prototype authorization decision
+        run: python3 tools/validate_prototype_authorization.py
+
+      - name: Run prototype authorization regression tests
+        run: python3 tools/test_validate_prototype_authorization.py
