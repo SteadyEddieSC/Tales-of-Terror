@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the P0.13 Drowned Harbor isolation validator."""
+"""Regression tests for the Drowned Harbor isolation validator."""
 
 from __future__ import annotations
 
@@ -45,6 +45,9 @@ def make_fixture() -> Path:
     manifest = read_json(ROOT / MANIFEST_PATH)
     for source in manifest["source_authorities"]:
         copy_file(ROOT, fixture, Path(source))
+    for fixture_uri in manifest["fixture_packages"]:
+        relative = Path("game") / fixture_uri.removeprefix("res://")
+        copy_file(ROOT, fixture, relative)
     return fixture
 
 
@@ -52,7 +55,10 @@ def write_manifest(root: Path, mutate: Callable[[dict], None]) -> None:
     path = root / MANIFEST_PATH
     data = read_json(path)
     mutate(data)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
 
 def expect_failure(name: str, mutation: Mutation) -> None:
@@ -78,64 +84,178 @@ def main() -> int:
     mutations: list[tuple[str, Mutation]] = [
         (
             "production catalog registration",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("production_catalog_registered", True)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "production_catalog_registered",
+                    True,
+                ),
+            ),
         ),
         (
             "production provider registration",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("production_provider_registered", True)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "production_provider_registered",
+                    True,
+                ),
+            ),
         ),
         (
             "normal Tale Library visibility",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("normal_tale_library_visible", True)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "normal_tale_library_visible",
+                    True,
+                ),
+            ),
         ),
         (
             "playable export authorization",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("playable_export_authorized", True)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "playable_export_authorized",
+                    True,
+                ),
+            ),
         ),
         (
             "runtime authority creation",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("runtime_authority_created", True)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "runtime_authority_created",
+                    True,
+                ),
+            ),
         ),
         (
             "network dependency",
-            lambda root: write_manifest(root, lambda data: data["dependencies"].__setitem__("network", True)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data["dependencies"].__setitem__(
+                    "network",
+                    True,
+                ),
+            ),
         ),
         (
             "credential dependency",
-            lambda root: write_manifest(root, lambda data: data["dependencies"].__setitem__("credentials", True)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data["dependencies"].__setitem__(
+                    "credentials",
+                    True,
+                ),
+            ),
         ),
         (
             "entry point outside tests",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("allowed_entry_points", ["res://src/main/main.gd"])),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "allowed_entry_points",
+                    ["res://src/main/main.gd"],
+                ),
+            ),
+        ),
+        (
+            "fixture package outside tests",
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "fixture_packages",
+                    ["res://data/tales/drowned_harbor/fixtures.json"],
+                ),
+            ),
+        ),
+        (
+            "fixture package missing",
+            lambda root: (
+                root
+                / "game/tests/drowned_harbor_dev_only/"
+                "state_projection_fixtures_v1.json"
+            ).unlink(),
         ),
         (
             "unknown manifest field",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("runtime_scene", "res://src/main/main.tscn")),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "runtime_scene",
+                    "res://src/main/main.tscn",
+                ),
+            ),
         ),
         (
             "shipping status",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("status", "prototype_playable")),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "status",
+                    "prototype_playable",
+                ),
+            ),
         ),
         (
-            "missing future issue",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("future_work_issues", [81, 82, 83, 84, 85])),
+            "completed issue drift",
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "completed_work_issues",
+                    [80],
+                ),
+            ),
+        ),
+        (
+            "future issue drift",
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "future_work_issues",
+                    [81, 82, 83, 84, 85, 86],
+                ),
+            ),
         ),
         (
             "human evidence claim",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("human_evidence_claimed", True)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "human_evidence_claimed",
+                    True,
+                ),
+            ),
         ),
         (
             "human validation removed",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("human_validation_required", False)),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "human_validation_required",
+                    False,
+                ),
+            ),
         ),
         (
             "source authority removed",
-            lambda root: write_manifest(root, lambda data: data.__setitem__("source_authorities", data["source_authorities"][:-1])),
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "source_authorities",
+                    data["source_authorities"][:-1],
+                ),
+            ),
         ),
         (
             "production catalog changed",
             lambda root: (root / CATALOG_PATH).write_text(
-                (root / CATALOG_PATH).read_text(encoding="utf-8").replace(
+                (root / CATALOG_PATH)
+                .read_text(encoding="utf-8")
+                .replace(
                     '"default_tale_id": "lantern_house_vertical_slice"',
                     '"default_tale_id": "drowned_harbor"',
                 ),
@@ -145,21 +265,26 @@ def main() -> int:
         (
             "provider registry changed",
             lambda root: (root / PROVIDER_PATH).write_text(
-                (root / PROVIDER_PATH).read_text(encoding="utf-8") + "\n# drowned_harbor provider\n",
+                (root / PROVIDER_PATH).read_text(encoding="utf-8")
+                + "\n# drowned_harbor provider\n",
                 encoding="utf-8",
             ),
         ),
         (
             "export exclusion removed",
             lambda root: (root / EXPORT_PRESETS_PATH).write_text(
-                (root / EXPORT_PRESETS_PATH).read_text(encoding="utf-8").replace("tests/*,", "", 1),
+                (root / EXPORT_PRESETS_PATH)
+                .read_text(encoding="utf-8")
+                .replace("tests/*,", "", 1),
                 encoding="utf-8",
             ),
         ),
         (
             "README current/future boundary removed",
             lambda root: (root / README_PATH).write_text(
-                (root / README_PATH).read_text(encoding="utf-8").replace("## What exists today", "## Status"),
+                (root / README_PATH)
+                .read_text(encoding="utf-8")
+                .replace("## What exists today", "## Status"),
                 encoding="utf-8",
             ),
         ),
@@ -168,7 +293,10 @@ def main() -> int:
     for name, mutation in mutations:
         expect_failure(name, mutation)
 
-    print(f"Drowned Harbor prototype isolation regression tests passed: {len(mutations)} fail-closed mutations")
+    print(
+        "Drowned Harbor prototype isolation regression tests passed: "
+        f"{len(mutations)} fail-closed mutations"
+    )
     return 0
 
 
