@@ -1,0 +1,50 @@
+name: Drowned Harbor prototype isolation validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/drowned-harbor-prototype-isolation.yml'
+      - 'README.md'
+      - 'docs/gdd/Terror_Turn_GDD.md'
+      - 'docs/technical/Drowned_Harbor_Development_Prototype_Isolation_v1.md'
+      - 'docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md'
+      - 'docs/technical/Tale_Catalog_Contract.md'
+      - 'docs/technical/Tale_Package_Contract.md'
+      - 'game/data/tales/tale_catalog_v1.json'
+      - 'game/export_presets.cfg'
+      - 'game/src/session/tale_provider_registry.gd'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
+      - 'tools/validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-prototype-isolation.yml'
+      - 'README.md'
+      - 'docs/gdd/Terror_Turn_GDD.md'
+      - 'docs/technical/Drowned_Harbor_Development_Prototype_Isolation_v1.md'
+      - 'docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md'
+      - 'docs/technical/Tale_Catalog_Contract.md'
+      - 'docs/technical/Tale_Package_Contract.md'
+      - 'game/data/tales/tale_catalog_v1.json'
+      - 'game/export_presets.cfg'
+      - 'game/src/session/tale_provider_registry.gd'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
+      - 'tools/validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Dev-only identity, production exclusion, exports, and README truth
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate Drowned Harbor prototype isolation
+        run: python tools/validate_drowned_harbor_prototype_isolation.py
+      - name: Run isolation regression mutations
+        run: python tools/test_validate_drowned_harbor_prototype_isolation.py
