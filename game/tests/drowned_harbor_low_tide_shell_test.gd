@@ -96,6 +96,7 @@ func _test_focus_preview_cancel_and_stable_seat() -> void:
 		"ACTIVE SEAT_01" in shell.render_snapshot().get("active_seat_label", ""),
 		"active stable seat is visible in text",
 	)
+	shell.free()
 
 
 func _test_voice_off_persistent_information() -> void:
@@ -115,6 +116,7 @@ func _test_voice_off_persistent_information() -> void:
 		"D-PAD / WASD" in snapshot.get("controller_prompts", ""),
 		"controller and keyboard prompts remain visible",
 	)
+	shell.free()
 
 
 func _test_revision_bound_confirmation() -> void:
@@ -136,6 +138,7 @@ func _test_revision_bound_confirmation() -> void:
 		"confirmation is explicitly revision-bound",
 	)
 	_expect(shell.state_signature() == before, "confirmation seam consumes no RNG")
+	shell.free()
 
 	var stale_shell: DrownedHarborLowTideSharedScreenShell = SHELL_SCRIPT.new()
 	stale_shell.initialize_from_fixture()
@@ -146,6 +149,7 @@ func _test_revision_bound_confirmation() -> void:
 	_expect(stale.get("code") == "stale_confirmation_revision", "stale code is explicit")
 	_expect(stale_shell.mode_name() == "recovery", "stale request enters recovery")
 	_expect(stale_shell.state_signature() == stale_before, "stale request mutates nothing")
+	stale_shell.free()
 
 
 func _test_transcript_replay_and_recovery_are_public_safe() -> void:
@@ -167,6 +171,7 @@ func _test_transcript_replay_and_recovery_are_public_safe() -> void:
 		in shell.render_snapshot().get("status", ""),
 		"recovery message states the no-mutation boundary",
 	)
+	shell.free()
 
 
 func _test_controller_and_keyboard_fallback_mappings() -> void:
