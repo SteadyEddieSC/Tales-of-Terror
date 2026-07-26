@@ -76,21 +76,62 @@ func default_request() -> Dictionary:
 
 
 func project(request: Dictionary) -> Dictionary:
-	if _fixture.is_empty():
-		return _rejected("fixture_not_loaded", "load DH-FIX-001 before projection")
-	if not _has_exact_keys(request, REQUEST_FIELDS):
-		return _rejected("malformed_request", "request fields are incomplete or unknown")
-	if request.get("fixture_id") != FIXTURE_ID:
-		return _rejected("unknown_fixture", "request fixture is not DH-FIX-001")
-	if request.get("source_revision") != source_revision():
-		return _rejected("stale_source_revision", "request revision is not current")
-	if not _fixture.get("authorized_actor_kinds", []).has(request.get("actor_kind")):
-		return _rejected("unauthorized_actor", "actor kind is not authorized")
-	if request.get("stable_seat_id") != stable_seat_id():
-		return _rejected("wrong_stable_seat", "request does not own the active stable seat")
-	if request.get("intent") != REQUEST_INTENT:
-		return _rejected("unauthorized_intent", "request intent is not approved")
+	var validation: Dictionary = _validate_request(request)
+	if not validation.get("accepted", false):
+		return validation
+	return _build_public_result()
 
+
+func source_revision() -> int:
+	return int(_fixture.get("source_revision", -1))
+
+
+func result_revision() -> int:
+	return int(_fixture.get("result_revision", -1))
+
+
+func rng_cursor() -> int:
+	return int(_fixture.get("rng_cursor_before", -1))
+
+
+func stable_seat_id() -> String:
+	return str(_fixture.get("active_stable_seat_id", ""))
+
+
+func source_fingerprint() -> String:
+	return _source_fingerprint
+
+
+func _validate_request(request: Dictionary) -> Dictionary:
+	var code: String = ""
+	var message: String = ""
+	if _fixture.is_empty():
+		code = "fixture_not_loaded"
+		message = "load DH-FIX-001 before projection"
+	elif not _has_exact_keys(request, REQUEST_FIELDS):
+		code = "malformed_request"
+		message = "request fields are incomplete or unknown"
+	elif request.get("fixture_id") != FIXTURE_ID:
+		code = "unknown_fixture"
+		message = "request fixture is not DH-FIX-001"
+	elif request.get("source_revision") != source_revision():
+		code = "stale_source_revision"
+		message = "request revision is not current"
+	elif not _fixture.get("authorized_actor_kinds", []).has(request.get("actor_kind")):
+		code = "unauthorized_actor"
+		message = "actor kind is not authorized"
+	elif request.get("stable_seat_id") != stable_seat_id():
+		code = "wrong_stable_seat"
+		message = "request does not own the active stable seat"
+	elif request.get("intent") != REQUEST_INTENT:
+		code = "unauthorized_intent"
+		message = "request intent is not approved"
+	if not code.is_empty():
+		return _rejected(code, message)
+	return {"accepted": true, "diagnostics": []}
+
+
+func _build_public_result() -> Dictionary:
 	var source_state: Dictionary = _fixture.get("source_state", {})
 	var public_state: Dictionary = source_state.get("public", {})
 	var seat_public: Dictionary = source_state.get("seat_public", {})
@@ -159,27 +200,17 @@ func project(request: Dictionary) -> Dictionary:
 	}
 
 
-func source_revision() -> int:
-	return int(_fixture.get("source_revision", -1))
-
-
-func result_revision() -> int:
-	return int(_fixture.get("result_revision", -1))
-
-
-func rng_cursor() -> int:
-	return int(_fixture.get("rng_cursor_before", -1))
-
-
-func stable_seat_id() -> String:
-	return str(_fixture.get("active_stable_seat_id", ""))
-
-
-func source_fingerprint() -> String:
-	return _source_fingerprint
-
-
 func _validate_fixture(value: Dictionary) -> Dictionary:
+	var code: String = ""
+	var message: String = ""
+	var source_state: Variant = value.get("source_state")
+	var public_state: Variant = {}
+	var seat_public: Variant = {}
+	var private_state: Variant = {}
+	if source_state is Dictionary:
+		public_state = source_state.get("public")
+		seat_public = source_state.get("seat_public")
+		private_state = source_state.get("private")
 	if (
 		value.get("fixture_id") != FIXTURE_ID
 		or value.get("trace_id") != TRACE_ID
@@ -188,37 +219,44 @@ func _validate_fixture(value: Dictionary) -> Dictionary:
 		or value.get("privacy_surface") != "public_shared"
 		or value.get("status") != "synthetic_test_only"
 	):
-		return _rejected("unauthorized_fixture", "fixture identity or scope is not approved")
-	if value.get("projection_request", {}).get("intent") != REQUEST_INTENT:
-		return _rejected("unauthorized_fixture", "fixture request intent drifted")
-	if value.get("source_revision") != 11 or value.get("result_revision") != 12:
-		return _rejected("unauthorized_fixture", "fixture revisions drifted")
-	if value.get("rng_cursor_before") != value.get("rng_cursor_after"):
-		return _rejected("rng_mutation_detected", "fixture projection may not consume RNG")
-	if (
+		code = "unauthorized_fixture"
+		message = "fixture identity or scope is not approved"
+	elif value.get("projection_request", {}).get("intent") != REQUEST_INTENT:
+		code = "unauthorized_fixture"
+		message = "fixture request intent drifted"
+	elif value.get("source_revision") != 11 or value.get("result_revision") != 12:
+		code = "unauthorized_fixture"
+		message = "fixture revisions drifted"
+	elif value.get("rng_cursor_before") != value.get("rng_cursor_after"):
+		code = "rng_mutation_detected"
+		message = "fixture projection may not consume RNG"
+	elif (
 		value.get("stable_seat_identity_before") != value.get("active_stable_seat_id")
 		or value.get("stable_seat_identity_after") != value.get("active_stable_seat_id")
 	):
-		return _rejected("stable_seat_drift", "stable-seat identity is not preserved")
-	var source_state: Variant = value.get("source_state")
-	if not source_state is Dictionary:
-		return _rejected("malformed_fixture", "source state must be an object")
-	var public_state: Variant = source_state.get("public")
-	var seat_public: Variant = source_state.get("seat_public")
-	var private_state: Variant = source_state.get("private")
-	if (
+		code = "stable_seat_drift"
+		message = "stable-seat identity is not preserved"
+	elif not source_state is Dictionary:
+		code = "malformed_fixture"
+		message = "source state must be an object"
+	elif (
 		not public_state is Dictionary
 		or not seat_public is Dictionary
 		or not private_state is Dictionary
 	):
-		return _rejected("malformed_fixture", "fixture domains are incomplete")
-	if public_state.get("stage") != "low_tide_arrival":
-		return _rejected("unauthorized_fixture", "fixture stage is not Low Tide Arrival")
-	if public_state.get("legal_actions", []).is_empty():
-		return _rejected("malformed_fixture", "fixture requires public legal actions")
-	var projection_map: Dictionary = value.get("projection_map", {})
-	if not projection_map.get("private", {}).is_empty():
-		return _rejected("private_projection_rejected", "Low Tide shell may not map private data")
+		code = "malformed_fixture"
+		message = "fixture domains are incomplete"
+	elif public_state.get("stage") != "low_tide_arrival":
+		code = "unauthorized_fixture"
+		message = "fixture stage is not Low Tide Arrival"
+	elif public_state.get("legal_actions", []).is_empty():
+		code = "malformed_fixture"
+		message = "fixture requires public legal actions"
+	elif not value.get("projection_map", {}).get("private", {}).is_empty():
+		code = "private_projection_rejected"
+		message = "Low Tide shell may not map private data"
+	if not code.is_empty():
+		return _rejected(code, message)
 	return {"accepted": true, "diagnostics": []}
 
 
