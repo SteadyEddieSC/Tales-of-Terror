@@ -1,9 +1,9 @@
 # Drowned Harbor Low-Tide Shared-Screen Prototype Shell
 
-**Version:** 1.0  
-**Release:** P0.15  
-**Issue:** #82  
-**Status:** Development-only, test-only, export-excluded prototype contract  
+**Version:** 1.0
+**Release:** P0.15
+**Issue:** #82
+**Status:** Development-only, test-only, export-excluded prototype contract
 **Tale status:** Drowned Harbor remains outside the production Tale catalog and provider
 
 ## 1. Purpose
@@ -192,7 +192,7 @@ The bounded workflow enforces the exact P0.15 path set and runs:
 
 - P0.15 static contract validation;
 - P0.15 fail-closed mutations;
-- P0.14 projection validation and regressions;
+- P0.14 projection validation and regressions through the P0.15 manifest-compatibility layer;
 - updated prototype-isolation validation and regressions;
 - Godot 4.7.1-stable import validation;
 - the standalone Low Tide shell test;
