@@ -6,12 +6,14 @@ on:
       - main
     paths:
       - '.p014/**'
+      - '.p0142/**'
       - '.github/workflows/apply-p014-chunks.yml'
   push:
     branches:
       - agent/p0.14-drowned-harbor-state-fixtures
     paths:
       - '.p014/**'
+      - '.p0142/**'
       - '.github/workflows/apply-p014-chunks.yml'
 
 permissions:
@@ -26,18 +28,47 @@ jobs:
         with:
           fetch-depth: 0
           ref: agent/p0.14-drowned-harbor-state-fixtures
-      - name: Materialize exact P0.14 package
+
+      - name: Verify and materialize exact P0.14 package
         run: |
-          cat .p014/chunk-* > "$RUNNER_TEMP/p014-package.b64"
-          base64 --decode "$RUNNER_TEMP/p014-package.b64" > "$RUNNER_TEMP/p014-package.zip"
-          unzip -q -o "$RUNNER_TEMP/p014-package.zip" -d .
-          rm -rf .p014 .github/workflows/apply-p014-chunks.yml
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+
+          expected = {
+              "part-00": "783f34c196f2fdbe5e1583b5ee84c84cc96dd66c2a9e0ef6a693329076575705",
+              "part-01": "e8e1a4ab377631ec112f8b7306e5da8db782665e8eac585df574d2a7c6e1d515",
+              "part-02": "48172e51d3a1f65e4f50a70f641f0d06b8268edbc4b0d3c8dd6ce97a784cbf37",
+              "part-03": "18f997597daed4d54292e954039d5eea287c2517f13a53571cdefab40ce572ca",
+              "part-04": "a70533c2d73d4fc2ef8d7e009387ad1ea92f117f69f498d5367f6f07d0d5abea",
+              "part-05": "db6129f7d40299c33d89629dc75fe483837f142729f709f5bc8bd30f59d27261",
+          }
+          parts = []
+          for name, digest in expected.items():
+              value = (Path(".p0142") / name).read_text(encoding="ascii")
+              actual = hashlib.sha256(value.encode("ascii")).hexdigest()
+              if actual != digest:
+                  raise SystemExit(f"{name} SHA-256 mismatch: {actual}")
+              parts.append(value)
+          assembled = "".join(parts)
+          assembled_digest = hashlib.sha256(assembled.encode("ascii")).hexdigest()
+          expected_assembled = "c23ddf6799e9e2ddd40bff341442d3bb0a9326052a8cf4c4331b6a6705c1f6e0"
+          if assembled_digest != expected_assembled:
+              raise SystemExit(f"assembled base64 SHA-256 mismatch: {assembled_digest}")
+          Path("/tmp/p014-package.b64").write_text(assembled, encoding="ascii")
+          PY
+          base64 --decode /tmp/p014-package.b64 > /tmp/p014-package.zip
+          echo 'b475206e1ac88b45e465ad00965e6ee6eff5f7c7e7652741d02eb7fbab7368f2  /tmp/p014-package.zip' | sha256sum --check
+          unzip -q -o /tmp/p014-package.zip -d .
+          rm -rf .p014 .p0142 .github/workflows/apply-p014-chunks.yml
+
       - name: Validate materialized package before commit
         run: |
           python tools/validate_drowned_harbor_projection_fixtures.py
           python tools/test_validate_drowned_harbor_projection_fixtures.py
           python tools/validate_drowned_harbor_prototype_isolation.py
           python tools/test_validate_drowned_harbor_prototype_isolation.py
+
       - name: Commit exact package and remove bootstrap files
         run: |
           git config user.name 'github-actions[bot]'
