@@ -249,7 +249,7 @@ def main() -> int:
             lambda root: (root / EXPORT_PRESETS_PATH).write_text(
                 (root / EXPORT_PRESETS_PATH)
                 .read_text(encoding="utf-8")
-                .replace("tests/*,", "", 1),
+                .replace("tests/*", "tests/legacy_only/*", 1),
                 encoding="utf-8",
             ),
         ),
