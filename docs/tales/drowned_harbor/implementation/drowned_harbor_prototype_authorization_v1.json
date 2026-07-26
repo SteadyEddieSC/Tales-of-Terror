@@ -1,0 +1,320 @@
+{
+  "decision_id": "DH-PA-001",
+  "release_id": "P0.12",
+  "tale_id": "drowned_harbor",
+  "production_status": "design_only",
+  "authorization_decision": "conditional_authorization_in_principle",
+  "execution_status": "blocked_pending_explicit_reopen",
+  "parent_issue": 79,
+  "baseline_main_sha": "0cb4aaaf3b82097a4dcaf38d2ff41d3047e9cd4f",
+  "production_catalog_path": "game/data/tales/tale_catalog_v1.json",
+  "production_tale": "lantern_house_vertical_slice",
+  "runtime_changes_in_release": false,
+  "production_catalog_change_authorized": false,
+  "provider_change_authorized": false,
+  "playable_export_authorized": false,
+  "human_evidence_claimed": false,
+  "unlock_gates": [
+    {
+      "gate_id": "p0_11_merged",
+      "description": "P0.11 is merged to protected main and provides the accepted interaction-state traceability baseline.",
+      "satisfied_in_p0_12": true
+    },
+    {
+      "gate_id": "p0_12_merged",
+      "description": "P0.12 must merge to protected main before any child implementation issue can leave blocked status.",
+      "satisfied_in_p0_12": false
+    },
+    {
+      "gate_id": "explicit_user_reopen",
+      "description": "The user must explicitly reopen local and Codex implementation work after the current temporary block.",
+      "satisfied_in_p0_12": false
+    },
+    {
+      "gate_id": "clean_implementation_branch",
+      "description": "A future implementation branch must begin from the then-current protected-main SHA with a clean intended delta.",
+      "satisfied_in_p0_12": false
+    },
+    {
+      "gate_id": "child_issue_unblocked",
+      "description": "The exact child issue being implemented must be intentionally unblocked without broadening the other issue packages.",
+      "satisfied_in_p0_12": false
+    },
+    {
+      "gate_id": "production_boundaries_reverified",
+      "description": "Production catalog, provider, package, default Tale, Tale Library, and export exclusions must be reverified at implementation start.",
+      "satisfied_in_p0_12": false
+    },
+    {
+      "gate_id": "exact_checks_defined",
+      "description": "The implementing issue must define its exact automated checks and failure evidence before merge review.",
+      "satisfied_in_p0_12": false
+    },
+    {
+      "gate_id": "external_gates_preserved",
+      "description": "Issues 7, 39, and 44 must remain accurately represented without suppression, substitution, or premature closure.",
+      "satisfied_in_p0_12": true
+    }
+  ],
+  "work_packages": [
+    {
+      "package_id": "DH-PROT-001",
+      "github_issue": 80,
+      "title": "Prototype isolation boundary",
+      "status": "blocked_pending_explicit_reopen",
+      "depends_on_issues": [79],
+      "trace_ids": [],
+      "objective": "Create an unmistakable development-only boundary that cannot enter normal Tale selection, production catalog identity, or ordinary exports.",
+      "allowed_outputs": [
+        "Development-only isolation and fail-closed entry seams",
+        "Synthetic identity and export-exclusion tests",
+        "Production catalog integrity evidence"
+      ],
+      "prohibited_outputs": [
+        "Production Tale catalog or default-Tale change",
+        "Production provider or package registration",
+        "Player-visible locked or coming-soon Tale entry",
+        "Public or ordinary portable playable export"
+      ],
+      "required_checks": [
+        "production_catalog_unchanged",
+        "normal_tale_library_excludes_prototype",
+        "development_entry_fail_closed",
+        "ordinary_exports_exclude_prototype"
+      ],
+      "source_paths": [
+        "docs/technical/Tale_Catalog_Contract.md",
+        "docs/technical/Tale_Package_Contract.md",
+        "docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md"
+      ]
+    },
+    {
+      "package_id": "DH-PROT-002",
+      "github_issue": 81,
+      "title": "Deterministic state and projection fixtures",
+      "status": "blocked_pending_explicit_reopen",
+      "depends_on_issues": [79, 80],
+      "trace_ids": ["DH-IS-003", "DH-IS-004", "DH-IS-007", "DH-IS-008", "DH-IS-009", "DH-IS-016", "DH-IS-019"],
+      "objective": "Provide synthetic authoritative source and result revisions for representative public, private, transition, and recovery interactions.",
+      "allowed_outputs": [
+        "Synthetic deterministic fixture records",
+        "Public and private projection adapters",
+        "Stable event-key and revision evidence"
+      ],
+      "prohibited_outputs": [
+        "Production saves or authored player history",
+        "Production Tale package or provider identity",
+        "Network, telemetry, cloud, upload, or credential dependency",
+        "Final mechanics or balance claims"
+      ],
+      "required_checks": [
+        "same_input_byte_equivalence",
+        "private_payload_public_exclusion",
+        "idempotent_reprojection",
+        "stale_action_fail_closed"
+      ],
+      "source_paths": [
+        "docs/technical/Interaction_State_and_Implementation_Traceability_Contract_v1.md",
+        "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_core_traces_v1.json",
+        "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_resolution_traces_v1.json",
+        "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_continuity_traces_v1.json"
+      ]
+    },
+    {
+      "package_id": "DH-PROT-003",
+      "github_issue": 82,
+      "title": "Low-Tide shared-screen prototype shell",
+      "status": "blocked_pending_explicit_reopen",
+      "depends_on_issues": [79, 80, 81],
+      "trace_ids": ["DH-IS-003"],
+      "objective": "Project the Low-Tide shared-screen contract with synthetic public state, controller-first focus, persistent text, captions, and stable-seat ownership.",
+      "allowed_outputs": [
+        "Development-only shared-screen layout shell",
+        "Placeholder board and landmark silhouettes",
+        "Automated controller-intent and keyboard-fallback tests"
+      ],
+      "prohibited_outputs": [
+        "Final board geometry, camera, or production scene",
+        "Final visual, audio, localization, or imported production asset",
+        "Physical-controller or television-readability claim",
+        "Complete Tale progression or balance result"
+      ],
+      "required_checks": [
+        "public_projection_only",
+        "focus_owner_visible_without_color",
+        "voice_off_persistent_text",
+        "cool_dark_material_separation"
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_core_traces_v1.json",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Palette_and_Contrast_Guardrails_v1.md"
+      ]
+    },
+    {
+      "package_id": "DH-PROT-004",
+      "github_issue": 83,
+      "title": "Bellhouse decision and invalid-action recovery",
+      "status": "blocked_pending_explicit_reopen",
+      "depends_on_issues": [79, 80, 81, 82],
+      "trace_ids": ["DH-IS-004", "DH-IS-019"],
+      "objective": "Prove one public Bellhouse decision can preview, cancel, commit once, and recover from invalid input without mutation or leakage.",
+      "allowed_outputs": [
+        "Bellhouse decision projection and focus flow",
+        "Command guard and deterministic reducer seam",
+        "Invalid-action recovery and focus restoration tests"
+      ],
+      "prohibited_outputs": [
+        "Final Ledger mechanics or narrative timing",
+        "Hidden-state hint, correct-answer glow, or moral recommendation",
+        "Penalty, ridicule, deadlock, RNG consumption, or seat reset on rejection",
+        "Human comprehension or fun claim"
+      ],
+      "required_checks": [
+        "valid_commit_exactly_once",
+        "preview_cancel_no_mutation",
+        "wrong_seat_and_stale_rejected",
+        "recovery_focus_deterministic"
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json",
+        "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_core_traces_v1.json",
+        "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_continuity_traces_v1.json"
+      ]
+    },
+    {
+      "package_id": "DH-PROT-005",
+      "github_issue": 84,
+      "title": "Controlled-private neutral shield proof",
+      "status": "blocked_pending_explicit_reopen",
+      "depends_on_issues": [79, 80, 81, 83],
+      "trace_ids": ["DH-IS-007", "DH-IS-016"],
+      "objective": "Prove neutral shared shielding, authorized private delivery, acknowledgement, clearing, and safe fallback with synthetic private data.",
+      "allowed_outputs": [
+        "Neutral shared-screen shield state",
+        "Authorized private-surface abstraction",
+        "Private clearing and interruption recovery tests"
+      ],
+      "prohibited_outputs": [
+        "Private payload in public display, audio, captions, transcript, replay, diagnostics, or mirroring",
+        "Timeout acceptance, default-confirm focus, or private-seat shopping",
+        "Production Companion endpoint or account identity change",
+        "Privacy or security certification claim"
+      ],
+      "required_checks": [
+        "neutral_shield_before_private_load",
+        "authorized_actor_only",
+        "private_clear_before_public_resume",
+        "unavailable_surface_commits_nothing"
+      ],
+      "source_paths": [
+        "docs/design/Seat_Continuity_and_Admission.md",
+        "docs/technical/Shared_Screen_Storyboard_Contract_v1.md",
+        "docs/technical/Interaction_State_and_Implementation_Traceability_Contract_v1.md",
+        "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_continuity_traces_v1.json"
+      ]
+    },
+    {
+      "package_id": "DH-PROT-006",
+      "github_issue": 85,
+      "title": "High Water deterministic transformation proof",
+      "status": "blocked_pending_explicit_reopen",
+      "depends_on_issues": [79, 80, 81, 82, 83],
+      "trace_ids": ["DH-IS-008", "DH-IS-009"],
+      "objective": "Prove the committed before-state, exactly-once High Water transformation, skip-equivalent presentation, and transformed public board projection.",
+      "allowed_outputs": [
+        "Deterministic High Water reducer seam",
+        "Before-state, changed-category summary, and after-state projections",
+        "Full-presentation and skip-equivalence tests"
+      ],
+      "prohibited_outputs": [
+        "Final water simulation, camera, animation, art, or audio",
+        "Player input, RNG branch, or authority transfer during transition",
+        "Hidden-state leak or stable-seat replacement",
+        "Human comprehension, pacing, or balance claim"
+      ],
+      "required_checks": [
+        "transition_exactly_once",
+        "skip_and_full_result_equivalent",
+        "changed_categories_persistent",
+        "stable_seat_identity_preserved"
+      ],
+      "source_paths": [
+        "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+        "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_resolution_traces_v1.json",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md"
+      ]
+    },
+    {
+      "package_id": "DH-PROT-007",
+      "github_issue": 86,
+      "title": "Prototype automation and export exclusion",
+      "status": "blocked_pending_explicit_reopen",
+      "depends_on_issues": [79, 80, 81, 82, 83, 84, 85],
+      "trace_ids": ["DH-IS-003", "DH-IS-004", "DH-IS-007", "DH-IS-008", "DH-IS-009", "DH-IS-016", "DH-IS-019"],
+      "objective": "Create exact-head automated evidence for deterministic behavior, privacy, deadlock resistance, catalog integrity, and ordinary-export exclusion.",
+      "allowed_outputs": [
+        "Headless deterministic and privacy regression tests",
+        "Catalog-integrity and export-exclusion evidence",
+        "Explicitly bounded internal prototype build evidence after separate review"
+      ],
+      "prohibited_outputs": [
+        "Suppression or reinterpretation of issue 44",
+        "Closure or substitution of issue 39 human evidence",
+        "Public release or ordinary portable prototype bundle",
+        "Claims of controller, television, accessibility, privacy, fun, fairness, or balance validation"
+      ],
+      "required_checks": [
+        "repository_and_godot_green",
+        "privacy_and_replay_equivalence",
+        "deadlock_lab_green",
+        "catalog_and_export_exclusion_green",
+        "generated_outputs_untracked"
+      ],
+      "source_paths": [
+        ".github/workflows/godot-tests.yml",
+        ".github/workflows/portable-builds.yml",
+        "docs/playtests/v0.1.9-automated-playthrough-evidence.md",
+        "docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md"
+      ]
+    }
+  ],
+  "external_gates": [
+    {
+      "issue": 7,
+      "summary": "Working game and host names remain provisional and may not support final legal, storefront, domain, or marketing claims.",
+      "may_be_suppressed": false
+    },
+    {
+      "issue": 39,
+      "summary": "Human household and remote playtest evidence remains open; automated prototype checks are not human evidence.",
+      "may_be_suppressed": false
+    },
+    {
+      "issue": 44,
+      "summary": "The Companion dependency vulnerability remains open and requires real remediation rather than suppression or reinterpretation.",
+      "may_be_suppressed": false
+    }
+  ],
+  "promotion_requirements": [
+    "Separate production-authorization release and exact-head review",
+    "Reviewed Tale package, provider, catalog, and Tale Library identity",
+    "Production asset provenance, licenses, and replacement status",
+    "Final localization, captions, transcript, and narrative packaging",
+    "Save, replay, migration, performance, and deterministic compatibility",
+    "Physical-controller and representative television validation",
+    "Human accessibility, privacy, comprehension, pacing, fun, fairness, and balance evidence",
+    "Legal-name, storefront, rating, release, and marketing readiness"
+  ],
+  "source_paths": [
+    "docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md",
+    "docs/technical/Tale_Catalog_Contract.md",
+    "docs/technical/Tale_Package_Contract.md",
+    "docs/technical/Shared_Screen_Storyboard_Contract_v1.md",
+    "docs/technical/Interaction_State_and_Implementation_Traceability_Contract_v1.md",
+    "docs/design/Seat_Continuity_and_Admission.md"
+  ],
+  "approval_boundary": "P0.12 conditionally approves only the future isolated prototype concept and blocked issue decomposition; it authorizes no runtime file, production Tale registration, provider or catalog change, playable export, production asset, human evidence claim, or public release activity."
+}
