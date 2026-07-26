@@ -1,10 +1,10 @@
 # Drowned Harbor Deterministic State & Projection Fixtures
 
-**Version:** 1.0  
-**Release:** P0.14  
-**Issue:** #81  
-**Status:** Development-only synthetic fixture contract  
-**Tale status:** Drowned Harbor remains design-only  
+**Version:** 1.0
+**Release:** P0.14
+**Issue:** #81
+**Status:** Development-only synthetic fixture contract
+**Tale status:** Drowned Harbor remains design-only
 **Runtime implementation:** Not authorized
 
 ## 1. Purpose
