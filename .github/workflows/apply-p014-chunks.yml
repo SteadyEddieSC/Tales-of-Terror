@@ -1,6 +1,12 @@
 name: Apply P0.14 package once
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.p014/**'
+      - '.github/workflows/apply-p014-chunks.yml'
   push:
     branches:
       - agent/p0.14-drowned-harbor-state-fixtures
@@ -19,6 +25,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
+          ref: agent/p0.14-drowned-harbor-state-fixtures
       - name: Materialize exact P0.14 package
         run: |
           cat .p014/chunk-* > "$RUNNER_TEMP/p014-package.b64"
