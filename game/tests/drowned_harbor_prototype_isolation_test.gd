@@ -4,9 +4,7 @@ const MANIFEST_PATH: String = "res://tests/drowned_harbor_prototype_manifest_v1.
 const PRODUCTION_CATALOG_PATH: String = "res://data/tales/tale_catalog_v1.json"
 const PRODUCTION_PROVIDER_PATH: String = "res://src/session/tale_provider_registry.gd"
 const EXPORT_PRESETS_PATH: String = "res://export_presets.cfg"
-const DROWNED_HARBOR_PRODUCTION_PACKAGE: String = (
-	"res://data/tales/drowned_harbor/tale_package_v1.json"
-)
+const DROWNED_HARBOR_PRODUCTION_PACKAGE: String = "res://data/tales/drowned_harbor/tale_package_v1.json"
 
 var _failures: int = 0
 
@@ -28,9 +26,7 @@ func _test_development_manifest_is_fail_closed() -> void:
 	)
 	if not FileAccess.file_exists(MANIFEST_PATH):
 		return
-	var parsed: Variant = JSON.parse_string(
-		FileAccess.get_file_as_string(MANIFEST_PATH)
-	)
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
 	_expect(
 		typeof(parsed) == TYPE_DICTIONARY,
 		"development manifest parses as an object",
@@ -111,10 +107,13 @@ func _test_development_manifest_is_fail_closed() -> void:
 
 func _test_production_catalog_remains_lantern_house_only() -> void:
 	var registry := TaleProviderRegistry.new()
-	var result: Dictionary = TaleCatalog.load_validated(
-		TaleCatalog.PRODUCTION_PATH,
-		registry,
-		TaleCatalog.PRODUCTION_DIGEST,
+	var result: Dictionary = (
+		TaleCatalog
+		. load_validated(
+			TaleCatalog.PRODUCTION_PATH,
+			registry,
+			TaleCatalog.PRODUCTION_DIGEST,
+		)
 	)
 	_expect(result.accepted, "production Tale catalog still validates")
 	if not result.accepted:
@@ -131,9 +130,7 @@ func _test_production_catalog_remains_lantern_house_only() -> void:
 		result.inventory[0].tale_id == TalePackage.LANTERN_HOUSE_ID,
 		"only production inventory entry remains Lantern House",
 	)
-	var production_text: String = (
-		FileAccess.get_file_as_string(PRODUCTION_CATALOG_PATH).to_lower()
-	)
+	var production_text: String = FileAccess.get_file_as_string(PRODUCTION_CATALOG_PATH).to_lower()
 	_expect(
 		"drowned_harbor" not in production_text,
 		"production catalog contains no Drowned Harbor entry",
@@ -149,9 +146,7 @@ func _test_normal_runtime_has_no_drowned_harbor_registration() -> void:
 		not FileAccess.file_exists(DROWNED_HARBOR_PRODUCTION_PACKAGE),
 		"no Drowned Harbor production Tale package exists",
 	)
-	var provider_text: String = (
-		FileAccess.get_file_as_string(PRODUCTION_PROVIDER_PATH).to_lower()
-	)
+	var provider_text: String = FileAccess.get_file_as_string(PRODUCTION_PROVIDER_PATH).to_lower()
 	_expect(
 		"drowned_harbor" not in provider_text,
 		"production provider registry contains no Drowned Harbor provider",
