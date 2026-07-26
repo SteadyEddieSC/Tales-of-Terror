@@ -16,7 +16,11 @@ PROVIDER_PATH = Path("game/src/session/tale_provider_registry.gd")
 EXPORT_PRESETS_PATH = Path("game/export_presets.cfg")
 README_PATH = Path("README.md")
 GODOT_TEST_PATH = Path("game/tests/drowned_harbor_prototype_isolation_test.gd")
-EXPECTED_CATALOG_DIGEST = "2b478fd0d11fa075c2050409193aa06e6b9ca4dcf6efd4e4c550a9f3a5ff9db6"
+LOW_TIDE_TEST_PATH = Path("game/tests/drowned_harbor_low_tide_shell_test.gd")
+EXPECTED_CATALOG_DIGEST = (
+    "2b478fd0d11fa075c2050409193aa06e"
+    "6b9ca4dcf6efd4e4c550a9f3a5ff9db6"
+)
 EXPECTED_MANIFEST_FIELDS = {
     "prototype_kind",
     "schema_version",
@@ -40,6 +44,7 @@ EXPECTED_MANIFEST_FIELDS = {
     "completed_work_issues",
     "future_work_issues",
     "fixture_packages",
+    "prototype_components",
     "human_validation_required",
     "human_evidence_claimed",
     "notes",
@@ -58,6 +63,18 @@ EXPECTED_EXPORT_FIELDS = {
     "internal_linux_preset",
     "ordinary_exports_include_prototype",
 }
+EXPECTED_ENTRY_POINTS = [
+    "res://tests/drowned_harbor_low_tide_shell_test.gd",
+    "res://tests/drowned_harbor_prototype_isolation_test.gd",
+]
+EXPECTED_FIXTURE_PACKAGES = [
+    "res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"
+]
+EXPECTED_COMPONENTS = [
+    "res://tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd",
+    "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.tscn",
+]
 
 
 class IsolationValidationError(ValueError):
@@ -90,6 +107,23 @@ def canonical_sha256(value: dict[str, Any]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def _validate_test_uris(
+    root: Path,
+    values: Any,
+    expected: list[str],
+    label: str,
+) -> None:
+    require(values == expected, f"{label} set drifted")
+    require(len(values) == len(set(values)), f"{label} contains duplicates")
+    for uri in values:
+        require(
+            isinstance(uri, str) and uri.startswith("res://tests/"),
+            f"every {label} path must stay under res://tests/",
+        )
+        local_path = root / "game" / uri.removeprefix("res://")
+        require(local_path.is_file(), f"{label} path does not exist: {uri}")
+
+
 def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
     require(
         set(manifest) == EXPECTED_MANIFEST_FIELDS,
@@ -117,27 +151,24 @@ def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
         manifest["launch_policy"] == "explicit_test_script_only",
         "prototype launch must remain explicit and test-only",
     )
-
-    entry_points = manifest["allowed_entry_points"]
-    require(
-        isinstance(entry_points, list) and entry_points,
-        "prototype requires at least one explicit test-only entry point",
+    _validate_test_uris(
+        root,
+        manifest["allowed_entry_points"],
+        EXPECTED_ENTRY_POINTS,
+        "prototype entry point",
     )
-    require(
-        len(entry_points) == len(set(entry_points)),
-        "prototype entry points contain duplicates",
+    _validate_test_uris(
+        root,
+        manifest["fixture_packages"],
+        EXPECTED_FIXTURE_PACKAGES,
+        "fixture package",
     )
-    for entry_point in entry_points:
-        require(
-            isinstance(entry_point, str)
-            and entry_point.startswith("res://tests/"),
-            "every prototype entry point must stay under res://tests/",
-        )
-        local_path = root / "game" / entry_point.removeprefix("res://")
-        require(
-            local_path.is_file(),
-            f"prototype entry point does not exist: {entry_point}",
-        )
+    _validate_test_uris(
+        root,
+        manifest["prototype_components"],
+        EXPECTED_COMPONENTS,
+        "prototype component",
+    )
 
     require(
         manifest["production_catalog_path"]
@@ -205,7 +236,7 @@ def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
 
     source_authorities = manifest["source_authorities"]
     require(
-        isinstance(source_authorities, list) and len(source_authorities) >= 5,
+        isinstance(source_authorities, list) and len(source_authorities) >= 6,
         "prototype must retain its governing sources",
     )
     require(
@@ -224,40 +255,18 @@ def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
         )
 
     require(
-        manifest["completed_work_issues"] == [80, 81],
-        "completed prototype work must be exactly issues #80 and #81",
+        manifest["completed_work_issues"] == [80, 81, 82],
+        "completed prototype work must be exactly issues #80 through #82",
     )
     require(
-        manifest["future_work_issues"] == [82, 83, 84, 85, 86],
-        "future work issue set must remain #82 through #86",
+        manifest["future_work_issues"] == [83, 84, 85, 86],
+        "future work issue set must remain #83 through #86",
     )
-
-    fixture_packages = manifest["fixture_packages"]
-    require(
-        fixture_packages
-        == [
-            (
-                "res://tests/drowned_harbor_dev_only/"
-                "state_projection_fixtures_v1.json"
-            )
-        ],
-        "prototype fixture package set drifted",
-    )
-    for fixture_path in fixture_packages:
-        require(
-            fixture_path.startswith("res://tests/"),
-            "every fixture package must stay under res://tests/",
-        )
-        local_path = root / "game" / fixture_path.removeprefix("res://")
-        require(
-            local_path.is_file(),
-            f"prototype fixture package does not exist: {fixture_path}",
-        )
 
     notes = manifest["notes"]
     require(
-        isinstance(notes, str) and len(notes) >= 300,
-        "prototype notes must preserve the evidence boundary",
+        isinstance(notes, str) and len(notes) >= 500,
+        "prototype notes must preserve the expanded evidence boundary",
     )
     for phrase in (
         "does not make Drowned Harbor playable",
@@ -265,6 +274,8 @@ def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
         "privacy-certified",
         "accessibility-compliant",
         "do not create a reducer",
+        "placeholder geometry",
+        "ordinary playable export",
     ):
         require(
             phrase in notes,
@@ -310,9 +321,7 @@ def validate_production_catalog(root: Path = ROOT) -> None:
         "production catalog may not reference test-only paths",
     )
 
-    provider_text = (root / PROVIDER_PATH).read_text(
-        encoding="utf-8"
-    ).lower()
+    provider_text = (root / PROVIDER_PATH).read_text(encoding="utf-8").lower()
     require(
         "drowned_harbor" not in provider_text,
         "production provider registry may not reference Drowned Harbor",
@@ -340,7 +349,11 @@ def validate_export_boundary(root: Path = ROOT) -> None:
     for filename in (
         "drowned_harbor_prototype_manifest_v1.json",
         "drowned_harbor_prototype_isolation_test.gd",
+        "drowned_harbor_low_tide_shell_test.gd",
         "state_projection_fixtures_v1.json",
+        "low_tide_fixture_adapter.gd",
+        "low_tide_shared_screen_shell.gd",
+        "low_tide_shared_screen_shell.tscn",
     ):
         require(
             filename not in preset_text,
@@ -393,14 +406,8 @@ def validate_readme(root: Path = ROOT) -> None:
 
 
 def validate(root: Path = ROOT) -> None:
-    require(
-        (root / MANIFEST_PATH).is_file(),
-        f"required manifest missing: {MANIFEST_PATH}",
-    )
-    require(
-        (root / GODOT_TEST_PATH).is_file(),
-        f"required Godot test missing: {GODOT_TEST_PATH}",
-    )
+    for path in (MANIFEST_PATH, GODOT_TEST_PATH, LOW_TIDE_TEST_PATH):
+        require((root / path).is_file(), f"required isolation file missing: {path}")
     validate_manifest(read_json(root / MANIFEST_PATH), root)
     validate_production_catalog(root)
     validate_export_boundary(root)
@@ -417,8 +424,9 @@ def main() -> int:
         )
         return 1
     print(
-        "Validated Drowned Harbor dev-only isolation, completed fixture packages, "
-        "Lantern House production exclusivity, export exclusion, and README vision boundary"
+        "Validated Drowned Harbor dev-only isolation, deterministic fixtures, "
+        "Low Tide shell components, Lantern House exclusivity, export exclusion, "
+        "and README vision boundary"
     )
     return 0
 
