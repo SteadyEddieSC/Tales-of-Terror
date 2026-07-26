@@ -35,17 +35,24 @@
     "docs/technical/Prototype_Authorization_and_Isolation_Contract_v1.md",
     "docs/technical/Tale_Catalog_Contract.md",
     "docs/technical/Tale_Package_Contract.md",
-    "docs/gdd/Terror_Turn_GDD.md"
+    "docs/gdd/Terror_Turn_GDD.md",
+    "docs/technical/Drowned_Harbor_Deterministic_State_Projection_Fixtures_v1.md"
+  ],
+  "completed_work_issues": [
+    80,
+    81
   ],
   "future_work_issues": [
-    81,
     82,
     83,
     84,
     85,
     86
   ],
+  "fixture_packages": [
+    "res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"
+  ],
   "human_validation_required": true,
   "human_evidence_claimed": false,
-  "notes": "This manifest proves only an isolated development boundary. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, or accessibility-compliant."
+  "notes": "This manifest proves only an isolated development boundary and six synthetic deterministic state/projection fixtures. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, accessibility-compliant, or production-ready. The fixtures provide test data and pure reprojection evidence only; they do not create a reducer, provider, Tale package, final mechanic, production save, network behavior, or runtime authority."
 }

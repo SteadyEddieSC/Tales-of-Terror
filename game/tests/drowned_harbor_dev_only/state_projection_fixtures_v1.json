@@ -1,0 +1,823 @@
+{
+  "fixture_package_kind": "drowned_harbor_state_projection_fixtures",
+  "schema_version": 1,
+  "prototype_id": "drowned_harbor_dev_only",
+  "tale_id": "drowned_harbor",
+  "status": "synthetic_test_only_export_excluded",
+  "projection_contract_version": 1,
+  "fixture_schema": "game/tests/drowned_harbor_dev_only/state_projection_fixture_schema_v1.json",
+  "trace_sources": [
+    "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_core_traces_v1.json",
+    "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_resolution_traces_v1.json",
+    "docs/tales/drowned_harbor/interaction/drowned_harbor_interaction_continuity_traces_v1.json"
+  ],
+  "fixtures": [
+    {
+      "fixture_id": "DH-FIX-001",
+      "title": "Low Tide public action projection",
+      "trace_id": "DH-IS-003",
+      "storyboard_id": "DH-UI-003",
+      "fixture_kind": "public_commit_projection",
+      "privacy_surface": "public_shared",
+      "status": "synthetic_test_only",
+      "seed": 3103,
+      "source_revision": 11,
+      "result_revision": 12,
+      "rng_cursor_before": 4,
+      "rng_cursor_after": 4,
+      "authoritative_commit": true,
+      "active_stable_seat_id": "seat_01",
+      "authorized_actor_kinds": [
+        "active_stable_seat",
+        "game_control"
+      ],
+      "projection_request": {
+        "fixture_id": "DH-FIX-001",
+        "source_revision": 11,
+        "actor_kind": "active_stable_seat",
+        "stable_seat_id": "seat_01",
+        "intent": "project_low_tide_public_action"
+      },
+      "source_state": {
+        "public": {
+          "stage": "low_tide_arrival",
+          "tide_state": "extreme_low_tide_returning",
+          "objective": "Reach one public landmark and recover a record before the water returns.",
+          "routes": {
+            "causeway_to_bellhouse": "open",
+            "causeway_to_salt_market": "open",
+            "mudflat_to_lifeboat_shed": "unstable"
+          },
+          "resources": {
+            "shared_light": 2,
+            "public_clues": 1
+          },
+          "caption": "The Bellhouse route remains open. The lifeboat route is unstable.",
+          "history_label": "Low Tide public action",
+          "legal_actions": [
+            "move_to_bellhouse",
+            "inspect_salt_market",
+            "stabilize_lifeboat_route"
+          ]
+        },
+        "seat_public": {
+          "seat_id": "seat_01",
+          "control_source": "human",
+          "location": "causeway",
+          "public_form": "living",
+          "condition": "ready",
+          "inventory_count": 1
+        },
+        "private": {
+          "role": "bellmarked_candidate",
+          "objective": "PRIVATE_FIND_MISSING_NAME",
+          "inventory": [
+            "PRIVATE_SALT_KEY"
+          ],
+          "hidden_route": "archive_culvert"
+        },
+        "diagnostic_nonplayer": {
+          "fixture_revision": "p0.14",
+          "authoring_note": "synthetic only"
+        }
+      },
+      "projection_map": {
+        "public": {
+          "stage": "public.stage",
+          "tide_state": "public.tide_state",
+          "objective": "public.objective",
+          "routes": "public.routes",
+          "resources": "public.resources",
+          "caption": "public.caption",
+          "history_label": "public.history_label",
+          "legal_actions": "public.legal_actions",
+          "active_seat": "seat_public"
+        },
+        "private": {}
+      },
+      "expected_events": [
+        {
+          "event_key": "low_tide_public_action_committed",
+          "classification": "public",
+          "exactly_once": true,
+          "payload_map": {
+            "stage": "public.stage",
+            "seat_id": "seat_public.seat_id",
+            "location": "seat_public.location",
+            "result_revision": "$result_revision"
+          }
+        }
+      ],
+      "negative_cases": [
+        {
+          "case_id": "stale_revision",
+          "mutation": {
+            "source_revision_delta": -1
+          },
+          "expected_error": "stale_source_revision"
+        },
+        {
+          "case_id": "unauthorized_actor",
+          "mutation": {
+            "actor_kind": "spectator"
+          },
+          "expected_error": "unauthorized_actor"
+        },
+        {
+          "case_id": "wrong_stable_seat",
+          "mutation": {
+            "stable_seat_id": "seat_99"
+          },
+          "expected_error": "wrong_stable_seat"
+        },
+        {
+          "case_id": "unknown_intent",
+          "mutation": {
+            "intent": "unknown_fixture_intent"
+          },
+          "expected_error": "unauthorized_intent"
+        }
+      ],
+      "stable_seat_identity_before": "seat_01",
+      "stable_seat_identity_after": "seat_01",
+      "human_validation_required": true,
+      "human_evidence_claimed": false,
+      "notes": "Synthetic Low Tide projection. No movement reducer, balance value, or production board state is approved."
+    },
+    {
+      "fixture_id": "DH-FIX-002",
+      "title": "Bellhouse decision projection",
+      "trace_id": "DH-IS-004",
+      "storyboard_id": "DH-UI-004",
+      "fixture_kind": "public_commit_projection",
+      "privacy_surface": "public_shared",
+      "status": "synthetic_test_only",
+      "seed": 4104,
+      "source_revision": 21,
+      "result_revision": 22,
+      "rng_cursor_before": 7,
+      "rng_cursor_after": 7,
+      "authoritative_commit": true,
+      "active_stable_seat_id": "seat_02",
+      "authorized_actor_kinds": [
+        "active_stable_seat"
+      ],
+      "projection_request": {
+        "fixture_id": "DH-FIX-002",
+        "source_revision": 21,
+        "actor_kind": "active_stable_seat",
+        "stable_seat_id": "seat_02",
+        "intent": "project_bellhouse_decision"
+      },
+      "source_state": {
+        "public": {
+          "stage": "bellhouse_ledger",
+          "ledger": {
+            "visible_names": 5,
+            "erased_positions": 2,
+            "unresolved_positions": 1
+          },
+          "ring_state": {
+            "visible_count": 5,
+            "audible_count": 6,
+            "extra_ring_unresolved": true
+          },
+          "selected_option": "record_missing_position",
+          "public_consequence": "One unresolved position is added to the Ledger without identifying a seat.",
+          "objective": "Compare the public Ledger with the lighthouse record.",
+          "caption": "The Bellhouse records one unresolved position. No seat is identified.",
+          "history_label": "Bellhouse decision committed",
+          "legal_actions": [
+            "continue_to_lighthouse",
+            "inspect_ledger",
+            "review_public_record"
+          ]
+        },
+        "seat_public": {
+          "seat_id": "seat_02",
+          "control_source": "human",
+          "location": "bellhouse",
+          "public_form": "living",
+          "condition": "ready"
+        },
+        "private": {
+          "faction": "PRIVATE_BELLMARKED",
+          "objective": "PRIVATE_PRESERVE_HARBOR",
+          "ledger_mark": "PRIVATE_SIXTH_NAME"
+        },
+        "diagnostic_nonplayer": {
+          "fixture_revision": "p0.14",
+          "authoring_note": "synthetic only"
+        }
+      },
+      "projection_map": {
+        "public": {
+          "stage": "public.stage",
+          "ledger": "public.ledger",
+          "ring_state": "public.ring_state",
+          "selected_option": "public.selected_option",
+          "public_consequence": "public.public_consequence",
+          "objective": "public.objective",
+          "caption": "public.caption",
+          "history_label": "public.history_label",
+          "legal_actions": "public.legal_actions",
+          "active_seat": "seat_public"
+        },
+        "private": {}
+      },
+      "expected_events": [
+        {
+          "event_key": "bellhouse_decision_committed",
+          "classification": "public",
+          "exactly_once": true,
+          "payload_map": {
+            "decision": "public.selected_option",
+            "unresolved_positions": "public.ledger.unresolved_positions",
+            "seat_id": "seat_public.seat_id",
+            "result_revision": "$result_revision"
+          }
+        }
+      ],
+      "negative_cases": [
+        {
+          "case_id": "stale_revision",
+          "mutation": {
+            "source_revision_delta": -1
+          },
+          "expected_error": "stale_source_revision"
+        },
+        {
+          "case_id": "unauthorized_actor",
+          "mutation": {
+            "actor_kind": "spectator"
+          },
+          "expected_error": "unauthorized_actor"
+        },
+        {
+          "case_id": "wrong_stable_seat",
+          "mutation": {
+            "stable_seat_id": "seat_99"
+          },
+          "expected_error": "wrong_stable_seat"
+        },
+        {
+          "case_id": "unknown_intent",
+          "mutation": {
+            "intent": "unknown_fixture_intent"
+          },
+          "expected_error": "unauthorized_intent"
+        }
+      ],
+      "stable_seat_identity_before": "seat_02",
+      "stable_seat_identity_after": "seat_02",
+      "human_validation_required": true,
+      "human_evidence_claimed": false,
+      "notes": "Synthetic Bellhouse projection. The fixture cannot infer Bellmarked identity or hidden causation."
+    },
+    {
+      "fixture_id": "DH-FIX-003",
+      "title": "Controlled-private bargain handoff projection",
+      "trace_id": "DH-IS-007",
+      "storyboard_id": "DH-UI-007",
+      "fixture_kind": "controlled_private_commit_projection",
+      "privacy_surface": "controlled_private_surface",
+      "status": "synthetic_test_only",
+      "seed": 5107,
+      "source_revision": 31,
+      "result_revision": 32,
+      "rng_cursor_before": 9,
+      "rng_cursor_after": 9,
+      "authoritative_commit": true,
+      "active_stable_seat_id": "seat_03",
+      "authorized_actor_kinds": [
+        "active_stable_seat",
+        "approved_takeover_controller",
+        "returning_reserved_controller"
+      ],
+      "projection_request": {
+        "fixture_id": "DH-FIX-003",
+        "source_revision": 31,
+        "actor_kind": "active_stable_seat",
+        "stable_seat_id": "seat_03",
+        "intent": "project_controlled_private_bargain"
+      },
+      "source_state": {
+        "public": {
+          "stage": "lighthouse_council",
+          "handoff_status": "neutral_shield_active",
+          "public_resolution": "Seat 3 completed a private Harbor bargain decision.",
+          "public_consequence": "The public rescue clock advances by one step.",
+          "caption": "Private terms are hidden. A public consequence has been applied.",
+          "history_label": "Private bargain resolved"
+        },
+        "seat_public": {
+          "seat_id": "seat_03",
+          "control_source": "human",
+          "location": "lighthouse_approach",
+          "public_form": "living",
+          "condition": "ready"
+        },
+        "private": {
+          "authorized_seat_id": "seat_03",
+          "term_id": "PRIVATE_TERM_BLACK_BELL",
+          "term_text": "PRIVATE_RING_THE_BLACK_BELL_AT_LAST_LIGHT",
+          "cost": "PRIVATE_SURRENDER_ONE_RECOVERED_NAME",
+          "response": "accept",
+          "private_result": "PRIVATE_DEBT_BOUND_TO_SEAT_03"
+        },
+        "diagnostic_nonplayer": {
+          "fixture_revision": "p0.14",
+          "authoring_note": "synthetic only"
+        }
+      },
+      "projection_map": {
+        "public": {
+          "handoff_status": "public.handoff_status",
+          "public_resolution": "public.public_resolution",
+          "public_consequence": "public.public_consequence",
+          "caption": "public.caption",
+          "history_label": "public.history_label",
+          "seat_id": "seat_public.seat_id"
+        },
+        "private": {
+          "seat_id": "private.authorized_seat_id",
+          "term_id": "private.term_id",
+          "term_text": "private.term_text",
+          "cost": "private.cost",
+          "response": "private.response",
+          "private_result": "private.private_result"
+        }
+      },
+      "expected_events": [
+        {
+          "event_key": "harbor_bargain_private_term_committed",
+          "classification": "private",
+          "exactly_once": true,
+          "payload_map": {
+            "seat_id": "private.authorized_seat_id",
+            "term_id": "private.term_id",
+            "response": "private.response",
+            "result_revision": "$result_revision"
+          }
+        },
+        {
+          "event_key": "harbor_bargain_public_resolution_projected",
+          "classification": "public",
+          "exactly_once": true,
+          "payload_map": {
+            "seat_id": "seat_public.seat_id",
+            "public_consequence": "public.public_consequence",
+            "result_revision": "$result_revision"
+          }
+        }
+      ],
+      "negative_cases": [
+        {
+          "case_id": "stale_revision",
+          "mutation": {
+            "source_revision_delta": -1
+          },
+          "expected_error": "stale_source_revision"
+        },
+        {
+          "case_id": "unauthorized_actor",
+          "mutation": {
+            "actor_kind": "spectator"
+          },
+          "expected_error": "unauthorized_actor"
+        },
+        {
+          "case_id": "wrong_stable_seat",
+          "mutation": {
+            "stable_seat_id": "seat_99"
+          },
+          "expected_error": "wrong_stable_seat"
+        },
+        {
+          "case_id": "unknown_intent",
+          "mutation": {
+            "intent": "unknown_fixture_intent"
+          },
+          "expected_error": "unauthorized_intent"
+        },
+        {
+          "case_id": "private_surface_missing",
+          "mutation": {
+            "privacy_surface": "public_shared"
+          },
+          "expected_error": "private_surface_required"
+        }
+      ],
+      "stable_seat_identity_before": "seat_03",
+      "stable_seat_identity_after": "seat_03",
+      "human_validation_required": true,
+      "human_evidence_claimed": false,
+      "notes": "Synthetic controlled-private projection. Private content is returned only to the authorized seat projection and never enters public payloads or history."
+    },
+    {
+      "fixture_id": "DH-FIX-004",
+      "title": "High Water transformation projection",
+      "trace_id": "DH-IS-008",
+      "storyboard_id": "DH-UI-008",
+      "fixture_kind": "once_only_public_transform_projection",
+      "privacy_surface": "public_shared",
+      "status": "synthetic_test_only",
+      "seed": 6108,
+      "source_revision": 41,
+      "result_revision": 42,
+      "rng_cursor_before": 12,
+      "rng_cursor_after": 12,
+      "authoritative_commit": true,
+      "active_stable_seat_id": "seat_04",
+      "authorized_actor_kinds": [
+        "system"
+      ],
+      "projection_request": {
+        "fixture_id": "DH-FIX-004",
+        "source_revision": 41,
+        "actor_kind": "system",
+        "stable_seat_id": "seat_04",
+        "intent": "project_high_water_transformation"
+      },
+      "source_state": {
+        "public": {
+          "stage_before": "lighthouse_council",
+          "stage_after": "high_water",
+          "board_before": {
+            "causeway_to_bellhouse": "open",
+            "causeway_to_salt_market": "open",
+            "mudflat_to_lifeboat_shed": "unstable",
+            "archive_street": "open"
+          },
+          "board_after": {
+            "causeway_to_bellhouse": "submerged",
+            "causeway_to_salt_market": "flooded_passable",
+            "mudflat_to_lifeboat_shed": "water_route_only",
+            "archive_street": "collapsed"
+          },
+          "changed_categories": [
+            "route",
+            "hazard",
+            "objective"
+          ],
+          "objective_after": "Reach the lighthouse or launch the lifeboat before Last Light.",
+          "caption": "High Water is active. Land and water routes have changed as shown.",
+          "history_label": "High Water transformation",
+          "once_only_marker": "high_water_committed"
+        },
+        "seat_public": {
+          "seat_id": "seat_04",
+          "control_source": "game_control",
+          "location_before": "salt_market",
+          "location_after": "salt_market_platform",
+          "public_form": "living",
+          "condition": "ready"
+        },
+        "private": {
+          "latent_form": "PRIVATE_TIDEBOUND_PENDING",
+          "objective": "PRIVATE_CARRY_NAME_TO_LIGHTHOUSE",
+          "director_target": "PRIVATE_SEAT_04"
+        },
+        "diagnostic_nonplayer": {
+          "fixture_revision": "p0.14",
+          "authoring_note": "synthetic only"
+        }
+      },
+      "projection_map": {
+        "public": {
+          "stage_before": "public.stage_before",
+          "stage_after": "public.stage_after",
+          "board_before": "public.board_before",
+          "board_after": "public.board_after",
+          "changed_categories": "public.changed_categories",
+          "objective": "public.objective_after",
+          "caption": "public.caption",
+          "history_label": "public.history_label",
+          "once_only_marker": "public.once_only_marker",
+          "active_seat": "seat_public"
+        },
+        "private": {}
+      },
+      "expected_events": [
+        {
+          "event_key": "high_water_transformation_committed",
+          "classification": "public",
+          "exactly_once": true,
+          "payload_map": {
+            "stage": "public.stage_after",
+            "changed_categories": "public.changed_categories",
+            "seat_id": "seat_public.seat_id",
+            "result_revision": "$result_revision"
+          }
+        }
+      ],
+      "negative_cases": [
+        {
+          "case_id": "stale_revision",
+          "mutation": {
+            "source_revision_delta": -1
+          },
+          "expected_error": "stale_source_revision"
+        },
+        {
+          "case_id": "unauthorized_actor",
+          "mutation": {
+            "actor_kind": "spectator"
+          },
+          "expected_error": "unauthorized_actor"
+        },
+        {
+          "case_id": "wrong_stable_seat",
+          "mutation": {
+            "stable_seat_id": "seat_99"
+          },
+          "expected_error": "wrong_stable_seat"
+        },
+        {
+          "case_id": "unknown_intent",
+          "mutation": {
+            "intent": "unknown_fixture_intent"
+          },
+          "expected_error": "unauthorized_intent"
+        },
+        {
+          "case_id": "once_only_replay_as_commit",
+          "mutation": {
+            "already_committed": true
+          },
+          "expected_error": "already_committed"
+        }
+      ],
+      "stable_seat_identity_before": "seat_04",
+      "stable_seat_identity_after": "seat_04",
+      "human_validation_required": true,
+      "human_evidence_claimed": false,
+      "notes": "Synthetic once-only High Water projection. Animation skip and reprojection must produce the same authoritative result bytes."
+    },
+    {
+      "fixture_id": "DH-FIX-005",
+      "title": "Tidebound public transformation projection",
+      "trace_id": "DH-IS-010",
+      "storyboard_id": "DH-UI-010",
+      "fixture_kind": "once_only_public_transform_projection",
+      "privacy_surface": "public_shared",
+      "status": "synthetic_test_only",
+      "seed": 7110,
+      "source_revision": 51,
+      "result_revision": 52,
+      "rng_cursor_before": 15,
+      "rng_cursor_after": 15,
+      "authoritative_commit": true,
+      "active_stable_seat_id": "seat_05",
+      "authorized_actor_kinds": [
+        "system"
+      ],
+      "projection_request": {
+        "fixture_id": "DH-FIX-005",
+        "source_revision": 51,
+        "actor_kind": "system",
+        "stable_seat_id": "seat_05",
+        "intent": "project_tidebound_transformation"
+      },
+      "source_state": {
+        "public": {
+          "stage": "high_water",
+          "transformation": "tidebound",
+          "capabilities": [
+            "water_route_movement",
+            "recover_submerged_record"
+          ],
+          "restrictions": [
+            "cannot_use_dry_only_route",
+            "must_end_turn_near_water_or_bell"
+          ],
+          "current_actions": [
+            "move_by_water",
+            "recover_record",
+            "warn_adjacent_seat"
+          ],
+          "caption": "Seat 5 is Tidebound. The same stable seat remains active with the displayed form rules.",
+          "history_label": "Tidebound transformation"
+        },
+        "seat_public": {
+          "seat_id": "seat_05",
+          "control_source": "human",
+          "location": "flooded_market",
+          "public_form_before": "living",
+          "public_form_after": "tidebound",
+          "condition": "transformed_active",
+          "participation_rights": "active"
+        },
+        "private": {
+          "inherited_faction": "PRIVATE_BELLMARKED",
+          "objective": "PRIVATE_OPEN_INLAND_BEAM",
+          "latent_cause": "PRIVATE_ACCEPTED_HARBOR_BARGAIN"
+        },
+        "diagnostic_nonplayer": {
+          "fixture_revision": "p0.14",
+          "authoring_note": "synthetic only"
+        }
+      },
+      "projection_map": {
+        "public": {
+          "stage": "public.stage",
+          "transformation": "public.transformation",
+          "capabilities": "public.capabilities",
+          "restrictions": "public.restrictions",
+          "current_actions": "public.current_actions",
+          "caption": "public.caption",
+          "history_label": "public.history_label",
+          "active_seat": "seat_public"
+        },
+        "private": {}
+      },
+      "expected_events": [
+        {
+          "event_key": "tidebound_transformation_committed",
+          "classification": "public",
+          "exactly_once": true,
+          "payload_map": {
+            "seat_id": "seat_public.seat_id",
+            "form": "seat_public.public_form_after",
+            "participation_rights": "seat_public.participation_rights",
+            "result_revision": "$result_revision"
+          }
+        }
+      ],
+      "negative_cases": [
+        {
+          "case_id": "stale_revision",
+          "mutation": {
+            "source_revision_delta": -1
+          },
+          "expected_error": "stale_source_revision"
+        },
+        {
+          "case_id": "unauthorized_actor",
+          "mutation": {
+            "actor_kind": "spectator"
+          },
+          "expected_error": "unauthorized_actor"
+        },
+        {
+          "case_id": "wrong_stable_seat",
+          "mutation": {
+            "stable_seat_id": "seat_99"
+          },
+          "expected_error": "wrong_stable_seat"
+        },
+        {
+          "case_id": "unknown_intent",
+          "mutation": {
+            "intent": "unknown_fixture_intent"
+          },
+          "expected_error": "unauthorized_intent"
+        },
+        {
+          "case_id": "stable_seat_changed",
+          "mutation": {
+            "stable_seat_id": "seat_06"
+          },
+          "expected_error": "wrong_stable_seat"
+        },
+        {
+          "case_id": "once_only_replay_as_commit",
+          "mutation": {
+            "already_committed": true
+          },
+          "expected_error": "already_committed"
+        }
+      ],
+      "stable_seat_identity_before": "seat_05",
+      "stable_seat_identity_after": "seat_05",
+      "human_validation_required": true,
+      "human_evidence_claimed": false,
+      "notes": "Synthetic public form projection. Transformation changes form rules, never the stable-seat identity or participation rights."
+    },
+    {
+      "fixture_id": "DH-FIX-006",
+      "title": "Invalid-action recovery projection",
+      "trace_id": "DH-IS-019",
+      "storyboard_id": "DH-UI-019",
+      "fixture_kind": "public_recovery_projection",
+      "privacy_surface": "public_shared",
+      "status": "synthetic_test_only",
+      "seed": 8119,
+      "source_revision": 61,
+      "result_revision": 61,
+      "rng_cursor_before": 18,
+      "rng_cursor_after": 18,
+      "authoritative_commit": false,
+      "active_stable_seat_id": "seat_06",
+      "authorized_actor_kinds": [
+        "active_stable_seat",
+        "game_control",
+        "host",
+        "system"
+      ],
+      "projection_request": {
+        "fixture_id": "DH-FIX-006",
+        "source_revision": 61,
+        "actor_kind": "active_stable_seat",
+        "stable_seat_id": "seat_06",
+        "intent": "project_invalid_action_recovery"
+      },
+      "source_state": {
+        "public": {
+          "rejected_action": "move_to_archive_street",
+          "public_safe_reason": "That route is not currently available.",
+          "legal_alternatives": [
+            "move_to_bellhouse_roof",
+            "move_to_lifeboat_channel",
+            "inspect_current_space"
+          ],
+          "focus_destination": "move_to_bellhouse_roof",
+          "caption": "The action was rejected. No state or randomness changed.",
+          "history_label": "Invalid action recovery",
+          "state_changed": false,
+          "rng_changed": false
+        },
+        "seat_public": {
+          "seat_id": "seat_06",
+          "control_source": "human",
+          "location": "flooded_market",
+          "public_form": "living",
+          "condition": "ready"
+        },
+        "private": {
+          "hidden_legality_cause": "PRIVATE_ARCHIVE_ROUTE_RESERVED_FOR_DROWNED_GUIDE",
+          "objective": "PRIVATE_FIND_MISSING_NAME"
+        },
+        "diagnostic_nonplayer": {
+          "fixture_revision": "p0.14",
+          "authoring_note": "synthetic only"
+        }
+      },
+      "projection_map": {
+        "public": {
+          "rejected_action": "public.rejected_action",
+          "public_safe_reason": "public.public_safe_reason",
+          "legal_alternatives": "public.legal_alternatives",
+          "focus_destination": "public.focus_destination",
+          "caption": "public.caption",
+          "history_label": "public.history_label",
+          "state_changed": "public.state_changed",
+          "rng_changed": "public.rng_changed",
+          "active_seat": "seat_public"
+        },
+        "private": {}
+      },
+      "expected_events": [
+        {
+          "event_key": "invalid_action_recovery_projected",
+          "classification": "diagnostic",
+          "exactly_once": false,
+          "payload_map": {
+            "seat_id": "seat_public.seat_id",
+            "reason": "public.public_safe_reason",
+            "source_revision": "$source_revision",
+            "result_revision": "$result_revision"
+          }
+        }
+      ],
+      "negative_cases": [
+        {
+          "case_id": "stale_revision",
+          "mutation": {
+            "source_revision_delta": -1
+          },
+          "expected_error": "stale_source_revision"
+        },
+        {
+          "case_id": "unauthorized_actor",
+          "mutation": {
+            "actor_kind": "spectator"
+          },
+          "expected_error": "unauthorized_actor"
+        },
+        {
+          "case_id": "wrong_stable_seat",
+          "mutation": {
+            "stable_seat_id": "seat_99"
+          },
+          "expected_error": "wrong_stable_seat"
+        },
+        {
+          "case_id": "unknown_intent",
+          "mutation": {
+            "intent": "unknown_fixture_intent"
+          },
+          "expected_error": "unauthorized_intent"
+        }
+      ],
+      "stable_seat_identity_before": "seat_06",
+      "stable_seat_identity_after": "seat_06",
+      "human_validation_required": true,
+      "human_evidence_claimed": false,
+      "notes": "Synthetic recovery projection. It models no reducer and must leave authoritative state, RNG cursor, and stable-seat identity unchanged."
+    }
+  ],
+  "human_validation_required": true,
+  "human_evidence_claimed": false,
+  "approval_boundary": "Synthetic projection fixtures only. No reducer, production save, final mechanics, balance, Tale registration, provider, normal Tale Library entry, network behavior, or playable export is authorized."
+}

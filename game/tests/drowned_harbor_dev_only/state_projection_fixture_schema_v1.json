@@ -1,0 +1,359 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-state-projection-fixture-v1.json",
+  "title": "Drowned Harbor deterministic state and projection fixture package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fixture_package_kind",
+    "schema_version",
+    "prototype_id",
+    "tale_id",
+    "status",
+    "projection_contract_version",
+    "fixture_schema",
+    "trace_sources",
+    "fixtures",
+    "human_validation_required",
+    "human_evidence_claimed",
+    "approval_boundary"
+  ],
+  "properties": {
+    "fixture_package_kind": {
+      "const": "drowned_harbor_state_projection_fixtures"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "prototype_id": {
+      "const": "drowned_harbor_dev_only"
+    },
+    "tale_id": {
+      "const": "drowned_harbor"
+    },
+    "status": {
+      "const": "synthetic_test_only_export_excluded"
+    },
+    "projection_contract_version": {
+      "const": 1
+    },
+    "fixture_schema": {
+      "type": "string",
+      "const": "game/tests/drowned_harbor_dev_only/state_projection_fixture_schema_v1.json"
+    },
+    "trace_sources": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/fixture"
+      }
+    },
+    "human_validation_required": {
+      "const": true
+    },
+    "human_evidence_claimed": {
+      "const": false
+    },
+    "approval_boundary": {
+      "type": "string",
+      "minLength": 160
+    }
+  },
+  "$defs": {
+    "stringMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_key",
+        "classification",
+        "exactly_once",
+        "payload_map"
+      ],
+      "properties": {
+        "event_key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "classification": {
+          "enum": [
+            "public",
+            "private",
+            "diagnostic"
+          ]
+        },
+        "exactly_once": {
+          "type": "boolean"
+        },
+        "payload_map": {
+          "$ref": "#/$defs/stringMap"
+        }
+      }
+    },
+    "negativeCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "mutation",
+        "expected_error"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "mutation": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "expected_error": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      }
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixture_id",
+        "title",
+        "trace_id",
+        "storyboard_id",
+        "fixture_kind",
+        "privacy_surface",
+        "status",
+        "seed",
+        "source_revision",
+        "result_revision",
+        "rng_cursor_before",
+        "rng_cursor_after",
+        "authoritative_commit",
+        "active_stable_seat_id",
+        "authorized_actor_kinds",
+        "projection_request",
+        "source_state",
+        "projection_map",
+        "expected_events",
+        "negative_cases",
+        "stable_seat_identity_before",
+        "stable_seat_identity_after",
+        "human_validation_required",
+        "human_evidence_claimed",
+        "notes"
+      ],
+      "properties": {
+        "fixture_id": {
+          "type": "string",
+          "pattern": "^DH-FIX-[0-9]{3}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 8
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^DH-IS-[0-9]{3}$"
+        },
+        "storyboard_id": {
+          "type": "string",
+          "pattern": "^DH-UI-[0-9]{3}$"
+        },
+        "fixture_kind": {
+          "enum": [
+            "public_commit_projection",
+            "controlled_private_commit_projection",
+            "once_only_public_transform_projection",
+            "public_recovery_projection"
+          ]
+        },
+        "privacy_surface": {
+          "enum": [
+            "public_shared",
+            "controlled_private_surface"
+          ]
+        },
+        "status": {
+          "const": "synthetic_test_only"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "result_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rng_cursor_before": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rng_cursor_after": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "authoritative_commit": {
+          "type": "boolean"
+        },
+        "active_stable_seat_id": {
+          "type": "string",
+          "pattern": "^seat_[0-9]{2}$"
+        },
+        "authorized_actor_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "projection_request": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fixture_id",
+            "source_revision",
+            "actor_kind",
+            "stable_seat_id",
+            "intent"
+          ],
+          "properties": {
+            "fixture_id": {
+              "type": "string",
+              "pattern": "^DH-FIX-[0-9]{3}$"
+            },
+            "source_revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "actor_kind": {
+              "type": "string",
+              "minLength": 1
+            },
+            "stable_seat_id": {
+              "type": "string",
+              "pattern": "^seat_[0-9]{2}$"
+            },
+            "intent": {
+              "type": "string",
+              "pattern": "^project_[a-z0-9_]+$"
+            }
+          }
+        },
+        "source_state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "public",
+            "seat_public",
+            "private",
+            "diagnostic_nonplayer"
+          ],
+          "properties": {
+            "public": {
+              "type": "object"
+            },
+            "seat_public": {
+              "type": "object"
+            },
+            "private": {
+              "type": "object"
+            },
+            "diagnostic_nonplayer": {
+              "type": "object"
+            }
+          }
+        },
+        "projection_map": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "public",
+            "private"
+          ],
+          "properties": {
+            "public": {
+              "type": "object",
+              "propertyNames": {
+                "pattern": "^[a-z][a-z0-9_]*$"
+              },
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "private": {
+              "type": "object",
+              "propertyNames": {
+                "pattern": "^[a-z][a-z0-9_]*$"
+              },
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "expected_events": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": false,
+          "items": {
+            "$ref": "#/$defs/event"
+          }
+        },
+        "negative_cases": {
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "$ref": "#/$defs/negativeCase"
+          }
+        },
+        "stable_seat_identity_before": {
+          "type": "string",
+          "pattern": "^seat_[0-9]{2}$"
+        },
+        "stable_seat_identity_after": {
+          "type": "string",
+          "pattern": "^seat_[0-9]{2}$"
+        },
+        "human_validation_required": {
+          "const": true
+        },
+        "human_evidence_claimed": {
+          "const": false
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 80
+        }
+      }
+    }
+  }
+}
