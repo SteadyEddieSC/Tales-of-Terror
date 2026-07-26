@@ -98,6 +98,8 @@ jobs:
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_package_test.gd
       - name: Tale catalog, selection, and provider boundary tests
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_catalog_test.gd
+      - name: Drowned Harbor prototype isolation tests
+        run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/drowned_harbor_prototype_isolation_test.gd
       - name: Controller-first Tale Library and selection UX tests
         run: Godot_v4.7.1-stable_linux.x86_64 --headless --path game --script res://tests/tale_library_test.gd
       - name: Player-owned interaction and waiting-state tests
