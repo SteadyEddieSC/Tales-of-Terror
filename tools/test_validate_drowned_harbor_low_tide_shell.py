@@ -91,6 +91,29 @@ def replace_text(root: Path, relative: Path, old: str, new: str) -> None:
     path.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
+def remove_controller_mapping(root: Path, action: str) -> None:
+    path = root / PROJECT_PATH
+    lines = path.read_text(encoding="utf-8").splitlines()
+    changed = False
+    for index, line in enumerate(lines):
+        if not line.startswith(f"{action}="):
+            continue
+        line = line.replace(
+            ', Object(InputEventJoypadButton,"device":-1,"button_index":0)',
+            "",
+        )
+        line = line.replace(
+            ', Object(InputEventJoypadMotion,"device":-1,"axis":0,"axis_value":1.0)',
+            "",
+        )
+        lines[index] = line
+        changed = True
+        break
+    if not changed:
+        raise AssertionError(f"input action not found: {action}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def expect_failure(name: str, mutation: Mutation) -> None:
     fixture = make_fixture()
     try:
@@ -185,13 +208,7 @@ def main() -> int:
         ),
         (
             "controller mapping removed",
-            lambda root: replace_text(
-                root,
-                PROJECT_PATH,
-                'ui_confirm={"deadzone": 0.5, "events": [',
-                'ui_confirm={"deadzone": 0.5, "events": ['
-                'Object(InputEventKey,"physical_keycode":32)]} # ',
-            ),
+            lambda root: remove_controller_mapping(root, "ui_confirm"),
         ),
         (
             "manifest production registration",
