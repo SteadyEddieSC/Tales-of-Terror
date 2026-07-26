@@ -215,7 +215,7 @@ def validate_godot_components(root: Path = ROOT) -> None:
         "placeholder_geometry_not_final",
         "persistent_text_when_voice_off",
         "prototype_confirmation_requested",
-        "authoritative_commit",
+        '"authoritative_commit": false',
         "No state, seat, or RNG change occurred.",
     ):
         require(phrase in shell, f"shell missing required contract phrase: {phrase}")
