@@ -4,7 +4,9 @@ const MANIFEST_PATH: String = "res://tests/drowned_harbor_prototype_manifest_v1.
 const PRODUCTION_CATALOG_PATH: String = "res://data/tales/tale_catalog_v1.json"
 const PRODUCTION_PROVIDER_PATH: String = "res://src/session/tale_provider_registry.gd"
 const EXPORT_PRESETS_PATH: String = "res://export_presets.cfg"
-const DROWNED_HARBOR_PRODUCTION_PACKAGE: String = "res://data/tales/drowned_harbor/tale_package_v1.json"
+const DROWNED_HARBOR_PRODUCTION_PACKAGE: String = (
+	"res://data/tales/drowned_harbor/" + "tale_package_v1.json"
+)
 
 var _failures: int = 0
 
