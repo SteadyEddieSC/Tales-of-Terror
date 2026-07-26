@@ -10,6 +10,8 @@ on:
       - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
       - 'tools/validate_drowned_harbor_projection_fixtures.py'
       - 'tools/test_validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p015.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p015.py'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
   push:
@@ -22,6 +24,8 @@ on:
       - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
       - 'tools/validate_drowned_harbor_projection_fixtures.py'
       - 'tools/test_validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p015.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p015.py'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
 
@@ -79,10 +83,10 @@ jobs:
           PY
 
       - name: Validate deterministic projection fixtures
-        run: python tools/validate_drowned_harbor_projection_fixtures.py
+        run: python tools/validate_drowned_harbor_projection_fixtures_p015.py
 
       - name: Run projection fixture regression suite
-        run: python tools/test_validate_drowned_harbor_projection_fixtures.py
+        run: python tools/test_validate_drowned_harbor_projection_fixtures_p015.py
 
       - name: Validate prototype isolation and package linkage
         run: python tools/validate_drowned_harbor_prototype_isolation.py
