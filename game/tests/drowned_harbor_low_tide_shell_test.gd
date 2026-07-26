@@ -21,6 +21,7 @@ var _failures: int = 0
 func _initialize() -> void:
 	_test_deterministic_public_projection()
 	_test_public_outputs_reject_private_fixture_data()
+	_test_adapter_rejects_malformed_and_unauthorized_requests()
 	_test_focus_preview_cancel_and_stable_seat()
 	_test_voice_off_persistent_information()
 	_test_revision_bound_confirmation()
@@ -65,6 +66,78 @@ func _test_public_outputs_reject_private_fixture_data() -> void:
 		"public projection contains only the approved nine fields",
 	)
 	_expect(not projection.has("private"), "public projection has no private domain")
+
+
+func _test_adapter_rejects_malformed_and_unauthorized_requests() -> void:
+	var adapter: DrownedHarborLowTideFixtureAdapter = ADAPTER_SCRIPT.new()
+	var loaded: Dictionary = adapter.load_fixture()
+	_expect(loaded.get("accepted", false), "adapter loads before negative request tests")
+	if not loaded.get("accepted", false):
+		return
+	var baseline: String = adapter.source_fingerprint()
+	var default_request: Dictionary = adapter.default_request()
+	var malformed_missing: Dictionary = default_request.duplicate(true)
+	malformed_missing.erase("intent")
+	var malformed_extra: Dictionary = default_request.duplicate(true)
+	malformed_extra["unexpected"] = true
+	var unknown_fixture: Dictionary = default_request.duplicate(true)
+	unknown_fixture["fixture_id"] = "DH-FIX-999"
+	var stale_revision: Dictionary = default_request.duplicate(true)
+	stale_revision["source_revision"] = 10
+	var unauthorized_actor: Dictionary = default_request.duplicate(true)
+	unauthorized_actor["actor_kind"] = "spectator"
+	var wrong_seat: Dictionary = default_request.duplicate(true)
+	wrong_seat["stable_seat_id"] = "seat_02"
+	var unauthorized_intent: Dictionary = default_request.duplicate(true)
+	unauthorized_intent["intent"] = "commit_final_movement"
+	var cases: Array[Dictionary] = [
+		{
+			"code": "malformed_request",
+			"name": "missing-field request",
+			"request": malformed_missing,
+		},
+		{
+			"code": "malformed_request",
+			"name": "unknown-field request",
+			"request": malformed_extra,
+		},
+		{
+			"code": "unknown_fixture",
+			"name": "unknown fixture request",
+			"request": unknown_fixture,
+		},
+		{
+			"code": "stale_source_revision",
+			"name": "stale revision request",
+			"request": stale_revision,
+		},
+		{
+			"code": "unauthorized_actor",
+			"name": "unauthorized actor request",
+			"request": unauthorized_actor,
+		},
+		{
+			"code": "wrong_stable_seat",
+			"name": "wrong-seat request",
+			"request": wrong_seat,
+		},
+		{
+			"code": "unauthorized_intent",
+			"name": "unauthorized intent request",
+			"request": unauthorized_intent,
+		},
+	]
+	for case: Dictionary in cases:
+		var rejected: Dictionary = adapter.project(case.request)
+		_expect(not rejected.get("accepted", true), "%s fails closed" % case.name)
+		_expect(
+			str(rejected.get("reason", "")).begins_with("%s:" % case.code),
+			"%s reports the expected code" % case.name,
+		)
+		_expect(
+			adapter.source_fingerprint() == baseline,
+			"%s does not mutate fixture state" % case.name,
+		)
 
 
 func _test_focus_preview_cancel_and_stable_seat() -> void:
@@ -150,6 +223,22 @@ func _test_revision_bound_confirmation() -> void:
 	_expect(stale_shell.mode_name() == "recovery", "stale request enters recovery")
 	_expect(stale_shell.state_signature() == stale_before, "stale request mutates nothing")
 	stale_shell.free()
+
+	var authority_shell: DrownedHarborLowTideSharedScreenShell = SHELL_SCRIPT.new()
+	authority_shell.initialize_from_fixture()
+	var authority_before: Dictionary = authority_shell.state_signature()
+	authority_shell.dispatch_semantic_action("ui_confirm")
+	var wrong_authority: Dictionary = authority_shell.confirm_pending(11, "seat_02")
+	_expect(not wrong_authority.get("accepted", true), "wrong authority fails closed")
+	_expect(
+		wrong_authority.get("code") == "wrong_confirmation_authority",
+		"wrong authority code is explicit",
+	)
+	_expect(
+		authority_shell.state_signature() == authority_before,
+		"wrong authority mutates nothing",
+	)
+	authority_shell.free()
 
 
 func _test_transcript_replay_and_recovery_are_public_safe() -> void:
