@@ -1,0 +1,46 @@
+name: P0.13 one-time Godot UID generation
+
+on:
+  push:
+    branches: [agent/p0.13-vision-and-prototype-isolation]
+    paths:
+      - '.github/workflows/p0.13-one-time-godot-uid.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: agent/p0.13-vision-and-prototype-isolation
+      - name: Download checksum-pinned Godot 4.7.1 stable
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
+          curl -fsSL -o godot.zip "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | sha512sum --check -
+          unzip -q godot.zip -d .godot-bin
+          chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
+      - name: Generate the first-party script UID
+        run: .godot-bin/Godot_v4.7.1-stable_linux.x86_64 --headless --editor --path game --quit
+      - name: Commit generated UID only
+        shell: bash
+        run: |
+          set -euo pipefail
+          uid_path=game/tests/drowned_harbor_prototype_isolation_test.gd.uid
+          test -f "$uid_path"
+          unexpected=$(git status --porcelain=v1 | grep -v "?? $uid_path" || true)
+          if [ -n "$unexpected" ]; then
+            echo 'Godot generated unexpected repository changes:'
+            printf '%s\n' "$unexpected"
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$uid_path"
+          git commit -m 'test: track Drowned Harbor isolation script UID'
+          git push origin HEAD:agent/p0.13-vision-and-prototype-isolation
