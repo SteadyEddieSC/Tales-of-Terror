@@ -119,23 +119,13 @@ jobs:
           python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
           python -m pip check
 
-      - name: Generate canonical shell formatting evidence
+      - name: Validate P0.15 GDScript format and lint
         run: |
-          mkdir -p artifacts/p015-gdformat
-          cp game/tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd \
-            artifacts/p015-gdformat/low_tide_shared_screen_shell.gd
-          gdformat artifacts/p015-gdformat/low_tide_shared_screen_shell.gd
-
-      - name: Upload canonical shell formatting evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: p015-shell-gdformat-output
-          path: artifacts/p015-gdformat/low_tide_shared_screen_shell.gd
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Validate P0.15 GDScript lint
-        run: |
+          gdformat --check \
+            game/tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd \
+            game/tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd \
+            game/tests/drowned_harbor_low_tide_shell_test.gd \
+            game/tests/drowned_harbor_prototype_isolation_test.gd
           gdlint \
             game/tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd \
             game/tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd \
@@ -208,7 +198,7 @@ jobs:
 
       - name: Remove generated validation evidence
         if: always()
-        run: rm -rf artifacts/p015-gdformat artifacts/p015-godot .godot-bin godot.zip
+        run: rm -rf artifacts/p015-godot .godot-bin godot.zip
 
       - name: Confirm validation leaves the repository clean
         if: always()
