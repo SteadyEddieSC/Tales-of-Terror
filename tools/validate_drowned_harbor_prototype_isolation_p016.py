@@ -11,6 +11,9 @@ from typing import Any
 import validate_drowned_harbor_prototype_isolation as inherited
 
 ROOT = Path(".")
+P016_TECHNICAL_AUTHORITY = (
+    "docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md"
+)
 EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
@@ -35,6 +38,10 @@ def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
     inherited.require(
         manifest.get("future_work_issues") == [84, 85, 86],
         "future work issue set must remain #84 through #86",
+    )
+    inherited.require(
+        P016_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
+        "P0.16 Bellhouse technical authority must remain registered",
     )
     adjusted = copy.deepcopy(manifest)
     adjusted["completed_work_issues"] = [80, 81, 82]
@@ -71,7 +78,8 @@ def main() -> int:
         return 1
     print(
         "Validated inherited prototype isolation with P0.16 entry points, "
-        "components, issue progression, production invariance, and exports"
+        "components, issue progression, source authority, production invariance, "
+        "and exports"
     )
     return 0
 
