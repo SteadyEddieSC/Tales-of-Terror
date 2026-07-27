@@ -35,13 +35,22 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('tools/validate_drowned_harbor_bellhouse_recovery.py')
           text = path.read_text(encoding='utf-8')
-          bellhouse_old = '''    require(
-              len(set(private_strings(private))) >= 5,
-              "Bellhouse fixture must retain private leak sentinels",
-          )'''
+          bellhouse_pattern = re.compile(
+              r'    require\(\n'
+              r'\s+len\(set\(private_strings\(private\)\)\) >= 5,\n'
+              r'\s+"Bellhouse fixture must retain private leak sentinels",\n'
+              r'\s+\)'
+          )
+          recovery_pattern = re.compile(
+              r'    require\(\n'
+              r'\s+len\(set\(private_strings\(private\)\)\) >= 5,\n'
+              r'\s+"recovery fixture must retain private leak sentinels",\n'
+              r'\s+\)'
+          )
           bellhouse_new = '''    require(
               set(private_strings(private))
               == {
@@ -51,10 +60,6 @@ jobs:
               },
               "Bellhouse fixture private leak sentinels drifted",
           )'''
-          recovery_old = '''    require(
-              len(set(private_strings(private))) >= 5,
-              "recovery fixture must retain private leak sentinels",
-          )'''
           recovery_new = '''    require(
               set(private_strings(private))
               == {
@@ -63,12 +68,12 @@ jobs:
               },
               "recovery fixture private leak sentinels drifted",
           )'''
-          if text.count(bellhouse_old) != 1:
-              raise SystemExit('Bellhouse sentinel assertion source drifted')
-          if text.count(recovery_old) != 1:
-              raise SystemExit('recovery sentinel assertion source drifted')
-          text = text.replace(bellhouse_old, bellhouse_new, 1)
-          text = text.replace(recovery_old, recovery_new, 1)
+          text, bellhouse_count = bellhouse_pattern.subn(bellhouse_new, text, count=1)
+          text, recovery_count = recovery_pattern.subn(recovery_new, text, count=1)
+          if bellhouse_count != 1:
+              raise SystemExit(f'Bellhouse sentinel replacement count: {bellhouse_count}')
+          if recovery_count != 1:
+              raise SystemExit(f'recovery sentinel replacement count: {recovery_count}')
           path.write_text(text, encoding='utf-8')
           PY
 
