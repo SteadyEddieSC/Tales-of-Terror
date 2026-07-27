@@ -12,8 +12,12 @@ on:
       - 'tools/test_validate_drowned_harbor_projection_fixtures.py'
       - 'tools/validate_drowned_harbor_projection_fixtures_p015.py'
       - 'tools/test_validate_drowned_harbor_projection_fixtures_p015.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p016.py'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation_p016.py'
   push:
     branches: [main]
     paths:
@@ -26,8 +30,12 @@ on:
       - 'tools/test_validate_drowned_harbor_projection_fixtures.py'
       - 'tools/validate_drowned_harbor_projection_fixtures_p015.py'
       - 'tools/test_validate_drowned_harbor_projection_fixtures_p015.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p016.py'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation_p016.py'
 
 permissions:
   contents: read
@@ -83,16 +91,16 @@ jobs:
           PY
 
       - name: Validate deterministic projection fixtures
-        run: python tools/validate_drowned_harbor_projection_fixtures_p015.py
+        run: python tools/validate_drowned_harbor_projection_fixtures_p016.py
 
       - name: Run projection fixture regression suite
-        run: python tools/test_validate_drowned_harbor_projection_fixtures_p015.py
+        run: python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
 
       - name: Validate prototype isolation and package linkage
-        run: python tools/validate_drowned_harbor_prototype_isolation.py
+        run: python tools/validate_drowned_harbor_prototype_isolation_p016.py
 
       - name: Run prototype isolation regression suite
-        run: python tools/test_validate_drowned_harbor_prototype_isolation.py
+        run: python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
 
       - name: Confirm validation leaves the repository clean
         run: git diff --exit-code
