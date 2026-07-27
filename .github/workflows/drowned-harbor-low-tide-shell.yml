@@ -18,11 +18,17 @@ on:
       - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
       - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
       - 'tools/test_validate_drowned_harbor_low_tide_shell.py'
+      - 'tools/test_validate_drowned_harbor_low_tide_shell_p016.py'
       - 'tools/test_validate_drowned_harbor_projection_fixtures_p015.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p016.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation_p016.py'
       - 'tools/validate_drowned_harbor_low_tide_shell.py'
+      - 'tools/validate_drowned_harbor_low_tide_shell_p016.py'
       - 'tools/validate_drowned_harbor_projection_fixtures_p015.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
   push:
     branches: [main]
     paths:
@@ -41,11 +47,17 @@ on:
       - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
       - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
       - 'tools/test_validate_drowned_harbor_low_tide_shell.py'
+      - 'tools/test_validate_drowned_harbor_low_tide_shell_p016.py'
       - 'tools/test_validate_drowned_harbor_projection_fixtures_p015.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p016.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation_p016.py'
       - 'tools/validate_drowned_harbor_low_tide_shell.py'
+      - 'tools/validate_drowned_harbor_low_tide_shell_p016.py'
       - 'tools/validate_drowned_harbor_projection_fixtures_p015.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
 
 permissions:
   contents: read
@@ -133,22 +145,22 @@ jobs:
             game/tests/drowned_harbor_prototype_isolation_test.gd
 
       - name: Validate Low Tide shared-screen shell
-        run: python tools/validate_drowned_harbor_low_tide_shell.py
+        run: python tools/validate_drowned_harbor_low_tide_shell_p016.py
 
       - name: Run Low Tide fail-closed regression suite
-        run: python tools/test_validate_drowned_harbor_low_tide_shell.py
+        run: python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
 
       - name: Validate inherited deterministic projection fixtures
-        run: python tools/validate_drowned_harbor_projection_fixtures_p015.py
+        run: python tools/validate_drowned_harbor_projection_fixtures_p016.py
 
       - name: Run inherited projection fixture regressions
-        run: python tools/test_validate_drowned_harbor_projection_fixtures_p015.py
+        run: python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
 
       - name: Validate updated prototype isolation
-        run: python tools/validate_drowned_harbor_prototype_isolation.py
+        run: python tools/validate_drowned_harbor_prototype_isolation_p016.py
 
       - name: Run updated prototype isolation regressions
-        run: python tools/test_validate_drowned_harbor_prototype_isolation.py
+        run: python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
 
       - name: Download checksum-pinned Godot 4.7.1 stable
         shell: bash
