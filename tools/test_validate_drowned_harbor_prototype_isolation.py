@@ -13,6 +13,7 @@ from validate_drowned_harbor_prototype_isolation import (
     CATALOG_PATH,
     EXPORT_PRESETS_PATH,
     GODOT_TEST_PATH,
+    LOW_TIDE_TEST_PATH,
     MANIFEST_PATH,
     PROVIDER_PATH,
     README_PATH,
@@ -40,14 +41,17 @@ def make_fixture() -> Path:
         EXPORT_PRESETS_PATH,
         README_PATH,
         GODOT_TEST_PATH,
+        LOW_TIDE_TEST_PATH,
     ):
         copy_file(ROOT, fixture, relative)
     manifest = read_json(ROOT / MANIFEST_PATH)
     for source in manifest["source_authorities"]:
         copy_file(ROOT, fixture, Path(source))
-    for fixture_uri in manifest["fixture_packages"]:
-        relative = Path("game") / fixture_uri.removeprefix("res://")
-        copy_file(ROOT, fixture, relative)
+    for key in ("fixture_packages", "prototype_components", "allowed_entry_points"):
+        for uri in manifest[key]:
+            relative = Path("game") / uri.removeprefix("res://")
+            if not (fixture / relative).exists():
+                copy_file(ROOT, fixture, relative)
     return fixture
 
 
@@ -86,70 +90,42 @@ def main() -> int:
             "production catalog registration",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "production_catalog_registered",
-                    True,
-                ),
+                lambda data: data.__setitem__("production_catalog_registered", True),
             ),
         ),
         (
             "production provider registration",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "production_provider_registered",
-                    True,
-                ),
+                lambda data: data.__setitem__("production_provider_registered", True),
             ),
         ),
         (
             "normal Tale Library visibility",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "normal_tale_library_visible",
-                    True,
-                ),
+                lambda data: data.__setitem__("normal_tale_library_visible", True),
             ),
         ),
         (
             "playable export authorization",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "playable_export_authorized",
-                    True,
-                ),
+                lambda data: data.__setitem__("playable_export_authorized", True),
             ),
         ),
         (
             "runtime authority creation",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "runtime_authority_created",
-                    True,
-                ),
+                lambda data: data.__setitem__("runtime_authority_created", True),
             ),
         ),
         (
             "network dependency",
             lambda root: write_manifest(
                 root,
-                lambda data: data["dependencies"].__setitem__(
-                    "network",
-                    True,
-                ),
-            ),
-        ),
-        (
-            "credential dependency",
-            lambda root: write_manifest(
-                root,
-                lambda data: data["dependencies"].__setitem__(
-                    "credentials",
-                    True,
-                ),
+                lambda data: data["dependencies"].__setitem__("network", True),
             ),
         ),
         (
@@ -163,6 +139,24 @@ def main() -> int:
             ),
         ),
         (
+            "prototype component outside tests",
+            lambda root: write_manifest(
+                root,
+                lambda data: data.__setitem__(
+                    "prototype_components",
+                    ["res://src/main/main.gd"],
+                ),
+            ),
+        ),
+        (
+            "prototype component missing",
+            lambda root: (
+                root
+                / "game/tests/drowned_harbor_dev_only/"
+                "low_tide_shared_screen_shell.tscn"
+            ).unlink(),
+        ),
+        (
             "fixture package outside tests",
             lambda root: write_manifest(
                 root,
@@ -173,19 +167,11 @@ def main() -> int:
             ),
         ),
         (
-            "fixture package missing",
-            lambda root: (
-                root
-                / "game/tests/drowned_harbor_dev_only/"
-                "state_projection_fixtures_v1.json"
-            ).unlink(),
-        ),
-        (
             "unknown manifest field",
             lambda root: write_manifest(
                 root,
                 lambda data: data.__setitem__(
-                    "runtime_scene",
+                    "production_runtime_scene",
                     "res://src/main/main.tscn",
                 ),
             ),
@@ -194,20 +180,14 @@ def main() -> int:
             "shipping status",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "status",
-                    "prototype_playable",
-                ),
+                lambda data: data.__setitem__("status", "prototype_playable"),
             ),
         ),
         (
             "completed issue drift",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "completed_work_issues",
-                    [80],
-                ),
+                lambda data: data.__setitem__("completed_work_issues", [80, 81]),
             ),
         ),
         (
@@ -216,7 +196,7 @@ def main() -> int:
                 root,
                 lambda data: data.__setitem__(
                     "future_work_issues",
-                    [81, 82, 83, 84, 85, 86],
+                    [82, 83, 84, 85, 86],
                 ),
             ),
         ),
@@ -224,20 +204,14 @@ def main() -> int:
             "human evidence claim",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "human_evidence_claimed",
-                    True,
-                ),
+                lambda data: data.__setitem__("human_evidence_claimed", True),
             ),
         ),
         (
             "human validation removed",
             lambda root: write_manifest(
                 root,
-                lambda data: data.__setitem__(
-                    "human_validation_required",
-                    False,
-                ),
+                lambda data: data.__setitem__("human_validation_required", False),
             ),
         ),
         (
@@ -275,7 +249,7 @@ def main() -> int:
             lambda root: (root / EXPORT_PRESETS_PATH).write_text(
                 (root / EXPORT_PRESETS_PATH)
                 .read_text(encoding="utf-8")
-                .replace("tests/*,", "", 1),
+                .replace("tests/*", "tests/legacy_only/*", 1),
                 encoding="utf-8",
             ),
         ),
