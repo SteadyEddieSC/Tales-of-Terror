@@ -6,18 +6,21 @@ on:
       - '.github/workflows/drowned-harbor-bellhouse-recovery.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  diagnose-validator:
-    name: Temporary read-only P0.16 validator diagnosis
-    if: github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery'
+  correct-contract:
+    name: Temporary bounded P0.16 contract correction
+    if: >-
+      github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Verify exact baseline and branch
         run: |
@@ -28,17 +31,14 @@ jobs:
         with:
           python-version: 3.11.9
 
-      - name: Build corrected validator copy
+      - name: Correct exact validator and documentation contract
         run: |
-          mkdir -p artifacts/p016-validator-diagnosis
-          cp tools/validate_drowned_harbor_bellhouse_recovery.py \
-            artifacts/p016-validator-diagnosis/validator.original.py
           python - <<'PY'
           from pathlib import Path
           import re
 
-          path = Path('tools/validate_drowned_harbor_bellhouse_recovery.py')
-          text = path.read_text(encoding='utf-8')
+          validator_path = Path('tools/validate_drowned_harbor_bellhouse_recovery.py')
+          text = validator_path.read_text(encoding='utf-8')
           bellhouse_pattern = re.compile(
               r'    require\(\n'
               r'\s+len\(set\(private_strings\(private\)\)\) >= 5,\n'
@@ -76,41 +76,77 @@ jobs:
           text, recovery_count = recovery_pattern.subn(recovery_new, text, count=1)
           if bellhouse_count != 1 or recovery_count != 1:
               raise SystemExit(
-                  f'replacement counts: Bellhouse={bellhouse_count}, recovery={recovery_count}'
+                  f'sentinel replacement counts: '
+                  f'Bellhouse={bellhouse_count}, recovery={recovery_count}'
               )
-          path.write_text(text, encoding='utf-8')
-          Path('artifacts/p016-validator-diagnosis/validator.corrected.py').write_text(
-              text,
+          validator_path.write_text(text, encoding='utf-8')
+
+          technical_path = Path(
+              'docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md'
+          )
+          technical = technical_path.read_text(encoding='utf-8')
+          technical_old = (
+              'This is not a production reducer, production save, final Ledger '
+              'mechanic, or balance commitment.'
+          )
+          technical_new = (
+              'No production authority is created. This is not a production '
+              'reducer, production save, final Ledger mechanic, or balance commitment.'
+          )
+          if technical.count(technical_old) != 1:
+              raise SystemExit('technical production-authority source drifted')
+          technical_path.write_text(
+              technical.replace(technical_old, technical_new, 1),
+              encoding='utf-8',
+          )
+
+          summary_path = Path('docs/preproduction/P0.16_Release_Summary.md')
+          summary = summary_path.read_text(encoding='utf-8')
+          summary_old = 'The event is not production gameplay authority.'
+          summary_new = (
+              'The event is not production gameplay authority. '
+              'No production authority is created.'
+          )
+          if summary.count(summary_old) != 1:
+              raise SystemExit('summary production-authority source drifted')
+          summary_path.write_text(
+              summary.replace(summary_old, summary_new, 1),
               encoding='utf-8',
           )
           PY
 
-      - name: Capture corrected validator and regression outputs
+      - name: Validate exact corrected contract
         run: |
-          set +e
-          python -m py_compile tools/validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-validator-diagnosis/py-compile.txt 2>&1
-          echo "$?" > artifacts/p016-validator-diagnosis/py-compile.status
-          python tools/validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-validator-diagnosis/validator.txt 2>&1
-          echo "$?" > artifacts/p016-validator-diagnosis/validator.status
-          python tools/test_validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-validator-diagnosis/regressions.txt 2>&1
-          echo "$?" > artifacts/p016-validator-diagnosis/regressions.status
-          set -e
+          python -m py_compile tools/validate_drowned_harbor_bellhouse_recovery.py
+          python tools/validate_drowned_harbor_bellhouse_recovery.py
+          python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          python - <<'PY'
+          import subprocess
+          changed = {
+              line for line in subprocess.check_output(
+                  ['git', 'diff', '--name-only'], text=True
+              ).splitlines() if line
+          }
+          expected = {
+              'docs/preproduction/P0.16_Release_Summary.md',
+              'docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md',
+              'tools/validate_drowned_harbor_bellhouse_recovery.py',
+          }
+          if changed != expected:
+              raise SystemExit(
+                  f'contract correction path mismatch: '
+                  f'missing={sorted(expected - changed)}; '
+                  f'unexpected={sorted(changed - expected)}'
+              )
+          PY
 
-      - name: Upload P0.16 validator diagnosis
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: p016-validator-diagnosis
-          path: artifacts/p016-validator-diagnosis
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Remove generated evidence and confirm cleanliness
-        if: always()
+      - name: Commit exact corrected contract
         run: |
-          git checkout -- tools/validate_drowned_harbor_bellhouse_recovery.py
-          rm -rf artifacts/p016-validator-diagnosis tools/__pycache__
-          git diff --exit-code
-          test -z "$(git status --porcelain)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            docs/preproduction/P0.16_Release_Summary.md \
+            docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md \
+            tools/validate_drowned_harbor_bellhouse_recovery.py
+          git commit -m "Correct P0.16 validator and authority wording"
+          git push origin "HEAD:$GITHUB_HEAD_REF"
