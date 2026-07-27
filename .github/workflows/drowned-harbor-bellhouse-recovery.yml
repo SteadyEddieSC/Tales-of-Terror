@@ -1,0 +1,221 @@
+name: Drowned Harbor Bellhouse decision and recovery
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/drowned-harbor-bellhouse-recovery.yml'
+      - '.github/workflows/drowned-harbor-low-tide-shell.yml'
+      - '.github/workflows/drowned-harbor-projection-fixtures.yml'
+      - '.github/workflows/drowned-harbor-prototype-isolation.yml'
+      - 'docs/preproduction/P0.16_Release_Summary.md'
+      - 'docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md'
+      - 'game/tests/drowned_harbor_bellhouse_recovery_test.gd'
+      - 'game/tests/drowned_harbor_bellhouse_recovery_test.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/README.md'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.tscn'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd.uid'
+      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'tools/test_validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/test_validate_drowned_harbor_low_tide_shell_p016.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation_p016.py'
+      - 'tools/validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/validate_drowned_harbor_low_tide_shell_p016.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-bellhouse-recovery.yml'
+      - '.github/workflows/drowned-harbor-low-tide-shell.yml'
+      - '.github/workflows/drowned-harbor-projection-fixtures.yml'
+      - '.github/workflows/drowned-harbor-prototype-isolation.yml'
+      - 'docs/preproduction/P0.16_Release_Summary.md'
+      - 'docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md'
+      - 'game/tests/drowned_harbor_bellhouse_recovery_test.gd'
+      - 'game/tests/drowned_harbor_bellhouse_recovery_test.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/README.md'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.tscn'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd'
+      - 'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd.uid'
+      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'tools/test_validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/test_validate_drowned_harbor_low_tide_shell_p016.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation_p016.py'
+      - 'tools/validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/validate_drowned_harbor_low_tide_shell_p016.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Bellhouse decision, exactly-once result, and recovery contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Enforce exact P0.16 release boundary
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          python - <<'PY'
+          import os
+          import subprocess
+
+          expected = {
+              '.github/workflows/drowned-harbor-bellhouse-recovery.yml',
+              '.github/workflows/drowned-harbor-low-tide-shell.yml',
+              '.github/workflows/drowned-harbor-projection-fixtures.yml',
+              '.github/workflows/drowned-harbor-prototype-isolation.yml',
+              'docs/preproduction/P0.16_Release_Summary.md',
+              'docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md',
+              'game/tests/drowned_harbor_bellhouse_recovery_test.gd',
+              'game/tests/drowned_harbor_bellhouse_recovery_test.gd.uid',
+              'game/tests/drowned_harbor_dev_only/README.md',
+              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd',
+              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd.uid',
+              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.tscn',
+              'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd',
+              'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd.uid',
+              'game/tests/drowned_harbor_prototype_isolation_test.gd',
+              'game/tests/drowned_harbor_prototype_manifest_v1.json',
+              'tools/test_validate_drowned_harbor_bellhouse_recovery.py',
+              'tools/test_validate_drowned_harbor_low_tide_shell_p016.py',
+              'tools/test_validate_drowned_harbor_projection_fixtures_p016.py',
+              'tools/test_validate_drowned_harbor_prototype_isolation_p016.py',
+              'tools/validate_drowned_harbor_bellhouse_recovery.py',
+              'tools/validate_drowned_harbor_low_tide_shell_p016.py',
+              'tools/validate_drowned_harbor_projection_fixtures_p016.py',
+              'tools/validate_drowned_harbor_prototype_isolation_p016.py',
+          }
+          base_ref = os.environ['BASE_REF']
+          output = subprocess.check_output(
+              ['git', 'diff', '--name-only', f'origin/{base_ref}...HEAD'],
+              text=True,
+          )
+          actual = {line for line in output.splitlines() if line}
+          if actual != expected:
+              missing = sorted(expected - actual)
+              unexpected = sorted(actual - expected)
+              raise SystemExit(
+                  f'P0.16 path boundary mismatch; missing={missing}; '
+                  f'unexpected={unexpected}'
+              )
+          print('Validated exact 24-path P0.16 release boundary')
+          PY
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Validate P0.16 Python contracts
+        run: |
+          python tools/validate_drowned_harbor_bellhouse_recovery.py
+          python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          python tools/validate_drowned_harbor_low_tide_shell_p016.py
+          python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
+          python tools/validate_drowned_harbor_projection_fixtures_p016.py
+          python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
+          python tools/validate_drowned_harbor_prototype_isolation_p016.py
+          python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
+
+      - name: Install pinned GDScript Toolkit
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+
+      - name: Validate P0.16 GDScript format and lint
+        run: |
+          gdformat --check \
+            game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd \
+            game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
+            game/tests/drowned_harbor_bellhouse_recovery_test.gd \
+            game/tests/drowned_harbor_prototype_isolation_test.gd
+          gdlint \
+            game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd \
+            game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
+            game/tests/drowned_harbor_bellhouse_recovery_test.gd \
+            game/tests/drowned_harbor_prototype_isolation_test.gd
+
+      - name: Download checksum-pinned Godot 4.7.1 stable
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
+          curl -fsSL -o godot.zip "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | sha512sum --check -
+          unzip -q godot.zip -d .godot-bin
+          chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
+          mkdir -p artifacts/p016-godot
+
+      - name: Validate typed Godot project import
+        shell: bash
+        run: |
+          set -o pipefail
+          .godot-bin/Godot_v4.7.1-stable_linux.x86_64 \
+            --headless --editor --path game --quit \
+            2>&1 | tee artifacts/p016-godot/import.txt
+
+      - name: Run Bellhouse and recovery Godot tests
+        shell: bash
+        run: |
+          set -o pipefail
+          .godot-bin/Godot_v4.7.1-stable_linux.x86_64 \
+            --headless --path game \
+            --script res://tests/drowned_harbor_bellhouse_recovery_test.gd \
+            2>&1 | tee artifacts/p016-godot/bellhouse-recovery-test.txt
+
+      - name: Run inherited Low Tide Godot tests
+        shell: bash
+        run: |
+          set -o pipefail
+          .godot-bin/Godot_v4.7.1-stable_linux.x86_64 \
+            --headless --path game \
+            --script res://tests/drowned_harbor_low_tide_shell_test.gd \
+            2>&1 | tee artifacts/p016-godot/low-tide-shell-test.txt
+
+      - name: Run prototype-isolation Godot tests
+        shell: bash
+        run: |
+          set -o pipefail
+          .godot-bin/Godot_v4.7.1-stable_linux.x86_64 \
+            --headless --path game \
+            --script res://tests/drowned_harbor_prototype_isolation_test.gd \
+            2>&1 | tee artifacts/p016-godot/prototype-isolation-test.txt
+
+      - name: Upload P0.16 Godot evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p016-godot-evidence
+          path: artifacts/p016-godot
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove generated validation evidence
+        if: always()
+        run: rm -rf artifacts/p016-godot .godot-bin godot.zip
+
+      - name: Confirm validation leaves the repository clean
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
