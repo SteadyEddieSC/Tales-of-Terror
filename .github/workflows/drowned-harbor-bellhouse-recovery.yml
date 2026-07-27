@@ -4,27 +4,20 @@ on:
   pull_request:
     paths:
       - '.github/workflows/drowned-harbor-bellhouse-recovery.yml'
-      - 'game/tests/drowned_harbor_bellhouse_recovery_test.gd'
-      - 'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd'
-      - 'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd'
-      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  canonicalize:
-    name: Temporary bounded P0.16 canonicalization
-    if: >-
-      github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+  diagnose:
+    name: Temporary read-only P0.16 lint evidence
+    if: github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-          persist-credentials: true
 
       - name: Verify exact protected-main baseline and branch
         run: |
@@ -40,14 +33,18 @@ jobs:
           python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
           python -m pip check
 
-      - name: Apply bounded semantic and lint-safe refactors
+      - name: Build formatted semantic copies
         run: |
+          mkdir -p artifacts/p016-lint
+          cp game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd artifacts/p016-lint/
+          cp game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd artifacts/p016-lint/
+          cp game/tests/drowned_harbor_bellhouse_recovery_test.gd artifacts/p016-lint/
+          cp game/tests/drowned_harbor_prototype_isolation_test.gd artifacts/p016-lint/
           python - <<'PY'
           from pathlib import Path
 
-          shell_path = Path(
-              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd'
-          )
+          root = Path('artifacts/p016-lint')
+          shell_path = root / 'bellhouse_decision_shell.gd'
           shell = shell_path.read_text(encoding='utf-8')
           if 'current_options: Array = []' not in shell:
               shell = shell.replace(
@@ -113,7 +110,7 @@ jobs:
           )
           shell_path.write_text(shell, encoding='utf-8')
 
-          test_path = Path('game/tests/drowned_harbor_bellhouse_recovery_test.gd')
+          test_path = root / 'drowned_harbor_bellhouse_recovery_test.gd'
           test = test_path.read_text(encoding='utf-8')
           if '"unavailable_confirmation_option"' not in test:
               test = test.replace(
@@ -154,52 +151,33 @@ jobs:
               )
           test_path.write_text(test, encoding='utf-8')
           PY
+          gdformat artifacts/p016-lint/*.gd
 
-      - name: Canonicalize and lint exact governed files
+      - name: Capture lint and line-length evidence
         run: |
-          files=(
-            game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd
-            game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd
-            game/tests/drowned_harbor_bellhouse_recovery_test.gd
-            game/tests/drowned_harbor_prototype_isolation_test.gd
-          )
-          gdformat "${files[@]}"
-          gdlint "${files[@]}"
-          python - <<'PY'
+          set +e
+          gdlint artifacts/p016-lint/*.gd > artifacts/p016-lint/gdlint.txt 2>&1
+          echo "$?" > artifacts/p016-lint/gdlint-status.txt
+          set -e
+          python - <<'PY' > artifacts/p016-lint/line-lengths.txt
           from pathlib import Path
-          allowed = {
-              'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd',
-              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd',
-              'game/tests/drowned_harbor_bellhouse_recovery_test.gd',
-              'game/tests/drowned_harbor_prototype_isolation_test.gd',
-          }
-          import subprocess
-          changed = {
-              line for line in subprocess.check_output(
-                  ['git', 'diff', '--name-only'], text=True
-              ).splitlines() if line
-          }
-          if not changed.issubset(allowed):
-              raise SystemExit(f'unexpected canonicalization paths: {sorted(changed - allowed)}')
-          for path in changed:
-              for number, line in enumerate(Path(path).read_text().splitlines(), 1):
+          for path in sorted(Path('artifacts/p016-lint').glob('*.gd')):
+              for number, line in enumerate(path.read_text().splitlines(), 1):
                   if len(line) > 100:
-                      raise SystemExit(f'{path}:{number} exceeds 100 characters')
-          print(f'Canonicalized governed paths: {sorted(changed)}')
+                      print(f'{path.name}:{number}:{len(line)}:{line}')
           PY
 
-      - name: Commit bounded canonical output
+      - name: Upload P0.16 lint evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p016-lint-evidence
+          path: artifacts/p016-lint
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove generated evidence and confirm cleanliness
+        if: always()
         run: |
-          if test -z "$(git status --porcelain)"; then
-            echo "No canonicalization changes remain"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd \
-            game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
-            game/tests/drowned_harbor_bellhouse_recovery_test.gd \
-            game/tests/drowned_harbor_prototype_isolation_test.gd
-          git commit -m "Canonicalize P0.16 GDScript and separate option failures"
-          git push origin "HEAD:$GITHUB_HEAD_REF"
+          rm -rf artifacts/p016-lint
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
