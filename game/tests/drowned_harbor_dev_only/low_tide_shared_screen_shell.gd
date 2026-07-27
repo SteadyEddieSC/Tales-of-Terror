@@ -16,10 +16,10 @@ const SHELL_THEME: Theme = preload("res://assets/theme/terror_lab_theme.tres")
 const ADAPTER_SCRIPT: Script = preload(
 	"res://tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd"
 )
-const CONFIRMATION_STATUS_PREFIX: String = "Confirmation seam emitted."
-const CONFIRMATION_STATUS_BOUNDARY: String = (
-	"Final movement and gameplay authority are not implemented."
-)
+const CONFIRMATION_STATUS_PARTS: PackedStringArray = [
+	"Confirmation seam emitted.",
+	"Final movement and gameplay authority are not implemented.",
+]
 const LANDMARKS: PackedStringArray = [
 	"Damaged Causeway",
 	"Bellhouse",
@@ -168,7 +168,7 @@ func confirm_pending(current_revision: int, stable_seat_id: String) -> Dictionar
 	}
 	_pending_confirmation.clear()
 	_mode = SurfaceMode.PREVIEW
-	_status_message = CONFIRMATION_STATUS_PREFIX + " " + CONFIRMATION_STATUS_BOUNDARY
+	_status_message = " ".join(CONFIRMATION_STATUS_PARTS)
 	return _emit_public_intent(payload)
 
 
