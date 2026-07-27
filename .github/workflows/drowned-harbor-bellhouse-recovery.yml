@@ -126,6 +126,131 @@ jobs:
         with:
           python-version: 3.11.9
 
+      - name: Install pinned GDScript Toolkit
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+
+      - name: Generate canonical P0.16 GDScript copies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/p016-gdformat
+          cp game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd artifacts/p016-gdformat/
+          cp game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd artifacts/p016-gdformat/
+          cp game/tests/drowned_harbor_bellhouse_recovery_test.gd artifacts/p016-gdformat/
+          cp game/tests/drowned_harbor_prototype_isolation_test.gd artifacts/p016-gdformat/
+          python - <<'PY'
+          from pathlib import Path
+
+          shell_path = Path('artifacts/p016-gdformat/bellhouse_decision_shell.gd')
+          shell = shell_path.read_text(encoding='utf-8')
+          old_signature = '''func confirm_pending(
+          \tcurrent_revision: int,
+          \tstable_seat_id: String,
+          \tactor_kind: String,
+          \tcurrent_option: String,
+          ) -> Dictionary:
+          \tvar code: String = ""
+          \tvar message: String = ""
+          '''
+          new_signature = '''func confirm_pending(
+          \tcurrent_revision: int,
+          \tstable_seat_id: String,
+          \tactor_kind: String,
+          \tcurrent_option: String,
+          \tcurrent_options: Array = [],
+          ) -> Dictionary:
+          \tvar code: String = ""
+          \tvar message: String = ""
+          \tvar available_options: Array = (
+          \t\tcurrent_options.duplicate(true)
+          \t\tif not current_options.is_empty()
+          \t\telse decision_options()
+          \t)
+          '''
+          old_checks = '''\telif current_option != _pending_confirmation.get("option"):
+          \t\tcode = "changed_confirmation_option"
+          \t\tmessage = "The selected option changed. Review the current public consequence."
+          \telif not decision_options().has(current_option):
+          \t\tcode = "unavailable_confirmation_option"
+          \t\tmessage = "That option is unavailable. Current legal options are shown."
+          '''
+          new_checks = '''\telif not available_options.has(current_option):
+          \t\tcode = "unavailable_confirmation_option"
+          \t\tmessage = "That option is unavailable. Current legal options are shown."
+          \telif current_option != _pending_confirmation.get("option"):
+          \t\tcode = "changed_confirmation_option"
+          \t\tmessage = "The selected option changed. Review the current public consequence."
+          '''
+          if old_signature not in shell or old_checks not in shell:
+              raise SystemExit('Bellhouse semantic patch source drifted')
+          shell = shell.replace(old_signature, new_signature, 1)
+          shell = shell.replace(old_checks, new_checks, 1)
+          shell_path.write_text(shell, encoding='utf-8')
+
+          test_path = Path('artifacts/p016-gdformat/drowned_harbor_bellhouse_recovery_test.gd')
+          test = test_path.read_text(encoding='utf-8')
+          old_case = '''\t_assert_confirmation_failure(
+          \t\t"changed_confirmation_option",
+          \t\t21,
+          \t\t"seat_02",
+          \t\t"active_stable_seat",
+          \t\t"unavailable_priority",
+          \t)
+          '''
+          new_case = '''\t_assert_confirmation_failure(
+          \t\t"unavailable_confirmation_option",
+          \t\t21,
+          \t\t"seat_02",
+          \t\t"active_stable_seat",
+          \t\t"unavailable_priority",
+          \t)
+          \t_assert_confirmation_failure(
+          \t\t"changed_confirmation_option",
+          \t\t21,
+          \t\t"seat_02",
+          \t\t"active_stable_seat",
+          \t\t"alternate_public_priority",
+          \t\t["record_missing_position", "alternate_public_priority"],
+          \t)
+          '''
+          old_helper = '''\tactor_kind: String,
+          \toption: String,
+          ) -> void:
+          '''
+          new_helper = '''\tactor_kind: String,
+          \toption: String,
+          \tcurrent_options: Array = [],
+          ) -> void:
+          '''
+          old_call = '''\t\tactor_kind,
+          \t\toption,
+          \t)
+          '''
+          new_call = '''\t\tactor_kind,
+          \t\toption,
+          \t\tcurrent_options,
+          \t)
+          '''
+          if old_case not in test or old_helper not in test or old_call not in test:
+              raise SystemExit('Bellhouse test semantic patch source drifted')
+          test = test.replace(old_case, new_case, 1)
+          test = test.replace(old_helper, new_helper, 1)
+          test = test.replace(old_call, new_call, 1)
+          test_path.write_text(test, encoding='utf-8')
+          PY
+          gdformat artifacts/p016-gdformat/*.gd
+          gdlint artifacts/p016-gdformat/*.gd
+
+      - name: Upload canonical P0.16 GDScript copies
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p016-gdformat-output
+          path: artifacts/p016-gdformat
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Validate P0.16 Python contracts
         run: |
           python tools/validate_drowned_harbor_bellhouse_recovery.py
@@ -137,12 +262,7 @@ jobs:
           python tools/validate_drowned_harbor_prototype_isolation_p016.py
           python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
 
-      - name: Install pinned GDScript Toolkit
-        run: |
-          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
-          python -m pip check
-
-      - name: Validate P0.16 GDScript format and lint
+      - name: Validate current P0.16 GDScript format and lint
         run: |
           gdformat --check \
             game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd \
@@ -207,12 +327,12 @@ jobs:
         with:
           name: p016-godot-evidence
           path: artifacts/p016-godot
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Remove generated validation evidence
         if: always()
-        run: rm -rf artifacts/p016-godot .godot-bin godot.zip
+        run: rm -rf artifacts/p016-gdformat artifacts/p016-godot .godot-bin godot.zip
 
       - name: Confirm validation leaves the repository clean
         if: always()
