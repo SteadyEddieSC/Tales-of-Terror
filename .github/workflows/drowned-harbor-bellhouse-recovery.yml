@@ -6,18 +6,21 @@ on:
       - '.github/workflows/drowned-harbor-bellhouse-recovery.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  diagnose-hardened-contract:
-    name: Temporary read-only P0.16 hardened-contract diagnosis
-    if: github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery'
+  apply-final-contract:
+    name: Temporary bounded final P0.16 contract correction
+    if: >-
+      github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Verify exact baseline and branch
         run: |
@@ -28,9 +31,8 @@ jobs:
         with:
           python-version: 3.11.9
 
-      - name: Build hardened corrected contract
+      - name: Apply final corrected and hardened contract
         run: |
-          mkdir -p artifacts/p016-hardened-diagnosis
           python - <<'PY'
           from pathlib import Path
           import re
@@ -38,7 +40,7 @@ jobs:
           validator_path = Path('tools/validate_drowned_harbor_bellhouse_recovery.py')
           text = validator_path.read_text(encoding='utf-8')
 
-          replacements = [
+          sentinel_replacements = [
               (
                   re.compile(
                       r'    require\(\n'
@@ -79,54 +81,58 @@ jobs:
                   'recovery sentinels',
               ),
           ]
-          for pattern, replacement, label in replacements:
+          for pattern, replacement, label in sentinel_replacements:
               text, count = pattern.subn(replacement, text, count=1)
               if count != 1:
                   raise SystemExit(f'{label} replacement count: {count}')
 
-          shell_anchor = '''    require(
-              'path="res://tests/drowned_harbor_dev_only/'
-              'bellhouse_decision_shell.gd"' in scene,
-              "scene does not use the bounded Bellhouse shell script",
-          )'''
-          shell_assertions = '''    require(
-              shell.count("_commit_count = 1") == 1,
-              "shell must contain exactly one exactly-once commit assignment",
+          shell_anchor = (
+              "    require(\n"
+              "        'path=\"res://tests/drowned_harbor_dev_only/'\n"
+              "        'bellhouse_decision_shell.gd\"' in scene,\n"
+              "        \"scene does not use the bounded Bellhouse shell script\",\n"
+              "    )"
           )
-          require(
-              shell.count('"production_authority": false') == 1,
-              "shell production-authority denial drifted",
+          shell_assertions = (
+              "    require(\n"
+              "        shell.count(\"_commit_count = 1\") == 1,\n"
+              "        \"shell must contain exactly one exactly-once commit assignment\",\n"
+              "    )\n"
+              "    require(\n"
+              "        shell.count('\"production_authority\": false') == 1,\n"
+              "        \"shell production-authority denial drifted\",\n"
+              "    )\n"
+              "    require(\n"
+              "        shell.count('\"stable_seat_reset\": false') == 1,\n"
+              "        \"shell stable-seat preservation marker drifted\",\n"
+              "    )\n\n"
+              + shell_anchor
           )
-          require(
-              shell.count('"stable_seat_reset": false') == 1,
-              "shell stable-seat preservation marker drifted",
-          )
-
-          ''' + shell_anchor
           if text.count(shell_anchor) != 1:
-              raise SystemExit('shell assertion anchor drifted')
+              raise SystemExit(f'shell assertion anchor count: {text.count(shell_anchor)}')
           text = text.replace(shell_anchor, shell_assertions, 1)
 
-          docs_anchor = '''            require(phrase.lower() in text.lower(), f"{path} missing phrase: {phrase}")'''
-          docs_assertions = docs_anchor + '''
-              if path == TECHNICAL_PATH:
-                  require(
-                      "physical-controller evidence" in text.lower(),
-                      "technical contract missing exact physical-controller evidence phrase",
-                  )
-              if path == SUMMARY_PATH:
-                  require(
-                      text.startswith("# P0.16 —"),
-                      "release summary heading must retain the exact P0.16 identity",
-                  )'''
+          docs_anchor = (
+              '            require(phrase.lower() in text.lower(), '
+              'f"{path} missing phrase: {phrase}")'
+          )
+          docs_assertions = (
+              docs_anchor
+              + "\n        if path == TECHNICAL_PATH:\n"
+              "            require(\n"
+              "                \"physical-controller evidence\" in text.lower(),\n"
+              "                \"technical contract missing exact physical-controller evidence phrase\",\n"
+              "            )\n"
+              "        if path == SUMMARY_PATH:\n"
+              "            require(\n"
+              "                text.startswith(\"# P0.16 —\"),\n"
+              "                \"release summary heading must retain the exact P0.16 identity\",\n"
+              "            )"
+          )
           if text.count(docs_anchor) != 1:
-              raise SystemExit('documentation assertion anchor drifted')
+              raise SystemExit(f'documentation assertion anchor count: {text.count(docs_anchor)}')
           text = text.replace(docs_anchor, docs_assertions, 1)
           validator_path.write_text(text, encoding='utf-8')
-          Path('artifacts/p016-hardened-diagnosis/validator.corrected.py').write_text(
-              text,
-              encoding='utf-8',
-          )
 
           technical_path = Path(
               'docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md'
@@ -162,35 +168,38 @@ jobs:
           )
           PY
 
-      - name: Capture hardened validator and regression outputs
+      - name: Validate final corrected contract
         run: |
-          set +e
-          python -m py_compile tools/validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-hardened-diagnosis/py-compile.txt 2>&1
-          echo "$?" > artifacts/p016-hardened-diagnosis/py-compile.status
-          python tools/validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-hardened-diagnosis/validator.txt 2>&1
-          echo "$?" > artifacts/p016-hardened-diagnosis/validator.status
-          python tools/test_validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-hardened-diagnosis/regressions.txt 2>&1
-          echo "$?" > artifacts/p016-hardened-diagnosis/regressions.status
-          set -e
+          python -m py_compile tools/validate_drowned_harbor_bellhouse_recovery.py
+          python tools/validate_drowned_harbor_bellhouse_recovery.py
+          python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          python - <<'PY'
+          import subprocess
+          changed = {
+              line for line in subprocess.check_output(
+                  ['git', 'diff', '--name-only'], text=True
+              ).splitlines() if line
+          }
+          expected = {
+              'docs/preproduction/P0.16_Release_Summary.md',
+              'docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md',
+              'tools/validate_drowned_harbor_bellhouse_recovery.py',
+          }
+          if changed != expected:
+              raise SystemExit(
+                  f'final contract path mismatch: '
+                  f'missing={sorted(expected - changed)}; '
+                  f'unexpected={sorted(changed - expected)}'
+              )
+          PY
 
-      - name: Upload hardened-contract diagnosis
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: p016-hardened-contract-diagnosis
-          path: artifacts/p016-hardened-diagnosis
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Restore source and confirm cleanliness
-        if: always()
+      - name: Commit final corrected contract
         run: |
-          git checkout -- \
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
             docs/preproduction/P0.16_Release_Summary.md \
             docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md \
             tools/validate_drowned_harbor_bellhouse_recovery.py
-          rm -rf artifacts/p016-hardened-diagnosis tools/__pycache__
-          git diff --exit-code
-          test -z "$(git status --porcelain)"
+          git commit -m "Harden P0.16 validator and authority boundaries"
+          git push origin "HEAD:$GITHUB_HEAD_REF"
