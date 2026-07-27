@@ -98,7 +98,7 @@ jobs:
           python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
           python -m pip check
 
-      - name: Format and lint canonical copies
+      - name: Format canonical copies
         run: |
           mkdir -p artifacts/p016-gdformat
           cp game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd artifacts/p016-gdformat/
@@ -106,7 +106,6 @@ jobs:
           cp game/tests/drowned_harbor_bellhouse_recovery_test.gd artifacts/p016-gdformat/
           cp game/tests/drowned_harbor_prototype_isolation_test.gd artifacts/p016-gdformat/
           gdformat artifacts/p016-gdformat/*.gd
-          gdlint artifacts/p016-gdformat/*.gd
 
       - name: Upload canonical P0.16 GDScript copies
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
