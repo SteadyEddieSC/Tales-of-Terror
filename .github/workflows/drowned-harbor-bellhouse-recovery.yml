@@ -6,21 +6,18 @@ on:
       - '.github/workflows/drowned-harbor-bellhouse-recovery.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  fix-validator:
-    name: Temporary bounded P0.16 validator correction
-    if: >-
-      github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+  diagnose-validator:
+    name: Temporary read-only P0.16 validator diagnosis
+    if: github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-          persist-credentials: true
 
       - name: Verify exact baseline and branch
         run: |
@@ -31,8 +28,11 @@ jobs:
         with:
           python-version: 3.11.9
 
-      - name: Correct exact private-sentinel assertions
+      - name: Build corrected validator copy
         run: |
+          mkdir -p artifacts/p016-validator-diagnosis
+          cp tools/validate_drowned_harbor_bellhouse_recovery.py \
+            artifacts/p016-validator-diagnosis/validator.original.py
           python - <<'PY'
           from pathlib import Path
           import re
@@ -74,34 +74,43 @@ jobs:
           )
           text, bellhouse_count = bellhouse_pattern.subn(bellhouse_new, text, count=1)
           text, recovery_count = recovery_pattern.subn(recovery_new, text, count=1)
-          if bellhouse_count != 1:
-              raise SystemExit(f'Bellhouse sentinel replacement count: {bellhouse_count}')
-          if recovery_count != 1:
-              raise SystemExit(f'recovery sentinel replacement count: {recovery_count}')
+          if bellhouse_count != 1 or recovery_count != 1:
+              raise SystemExit(
+                  f'replacement counts: Bellhouse={bellhouse_count}, recovery={recovery_count}'
+              )
           path.write_text(text, encoding='utf-8')
+          Path('artifacts/p016-validator-diagnosis/validator.corrected.py').write_text(
+              text,
+              encoding='utf-8',
+          )
           PY
 
-      - name: Validate bounded correction
+      - name: Capture corrected validator and regression outputs
         run: |
-          python -m py_compile tools/validate_drowned_harbor_bellhouse_recovery.py
-          python tools/validate_drowned_harbor_bellhouse_recovery.py
-          python tools/test_validate_drowned_harbor_bellhouse_recovery.py
-          python - <<'PY'
-          import subprocess
-          changed = {
-              line for line in subprocess.check_output(
-                  ['git', 'diff', '--name-only'], text=True
-              ).splitlines() if line
-          }
-          expected = {'tools/validate_drowned_harbor_bellhouse_recovery.py'}
-          if changed != expected:
-              raise SystemExit(f'unexpected changed paths: {sorted(changed)}')
-          PY
+          set +e
+          python -m py_compile tools/validate_drowned_harbor_bellhouse_recovery.py \
+            > artifacts/p016-validator-diagnosis/py-compile.txt 2>&1
+          echo "$?" > artifacts/p016-validator-diagnosis/py-compile.status
+          python tools/validate_drowned_harbor_bellhouse_recovery.py \
+            > artifacts/p016-validator-diagnosis/validator.txt 2>&1
+          echo "$?" > artifacts/p016-validator-diagnosis/validator.status
+          python tools/test_validate_drowned_harbor_bellhouse_recovery.py \
+            > artifacts/p016-validator-diagnosis/regressions.txt 2>&1
+          echo "$?" > artifacts/p016-validator-diagnosis/regressions.status
+          set -e
 
-      - name: Commit exact validator correction
+      - name: Upload P0.16 validator diagnosis
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p016-validator-diagnosis
+          path: artifacts/p016-validator-diagnosis
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove generated evidence and confirm cleanliness
+        if: always()
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/validate_drowned_harbor_bellhouse_recovery.py
-          git commit -m "Correct P0.16 private sentinel assertions"
-          git push origin "HEAD:$GITHUB_HEAD_REF"
+          git checkout -- tools/validate_drowned_harbor_bellhouse_recovery.py
+          rm -rf artifacts/p016-validator-diagnosis tools/__pycache__
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
