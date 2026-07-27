@@ -36,28 +36,18 @@ func _test_deterministic_decision_and_recovery_projection() -> void:
 	_expect(loaded.get("accepted", false), "DH-FIX-002 and DH-FIX-006 load together")
 	if not loaded.get("accepted", false):
 		return
-	var decision_first: Dictionary = adapter.project_decision(
-		adapter.default_decision_request()
-	)
-	var decision_second: Dictionary = adapter.project_decision(
-		adapter.default_decision_request()
-	)
-	var recovery_first: Dictionary = adapter.project_recovery(
-		adapter.default_recovery_request()
-	)
-	var recovery_second: Dictionary = adapter.project_recovery(
-		adapter.default_recovery_request()
-	)
+	var decision_first: Dictionary = adapter.project_decision(adapter.default_decision_request())
+	var decision_second: Dictionary = adapter.project_decision(adapter.default_decision_request())
+	var recovery_first: Dictionary = adapter.project_recovery(adapter.default_recovery_request())
+	var recovery_second: Dictionary = adapter.project_recovery(adapter.default_recovery_request())
 	_expect(decision_first.get("accepted", false), "DH-FIX-002 projects")
 	_expect(recovery_first.get("accepted", false), "DH-FIX-006 projects")
 	_expect(
-		JSON.stringify(decision_first, "", true)
-		== JSON.stringify(decision_second, "", true),
+		JSON.stringify(decision_first, "", true) == JSON.stringify(decision_second, "", true),
 		"Bellhouse reprojection is byte-equivalent",
 	)
 	_expect(
-		JSON.stringify(recovery_first, "", true)
-		== JSON.stringify(recovery_second, "", true),
+		JSON.stringify(recovery_first, "", true) == JSON.stringify(recovery_second, "", true),
 		"recovery reprojection is byte-equivalent",
 	)
 	_expect(decision_first.get("source_revision") == 21, "Bellhouse source revision is 21")
@@ -84,13 +74,11 @@ func _test_public_outputs_exclude_private_fixture_data() -> void:
 		"recovery output excludes every private sentinel",
 	)
 	_expect(
-		decision.get("projection", {}).get("decision_options", [])
-		== ["record_missing_position"],
+		decision.get("projection", {}).get("decision_options", []) == ["record_missing_position"],
 		"only the governed synthetic Bellhouse priority is exposed",
 	)
 	_expect(
-		recovery.get("projection", {}).get("focus_destination", "")
-		== "move_to_bellhouse_roof",
+		recovery.get("projection", {}).get("focus_destination", "") == "move_to_bellhouse_roof",
 		"recovery focus targets a governed legal alternative",
 	)
 
@@ -145,13 +133,17 @@ func _test_bellhouse_presentation_and_voice_off_text() -> void:
 	var snapshot: Dictionary = shell.render_snapshot()
 	_expect(snapshot.get("stage") == "BELLHOUSE LEDGER", "Bellhouse stage is explicit")
 	_expect(
-		"VISIBLE 5" in snapshot.get("ledger_summary", "")
-		and "UNRESOLVED 1" in snapshot.get("ledger_summary", ""),
+		(
+			"VISIBLE 5" in snapshot.get("ledger_summary", "")
+			and "UNRESOLVED 1" in snapshot.get("ledger_summary", "")
+		),
 		"public Ledger count and unresolved position remain visible",
 	)
 	_expect(
-		"AUDIBLE 6" in snapshot.get("ring_summary", "")
-		and "EXTRA RING UNRESOLVED" in snapshot.get("ring_summary", ""),
+		(
+			"AUDIBLE 6" in snapshot.get("ring_summary", "")
+			and "EXTRA RING UNRESOLVED" in snapshot.get("ring_summary", "")
+		),
 		"public ring evidence remains visible",
 	)
 	_expect(
@@ -167,8 +159,7 @@ func _test_bellhouse_presentation_and_voice_off_text() -> void:
 		"objective, caption, option, and consequence persist with voice off",
 	)
 	_expect(
-		snapshot.get("board_geometry", {}).get("kind")
-		== "placeholder_geometry_not_final",
+		snapshot.get("board_geometry", {}).get("kind") == "placeholder_geometry_not_final",
 		"Bellhouse geometry remains explicitly placeholder",
 	)
 	shell.free()
@@ -202,19 +193,21 @@ func _test_confirmation_commits_once_and_reprojects_idempotently() -> void:
 	var shell: DrownedHarborBellhouseDecisionShell = _new_shell()
 	var emitted: Array[Dictionary] = []
 	shell.prototype_intent_emitted.connect(
-		func(payload: Dictionary) -> void:
-			emitted.append(payload)
+		func(payload: Dictionary) -> void: emitted.append(payload)
 	)
 	var before: Dictionary = shell.fixture_signature()
 	var requested: Dictionary = shell.request_confirmation()
 	_expect(requested.get("accepted", false), "first confirm opens a pending seam")
 	_expect(shell.mode_name() == "confirmation", "confirmation state is explicit")
 	_expect(shell.fixture_signature() == before, "confirmation request mutates nothing")
-	var committed: Dictionary = shell.confirm_pending(
-		21,
-		"seat_02",
-		"active_stable_seat",
-		"record_missing_position",
+	var committed: Dictionary = (
+		shell
+		. confirm_pending(
+			21,
+			"seat_02",
+			"active_stable_seat",
+			"record_missing_position",
+		)
 	)
 	_expect(committed.get("accepted", false), "valid current confirmation is accepted")
 	_expect(not committed.get("reprojected", true), "first confirmation is not a replay")
@@ -229,11 +222,14 @@ func _test_confirmation_commits_once_and_reprojects_idempotently() -> void:
 		"prototype commit creates no production authority",
 	)
 	_expect(shell.fixture_signature() == before, "commit seam consumes no fixture RNG")
-	var repeated: Dictionary = shell.confirm_pending(
-		21,
-		"seat_02",
-		"active_stable_seat",
-		"record_missing_position",
+	var repeated: Dictionary = (
+		shell
+		. confirm_pending(
+			21,
+			"seat_02",
+			"active_stable_seat",
+			"record_missing_position",
+		)
 	)
 	_expect(repeated.get("accepted", false), "same confirmation reprojects existing result")
 	_expect(repeated.get("reprojected", false), "repeat is marked as reprojection")
@@ -265,11 +261,19 @@ func _test_confirmation_failures_restore_public_safe_focus() -> void:
 		"record_missing_position",
 	)
 	_assert_confirmation_failure(
-		"changed_confirmation_option",
+		"unavailable_confirmation_option",
 		21,
 		"seat_02",
 		"active_stable_seat",
 		"unavailable_priority",
+	)
+	_assert_confirmation_failure(
+		"changed_confirmation_option",
+		21,
+		"seat_02",
+		"active_stable_seat",
+		"alternate_public_priority",
+		["record_missing_position", "alternate_public_priority"],
 	)
 
 
@@ -349,9 +353,7 @@ func _test_controller_and_keyboard_fallback_mappings() -> void:
 		for event: InputEvent in InputMap.action_get_events(action):
 			has_key = has_key or event is InputEventKey
 			has_controller = (
-				has_controller
-				or event is InputEventJoypadButton
-				or event is InputEventJoypadMotion
+				has_controller or event is InputEventJoypadButton or event is InputEventJoypadMotion
 			)
 		_expect(has_key, "%s retains keyboard fallback" % action)
 		_expect(has_controller, "%s retains controller mapping" % action)
@@ -380,15 +382,20 @@ func _assert_confirmation_failure(
 	seat_id: String,
 	actor_kind: String,
 	option: String,
+	current_options: Array = [],
 ) -> void:
 	var shell: DrownedHarborBellhouseDecisionShell = _new_shell()
 	var before: Dictionary = shell.fixture_signature()
 	shell.request_confirmation()
-	var rejected: Dictionary = shell.confirm_pending(
-		revision,
-		seat_id,
-		actor_kind,
-		option,
+	var rejected: Dictionary = (
+		shell
+		. confirm_pending(
+			revision,
+			seat_id,
+			actor_kind,
+			option,
+			current_options,
+		)
 	)
 	_expect(not rejected.get("accepted", true), "%s fails closed" % expected_code)
 	_expect(rejected.get("code") == expected_code, "%s code is explicit" % expected_code)

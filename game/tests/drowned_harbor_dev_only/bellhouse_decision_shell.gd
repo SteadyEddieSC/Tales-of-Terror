@@ -19,6 +19,18 @@ const ADAPTER_SCRIPT: Script = preload(
 	"res://tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd"
 )
 const CONFIRM_ACTORS: PackedStringArray = ["active_stable_seat"]
+const COMMITTED_STATUS: PackedStringArray = [
+	"Prototype decision recorded once.",
+	"No production gameplay authority was created.",
+]
+const CANCEL_STATUS: PackedStringArray = [
+	"Cancelled.",
+	"Fixture state, stable seat, RNG, and committed count are unchanged.",
+]
+const FIXTURE_RECOVERY_STATUS: PackedStringArray = [
+	"Independent DH-FIX-006 recovery projection.",
+	"Bellhouse fixture state is unchanged.",
+]
 const SUPPORTED_ACTIONS: PackedStringArray = [
 	"diagnostic_test",
 	"help_accessibility",
@@ -71,9 +83,7 @@ func initialize_from_fixtures(
 			"fixture_load_failed",
 			str(loaded.get("reason", "fixture load failed")),
 		)
-	var projected: Dictionary = _adapter.project_decision(
-		_adapter.default_decision_request()
-	)
+	var projected: Dictionary = _adapter.project_decision(_adapter.default_decision_request())
 	if not projected.get("accepted", false):
 		return _enter_decision_recovery(
 			"fixture_projection_failed",
@@ -132,9 +142,7 @@ func inspect_selected() -> Dictionary:
 			"The Bellhouse decision is unavailable. No state changed.",
 		)
 	_mode = SurfaceMode.INSPECT
-	_status_message = (
-		"Inspecting public Ledger evidence and the selected public consequence."
-	)
+	_status_message = ("Inspecting public Ledger evidence and the selected public consequence.")
 	_refresh_ui()
 	return {
 		"accepted": true,
@@ -196,9 +204,13 @@ func confirm_pending(
 	stable_seat_id: String,
 	actor_kind: String,
 	current_option: String,
+	current_options: Array = [],
 ) -> Dictionary:
 	var code: String = ""
 	var message: String = ""
+	var available_options: Array = (
+		current_options.duplicate(true) if not current_options.is_empty() else decision_options()
+	)
 	if _commit_count > 0:
 		if _commit_matches(
 			current_revision,
@@ -221,12 +233,12 @@ func confirm_pending(
 	elif not CONFIRM_ACTORS.has(actor_kind):
 		code = "unauthorized_confirmation_actor"
 		message = "That authority cannot confirm this Bellhouse option."
+	elif not available_options.has(current_option):
+		code = "unavailable_confirmation_option"
+		message = "That option is unavailable. Current legal options are shown."
 	elif current_option != _pending_confirmation.get("option"):
 		code = "changed_confirmation_option"
 		message = "The selected option changed. Review the current public consequence."
-	elif not decision_options().has(current_option):
-		code = "unavailable_confirmation_option"
-		message = "That option is unavailable. Current legal options are shown."
 	if not code.is_empty():
 		return _enter_decision_recovery(code, message)
 	_commit_count = 1
@@ -234,9 +246,7 @@ func confirm_pending(
 	_pending_confirmation.clear()
 	_decision_recovery.clear()
 	_mode = SurfaceMode.COMMITTED
-	_status_message = (
-		"Prototype decision recorded once. No production gameplay authority was created."
-	)
+	_status_message = " ".join(COMMITTED_STATUS)
 	var payload: Dictionary = {
 		"classification": "public",
 		"event": _committed_event.duplicate(true),
@@ -261,9 +271,7 @@ func cancel() -> Dictionary:
 	_decision_recovery.clear()
 	_fixture_recovery_result.clear()
 	_mode = SurfaceMode.COMMITTED if _commit_count > 0 else SurfaceMode.DECISION
-	_status_message = (
-		"Cancelled. Fixture state, stable seat, RNG, and committed count are unchanged."
-	)
+	_status_message = " ".join(CANCEL_STATUS)
 	_refresh_ui()
 	return {
 		"accepted": true,
@@ -310,9 +318,7 @@ func request_replay() -> Dictionary:
 
 
 func project_fixture_recovery() -> Dictionary:
-	var projected: Dictionary = _adapter.project_recovery(
-		_adapter.default_recovery_request()
-	)
+	var projected: Dictionary = _adapter.project_recovery(_adapter.default_recovery_request())
 	if not projected.get("accepted", false):
 		return _enter_decision_recovery(
 			"recovery_fixture_rejected",
@@ -322,9 +328,7 @@ func project_fixture_recovery() -> Dictionary:
 	_decision_recovery.clear()
 	_pending_confirmation.clear()
 	_mode = SurfaceMode.FIXTURE_RECOVERY
-	_status_message = (
-		"Independent DH-FIX-006 recovery projection. Bellhouse fixture state is unchanged."
-	)
+	_status_message = " ".join(FIXTURE_RECOVERY_STATUS)
 	_refresh_ui()
 	return {
 		"accepted": true,
@@ -357,12 +361,7 @@ func selected_option() -> String:
 
 
 func decision_options() -> Array:
-	return (
-		_decision_result
-		.get("projection", {})
-		.get("decision_options", [])
-		.duplicate(true)
-	)
+	return _decision_result.get("projection", {}).get("decision_options", []).duplicate(true)
 
 
 func fixture_signature() -> Dictionary:
@@ -411,12 +410,17 @@ func render_snapshot() -> Dictionary:
 	var option: String = selected_option()
 	return {
 		"accepted": true,
-		"active_seat_label": "ACTIVE %s • %s • %s" % [
-			str(active_seat.get("seat_id", "")).to_upper(),
-			str(active_seat.get("control_source", "")).to_upper(),
-			str(active_seat.get("location", "")).to_upper(),
-		],
-		"board_geometry": {
+		"active_seat_label":
+		(
+			"ACTIVE %s • %s • %s"
+			% [
+				str(active_seat.get("seat_id", "")).to_upper(),
+				str(active_seat.get("control_source", "")).to_upper(),
+				str(active_seat.get("location", "")).to_upper(),
+			]
+		),
+		"board_geometry":
+		{
 			"bell": "one_large_bell_placeholder",
 			"kind": "placeholder_geometry_not_final",
 			"ledger": "public_ledger_placeholder",
@@ -424,25 +428,35 @@ func render_snapshot() -> Dictionary:
 		},
 		"caption": projection.get("caption", ""),
 		"confirmation_pending": not _pending_confirmation.is_empty(),
-		"controller_prompts": (
+		"controller_prompts":
+		(
 			"D-PAD / WASD: FOCUS • A / SPACE: CONFIRM • "
 			+ "B / ESC: CANCEL • X / H: TRANSCRIPT • T: REPLAY"
 		),
 		"decision_option": option,
-		"focus_label": "FOCUS 1 OF %d • %s" % [
-			decision_options().size(),
-			_action_label(option),
-		],
+		"focus_label":
+		(
+			"FOCUS 1 OF %d • %s"
+			% [
+				decision_options().size(),
+				_action_label(option),
+			]
+		),
 		"host_authority": "UNDERTELLER HOST AREA • PUBLIC FIXTURE PROJECTION ONLY",
-		"ledger_summary": "VISIBLE %d • ERASED %d • UNRESOLVED %d" % [
-			int(ledger.get("visible_names", 0)),
-			int(ledger.get("erased_positions", 0)),
-			int(ledger.get("unresolved_positions", 0)),
-		],
+		"ledger_summary":
+		(
+			"VISIBLE %d • ERASED %d • UNRESOLVED %d"
+			% [
+				int(ledger.get("visible_names", 0)),
+				int(ledger.get("erased_positions", 0)),
+				int(ledger.get("unresolved_positions", 0)),
+			]
+		),
 		"legal_actions": projection.get("legal_actions", []).duplicate(true),
 		"mode": mode_name(),
 		"objective": projection.get("objective", ""),
-		"persistent_text_when_voice_off": (
+		"persistent_text_when_voice_off":
+		(
 			not _voice_enabled
 			and not str(projection.get("objective", "")).is_empty()
 			and not str(projection.get("caption", "")).is_empty()
@@ -451,11 +465,15 @@ func render_snapshot() -> Dictionary:
 		"prototype_commit_count": _commit_count,
 		"public_consequence": projection.get("public_consequence", ""),
 		"recovery": _decision_recovery.duplicate(true),
-		"ring_summary": "VISIBLE %d • AUDIBLE %d • EXTRA RING %s" % [
-			int(ring_state.get("visible_count", 0)),
-			int(ring_state.get("audible_count", 0)),
-			"UNRESOLVED" if ring_state.get("extra_ring_unresolved", false) else "NONE",
-		],
+		"ring_summary":
+		(
+			"VISIBLE %d • AUDIBLE %d • EXTRA RING %s"
+			% [
+				int(ring_state.get("visible_count", 0)),
+				int(ring_state.get("audible_count", 0)),
+				"UNRESOLVED" if ring_state.get("extra_ring_unresolved", false) else "NONE",
+			]
+		),
 		"stage": "BELLHOUSE LEDGER",
 		"status": _status_message,
 		"voice_enabled": _voice_enabled,
@@ -469,16 +487,21 @@ func _render_fixture_recovery_snapshot() -> Dictionary:
 	var active_seat: Dictionary = projection.get("active_seat", {})
 	return {
 		"accepted": true,
-		"active_seat_label": "ACTIVE %s • %s • %s" % [
-			str(active_seat.get("seat_id", "")).to_upper(),
-			str(active_seat.get("control_source", "")).to_upper(),
-			str(active_seat.get("location", "")).to_upper(),
-		],
+		"active_seat_label":
+		(
+			"ACTIVE %s • %s • %s"
+			% [
+				str(active_seat.get("seat_id", "")).to_upper(),
+				str(active_seat.get("control_source", "")).to_upper(),
+				str(active_seat.get("location", "")).to_upper(),
+			]
+		),
 		"caption": projection.get("caption", ""),
 		"focus_destination": projection.get("focus_destination", ""),
 		"legal_alternatives": projection.get("legal_alternatives", []).duplicate(true),
 		"mode": mode_name(),
-		"persistent_text_when_voice_off": (
+		"persistent_text_when_voice_off":
+		(
 			not _voice_enabled
 			and not str(projection.get("public_safe_reason", "")).is_empty()
 			and not projection.get("legal_alternatives", []).is_empty()
@@ -534,10 +557,7 @@ func _enter_decision_recovery(code: String, message: String) -> Dictionary:
 		"stable_seat_reset": false,
 		"state_changed": false,
 	}
-	_status_message = (
-		"RECOVERY • %s No state, stable seat, or RNG changed."
-		% message
-	)
+	_status_message = ("RECOVERY • %s No state, stable seat, or RNG changed." % message)
 	_refresh_ui()
 	return {
 		"accepted": false,
@@ -667,22 +687,41 @@ func _refresh_ui() -> void:
 	var snapshot: Dictionary = render_snapshot()
 	_title_label.text = "DROWNED HARBOR • BELLHOUSE LEDGER • DEV-ONLY SHELL"
 	_objective_label.text = "OBJECTIVE • %s" % snapshot.get("objective", "")
-	_seat_label.text = "%s\n%s" % [
-		snapshot.get("host_authority", "PUBLIC RECOVERY PROJECTION"),
-		snapshot.get("active_seat_label", ""),
-	]
-	_decision_label.text = "LEDGER • %s\nRINGS • %s\nCONSEQUENCE • %s" % [
-		snapshot.get("ledger_summary", "RECOVERY FIXTURE"),
-		snapshot.get("ring_summary", snapshot.get("public_safe_reason", "")),
-		snapshot.get("public_consequence", ""),
-	]
-	_focus_label.text = "%s\nLEGAL • %s" % [
-		snapshot.get("focus_label", snapshot.get("focus_destination", "")),
-		", ".join(PackedStringArray(snapshot.get(
-			"legal_actions",
-			snapshot.get("legal_alternatives", []),
-		))),
-	]
+	_seat_label.text = (
+		"%s\n%s"
+		% [
+			snapshot.get("host_authority", "PUBLIC RECOVERY PROJECTION"),
+			snapshot.get("active_seat_label", ""),
+		]
+	)
+	_decision_label.text = (
+		"LEDGER • %s\nRINGS • %s\nCONSEQUENCE • %s"
+		% [
+			snapshot.get("ledger_summary", "RECOVERY FIXTURE"),
+			snapshot.get("ring_summary", snapshot.get("public_safe_reason", "")),
+			snapshot.get("public_consequence", ""),
+		]
+	)
+	_focus_label.text = (
+		"%s\nLEGAL • %s"
+		% [
+			snapshot.get("focus_label", snapshot.get("focus_destination", "")),
+			(
+				", "
+				. join(
+					PackedStringArray(
+						(
+							snapshot
+							. get(
+								"legal_actions",
+								snapshot.get("legal_alternatives", []),
+							)
+						)
+					)
+				)
+			),
+		]
+	)
 	_caption_label.text = "CAPTION • %s" % snapshot.get("caption", "")
 	_prompt_label.text = snapshot.get("controller_prompts", "")
 	_status_label.text = "STATUS • %s" % snapshot.get("status", "")

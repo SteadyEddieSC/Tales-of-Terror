@@ -136,10 +136,7 @@ func _test_development_manifest_is_fail_closed() -> void:
 		"records issues #80 through #83 as completed bounded packages",
 	)
 	_expect(
-		(
-			PackedInt32Array(manifest.get("future_work_issues", []))
-			== PackedInt32Array([84, 85, 86])
-		),
+		PackedInt32Array(manifest.get("future_work_issues", [])) == PackedInt32Array([84, 85, 86]),
 		"keeps issues #84 through #86 blocked for future releases",
 	)
 	_expect(
