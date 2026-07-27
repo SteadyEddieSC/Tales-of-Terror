@@ -137,7 +137,7 @@ A valid confirmation records one synthetic prototype result and emits the govern
 
 The fixture source state and RNG remain unchanged. Repeating the same valid confirmation reprojects the existing result and emits no second governed event.
 
-This is not a production reducer, production save, final Ledger mechanic, or balance commitment.
+No production authority is created. This is not a production reducer, production save, final Ledger mechanic, or balance commitment.
 
 ## 9. Bellhouse request recovery
 

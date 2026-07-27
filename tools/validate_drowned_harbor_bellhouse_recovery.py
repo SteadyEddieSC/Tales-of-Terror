@@ -198,8 +198,13 @@ def validate_decision_fixture(package: dict[str, Any]) -> None:
         "Bellhouse public map may read only public and seat-public data",
     )
     require(
-        len(set(private_strings(private))) >= 5,
-        "Bellhouse fixture must retain private leak sentinels",
+        set(private_strings(private))
+        == {
+            "PRIVATE_BELLMARKED",
+            "PRIVATE_PRESERVE_HARBOR",
+            "PRIVATE_SIXTH_NAME",
+        },
+        "Bellhouse fixture private leak sentinels drifted",
     )
     events = fixture.get("expected_events")
     require(
@@ -270,8 +275,12 @@ def validate_recovery_fixture(package: dict[str, Any]) -> None:
         "governed recovery focus drifted",
     )
     require(
-        len(set(private_strings(private))) >= 5,
-        "recovery fixture must retain private leak sentinels",
+        set(private_strings(private))
+        == {
+            "PRIVATE_ARCHIVE_ROUTE_RESERVED_FOR_DROWNED_GUIDE",
+            "PRIVATE_FIND_MISSING_NAME",
+        },
+        "recovery fixture private leak sentinels drifted",
     )
     projection_map = fixture.get("projection_map")
     require(isinstance(projection_map, dict), "recovery projection map is required")
@@ -358,6 +367,19 @@ def validate_godot_components(root: Path, package: dict[str, Any]) -> None:
         "persistent_text_when_voice_off",
     ):
         require(phrase in shell, f"shell missing required phrase: {phrase}")
+
+    require(
+        shell.count("_commit_count = 1") == 1,
+        "shell must contain exactly one exactly-once commit assignment",
+    )
+    require(
+        shell.count('"production_authority": false') == 1,
+        "shell production-authority denial drifted",
+    )
+    require(
+        shell.count('"stable_seat_reset": false') == 1,
+        "shell stable-seat preservation marker drifted",
+    )
 
     require(
         'path="res://tests/drowned_harbor_dev_only/'
@@ -531,6 +553,16 @@ def validate_documentation(root: Path) -> None:
             "production authority",
         ):
             require(phrase.lower() in text.lower(), f"{path} missing phrase: {phrase}")
+        if path == TECHNICAL_PATH:
+            require(
+                "physical-controller evidence" in text.lower(),
+                "technical contract missing exact physical-controller evidence phrase",
+            )
+        if path == SUMMARY_PATH:
+            require(
+                text.startswith("# P0.16 —"),
+                "release summary heading must retain the exact P0.16 identity",
+            )
 
 
 def validate(root: Path = ROOT) -> None:
