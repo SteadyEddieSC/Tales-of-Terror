@@ -1,9 +1,7 @@
 class_name DrownedHarborBellhouseFixtureAdapter
 extends RefCounted
 
-const FIXTURE_PATH: String = (
-	"res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"
-)
+const FIXTURE_PATH: String = "res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"
 const DECISION_FIXTURE_ID: String = "DH-FIX-002"
 const DECISION_TRACE_ID: String = "DH-IS-004"
 const DECISION_STORYBOARD_ID: String = "DH-UI-004"
@@ -192,13 +190,19 @@ func _build_decision_result() -> Dictionary:
 		"classification": "public",
 		"event_key": "bellhouse_decision_committed",
 		"exactly_once": true,
-		"payload": {
+		"payload":
+		{
 			"decision": selected_option,
 			"result_revision": decision_result_revision(),
 			"seat_id": seat_public.get("seat_id", ""),
-			"unresolved_positions": public_state.get("ledger", {}).get(
-				"unresolved_positions",
-				-1,
+			"unresolved_positions":
+			(
+				public_state
+				. get("ledger", {})
+				. get(
+					"unresolved_positions",
+					-1,
+				)
 			),
 		},
 	}
@@ -260,7 +264,8 @@ func _build_recovery_result() -> Dictionary:
 		"classification": "diagnostic",
 		"event_key": "invalid_action_recovery_projected",
 		"exactly_once": false,
-		"payload": {
+		"payload":
+		{
 			"reason": public_state.get("public_safe_reason", ""),
 			"result_revision": recovery_result_revision(),
 			"seat_id": seat_public.get("seat_id", ""),
@@ -421,9 +426,7 @@ func _validate_recovery_fixture(value: Dictionary) -> Dictionary:
 	elif public_state.get("rng_changed") is not false:
 		code = "rng_mutation_detected"
 		message = "recovery fixture must preserve RNG"
-	elif not public_state.get("legal_alternatives", []).has(
-		public_state.get("focus_destination")
-	):
+	elif not public_state.get("legal_alternatives", []).has(public_state.get("focus_destination")):
 		code = "invalid_focus_destination"
 		message = "recovery focus must target a legal alternative"
 	elif not value.get("projection_map", {}).get("private", {}).is_empty():
@@ -436,8 +439,7 @@ func _validate_recovery_fixture(value: Dictionary) -> Dictionary:
 
 static func _package_is_authorized(package: Dictionary) -> bool:
 	return (
-		package.get("fixture_package_kind")
-		== "drowned_harbor_state_projection_fixtures"
+		package.get("fixture_package_kind") == "drowned_harbor_state_projection_fixtures"
 		and package.get("schema_version") == 1
 		and package.get("prototype_id") == "drowned_harbor_dev_only"
 		and package.get("status") == "synthetic_test_only_export_excluded"
