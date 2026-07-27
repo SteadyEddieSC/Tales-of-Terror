@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  diagnose-contract:
-    name: Temporary read-only P0.16 corrected-contract diagnosis
+  diagnose-hardened-contract:
+    name: Temporary read-only P0.16 hardened-contract diagnosis
     if: github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery'
     runs-on: ubuntu-24.04
     steps:
@@ -28,57 +28,102 @@ jobs:
         with:
           python-version: 3.11.9
 
-      - name: Build corrected contract copies
+      - name: Build hardened corrected contract
         run: |
-          mkdir -p artifacts/p016-contract-diagnosis
+          mkdir -p artifacts/p016-hardened-diagnosis
           python - <<'PY'
           from pathlib import Path
           import re
 
           validator_path = Path('tools/validate_drowned_harbor_bellhouse_recovery.py')
           text = validator_path.read_text(encoding='utf-8')
-          bellhouse_pattern = re.compile(
-              r'    require\(\n'
-              r'\s+len\(set\(private_strings\(private\)\)\) >= 5,\n'
-              r'\s+"Bellhouse fixture must retain private leak sentinels",\n'
-              r'\s+\)'
+
+          replacements = [
+              (
+                  re.compile(
+                      r'    require\(\n'
+                      r'\s+len\(set\(private_strings\(private\)\)\) >= 5,\n'
+                      r'\s+"Bellhouse fixture must retain private leak sentinels",\n'
+                      r'\s+\)'
+                  ),
+                  (
+                      "    require(\n"
+                      "        set(private_strings(private))\n"
+                      "        == {\n"
+                      "            \"PRIVATE_BELLMARKED\",\n"
+                      "            \"PRIVATE_PRESERVE_HARBOR\",\n"
+                      "            \"PRIVATE_SIXTH_NAME\",\n"
+                      "        },\n"
+                      "        \"Bellhouse fixture private leak sentinels drifted\",\n"
+                      "    )"
+                  ),
+                  'Bellhouse sentinels',
+              ),
+              (
+                  re.compile(
+                      r'    require\(\n'
+                      r'\s+len\(set\(private_strings\(private\)\)\) >= 5,\n'
+                      r'\s+"recovery fixture must retain private leak sentinels",\n'
+                      r'\s+\)'
+                  ),
+                  (
+                      "    require(\n"
+                      "        set(private_strings(private))\n"
+                      "        == {\n"
+                      "            \"PRIVATE_ARCHIVE_ROUTE_RESERVED_FOR_DROWNED_GUIDE\",\n"
+                      "            \"PRIVATE_FIND_MISSING_NAME\",\n"
+                      "        },\n"
+                      "        \"recovery fixture private leak sentinels drifted\",\n"
+                      "    )"
+                  ),
+                  'recovery sentinels',
+              ),
+          ]
+          for pattern, replacement, label in replacements:
+              text, count = pattern.subn(replacement, text, count=1)
+              if count != 1:
+                  raise SystemExit(f'{label} replacement count: {count}')
+
+          shell_anchor = '''    require(
+              'path="res://tests/drowned_harbor_dev_only/'
+              'bellhouse_decision_shell.gd"' in scene,
+              "scene does not use the bounded Bellhouse shell script",
+          )'''
+          shell_assertions = '''    require(
+              shell.count("_commit_count = 1") == 1,
+              "shell must contain exactly one exactly-once commit assignment",
           )
-          recovery_pattern = re.compile(
-              r'    require\(\n'
-              r'\s+len\(set\(private_strings\(private\)\)\) >= 5,\n'
-              r'\s+"recovery fixture must retain private leak sentinels",\n'
-              r'\s+\)'
+          require(
+              shell.count('"production_authority": false') == 1,
+              "shell production-authority denial drifted",
           )
-          bellhouse_new = (
-              "    require(\n"
-              "        set(private_strings(private))\n"
-              "        == {\n"
-              "            \"PRIVATE_BELLMARKED\",\n"
-              "            \"PRIVATE_PRESERVE_HARBOR\",\n"
-              "            \"PRIVATE_SIXTH_NAME\",\n"
-              "        },\n"
-              "        \"Bellhouse fixture private leak sentinels drifted\",\n"
-              "    )"
+          require(
+              shell.count('"stable_seat_reset": false') == 1,
+              "shell stable-seat preservation marker drifted",
           )
-          recovery_new = (
-              "    require(\n"
-              "        set(private_strings(private))\n"
-              "        == {\n"
-              "            \"PRIVATE_ARCHIVE_ROUTE_RESERVED_FOR_DROWNED_GUIDE\",\n"
-              "            \"PRIVATE_FIND_MISSING_NAME\",\n"
-              "        },\n"
-              "        \"recovery fixture private leak sentinels drifted\",\n"
-              "    )"
-          )
-          text, bellhouse_count = bellhouse_pattern.subn(bellhouse_new, text, count=1)
-          text, recovery_count = recovery_pattern.subn(recovery_new, text, count=1)
-          if bellhouse_count != 1 or recovery_count != 1:
-              raise SystemExit(
-                  f'sentinel replacement counts: '
-                  f'Bellhouse={bellhouse_count}, recovery={recovery_count}'
-              )
+
+          ''' + shell_anchor
+          if text.count(shell_anchor) != 1:
+              raise SystemExit('shell assertion anchor drifted')
+          text = text.replace(shell_anchor, shell_assertions, 1)
+
+          docs_anchor = '''            require(phrase.lower() in text.lower(), f"{path} missing phrase: {phrase}")'''
+          docs_assertions = docs_anchor + '''
+              if path == TECHNICAL_PATH:
+                  require(
+                      "physical-controller evidence" in text.lower(),
+                      "technical contract missing exact physical-controller evidence phrase",
+                  )
+              if path == SUMMARY_PATH:
+                  require(
+                      text.startswith("# P0.16 —"),
+                      "release summary heading must retain the exact P0.16 identity",
+                  )'''
+          if text.count(docs_anchor) != 1:
+              raise SystemExit('documentation assertion anchor drifted')
+          text = text.replace(docs_anchor, docs_assertions, 1)
           validator_path.write_text(text, encoding='utf-8')
-          Path('artifacts/p016-contract-diagnosis/validator.corrected.py').write_text(
+          Path('artifacts/p016-hardened-diagnosis/validator.corrected.py').write_text(
               text,
               encoding='utf-8',
           )
@@ -97,10 +142,8 @@ jobs:
           )
           if technical.count(technical_old) != 1:
               raise SystemExit('technical production-authority source drifted')
-          technical = technical.replace(technical_old, technical_new, 1)
-          technical_path.write_text(technical, encoding='utf-8')
-          Path('artifacts/p016-contract-diagnosis/technical.corrected.md').write_text(
-              technical,
+          technical_path.write_text(
+              technical.replace(technical_old, technical_new, 1),
               encoding='utf-8',
           )
 
@@ -113,33 +156,31 @@ jobs:
           )
           if summary.count(summary_old) != 1:
               raise SystemExit('summary production-authority source drifted')
-          summary = summary.replace(summary_old, summary_new, 1)
-          summary_path.write_text(summary, encoding='utf-8')
-          Path('artifacts/p016-contract-diagnosis/summary.corrected.md').write_text(
-              summary,
+          summary_path.write_text(
+              summary.replace(summary_old, summary_new, 1),
               encoding='utf-8',
           )
           PY
 
-      - name: Capture corrected contract outputs
+      - name: Capture hardened validator and regression outputs
         run: |
           set +e
           python -m py_compile tools/validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-contract-diagnosis/py-compile.txt 2>&1
-          echo "$?" > artifacts/p016-contract-diagnosis/py-compile.status
+            > artifacts/p016-hardened-diagnosis/py-compile.txt 2>&1
+          echo "$?" > artifacts/p016-hardened-diagnosis/py-compile.status
           python tools/validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-contract-diagnosis/validator.txt 2>&1
-          echo "$?" > artifacts/p016-contract-diagnosis/validator.status
+            > artifacts/p016-hardened-diagnosis/validator.txt 2>&1
+          echo "$?" > artifacts/p016-hardened-diagnosis/validator.status
           python tools/test_validate_drowned_harbor_bellhouse_recovery.py \
-            > artifacts/p016-contract-diagnosis/regressions.txt 2>&1
-          echo "$?" > artifacts/p016-contract-diagnosis/regressions.status
+            > artifacts/p016-hardened-diagnosis/regressions.txt 2>&1
+          echo "$?" > artifacts/p016-hardened-diagnosis/regressions.status
           set -e
 
-      - name: Upload corrected-contract diagnosis
+      - name: Upload hardened-contract diagnosis
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: p016-corrected-contract-diagnosis
-          path: artifacts/p016-contract-diagnosis
+          name: p016-hardened-contract-diagnosis
+          path: artifacts/p016-hardened-diagnosis
           if-no-files-found: error
           retention-days: 14
 
@@ -150,6 +191,6 @@ jobs:
             docs/preproduction/P0.16_Release_Summary.md \
             docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md \
             tools/validate_drowned_harbor_bellhouse_recovery.py
-          rm -rf artifacts/p016-contract-diagnosis tools/__pycache__
+          rm -rf artifacts/p016-hardened-diagnosis tools/__pycache__
           git diff --exit-code
           test -z "$(git status --porcelain)"
