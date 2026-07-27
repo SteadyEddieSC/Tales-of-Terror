@@ -17,6 +17,8 @@ on:
       - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation_p016.py'
   push:
     branches: [main]
     paths:
@@ -34,6 +36,8 @@ on:
       - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
       - 'tools/validate_drowned_harbor_prototype_isolation.py'
       - 'tools/test_validate_drowned_harbor_prototype_isolation.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+      - 'tools/test_validate_drowned_harbor_prototype_isolation_p016.py'
 
 permissions:
   contents: read
@@ -45,6 +49,6 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Validate Drowned Harbor prototype isolation
-        run: python tools/validate_drowned_harbor_prototype_isolation.py
+        run: python tools/validate_drowned_harbor_prototype_isolation_p016.py
       - name: Run isolation regression mutations
-        run: python tools/test_validate_drowned_harbor_prototype_isolation.py
+        run: python tools/test_validate_drowned_harbor_prototype_isolation_p016.py

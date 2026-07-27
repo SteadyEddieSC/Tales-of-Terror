@@ -8,6 +8,7 @@
   "launch_policy": "explicit_test_script_only",
   "allowed_entry_points": [
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
+    "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd"
   ],
   "production_catalog_path": "res://data/tales/tale_catalog_v1.json",
@@ -38,15 +39,16 @@
     "docs/technical/Tale_Package_Contract.md",
     "docs/gdd/Terror_Turn_GDD.md",
     "docs/technical/Drowned_Harbor_Deterministic_State_Projection_Fixtures_v1.md",
-    "docs/technical/Drowned_Harbor_Low_Tide_Shared_Screen_Shell_v1.md"
+    "docs/technical/Drowned_Harbor_Low_Tide_Shared_Screen_Shell_v1.md",
+    "docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md"
   ],
   "completed_work_issues": [
     80,
     81,
-    82
+    82,
+    83
   ],
   "future_work_issues": [
-    83,
     84,
     85,
     86
@@ -57,9 +59,12 @@
   "prototype_components": [
     "res://tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd",
     "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd",
-    "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.tscn"
+    "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.tscn",
+    "res://tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd",
+    "res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.tscn"
   ],
   "human_validation_required": true,
   "human_evidence_claimed": false,
-  "notes": "This manifest proves only an isolated development boundary, six synthetic deterministic state/projection fixtures, and one fixture-backed Low Tide shared-screen shell. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, accessibility-compliant, or production-ready. The shell uses placeholder geometry and emits public prototype intents only. The fixtures and shell do not create a reducer, provider, Tale package, final mechanic, production save, network behavior, Companion behavior, runtime authority, or ordinary playable export."
+  "notes": "This manifest proves only an isolated development boundary, six synthetic deterministic state/projection fixtures, one fixture-backed Low Tide shared-screen shell, and one fixture-backed Bellhouse decision plus invalid-action recovery shell. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, accessibility-compliant, or production-ready. The shells use placeholder geometry and public fixture data only. The Bellhouse shell records one synthetic exactly-once prototype result but creates no production runtime authority, final Ledger mechanic, balance value, production reducer, production save, network behavior, Companion behavior, private bargain, High Water transformation, or ending logic. Preview, inspect, cancel, transcript, replay, and invalid-action recovery preserve fixture state, stable-seat identity, and deterministic RNG. The recovery fixture remains independent from the Bellhouse fixture so its different stable seat and reusable-system context do not contaminate the Bellhouse decision. The fixtures and shells do not create a reducer, provider, Tale package, final mechanic, production save, network behavior, Companion behavior, runtime authority, production asset, or ordinary playable export. They do not establish privacy certification, accessibility certification, physical-controller evidence, television-readability evidence, or human playtest evidence. Issue #39 remains the human-evidence authority and issue #44 remains separate and unsuppressed."
 }
