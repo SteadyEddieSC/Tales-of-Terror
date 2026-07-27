@@ -51,23 +51,27 @@ jobs:
               r'\s+"recovery fixture must retain private leak sentinels",\n'
               r'\s+\)'
           )
-          bellhouse_new = '''    require(
-              set(private_strings(private))
-              == {
-                  "PRIVATE_BELLMARKED",
-                  "PRIVATE_PRESERVE_HARBOR",
-                  "PRIVATE_SIXTH_NAME",
-              },
-              "Bellhouse fixture private leak sentinels drifted",
-          )'''
-          recovery_new = '''    require(
-              set(private_strings(private))
-              == {
-                  "PRIVATE_ARCHIVE_ROUTE_RESERVED_FOR_DROWNED_GUIDE",
-                  "PRIVATE_FIND_MISSING_NAME",
-              },
-              "recovery fixture private leak sentinels drifted",
-          )'''
+          bellhouse_new = (
+              "    require(\n"
+              "        set(private_strings(private))\n"
+              "        == {\n"
+              "            \"PRIVATE_BELLMARKED\",\n"
+              "            \"PRIVATE_PRESERVE_HARBOR\",\n"
+              "            \"PRIVATE_SIXTH_NAME\",\n"
+              "        },\n"
+              "        \"Bellhouse fixture private leak sentinels drifted\",\n"
+              "    )"
+          )
+          recovery_new = (
+              "    require(\n"
+              "        set(private_strings(private))\n"
+              "        == {\n"
+              "            \"PRIVATE_ARCHIVE_ROUTE_RESERVED_FOR_DROWNED_GUIDE\",\n"
+              "            \"PRIVATE_FIND_MISSING_NAME\",\n"
+              "        },\n"
+              "        \"recovery fixture private leak sentinels drifted\",\n"
+              "    )"
+          )
           text, bellhouse_count = bellhouse_pattern.subn(bellhouse_new, text, count=1)
           text, recovery_count = recovery_pattern.subn(recovery_new, text, count=1)
           if bellhouse_count != 1:
@@ -79,6 +83,7 @@ jobs:
 
       - name: Validate bounded correction
         run: |
+          python -m py_compile tools/validate_drowned_harbor_bellhouse_recovery.py
           python tools/validate_drowned_harbor_bellhouse_recovery.py
           python tools/test_validate_drowned_harbor_bellhouse_recovery.py
           python - <<'PY'
