@@ -408,7 +408,7 @@ func _validate_recovery_fixture(value: Dictionary) -> Dictionary:
 	elif value.get("source_revision") != 61 or value.get("result_revision") != 61:
 		code = "unauthorized_fixture"
 		message = "recovery fixture revisions drifted"
-	elif value.get("authoritative_commit") is not false:
+	elif value.get("authoritative_commit") != false:
 		code = "unauthorized_fixture"
 		message = "recovery fixture may not commit authoritative state"
 	elif value.get("rng_cursor_before") != value.get("rng_cursor_after"):
@@ -420,10 +420,10 @@ func _validate_recovery_fixture(value: Dictionary) -> Dictionary:
 	elif not source_state is Dictionary or not public_state is Dictionary:
 		code = "malformed_fixture"
 		message = "recovery public source state is required"
-	elif public_state.get("state_changed") is not false:
+	elif public_state.get("state_changed") != false:
 		code = "state_mutation_detected"
 		message = "recovery fixture must preserve authoritative state"
-	elif public_state.get("rng_changed") is not false:
+	elif public_state.get("rng_changed") != false:
 		code = "rng_mutation_detected"
 		message = "recovery fixture must preserve RNG"
 	elif not public_state.get("legal_alternatives", []).has(public_state.get("focus_destination")):
