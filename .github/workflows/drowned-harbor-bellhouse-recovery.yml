@@ -6,12 +6,14 @@ on:
       - '.github/workflows/drowned-harbor-bellhouse-recovery.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  diagnose-standalone:
-    name: Temporary read-only P0.16 standalone diagnosis
-    if: github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery'
+  fix-adapter-syntax:
+    name: Temporary bounded P0.16 adapter syntax correction
+    if: >-
+      github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -19,6 +21,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Verify exact baseline and branch
         run: |
@@ -29,69 +32,42 @@ jobs:
         with:
           python-version: 3.11.9
 
-      - name: Build standalone-safe candidate copies
+      - name: Correct invalid GDScript boolean identity syntax
         run: |
-          mkdir -p artifacts/p016-standalone-diagnosis
-          cp game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd \
-            artifacts/p016-standalone-diagnosis/adapter.original.gd
-          cp game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
-            artifacts/p016-standalone-diagnosis/shell.original.gd
-          cp game/tests/drowned_harbor_bellhouse_recovery_test.gd \
-            artifacts/p016-standalone-diagnosis/test.original.gd
           python - <<'PY'
           from pathlib import Path
-
-          shell_path = Path(
-              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd'
+          path = Path(
+              'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd'
           )
-          shell = shell_path.read_text(encoding='utf-8')
-          replacements = {
-              'var _adapter: DrownedHarborBellhouseFixtureAdapter = ADAPTER_SCRIPT.new()':
-                  'var _adapter = ADAPTER_SCRIPT.new()',
-              'path: String = DrownedHarborBellhouseFixtureAdapter.FIXTURE_PATH':
-                  'path: String = "res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"',
-          }
-          for old, new in replacements.items():
-              if shell.count(old) != 1:
-                  raise SystemExit(f'shell source count for {old!r}: {shell.count(old)}')
-              shell = shell.replace(old, new, 1)
-          shell_path.write_text(shell, encoding='utf-8')
-
-          test_path = Path('game/tests/drowned_harbor_bellhouse_recovery_test.gd')
-          test = test_path.read_text(encoding='utf-8')
-          adapter_type = ': DrownedHarborBellhouseFixtureAdapter'
-          shell_type = ': DrownedHarborBellhouseDecisionShell'
-          shell_return = ' -> DrownedHarborBellhouseDecisionShell'
-          if test.count(adapter_type) != 3:
-              raise SystemExit(f'adapter type count: {test.count(adapter_type)}')
-          if test.count(shell_type) < 5:
-              raise SystemExit(f'shell variable type count: {test.count(shell_type)}')
-          if test.count(shell_return) != 1:
-              raise SystemExit(f'shell return type count: {test.count(shell_return)}')
-          test = test.replace(adapter_type, '')
-          test = test.replace(shell_type, '')
-          test = test.replace(shell_return, '')
-          scene_check = 'instance is DrownedHarborBellhouseDecisionShell'
-          if test.count(scene_check) != 1:
-              raise SystemExit(f'scene type check count: {test.count(scene_check)}')
-          test = test.replace(scene_check, 'instance.get_script() == SHELL_SCRIPT', 1)
-          test_path.write_text(test, encoding='utf-8')
+          text = path.read_text(encoding='utf-8')
+          invalid = ' is not false'
+          if text.count(invalid) != 3:
+              raise SystemExit(f'invalid boolean identity count: {text.count(invalid)}')
+          text = text.replace(invalid, ' != false')
+          path.write_text(text, encoding='utf-8')
           PY
-          cp game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
-            artifacts/p016-standalone-diagnosis/shell.candidate.gd
-          cp game/tests/drowned_harbor_bellhouse_recovery_test.gd \
-            artifacts/p016-standalone-diagnosis/test.candidate.gd
 
       - name: Install pinned GDScript Toolkit
         run: |
           python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
           python -m pip check
-          gdformat game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
-            game/tests/drowned_harbor_bellhouse_recovery_test.gd
-          gdformat --check game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
-            game/tests/drowned_harbor_bellhouse_recovery_test.gd
-          gdlint game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
-            game/tests/drowned_harbor_bellhouse_recovery_test.gd
+
+      - name: Canonicalize and lint corrected adapter
+        run: |
+          gdformat game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd
+          gdformat --check game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd
+          gdlint game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd
+
+      - name: Validate all P0.16 Python contracts
+        run: |
+          python tools/validate_drowned_harbor_bellhouse_recovery.py
+          python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          python tools/validate_drowned_harbor_low_tide_shell_p016.py
+          python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
+          python tools/validate_drowned_harbor_projection_fixtures_p016.py
+          python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
+          python tools/validate_drowned_harbor_prototype_isolation_p016.py
+          python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
 
       - name: Download checksum-pinned Godot 4.7.1 stable
         run: |
@@ -102,41 +78,42 @@ jobs:
           unzip -q godot.zip -d .godot-bin
           chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
 
-      - name: Capture separate Godot parser and test outputs
+      - name: Validate typed import and standalone suites
         run: |
-          set +e
+          set -o pipefail
           godot=.godot-bin/Godot_v4.7.1-stable_linux.x86_64
-          "$godot" --headless --editor --path game --quit \
-            > artifacts/p016-standalone-diagnosis/import.txt 2>&1
-          echo "$?" > artifacts/p016-standalone-diagnosis/import.status
+          "$godot" --headless --editor --path game --quit
           "$godot" --headless --path game \
-            --script res://tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd \
-            > artifacts/p016-standalone-diagnosis/adapter-script.txt 2>&1
-          echo "$?" > artifacts/p016-standalone-diagnosis/adapter-script.status
+            --script res://tests/drowned_harbor_bellhouse_recovery_test.gd
           "$godot" --headless --path game \
-            --script res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
-            > artifacts/p016-standalone-diagnosis/shell-script.txt 2>&1
-          echo "$?" > artifacts/p016-standalone-diagnosis/shell-script.status
+            --script res://tests/drowned_harbor_low_tide_shell_test.gd
           "$godot" --headless --path game \
-            --script res://tests/drowned_harbor_bellhouse_recovery_test.gd \
-            > artifacts/p016-standalone-diagnosis/bellhouse-test.txt 2>&1
-          echo "$?" > artifacts/p016-standalone-diagnosis/bellhouse-test.status
-          set -e
+            --script res://tests/drowned_harbor_prototype_isolation_test.gd
 
-      - name: Upload standalone diagnosis
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: p016-standalone-diagnosis
-          path: artifacts/p016-standalone-diagnosis
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Restore source and confirm cleanliness
-        if: always()
+      - name: Enforce exact correction path
         run: |
-          git checkout -- \
-            game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
-            game/tests/drowned_harbor_bellhouse_recovery_test.gd
-          rm -rf artifacts/p016-standalone-diagnosis .godot-bin godot.zip
-          git diff --exit-code
-          test -z "$(git status --porcelain)"
+          python - <<'PY'
+          import subprocess
+          changed = {
+              line for line in subprocess.check_output(
+                  ['git', 'diff', '--name-only'], text=True
+              ).splitlines() if line
+          }
+          expected = {
+              'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd'
+          }
+          if changed != expected:
+              raise SystemExit(
+                  f'adapter correction path mismatch: '
+                  f'missing={sorted(expected - changed)}; '
+                  f'unexpected={sorted(changed - expected)}'
+              )
+          PY
+
+      - name: Commit adapter syntax correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd
+          git commit -m "Correct P0.16 adapter boolean syntax"
+          git push origin "HEAD:$GITHUB_HEAD_REF"
