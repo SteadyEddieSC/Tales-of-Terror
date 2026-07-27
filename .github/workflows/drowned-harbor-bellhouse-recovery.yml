@@ -127,15 +127,48 @@ jobs:
           python-version: 3.11.9
 
       - name: Validate P0.16 Python contracts
+        shell: bash
         run: |
-          python tools/validate_drowned_harbor_bellhouse_recovery.py
-          python tools/test_validate_drowned_harbor_bellhouse_recovery.py
-          python tools/validate_drowned_harbor_low_tide_shell_p016.py
-          python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
-          python tools/validate_drowned_harbor_projection_fixtures_p016.py
-          python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
-          python tools/validate_drowned_harbor_prototype_isolation_p016.py
-          python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
+          set -euo pipefail
+          mkdir -p artifacts/p016-python
+          run_check() {
+            name="$1"
+            shift
+            set +e
+            "$@" 2>&1 | tee "artifacts/p016-python/${name}.txt"
+            status=${PIPESTATUS[0]}
+            set -e
+            if [ "$status" -ne 0 ]; then
+              echo "$status" > "artifacts/p016-python/${name}.status"
+              exit "$status"
+            fi
+            echo 0 > "artifacts/p016-python/${name}.status"
+          }
+          run_check bellhouse-validator \
+            python tools/validate_drowned_harbor_bellhouse_recovery.py
+          run_check bellhouse-regressions \
+            python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          run_check low-tide-validator \
+            python tools/validate_drowned_harbor_low_tide_shell_p016.py
+          run_check low-tide-regressions \
+            python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
+          run_check projection-validator \
+            python tools/validate_drowned_harbor_projection_fixtures_p016.py
+          run_check projection-regressions \
+            python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
+          run_check isolation-validator \
+            python tools/validate_drowned_harbor_prototype_isolation_p016.py
+          run_check isolation-regressions \
+            python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
+
+      - name: Upload P0.16 Python evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p016-python-evidence
+          path: artifacts/p016-python
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Install pinned GDScript Toolkit
         run: |
@@ -207,12 +240,12 @@ jobs:
         with:
           name: p016-godot-evidence
           path: artifacts/p016-godot
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Remove generated validation evidence
         if: always()
-        run: rm -rf artifacts/p016-godot .godot-bin godot.zip
+        run: rm -rf artifacts/p016-python artifacts/p016-godot .godot-bin godot.zip
 
       - name: Confirm validation leaves the repository clean
         if: always()
