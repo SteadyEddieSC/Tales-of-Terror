@@ -6,18 +6,21 @@ on:
       - '.github/workflows/drowned-harbor-bellhouse-recovery.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  diagnose:
-    name: Temporary read-only P0.16 lint evidence
-    if: github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery'
+  canonicalize:
+    name: Temporary bounded P0.16 canonicalization
+    if: >-
+      github.head_ref == 'agent/p0.16-drowned-harbor-bellhouse-recovery' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Verify exact protected-main baseline and branch
         run: |
@@ -33,18 +36,14 @@ jobs:
           python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
           python -m pip check
 
-      - name: Build formatted semantic copies
+      - name: Apply bounded semantic refactors
         run: |
-          mkdir -p artifacts/p016-lint
-          cp game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd artifacts/p016-lint/
-          cp game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd artifacts/p016-lint/
-          cp game/tests/drowned_harbor_bellhouse_recovery_test.gd artifacts/p016-lint/
-          cp game/tests/drowned_harbor_prototype_isolation_test.gd artifacts/p016-lint/
           python - <<'PY'
           from pathlib import Path
 
-          root = Path('artifacts/p016-lint')
-          shell_path = root / 'bellhouse_decision_shell.gd'
+          shell_path = Path(
+              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd'
+          )
           shell = shell_path.read_text(encoding='utf-8')
           if 'current_options: Array = []' not in shell:
               shell = shell.replace(
@@ -96,21 +95,9 @@ jobs:
                   ']\n',
                   1,
               )
-          shell = shell.replace(
-              '_status_message = ("Prototype decision recorded once. No production gameplay authority was created.")',
-              '_status_message = " ".join(COMMITTED_STATUS)',
-          )
-          shell = shell.replace(
-              '_status_message = ("Cancelled. Fixture state, stable seat, RNG, and committed count are unchanged.")',
-              '_status_message = " ".join(CANCEL_STATUS)',
-          )
-          shell = shell.replace(
-              '_status_message = ("Independent DH-FIX-006 recovery projection. Bellhouse fixture state is unchanged.")',
-              '_status_message = " ".join(FIXTURE_RECOVERY_STATUS)',
-          )
           shell_path.write_text(shell, encoding='utf-8')
 
-          test_path = root / 'drowned_harbor_bellhouse_recovery_test.gd'
+          test_path = Path('game/tests/drowned_harbor_bellhouse_recovery_test.gd')
           test = test_path.read_text(encoding='utf-8')
           if '"unavailable_confirmation_option"' not in test:
               test = test.replace(
@@ -151,33 +138,73 @@ jobs:
               )
           test_path.write_text(test, encoding='utf-8')
           PY
-          gdformat artifacts/p016-lint/*.gd
 
-      - name: Capture lint and line-length evidence
+      - name: Canonicalize, preserve lint-safe statuses, and lint
         run: |
-          set +e
-          gdlint artifacts/p016-lint/*.gd > artifacts/p016-lint/gdlint.txt 2>&1
-          echo "$?" > artifacts/p016-lint/gdlint-status.txt
-          set -e
-          python - <<'PY' > artifacts/p016-lint/line-lengths.txt
+          files=(
+            game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd
+            game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd
+            game/tests/drowned_harbor_bellhouse_recovery_test.gd
+            game/tests/drowned_harbor_prototype_isolation_test.gd
+          )
+          gdformat "${files[@]}"
+          python - <<'PY'
           from pathlib import Path
-          for path in sorted(Path('artifacts/p016-lint').glob('*.gd')):
-              for number, line in enumerate(path.read_text().splitlines(), 1):
+          path = Path(
+              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd'
+          )
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              '\t_status_message = ("Prototype decision recorded once. No production gameplay authority was created.")':
+                  '\t_status_message = " ".join(COMMITTED_STATUS)',
+              '\t_status_message = ("Cancelled. Fixture state, stable seat, RNG, and committed count are unchanged.")':
+                  '\t_status_message = " ".join(CANCEL_STATUS)',
+              '\t_status_message = ("Independent DH-FIX-006 recovery projection. Bellhouse fixture state is unchanged.")':
+                  '\t_status_message = " ".join(FIXTURE_RECOVERY_STATUS)',
+          }
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f'lint-safe status source count was {text.count(old)}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+          gdformat --check "${files[@]}"
+          gdlint "${files[@]}"
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          allowed = {
+              'game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd',
+              'game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd',
+              'game/tests/drowned_harbor_bellhouse_recovery_test.gd',
+              'game/tests/drowned_harbor_prototype_isolation_test.gd',
+          }
+          changed = {
+              line for line in subprocess.check_output(
+                  ['git', 'diff', '--name-only'], text=True
+              ).splitlines() if line
+          }
+          if not changed.issubset(allowed):
+              raise SystemExit(f'unexpected paths: {sorted(changed - allowed)}')
+          for filename in changed:
+              for number, line in enumerate(Path(filename).read_text().splitlines(), 1):
                   if len(line) > 100:
-                      print(f'{path.name}:{number}:{len(line)}:{line}')
+                      raise SystemExit(f'{filename}:{number} exceeds 100 characters')
+          print(f'Validated bounded canonical paths: {sorted(changed)}')
           PY
 
-      - name: Upload P0.16 lint evidence
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: p016-lint-evidence
-          path: artifacts/p016-lint
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Remove generated evidence and confirm cleanliness
-        if: always()
+      - name: Commit bounded canonical output
         run: |
-          rm -rf artifacts/p016-lint
-          git diff --exit-code
-          test -z "$(git status --porcelain)"
+          if test -z "$(git status --porcelain)"; then
+            echo "No canonicalization changes remain"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            game/tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd \
+            game/tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd \
+            game/tests/drowned_harbor_bellhouse_recovery_test.gd \
+            game/tests/drowned_harbor_prototype_isolation_test.gd
+          git commit -m "Canonicalize P0.16 GDScript and separate option failures"
+          git push origin "HEAD:$GITHUB_HEAD_REF"
