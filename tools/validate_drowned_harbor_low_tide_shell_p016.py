@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import validate_drowned_harbor_low_tide_shell as inherited
 
@@ -13,6 +13,7 @@ ROOT = Path(".")
 EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
+    "res://tests/drowned_harbor_controlled_private_shield_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 EXPECTED_COMPONENTS = [
@@ -22,6 +23,10 @@ EXPECTED_COMPONENTS = [
     "res://tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd",
     "res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd",
     "res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.tscn",
+    "res://tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/controlled_private_surface.gd",
+    "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd",
+    "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn",
 ]
 
 
@@ -29,12 +34,12 @@ def validate_manifest_and_production_boundary(root: Path = ROOT) -> None:
     """Validate P0.16 progression without weakening the Low Tide contract."""
     manifest = inherited.read_json(root / inherited.MANIFEST_PATH)
     inherited.require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83],
-        "manifest must record issue #83 as completed bounded work",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84],
+        "manifest must record issue #84 as completed bounded work",
     )
     inherited.require(
-        manifest.get("future_work_issues") == [84, 85, 86],
-        "issues #84 through #86 must remain future work",
+        manifest.get("future_work_issues") == [85, 86],
+        "issues #85 and #86 must remain future work",
     )
     inherited.require(
         manifest.get("allowed_entry_points") == EXPECTED_ENTRY_POINTS,
@@ -110,13 +115,19 @@ def validate_manifest_and_production_boundary(root: Path = ROOT) -> None:
 
 def validate(root: Path = ROOT) -> None:
     original = inherited.validate_manifest_and_production_boundary
+    path_names = ("ADAPTER_PATH", "SHELL_PATH", "SCENE_PATH", "TEST_PATH")
+    original_paths = {name: getattr(inherited, name) for name in path_names}
     inherited.validate_manifest_and_production_boundary = (
         validate_manifest_and_production_boundary
     )
+    for name, path in original_paths.items():
+        setattr(inherited, name, PurePosixPath(path.as_posix()))
     try:
         inherited.validate(root)
     finally:
         inherited.validate_manifest_and_production_boundary = original
+        for name, path in original_paths.items():
+            setattr(inherited, name, path)
 
 
 def main() -> int:
@@ -129,7 +140,7 @@ def main() -> int:
         )
         return 1
     print(
-        "Validated the full P0.15 Low Tide contract against P0.16 manifest progression"
+        "Validated the full P0.15 Low Tide contract against P0.17 manifest progression"
     )
     return 0
 

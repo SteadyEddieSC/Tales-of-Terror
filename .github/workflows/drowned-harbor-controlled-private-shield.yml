@@ -1,0 +1,239 @@
+name: Drowned Harbor controlled-private shield
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/drowned-harbor-controlled-private-shield.yml'
+      - 'docs/preproduction/P0.17_Release_Summary.md'
+      - 'docs/technical/Drowned_Harbor_Controlled_Private_Shield_Proof_v1.md'
+      - 'game/tests/drowned_harbor_controlled_private_shield_test.gd'
+      - 'game/tests/drowned_harbor_controlled_private_shield_test.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/README.md'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_surface.gd'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_surface.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/state_projection_fixture_schema_v1.json'
+      - 'game/tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json'
+      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'tools/test_validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/validate_drowned_harbor_low_tide_shell_p016.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-controlled-private-shield.yml'
+      - 'docs/preproduction/P0.17_Release_Summary.md'
+      - 'docs/technical/Drowned_Harbor_Controlled_Private_Shield_Proof_v1.md'
+      - 'game/tests/drowned_harbor_controlled_private_shield_test.gd'
+      - 'game/tests/drowned_harbor_controlled_private_shield_test.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/README.md'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_surface.gd'
+      - 'game/tests/drowned_harbor_dev_only/controlled_private_surface.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/state_projection_fixture_schema_v1.json'
+      - 'game/tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json'
+      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'tools/test_validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/test_validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/validate_drowned_harbor_low_tide_shell_p016.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Neutral shield, controlled-private handoff, and clearing contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Enforce exact P0.17 release boundary
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.head_ref == 'agent/p0.17-drowned-harbor-controlled-private-shield'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          python - <<'PY'
+          import os
+          import subprocess
+
+          expected = {
+              '.github/workflows/drowned-harbor-controlled-private-shield.yml',
+              'docs/preproduction/P0.17_Release_Summary.md',
+              'docs/technical/Drowned_Harbor_Controlled_Private_Shield_Proof_v1.md',
+              'game/tests/drowned_harbor_controlled_private_shield_test.gd',
+              'game/tests/drowned_harbor_controlled_private_shield_test.gd.uid',
+              'game/tests/drowned_harbor_dev_only/README.md',
+              'game/tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd',
+              'game/tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd.uid',
+              'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd',
+              'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd.uid',
+              'game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn',
+              'game/tests/drowned_harbor_dev_only/controlled_private_surface.gd',
+              'game/tests/drowned_harbor_dev_only/controlled_private_surface.gd.uid',
+              'game/tests/drowned_harbor_dev_only/state_projection_fixture_schema_v1.json',
+              'game/tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json',
+              'game/tests/drowned_harbor_prototype_isolation_test.gd',
+              'game/tests/drowned_harbor_prototype_manifest_v1.json',
+              'tools/test_validate_drowned_harbor_bellhouse_recovery.py',
+              'tools/test_validate_drowned_harbor_controlled_private_shield.py',
+              'tools/test_validate_drowned_harbor_projection_fixtures.py',
+              'tools/validate_drowned_harbor_bellhouse_recovery.py',
+              'tools/validate_drowned_harbor_controlled_private_shield.py',
+              'tools/validate_drowned_harbor_low_tide_shell_p016.py',
+              'tools/validate_drowned_harbor_projection_fixtures.py',
+              'tools/validate_drowned_harbor_projection_fixtures_p016.py',
+              'tools/validate_drowned_harbor_prototype_isolation_p016.py',
+          }
+          output = subprocess.check_output(
+              ['git', 'diff', '--name-only', f"origin/{os.environ['BASE_REF']}...HEAD"],
+              text=True,
+          )
+          actual = {line for line in output.splitlines() if line}
+          if actual != expected:
+              raise SystemExit(
+                  'P0.17 path boundary mismatch; '
+                  f'missing={sorted(expected - actual)}; '
+                  f'unexpected={sorted(actual - expected)}'
+              )
+          print('Validated exact 26-path P0.17 release boundary')
+          PY
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Install pinned validation dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+
+      - name: Validate P0.17 and inherited Python contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/p017-python
+          run_check() {
+            name="$1"
+            shift
+            set +e
+            "$@" 2>&1 | tee "artifacts/p017-python/${name}.txt"
+            status=${PIPESTATUS[0]}
+            set -e
+            echo "$status" > "artifacts/p017-python/${name}.status"
+            if [ "$status" -ne 0 ]; then exit "$status"; fi
+          }
+          run_check controlled-private-validator \
+            python tools/validate_drowned_harbor_controlled_private_shield.py
+          run_check controlled-private-mutations \
+            python tools/test_validate_drowned_harbor_controlled_private_shield.py
+          run_check bellhouse-validator \
+            python tools/validate_drowned_harbor_bellhouse_recovery.py
+          run_check bellhouse-mutations \
+            python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          run_check low-tide-validator \
+            python tools/validate_drowned_harbor_low_tide_shell_p016.py
+          run_check low-tide-mutations \
+            python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
+          run_check projection-validator \
+            python tools/validate_drowned_harbor_projection_fixtures_p016.py
+          run_check projection-mutations \
+            python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
+          run_check isolation-validator \
+            python tools/validate_drowned_harbor_prototype_isolation_p016.py
+          run_check isolation-mutations \
+            python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
+
+      - name: Validate P0.17 GDScript format and lint
+        run: |
+          gdformat --check \
+            game/tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd \
+            game/tests/drowned_harbor_dev_only/controlled_private_surface.gd \
+            game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd \
+            game/tests/drowned_harbor_controlled_private_shield_test.gd \
+            game/tests/drowned_harbor_prototype_isolation_test.gd
+          gdlint \
+            game/tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd \
+            game/tests/drowned_harbor_dev_only/controlled_private_surface.gd \
+            game/tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd \
+            game/tests/drowned_harbor_controlled_private_shield_test.gd \
+            game/tests/drowned_harbor_prototype_isolation_test.gd
+
+      - name: Download checksum-pinned Godot 4.7.1 stable
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
+          curl -fsSL -o godot.zip "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | sha512sum --check -
+          unzip -q godot.zip -d .godot-bin
+          chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
+          mkdir -p artifacts/p017-godot
+
+      - name: Validate typed import and controlled-private proof
+        shell: bash
+        run: |
+          set -o pipefail
+          godot=.godot-bin/Godot_v4.7.1-stable_linux.x86_64
+          "$godot" --headless --editor --path game --quit \
+            2>&1 | tee artifacts/p017-godot/import.txt
+          "$godot" --headless --path game \
+            --script res://tests/drowned_harbor_controlled_private_shield_test.gd \
+            2>&1 | tee artifacts/p017-godot/controlled-private-test.txt
+          "$godot" --headless --path game \
+            --script res://tests/drowned_harbor_low_tide_shell_test.gd \
+            2>&1 | tee artifacts/p017-godot/low-tide-test.txt
+          "$godot" --headless --path game \
+            --script res://tests/drowned_harbor_bellhouse_recovery_test.gd \
+            2>&1 | tee artifacts/p017-godot/bellhouse-test.txt
+          "$godot" --headless --path game \
+            --script res://tests/drowned_harbor_prototype_isolation_test.gd \
+            2>&1 | tee artifacts/p017-godot/isolation-test.txt
+
+      - name: Upload P0.17 evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p017-controlled-private-evidence
+          path: |
+            artifacts/p017-python
+            artifacts/p017-godot
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove generated validation evidence
+        if: always()
+        run: rm -rf artifacts/p017-python artifacts/p017-godot .godot-bin godot.zip
+
+      - name: Confirm validation leaves repository clean
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"

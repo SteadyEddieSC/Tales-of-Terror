@@ -4,14 +4,18 @@ Everything in this directory is synthetic, test-only, and excluded from ordinary
 
 ## Current package
 
-- `state_projection_fixture_schema_v1.json` — closed P0.14 fixture schema.
-- `state_projection_fixtures_v1.json` — six deterministic fixtures bound to P0.11 interaction traces.
+- `state_projection_fixture_schema_v1.json` — closed P0.17 fixture schema.
+- `state_projection_fixtures_v1.json` — seven deterministic fixtures bound to governed interaction traces.
 - `low_tide_fixture_adapter.gd` — fail-closed public reader for `DH-FIX-001`.
 - `low_tide_shared_screen_shell.gd` — controller-first Low Tide presentation and intent shell.
 - `low_tide_shared_screen_shell.tscn` — explicit test-only Low Tide scene using placeholder geometry.
 - `bellhouse_fixture_adapter.gd` — fail-closed public readers for `DH-FIX-002` and `DH-FIX-006`.
 - `bellhouse_decision_shell.gd` — controller-first Bellhouse decision and recovery shell.
 - `bellhouse_decision_shell.tscn` — explicit test-only Bellhouse scene using placeholder geometry.
+- `controlled_private_fixture_adapter.gd` — exact request and revision binding for `DH-FIX-003` and `DH-FIX-007`.
+- `controlled_private_surface.gd` — local deterministic private-surface abstraction and clearing lifecycle.
+- `controlled_private_shield_shell.gd` — information-neutral shared-screen shield and sanitized restoration shell.
+- `controlled_private_shield_shell.tscn` — explicit test-only controlled-private scene.
 
 ## P0.15 Low Tide boundary
 
@@ -41,6 +45,14 @@ Bellhouse request rejection preserves the Bellhouse source revision, fixture fin
 
 Recovery uses public-safe neutral language and includes no ridicule, blame, penalty, timer loss, hidden consequence, stable-seat reset, input lock, or deadlock.
 
+## P0.17 controlled-private shield boundary
+
+The P0.17 proof binds `DH-FIX-003` to `DH-UI-007` / `DH-IS-007` and the new `DH-FIX-007` to `DH-UI-016` / `DH-IS-016`. An information-neutral neutral shield replaces the public presentation before a private payload is requested. Only the authorized test-only surface receives synthetic private content; confirm is not the default focus, and acceptance requires an explicit current-revision acknowledgement.
+
+The local abstraction binds stable seat, controller authority, source revision, handoff identity and revision, expected trace, and a deterministic fixture counter. It has no network, account, Companion, device, cloud, or telemetry behavior. Before sanitized public restoration it clears its private payload, presentation, focus, acknowledgement, binding, caption, and audio request state.
+
+The no-phone fallback stays neutral, permits governed cancellation, deferral, and Help, and commits nothing. `DH-FIX-007` retains the same stable seat and existing state; it does not heal, reroll, restore inventory, reset objectives or conditions, erase history, or change ending identity.
+
 ## Privacy and evidence boundary
 
 Only public and approved seat-public fields are projected. Private fixture markers are deliberately present in the source fixtures so tests can prove they do not enter the public screen, captions, transcript, replay, diagnostics, recovery, or events.
@@ -54,6 +66,8 @@ From the repository root:
 ```bash
 python tools/validate_drowned_harbor_bellhouse_recovery.py
 python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+python tools/validate_drowned_harbor_controlled_private_shield.py
+python tools/test_validate_drowned_harbor_controlled_private_shield.py
 python tools/validate_drowned_harbor_low_tide_shell_p016.py
 python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
 python tools/validate_drowned_harbor_projection_fixtures_p016.py
@@ -66,8 +80,9 @@ Godot 4.7.1-stable:
 
 ```bash
 godot --headless --path game --script res://tests/drowned_harbor_bellhouse_recovery_test.gd
+godot --headless --path game --script res://tests/drowned_harbor_controlled_private_shield_test.gd
 godot --headless --path game --script res://tests/drowned_harbor_low_tide_shell_test.gd
 godot --headless --path game --script res://tests/drowned_harbor_prototype_isolation_test.gd
 ```
 
-Drowned Harbor remains development-only and absent from the production Tale catalog and provider. Lantern House remains the sole production/default Tale. Issue #39 remains the human-evidence authority, and issue #44 remains the separate Companion dependency-remediation authority.
+Drowned Harbor remains development-only and absent from the production Tale catalog and provider. Lantern House remains the sole production/default Tale. Issue #44 is completed. Issue #39 remains the deferred human-evidence authority. Issues #85 and #86 remain blocked.

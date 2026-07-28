@@ -10,6 +10,7 @@ const DROWNED_HARBOR_PRODUCTION_PACKAGE: String = (
 const EXPECTED_ENTRY_POINTS: PackedStringArray = [
 	"res://tests/drowned_harbor_low_tide_shell_test.gd",
 	"res://tests/drowned_harbor_bellhouse_recovery_test.gd",
+	"res://tests/drowned_harbor_controlled_private_shield_test.gd",
 	"res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 const EXPECTED_COMPONENTS: PackedStringArray = [
@@ -19,6 +20,10 @@ const EXPECTED_COMPONENTS: PackedStringArray = [
 	"res://tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd",
 	"res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd",
 	"res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.tscn",
+	"res://tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd",
+	"res://tests/drowned_harbor_dev_only/controlled_private_surface.gd",
+	"res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd",
+	"res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn",
 ]
 
 var _failures: int = 0
@@ -73,7 +78,7 @@ func _test_development_manifest_is_fail_closed() -> void:
 	var entry_points: Array = manifest.get("allowed_entry_points", [])
 	_expect(
 		PackedStringArray(entry_points) == EXPECTED_ENTRY_POINTS,
-		"declares the exact three bounded test entry points",
+		"declares the exact four bounded test entry points",
 	)
 	for entry_point: Variant in entry_points:
 		_expect(
@@ -87,7 +92,7 @@ func _test_development_manifest_is_fail_closed() -> void:
 	var components: Array = manifest.get("prototype_components", [])
 	_expect(
 		PackedStringArray(components) == EXPECTED_COMPONENTS,
-		"declares the exact six prototype component paths",
+		"declares the exact ten prototype component paths",
 	)
 	for component: Variant in components:
 		_expect(
@@ -131,13 +136,13 @@ func _test_development_manifest_is_fail_closed() -> void:
 	_expect(
 		(
 			PackedInt32Array(manifest.get("completed_work_issues", []))
-			== PackedInt32Array([80, 81, 82, 83])
+			== PackedInt32Array([80, 81, 82, 83, 84])
 		),
-		"records issues #80 through #83 as completed bounded packages",
+		"records issues #80 through #84 as completed bounded packages",
 	)
 	_expect(
-		PackedInt32Array(manifest.get("future_work_issues", [])) == PackedInt32Array([84, 85, 86]),
-		"keeps issues #84 through #86 blocked for future releases",
+		PackedInt32Array(manifest.get("future_work_issues", [])) == PackedInt32Array([85, 86]),
+		"keeps issues #85 and #86 blocked for future releases",
 	)
 	_expect(
 		manifest.get("human_validation_required") == true,
@@ -217,12 +222,17 @@ func _test_windows_and_linux_exports_exclude_tests() -> void:
 		"drowned_harbor_prototype_isolation_test.gd",
 		"drowned_harbor_low_tide_shell_test.gd",
 		"drowned_harbor_bellhouse_recovery_test.gd",
+		"drowned_harbor_controlled_private_shield_test.gd",
 		"low_tide_fixture_adapter.gd",
 		"low_tide_shared_screen_shell.gd",
 		"low_tide_shared_screen_shell.tscn",
 		"bellhouse_fixture_adapter.gd",
 		"bellhouse_decision_shell.gd",
 		"bellhouse_decision_shell.tscn",
+		"controlled_private_fixture_adapter.gd",
+		"controlled_private_surface.gd",
+		"controlled_private_shield_shell.gd",
+		"controlled_private_shield_shell.tscn",
 	]:
 		_expect(
 			filename not in preset_text,
