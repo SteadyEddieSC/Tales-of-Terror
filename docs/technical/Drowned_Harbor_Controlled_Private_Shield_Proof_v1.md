@@ -21,11 +21,17 @@ The initial private focus is informational or cancellation-oriented. Confirm/ack
 
 The dev-only surface is bound to the exact stable seat, current controller authority, source revision, private-handoff ID and revision, expected trace, deterministic fixture state, and one acknowledgement lifecycle. A bounded fixture counter supplies deterministic expiry; wall-clock time is not authoritative.
 
-The surface models local availability, reveal, navigation, acknowledgement, cancellation, disconnect, and clearing without transmitting data. It stores no raw controller, account, network, device, voice, or personal identity. UI code remains test-only and creates no gameplay authority.
+The surface models local availability, reveal, navigation, explicit acknowledgement, explicit bargain refusal, cancellation/deferral, disconnect, and clearing without transmitting data. Refuse is a governed focus target executed by the same semantic Confirm action as other selected private actions; it is not timeout, disconnect, malformed-input recovery, or the separate B/Escape cancellation route. It stores no raw controller, account, network, device, voice, or personal identity. UI code remains test-only and creates no gameplay authority.
 
 ## DH-FIX-003 bargain lifecycle
 
-After the neutral shield is active, the authorized local surface can reveal the synthetic private terms for `seat_03`. Only an explicit, current-revision acknowledgement from the governed controller commits the trace-authorized private event. The public side receives only the sanitized resolution. Duplicate, stale, wrong-seat, wrong-authority, unknown, malformed, unavailable, expired, cancelled, and interrupted attempts fail closed before mutation. One pressed action can cause at most one prototype commit.
+After the neutral shield is active, the authorized local surface can reveal the synthetic private terms for `seat_03`. Only an explicit, current-revision acknowledgement from the governed controller commits the trace-authorized private event. Selecting Refuse clears the private payload, event, presentation, focus, acknowledgement, binding, captions/audio requests, adapter, and shell projection; it creates no private commit, bargain acceptance, result revision, or public bargain event. The public side receives a sanitized resolution only after confirmation. Duplicate, stale, wrong-seat, wrong-authority, unknown, malformed, unavailable, expired, cancelled, and interrupted attempts fail closed before mutation. One pressed action can cause at most one prototype commit.
+
+## Identity-scoped exactly-once contract
+
+Exactly-once tracking is scoped to a deterministic governed identity derived from fixture ID, handoff ID and revision, source revision, result revision, and the private or public event key. The resulting digest uses no time, randomness, object identity, device identity, or personal identity. Aggregate private/public counts are evidence only and never gate a later distinct handoff.
+
+Acknowledgement validates the bound request and both event identities before mutation, prepares the sanitized pending public result, rejects only a recorded matching identity, records the new private identity, then clears private surface/shell state and enters restoration. Public restoration independently records the matching public identity before appending history, replay, transcript, mirror, and signal output. Therefore one shell can retain both authorized DH-FIX-003 and DH-FIX-007 events exactly once while true retries remain fail-closed and restoration retries remain idempotent.
 
 ## DH-FIX-007 continuity lifecycle
 
@@ -33,7 +39,7 @@ The inherited-state handoff retains `seat_07`, controller governance, form, heal
 
 ## Clearing and public restoration
 
-Before public restoration, the model clears the private payload, private event, derived private presentation, revealing focus/selection, pending acknowledgement, binding/handoff references, private caption request, and private audio requests. The shell then clears its projection and adapter reference. Only after those checks succeed can it project a sanitized public event and resolution. A restoration failure remains behind the neutral shield and retries deterministically. A subsequent handoff cannot open while uncleared private state exists.
+Before public restoration, the model clears the private payload, private event, derived private presentation, revealing focus/selection, pending acknowledgement, binding/handoff references, private caption request, and private audio requests. The shell then clears its projection and adapter reference. Only after those checks succeed can it project a sanitized public event and resolution. A restoration failure remains behind the neutral shield and retries deterministically. A subsequent handoff cannot open while uncleared private state or a pending public restoration exists.
 
 This is an application-state and projection proof; it does not claim secure-memory erasure, privacy certification, or security certification.
 

@@ -49,6 +49,8 @@ var _diagnostics: Array[Dictionary] = []
 var _lifecycle_audit: Array[String] = []
 var _commit_count: int = 0
 var _public_event_count: int = 0
+var _committed_private_event_identities: Dictionary = {}
+var _committed_public_event_identities: Dictionary = {}
 var _help_open: bool = false
 var _voice_enabled: bool = false
 var _status: String = "Public fixture state ready."
@@ -65,7 +67,10 @@ func _ready() -> void:
 func begin_handoff(request: Dictionary, private_surface_available: bool = true) -> Dictionary:
 	if not _private_surface.is_cleared() or not _private_projection_result.is_empty():
 		return _fail_closed("uncleared_private_payload")
-	if _mode == SurfaceMode.RESTORING:
+	if (
+		_mode in [SurfaceMode.RESTORING, SurfaceMode.RECOVERY]
+		or not _pending_public_result.is_empty()
+	):
 		return _fail_closed("public_restoration_pending")
 	_enter_neutral_shield()
 	_private_surface.set_available(private_surface_available)
@@ -114,38 +119,101 @@ func request_acknowledgement() -> Dictionary:
 	return result
 
 
-func acknowledge(request: Dictionary) -> Dictionary:
-	if _mode != SurfaceMode.PRIVATE_CONFIRMATION:
+func refuse_private_bargain() -> Dictionary:
+	if _mode != SurfaceMode.PRIVATE_REVIEW:
 		return _fail_closed("private_handoff_not_active")
+	var before: Dictionary = fixture_signature()
+	var refused: Dictionary = _private_surface.refuse_private_bargain()
+	if not refused.get("accepted", false):
+		return _reject_pending_action(str(refused.get("code", "refusal_focus_required")))
+	var fixture_unchanged: bool = fixture_signature() == before
+	_clear_private_application_state()
+	_help_open = false
+	_mode = SurfaceMode.PUBLIC_READY
+	_status = "Public fixture state ready."
+	_lifecycle_audit.append("explicit_private_bargain_refused_and_cleared")
+	_refresh_ui()
+	return {
+		"accepted": true,
+		"commit_count": _commit_count,
+		"fixture_unchanged": fixture_unchanged,
+		"mode": mode_name(),
+		"private_state_cleared": private_state_cleared(),
+		"public_event_count": _public_event_count,
+		"refused": true,
+	}
+
+
+func acknowledge(request: Dictionary) -> Dictionary:
 	var before: Dictionary = fixture_signature()
 	var acknowledged: Dictionary = _private_surface.acknowledge(request)
 	if not acknowledged.get("accepted", false):
-		return _fail_closed(str(acknowledged.get("code", "malformed_handoff")))
-	if _commit_count != 0:
-		return _fail_closed("duplicate_acknowledgement")
+		return _reject_pending_action(str(acknowledged.get("code", "malformed_handoff")))
 	var private_event_key: String = str(acknowledged.get("private_event_key", ""))
+	var fixture_id: String = str(_private_projection_result.get("fixture_id", ""))
 	var public_event: Dictionary = _private_projection_result.get("public_event", {}).duplicate(
 		true
 	)
+	var public_event_key: String = str(public_event.get("event_key", ""))
 	var public_resolution: Dictionary = (
 		_private_projection_result.get("public_resolution", {}).duplicate(true)
 	)
 	var source_revision: int = int(_private_projection_result.get("source_revision", -1))
 	var result_revision: int = int(_private_projection_result.get("result_revision", -1))
-	if private_event_key.is_empty() or public_event.is_empty() or public_resolution.is_empty():
-		return _fail_closed("malformed_handoff")
+	var private_event_identity: String = _build_event_identity(
+		fixture_id,
+		str(request.get("handoff_id", "")),
+		int(request.get("handoff_revision", -1)),
+		source_revision,
+		result_revision,
+		private_event_key,
+	)
+	var public_event_identity: String = _build_event_identity(
+		fixture_id,
+		str(request.get("handoff_id", "")),
+		int(request.get("handoff_revision", -1)),
+		source_revision,
+		result_revision,
+		public_event_key,
+	)
+	if (
+		private_event_key.is_empty()
+		or public_event_key.is_empty()
+		or public_event.is_empty()
+		or public_resolution.is_empty()
+		or private_event_identity.is_empty()
+		or public_event_identity.is_empty()
+	):
+		return _reject_pending_action("malformed_handoff")
+	if (
+		_committed_private_event_identities.has(private_event_identity)
+		or _committed_public_event_identities.has(public_event_identity)
+	):
+		return _reject_duplicate_acknowledgement()
+	var sanitized_public_event: Dictionary = _build_sanitized_public_event(
+		public_event,
+		public_resolution,
+		source_revision,
+		result_revision,
+	)
+	if _contains_private_marker({"event": sanitized_public_event, "resolution": public_resolution}):
+		return _reject_pending_action("private_data_rejected")
 	_pending_public_result = {
-		"event":
-		_build_sanitized_public_event(
-			public_event,
-			public_resolution,
-			source_revision,
-			result_revision,
-		),
+		"event": sanitized_public_event,
+		"event_identity": public_event_identity,
 		"resolution": public_resolution,
 		"result_revision": result_revision,
 		"source_revision": source_revision,
 	}
+	_committed_private_event_identities[private_event_identity] = true
+	var completed: Dictionary = _private_surface.complete_acknowledgement()
+	if not completed.get("accepted", false):
+		_committed_private_event_identities.erase(private_event_identity)
+		_pending_public_result.clear()
+		return _reject_pending_action("private_clearing_failed")
+	var fixture_unchanged: bool = fixture_signature() == before
+	_private_projection_result.clear()
+	_adapter.clear_loaded_fixture()
 	_commit_count += 1
 	(
 		prototype_private_commit_recorded
@@ -159,8 +227,6 @@ func acknowledge(request: Dictionary) -> Dictionary:
 			}
 		)
 	)
-	_private_projection_result.clear()
-	_adapter.clear_loaded_fixture()
 	_mode = SurfaceMode.RESTORING
 	_status = NEUTRAL_SHIELD_TEXT
 	_lifecycle_audit.append("private_payload_cleared_before_public_restoration")
@@ -168,7 +234,8 @@ func acknowledge(request: Dictionary) -> Dictionary:
 	return {
 		"accepted": true,
 		"commit_count": _commit_count,
-		"fixture_unchanged": fixture_signature().is_empty() or fixture_signature() == before,
+		"event_identity": private_event_identity,
+		"fixture_unchanged": fixture_unchanged,
 		"mode": mode_name(),
 		"private_state_cleared": private_state_cleared(),
 	}
@@ -192,11 +259,22 @@ func restore_public(succeeds: bool = true) -> Dictionary:
 			"private_state_cleared": true,
 		}
 	var event: Dictionary = _pending_public_result.get("event", {}).duplicate(true)
+	var event_identity: String = str(_pending_public_result.get("event_identity", ""))
 	var resolution: Dictionary = _pending_public_result.get("resolution", {}).duplicate(true)
-	if _contains_private_marker({"event": event, "resolution": resolution}):
-		return _fail_closed("private_data_rejected")
-	if _public_event_count == 0:
-		_public_event_count = 1
+	if (
+		event_identity.is_empty()
+		or _contains_private_marker({"event": event, "resolution": resolution})
+	):
+		return _fail_closed(
+			(
+				"public_event_identity_missing"
+				if event_identity.is_empty()
+				else "private_data_rejected"
+			)
+		)
+	if not _committed_public_event_identities.has(event_identity):
+		_committed_public_event_identities[event_identity] = true
+		_public_event_count += 1
 		_public_history.append(event.duplicate(true))
 		_public_replay.append(event.duplicate(true))
 		_public_transcript.append(str(resolution.get("caption", "")))
@@ -219,10 +297,7 @@ func restore_public(succeeds: bool = true) -> Dictionary:
 
 
 func cancel_or_defer() -> Dictionary:
-	_private_surface.cancel()
-	_private_projection_result.clear()
-	_pending_public_result.clear()
-	_adapter.clear_loaded_fixture()
+	_clear_private_application_state()
 	_help_open = false
 	_mode = SurfaceMode.PUBLIC_READY
 	_status = "Public fixture state ready."
@@ -282,7 +357,10 @@ func dispatch_semantic_action(action: String) -> Dictionary:
 		"ui_navigate_right", "ui_navigate_down":
 			result = navigate_private(1)
 		"ui_confirm":
-			result = request_acknowledgement()
+			if _private_surface.focused_item() == "refuse_private_bargain":
+				result = refuse_private_bargain()
+			else:
+				result = request_acknowledgement()
 		"ui_cancel_action":
 			result = cancel_or_defer()
 		"help_accessibility":
@@ -372,6 +450,22 @@ func _public_event_count_snapshot() -> int:
 	return _public_event_count
 
 
+func _private_event_identities_snapshot() -> PackedStringArray:
+	var identities: PackedStringArray = []
+	for identity: Variant in _committed_private_event_identities.keys():
+		identities.append(str(identity))
+	identities.sort()
+	return identities
+
+
+func _public_event_identities_snapshot() -> PackedStringArray:
+	var identities: PackedStringArray = []
+	for identity: Variant in _committed_public_event_identities.keys():
+		identities.append(str(identity))
+	identities.sort()
+	return identities
+
+
 func mode_name() -> String:
 	return str(SurfaceMode.keys()[_mode]).to_lower()
 
@@ -396,6 +490,40 @@ func _enter_neutral_shield() -> void:
 	_public_audio_requests.clear()
 	_lifecycle_audit.append("neutral_shield_entered_before_private_request")
 	_refresh_ui()
+
+
+func _clear_private_application_state() -> void:
+	_private_surface.clear_private_state()
+	_private_projection_result.clear()
+	_pending_public_result.clear()
+	_adapter.clear_loaded_fixture()
+
+
+func _reject_pending_action(code: String) -> Dictionary:
+	_diagnostics.append({"code": code, "private_payload": false})
+	_status = NEUTRAL_SHIELD_TEXT
+	_refresh_ui()
+	return {
+		"accepted": false,
+		"code": code,
+		"commit_count": _commit_count,
+		"private_state_cleared": private_state_cleared(),
+	}
+
+
+func _reject_duplicate_acknowledgement() -> Dictionary:
+	_clear_private_application_state()
+	_help_open = false
+	_mode = SurfaceMode.PUBLIC_READY
+	_status = "Public fixture state ready."
+	_lifecycle_audit.append("duplicate_acknowledgement_rejected_and_cleared")
+	_refresh_ui()
+	return {
+		"accepted": false,
+		"code": "duplicate_acknowledgement",
+		"commit_count": _commit_count,
+		"private_state_cleared": private_state_cleared(),
+	}
 
 
 func _fail_closed(code: String, record_diagnostic: bool = true) -> Dictionary:
@@ -433,6 +561,41 @@ static func _build_sanitized_public_event(
 			"source_revision": source_revision,
 		},
 	}
+
+
+static func _build_event_identity(
+	fixture_id: String,
+	handoff_id: String,
+	handoff_revision: int,
+	source_revision: int,
+	result_revision: int,
+	event_key: String,
+) -> String:
+	if (
+		fixture_id.is_empty()
+		or handoff_id.is_empty()
+		or handoff_revision < 0
+		or source_revision < 0
+		or result_revision < 0
+		or event_key.is_empty()
+	):
+		return ""
+	return (
+		"|"
+		. join(
+			PackedStringArray(
+				[
+					fixture_id,
+					handoff_id,
+					str(handoff_revision),
+					str(source_revision),
+					str(result_revision),
+					event_key,
+				]
+			)
+		)
+		. sha256_text()
+	)
 
 
 static func _contains_private_marker(value: Variant) -> bool:

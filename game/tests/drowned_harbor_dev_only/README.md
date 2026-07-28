@@ -49,7 +49,9 @@ Recovery uses public-safe neutral language and includes no ridicule, blame, pena
 
 The P0.17 proof binds `DH-FIX-003` to `DH-UI-007` / `DH-IS-007` and the new `DH-FIX-007` to `DH-UI-016` / `DH-IS-016`. An information-neutral neutral shield replaces the public presentation before a private payload is requested. Only the authorized test-only surface receives synthetic private content; confirm is not the default focus, and acceptance requires an explicit current-revision acknowledgement.
 
-The local abstraction binds stable seat, controller authority, source revision, handoff identity and revision, expected trace, and a deterministic fixture counter. It has no network, account, Companion, device, cloud, or telemetry behavior. Before sanitized public restoration it clears its private payload, presentation, focus, acknowledgement, binding, caption, and audio request state.
+The local abstraction binds stable seat, controller authority, source revision, handoff identity and revision, expected trace, and a deterministic fixture counter. It has no network, account, Companion, device, cloud, or telemetry behavior. Semantic Confirm on the governed Refuse focus runs an explicit no-commit refusal path, separate from B/Escape cancellation/deferral. Before sanitized public restoration or after refusal it clears its private payload, event, presentation, focus, acknowledgement, binding, caption/audio requests, adapter, and shell projection state.
+
+Exactly-once tracking is scoped to deterministic fixture/handoff/source/result/event identities. Aggregate counts are evidence only. A single shell can complete DH-FIX-003 and DH-FIX-007 sequentially, retain both authorized sanitized public histories, and reject only true retries without clearing one layer before duplicate validation.
 
 The no-phone fallback stays neutral, permits governed cancellation, deferral, and Help, and commits nothing. `DH-FIX-007` retains the same stable seat and existing state; it does not heal, reroll, restore inventory, reset objectives or conditions, erase history, or change ending identity.
 

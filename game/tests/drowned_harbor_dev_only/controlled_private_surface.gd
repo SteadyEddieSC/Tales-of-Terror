@@ -108,6 +108,15 @@ func request_acknowledgement() -> Dictionary:
 	return {"accepted": true, "phase": phase_name()}
 
 
+func refuse_private_bargain() -> Dictionary:
+	if _phase != Phase.REVEALED:
+		return _rejected("private_handoff_not_active")
+	if focused_item() != "refuse_private_bargain":
+		return _rejected("refusal_focus_required")
+	clear_private_state()
+	return {"accepted": true, "refused": true}
+
+
 func acknowledge(request: Dictionary) -> Dictionary:
 	if _phase != Phase.ACKNOWLEDGEMENT_PENDING:
 		return _rejected("private_handoff_not_active")
@@ -124,11 +133,17 @@ func acknowledge(request: Dictionary) -> Dictionary:
 		return _rejected("malformed_handoff")
 	var sanitized: Dictionary = {
 		"accepted": true,
-		"private_event_committed": true,
+		"private_event_validated": true,
 		"private_event_key": event_key,
 	}
-	clear_private_state()
 	return sanitized
+
+
+func complete_acknowledgement() -> Dictionary:
+	if _phase != Phase.ACKNOWLEDGEMENT_PENDING:
+		return _rejected("private_handoff_not_active")
+	clear_private_state()
+	return {"accepted": true, "cleared": true}
 
 
 func _validate_acknowledgement_request(request: Dictionary) -> Dictionary:

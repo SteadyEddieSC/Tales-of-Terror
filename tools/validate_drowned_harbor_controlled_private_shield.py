@@ -394,7 +394,9 @@ def validate_godot_sources_text(
     surface_phrases = (
         "class_name DrownedHarborControlledPrivateSurface",
         "func request_acknowledgement() -> Dictionary:",
+        "func refuse_private_bargain() -> Dictionary:",
         "func acknowledge(request: Dictionary) -> Dictionary:",
+        "func complete_acknowledgement() -> Dictionary:",
         "func clear_private_state() -> void:",
         "_private_payload.clear()",
         "_private_event.clear()",
@@ -403,6 +405,7 @@ def validate_godot_sources_text(
         '_private_caption_request = ""',
         "_private_audio_requests.clear()",
         "acknowledgement_focus_required",
+        "refusal_focus_required",
         "expired_handoff",
     )
     for phrase in surface_phrases:
@@ -460,6 +463,15 @@ def validate_godot_sources_text(
     for phrase in shell_phrases:
         require(phrase in shell, f"controlled-private shell missing: {phrase}")
     require(shell.count("_commit_count += 1") == 1, "exactly-once commit increment drifted")
+    require(
+        shell.count("_public_event_count += 1") == 1,
+        "aggregate public-event increment drifted",
+    )
+    require("_commit_count != 0" not in shell, "lifetime-global commit gating is prohibited")
+    require(
+        "_public_event_count == 0" not in shell,
+        "lifetime-global public-event suppression is prohibited",
+    )
     begin_handoff = shell[
         shell.index("func begin_handoff(") : shell.index("func navigate_private(")
     ]
@@ -475,6 +487,85 @@ def validate_godot_sources_text(
         and "not _private_projection_result.is_empty()" in shell,
         "new handoff must reject retained private payload",
     )
+    surface_acknowledgement = surface[
+        surface.index("func acknowledge(") : surface.index("func complete_acknowledgement(")
+    ]
+    require(
+        "clear_private_state()" not in surface_acknowledgement,
+        "surface acknowledgement must validate before application clearing",
+    )
+    refusal = shell[
+        shell.index("func refuse_private_bargain(") : shell.index("func acknowledge(")
+    ]
+    for phrase in (
+        "_private_surface.refuse_private_bargain()",
+        "_clear_private_application_state()",
+        "explicit_private_bargain_refused_and_cleared",
+        "SurfaceMode.PUBLIC_READY",
+    ):
+        require(phrase in refusal, f"governed refusal path missing: {phrase}")
+    require(
+        "_commit_count += 1" not in refusal
+        and "prototype_private_commit_recorded" not in refusal
+        and "prototype_public_event_emitted" not in refusal,
+        "governed refusal must not create a private or public event",
+    )
+    dispatch = shell[shell.index("func dispatch_semantic_action(") : shell.index("func public_snapshot(")]
+    require(
+        'if _private_surface.focused_item() == "refuse_private_bargain":' in dispatch
+        and "result = refuse_private_bargain()" in dispatch,
+        "semantic Confirm must route governed Refuse to the refusal path",
+    )
+    acknowledgement = shell[
+        shell.index("func acknowledge(") : shell.index("func restore_public(")
+    ]
+    for phrase in (
+        "_build_event_identity(",
+        "_committed_private_event_identities.has(private_event_identity)",
+        "_committed_public_event_identities.has(public_event_identity)",
+        "_committed_private_event_identities[private_event_identity] = true",
+        "_private_surface.complete_acknowledgement()",
+    ):
+        require(phrase in acknowledgement, f"identity-scoped acknowledgement missing: {phrase}")
+    require(
+        "_private_surface.clear_private_state()" not in acknowledgement,
+        "shell must not clear the surface before duplicate validation",
+    )
+    require(
+        acknowledgement.index("_committed_private_event_identities.has(private_event_identity)")
+        < acknowledgement.index("_pending_public_result = {")
+        < acknowledgement.index("_committed_private_event_identities[private_event_identity] = true")
+        < acknowledgement.index("_private_surface.complete_acknowledgement()")
+        < acknowledgement.index("_private_projection_result.clear()")
+        < acknowledgement.index("_commit_count += 1")
+        < acknowledgement.index("_mode = SurfaceMode.RESTORING"),
+        "acknowledgement validation, identity record, clearing, and restore ordering drifted",
+    )
+    identity_builder = shell[
+        shell.index("static func _build_event_identity(") : shell.index(
+            "static func _contains_private_marker("
+        )
+    ]
+    for component in (
+        "fixture_id",
+        "handoff_id",
+        "handoff_revision",
+        "source_revision",
+        "result_revision",
+        "event_key",
+        "sha256_text()",
+    ):
+        require(component in identity_builder, f"governed event identity missing: {component}")
+    restoration = shell[shell.index("func restore_public(") : shell.index("func cancel_or_defer(")]
+    for phrase in (
+        "_committed_public_event_identities.has(event_identity)",
+        "_committed_public_event_identities[event_identity] = true",
+        "_public_event_count += 1",
+        "_public_history.append(event.duplicate(true))",
+        "_public_replay.append(event.duplicate(true))",
+        "prototype_public_event_emitted.emit(event.duplicate(true))",
+    ):
+        require(phrase in restoration, f"identity-scoped public restoration missing: {phrase}")
     for prohibited in (
         "Time.get_ticks",
         "Time.get_unix",
@@ -494,11 +585,12 @@ def validate_godot_sources_text(
         require(prohibited not in combined_runtime, f"prohibited runtime seam found: {prohibited}")
     for phrase in (
         "_test_bargain_authorized_reveal_and_acknowledgement",
+        "_test_governed_bargain_refusal_and_following_handoff",
         "_test_inherited_state_authorized_reveal_and_acknowledgement",
         "_test_shield_is_information_neutral_with_voice_disabled",
         "_test_private_values_never_enter_public_outputs",
         "_test_application_private_state_clears_before_public_restore",
-        "_test_exactly_once_and_duplicate_acknowledgement",
+        "_test_sequential_handoffs_and_identity_scoped_exactly_once",
         "_test_disconnect_and_reconnect_matrix",
         "_test_public_restoration_failure_recovers_deterministically",
         "_test_production_and_export_boundaries",

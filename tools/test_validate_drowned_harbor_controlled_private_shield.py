@@ -188,6 +188,85 @@ def main() -> int:
             lambda: source_mutation(SHELL_PATH, "_commit_count += 1", "_commit_count += 1\n\t_commit_count += 1"),
         ),
         (
+            "Refuse focus routed to acknowledgement",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "result = refuse_private_bargain()",
+                "result = request_acknowledgement()",
+            ),
+        ),
+        (
+            "Refuse creates a bargain commit",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "\t_clear_private_application_state()",
+                "\t_commit_count += 1\n\t_clear_private_application_state()",
+            ),
+        ),
+        (
+            "lifetime-global commit gating",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "\t_pending_public_result = {",
+                (
+                    "\tif _commit_count != 0:\n"
+                    '\t\treturn _reject_pending_action("duplicate_acknowledgement")\n'
+                    "\t_pending_public_result = {"
+                ),
+            ),
+        ),
+        (
+            "lifetime-global public-event suppression",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "if not _committed_public_event_identities.has(event_identity):",
+                "if _public_event_count == 0:",
+            ),
+        ),
+        (
+            "duplicate identity not checked",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "_committed_private_event_identities.has(private_event_identity)",
+                "false # duplicate identity ignored",
+            ),
+        ),
+        (
+            "distinct handoff incorrectly treated as duplicate",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "_committed_private_event_identities.has(private_event_identity)",
+                "_committed_private_event_identities.has(private_event_key)",
+            ),
+        ),
+        (
+            "private surface cleared before duplicate validation",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "\tvar acknowledged: Dictionary = _private_surface.acknowledge(request)",
+                (
+                    "\t_private_surface.clear_private_state()\n"
+                    "\tvar acknowledged: Dictionary = _private_surface.acknowledge(request)"
+                ),
+            ),
+        ),
+        (
+            "second public event omitted",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "prototype_public_event_emitted.emit(event.duplicate(true))",
+                "pass # second public event omitted",
+            ),
+        ),
+        (
+            "second history entry omitted",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "_public_history.append(event.duplicate(true))",
+                "pass # second history entry omitted",
+            ),
+        ),
+        (
             "missing payload clearing",
             lambda: source_mutation(SURFACE_PATH, "\t_private_payload.clear()", "\tpass # payload retained"),
         ),

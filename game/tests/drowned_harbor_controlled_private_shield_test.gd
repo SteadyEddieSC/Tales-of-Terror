@@ -20,19 +20,22 @@ const EXPORT_PRESETS_PATH: String = "res://export_presets.cfg"
 const PRIVATE_MARKER: String = "PRIVATE_"
 
 var _failures: int = 0
+var _private_commit_signals: Array[Dictionary] = []
+var _public_event_signals: Array[Dictionary] = []
 
 
 func _initialize() -> void:
 	_test_fixture_inventory_and_bindings()
 	_test_neutral_shield_precedes_private_request()
 	_test_bargain_authorized_reveal_and_acknowledgement()
+	_test_governed_bargain_refusal_and_following_handoff()
 	_test_inherited_state_authorized_reveal_and_acknowledgement()
 	_test_shield_is_information_neutral_with_voice_disabled()
 	_test_private_values_never_enter_public_outputs()
 	_test_application_private_state_clears_before_public_restore()
 	_test_deterministic_repeated_inputs_are_byte_equivalent()
 	_test_presentation_and_help_consume_no_rng()
-	_test_exactly_once_and_duplicate_acknowledgement()
+	_test_sequential_handoffs_and_identity_scoped_exactly_once()
 	_test_fail_closed_request_matrix()
 	_test_private_surface_unavailable_and_no_phone_fallback()
 	_test_disconnect_and_reconnect_matrix()
@@ -127,6 +130,87 @@ func _test_bargain_authorized_reveal_and_acknowledgement() -> void:
 	_expect(shell.private_state_cleared(), "bargain payload clears before public restoration")
 	_expect(shell.restore_public().get("accepted", false), "sanitized bargain resolution restores")
 	_expect(shell._public_event_count_snapshot() == 1, "sanitized bargain public event emits once")
+	shell.free()
+
+
+func _test_governed_bargain_refusal_and_following_handoff() -> void:
+	_private_commit_signals.clear()
+	_public_event_signals.clear()
+	var shell: DrownedHarborControlledPrivateShieldShell = _new_shell()
+	shell.prototype_private_commit_recorded.connect(_record_private_commit_signal)
+	shell.prototype_public_event_emitted.connect(_record_public_event_signal)
+	var bargain_request: Dictionary = _request("DH-FIX-003")
+	_expect(shell.begin_handoff(bargain_request).get("accepted", false), "refusal handoff begins")
+	var governed_source: Dictionary = shell.fixture_signature()
+	for index: int in range(5):
+		var moved: Dictionary = shell.dispatch_semantic_action("ui_navigate_down")
+		_expect(
+			moved.get("accepted", false), "semantic refusal focus step %d succeeds" % (index + 1)
+		)
+	_expect(
+		shell.private_surface_snapshot().get("focus") == "refuse_private_bargain",
+		"semantic navigation reaches the governed Refuse focus",
+	)
+	var refused: Dictionary = shell.dispatch_semantic_action("ui_confirm")
+	_expect(
+		refused.get("accepted", false) and refused.get("refused", false),
+		"semantic Confirm executes explicit refusal"
+	)
+	_expect(
+		refused.get("fixture_unchanged", false), "refusal preserves the governed source fixture"
+	)
+	_expect(governed_source.get("stable_seat_id") == "seat_03", "refusal preserves stable seat_03")
+	_expect(governed_source.get("source_revision") == 31, "refusal preserves source revision 31")
+	_expect(governed_source.get("rng_cursor") == 9, "refusal consumes no bargain RNG")
+	_expect(_private_commit_signals.is_empty(), "refusal emits no private commit signal")
+	_expect(_public_event_signals.is_empty(), "refusal emits no public event signal")
+	_expect(shell._prototype_commit_count() == 0, "refusal commits no private event")
+	_expect(shell._public_event_count_snapshot() == 0, "refusal fabricates no public result")
+	_expect(
+		shell._private_event_identities_snapshot().is_empty(), "refusal records no private identity"
+	)
+	_expect(
+		shell._public_event_identities_snapshot().is_empty(), "refusal records no public identity"
+	)
+	_expect(shell.private_state_cleared(), "refusal clears all private application state")
+	for field: String in shell.clearing_snapshot():
+		_expect(shell.clearing_snapshot()[field] == true, "refusal clears %s" % field)
+	_expect(shell.mode_name() == "public_ready", "refusal returns to a governed public-safe state")
+	var refusal_public: String = (
+		JSON
+		. stringify(
+			{"outputs": shell.privacy_outputs(), "snapshot": shell.public_snapshot()}, "", true
+		)
+		. to_lower()
+	)
+	for hint: String in ["private_", "black_bell", "surrender", "benefit", "cost", "desirable"]:
+		_expect(hint not in refusal_public, "refusal public outputs exclude %s hint" % hint)
+	var duplicate_refusal: Dictionary = shell.dispatch_semantic_action("ui_confirm")
+	_expect(not duplicate_refusal.get("accepted", true), "duplicate Refuse input fails closed")
+	_expect(shell._prototype_commit_count() == 0, "duplicate Refuse creates no event")
+	_expect(shell.mode_name() == "public_ready", "duplicate Refuse creates no stuck recovery")
+
+	var inherited_request: Dictionary = _request("DH-FIX-007")
+	_expect(
+		shell.begin_handoff(inherited_request).get("accepted", false),
+		"later valid handoff begins after refusal"
+	)
+	_arm_acknowledgement(shell, 6)
+	_expect(
+		shell.acknowledge(_ack_request(inherited_request)).get("accepted", false),
+		"later inherited acknowledgement succeeds"
+	)
+	_expect(shell.restore_public().get("accepted", false), "later inherited public result restores")
+	_expect(shell._prototype_commit_count() == 1, "only the inherited handoff commits")
+	_expect(shell._public_event_count_snapshot() == 1, "only the inherited public event emits")
+	_expect(_private_commit_signals.size() == 1, "only the inherited private signal is recorded")
+	_expect(_public_event_signals.size() == 1, "only the inherited public signal is recorded")
+	var history: Array = shell.privacy_outputs().get("public_history", [])
+	_expect(history.size() == 1, "refusal adds no authorized public-history entry")
+	_expect(
+		history[0].get("event_key") == "stable_seat_human_takeover_committed",
+		"no bargain public-resolution event is fabricated"
+	)
 	shell.free()
 
 
@@ -266,18 +350,162 @@ func _test_presentation_and_help_consume_no_rng() -> void:
 	shell.free()
 
 
-func _test_exactly_once_and_duplicate_acknowledgement() -> void:
+func _test_sequential_handoffs_and_identity_scoped_exactly_once() -> void:
+	_private_commit_signals.clear()
+	_public_event_signals.clear()
 	var shell: DrownedHarborControlledPrivateShieldShell = _new_shell()
-	var request: Dictionary = _request("DH-FIX-003")
-	shell.begin_handoff(request)
+	shell.prototype_private_commit_recorded.connect(_record_private_commit_signal)
+	shell.prototype_public_event_emitted.connect(_record_public_event_signal)
+	var bargain_request: Dictionary = _request("DH-FIX-003")
+	_expect(
+		shell.begin_handoff(bargain_request).get("accepted", false), "first distinct handoff begins"
+	)
+	var bargain_source: Dictionary = shell.fixture_signature()
 	_arm_acknowledgement(shell, 4)
-	var ack: Dictionary = _ack_request(request)
-	_expect(shell.acknowledge(ack).get("accepted", false), "first acknowledgement succeeds")
-	var repeated: Dictionary = shell.acknowledge(ack)
-	_expect(not repeated.get("accepted", true), "duplicate acknowledgement fails closed")
-	_expect(shell._prototype_commit_count() == 1, "duplicate acknowledgement creates no commit")
-	shell.restore_public()
-	_expect(shell._public_event_count_snapshot() == 1, "public event remains exactly once")
+	var bargain_ack: Dictionary = _ack_request(bargain_request)
+	var first_acknowledged: Dictionary = shell.acknowledge(bargain_ack)
+	_expect(first_acknowledged.get("accepted", false), "DH-FIX-003 acknowledgement succeeds")
+	_expect(shell.restore_public().get("accepted", false), "DH-FIX-003 public result restores")
+	_expect(
+		not shell.restore_public().get("accepted", true),
+		"duplicate DH-FIX-003 restoration fails closed"
+	)
+	_expect(
+		shell._public_event_count_snapshot() == 1, "duplicate restoration appends no public event"
+	)
+
+	_expect(
+		shell.begin_handoff(bargain_request).get("accepted", false),
+		"duplicate DH-FIX-003 handoff can be validated"
+	)
+	_arm_acknowledgement(shell, 4)
+	var stale_bargain_ack: Dictionary = bargain_ack.duplicate(true)
+	stale_bargain_ack.source_revision = 30
+	var stale_retry: Dictionary = shell.acknowledge(stale_bargain_ack)
+	_expect(
+		stale_retry.get("code") == "stale_source_revision", "stale duplicate retry fails closed"
+	)
+	_expect(
+		not shell.private_state_cleared(),
+		"stale retry leaves surface and shell state consistently bound"
+	)
+	var duplicate_bargain: Dictionary = shell.acknowledge(bargain_ack)
+	_expect(
+		duplicate_bargain.get("code") == "duplicate_acknowledgement",
+		"true DH-FIX-003 duplicate identity is rejected"
+	)
+	_expect(
+		duplicate_bargain.get("private_state_cleared", false),
+		"validated duplicate clears both private layers"
+	)
+	_expect(shell._prototype_commit_count() == 1, "DH-FIX-003 duplicate does not recommit")
+
+	var inherited_request: Dictionary = _request("DH-FIX-007")
+	_expect(
+		shell.begin_handoff(inherited_request).get("accepted", false),
+		"distinct DH-FIX-007 remains usable"
+	)
+	var inherited_source: Dictionary = shell.fixture_signature()
+	_arm_acknowledgement(shell, 6)
+	var inherited_ack: Dictionary = _ack_request(inherited_request)
+	var second_acknowledged: Dictionary = shell.acknowledge(inherited_ack)
+	_expect(second_acknowledged.get("accepted", false), "DH-FIX-007 acknowledgement succeeds")
+	_expect(shell.restore_public().get("accepted", false), "DH-FIX-007 public result restores")
+	_expect(
+		not shell.restore_public().get("accepted", true),
+		"duplicate DH-FIX-007 restoration fails closed"
+	)
+
+	_expect(
+		shell.begin_handoff(inherited_request).get("accepted", false),
+		"duplicate DH-FIX-007 handoff can be validated"
+	)
+	_arm_acknowledgement(shell, 6)
+	var duplicate_inherited: Dictionary = shell.acknowledge(inherited_ack)
+	_expect(
+		duplicate_inherited.get("code") == "duplicate_acknowledgement",
+		"true DH-FIX-007 duplicate identity is rejected"
+	)
+	_expect(
+		duplicate_inherited.get("private_state_cleared", false),
+		"second validated duplicate clears both private layers"
+	)
+
+	var private_identities: PackedStringArray = shell._private_event_identities_snapshot()
+	var public_identities: PackedStringArray = shell._public_event_identities_snapshot()
+	_expect(
+		private_identities.size() == 2 and private_identities[0] != private_identities[1],
+		"two distinct private event identities are retained"
+	)
+	_expect(
+		public_identities.size() == 2 and public_identities[0] != public_identities[1],
+		"two distinct public event identities are retained"
+	)
+	_expect(
+		first_acknowledged.get("event_identity") != second_acknowledged.get("event_identity"),
+		"handoff-scoped private identities differ"
+	)
+	_expect(shell._prototype_commit_count() == 2, "two distinct private events commit exactly once")
+	_expect(
+		shell._public_event_count_snapshot() == 2, "two distinct public events emit exactly once"
+	)
+	_expect(_private_commit_signals.size() == 2, "two distinct private commit signals are recorded")
+	_expect(_public_event_signals.size() == 2, "two distinct public event signals are recorded")
+	var outputs: Dictionary = shell.privacy_outputs()
+	var history: Array = outputs.get("public_history", [])
+	_expect(history.size() == 2, "two authorized public-history entries are retained")
+	_expect(outputs.get("replay", []).size() == 2, "replay retains both authorized public events")
+	_expect(outputs.get("transcript", []).size() == 2, "transcript retains both sanitized captions")
+	_expect(
+		outputs.get("mirrored_output", []).size() == 2, "mirror retains both sanitized resolutions"
+	)
+	_expect(
+		(
+			PackedStringArray(
+				[str(history[0].get("event_key", "")), str(history[1].get("event_key", ""))]
+			)
+			== PackedStringArray(
+				[
+					"harbor_bargain_public_resolution_projected",
+					"stable_seat_human_takeover_committed"
+				]
+			)
+		),
+		"public history retains both governed event keys in order",
+	)
+	var public_bundle: String = JSON.stringify(
+		{"outputs": outputs, "snapshot": shell.public_snapshot()}, "", true
+	)
+	_expect(
+		PRIVATE_MARKER not in public_bundle,
+		"history, replay, transcript, diagnostics, mirror, captions, and audio contain no private marker"
+	)
+	_expect(
+		shell.public_snapshot().get("shared_audio_requests", []).is_empty(),
+		"shared audio remains empty after both handoffs"
+	)
+	_expect(
+		shell.private_state_cleared(), "all private state is clear after both handoffs and retries"
+	)
+	_expect(shell.mode_name() == "public_ready", "duplicate retries leave no stuck recovery")
+	_expect(
+		(
+			bargain_source.get("stable_seat_id") == "seat_03"
+			and bargain_source.get("source_revision") == 31
+		),
+		"first stable-seat source remains governed"
+	)
+	_expect(
+		(
+			inherited_source.get("stable_seat_id") == "seat_07"
+			and inherited_source.get("source_revision") == 71
+		),
+		"second stable-seat source remains governed"
+	)
+	_expect(
+		bargain_source.get("rng_cursor") == 9 and inherited_source.get("rng_cursor") == 21,
+		"sequential handoffs consume no RNG"
+	)
 	shell.free()
 
 
@@ -368,6 +596,23 @@ func _test_disconnect_and_reconnect_matrix() -> void:
 		after.restore_public().get("accepted", false),
 		"post-ack reconnect restores sanitized result"
 	)
+	var next_request: Dictionary = _request("DH-FIX-003")
+	_expect(
+		after.begin_handoff(next_request).get("accepted", false),
+		"next distinct handoff begins after disconnect recovery"
+	)
+	_arm_acknowledgement(after, 4)
+	_expect(
+		after.acknowledge(_ack_request(next_request)).get("accepted", false),
+		"next distinct handoff acknowledges after disconnect recovery"
+	)
+	_expect(
+		after.restore_public().get("accepted", false),
+		"next distinct handoff restores after disconnect recovery"
+	)
+	_expect(
+		after._prototype_commit_count() == 2, "disconnect sequence records both distinct handoffs"
+	)
 	after.free()
 
 
@@ -397,6 +642,27 @@ func _test_public_restoration_failure_recovers_deterministically() -> void:
 	_expect(failed.get("private_state_cleared", false), "restore failure retains clearing")
 	_expect(shell.restore_public(true).get("accepted", false), "deterministic retry restores")
 	_expect(shell._prototype_commit_count() == 1, "restore retry does not recommit")
+	var inherited_request: Dictionary = _request("DH-FIX-007")
+	_expect(
+		shell.begin_handoff(inherited_request).get("accepted", false),
+		"next distinct handoff begins after restoration recovery"
+	)
+	_arm_acknowledgement(shell, 6)
+	_expect(
+		shell.acknowledge(_ack_request(inherited_request)).get("accepted", false),
+		"next distinct handoff acknowledges after restoration recovery"
+	)
+	_expect(
+		shell.restore_public().get("accepted", false),
+		"next distinct handoff restores after restoration recovery"
+	)
+	_expect(
+		shell._prototype_commit_count() == 2, "restoration-failure sequence records both handoffs"
+	)
+	_expect(
+		shell._public_event_count_snapshot() == 2,
+		"restoration-failure sequence emits both public events"
+	)
 	shell.free()
 
 
@@ -535,9 +801,20 @@ func _arm_acknowledgement(
 	steps: int,
 ) -> void:
 	for index: int in range(steps):
-		var moved: Dictionary = shell.navigate_private(1)
+		var moved: Dictionary = shell.dispatch_semantic_action("ui_navigate_down")
 		_expect(moved.get("accepted", false), "private focus step %d succeeds" % (index + 1))
-	_expect(shell.request_acknowledgement().get("accepted", false), "explicit acknowledgement arms")
+	_expect(
+		shell.dispatch_semantic_action("ui_confirm").get("accepted", false),
+		"semantic Confirm arms explicit acknowledgement",
+	)
+
+
+func _record_private_commit_signal(metadata: Dictionary) -> void:
+	_private_commit_signals.append(metadata.duplicate(true))
+
+
+func _record_public_event_signal(payload: Dictionary) -> void:
+	_public_event_signals.append(payload.duplicate(true))
 
 
 func _fixture(package: Dictionary, fixture_id: String) -> Dictionary:
