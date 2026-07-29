@@ -321,12 +321,19 @@ func cancel_or_defer() -> Dictionary:
 
 
 func handle_disconnect() -> Dictionary:
-	if _mode == SurfaceMode.RESTORING:
+	if not _pending_public_result.is_empty():
+		_clear_private_state_preserving_public_result()
+		_help_open = false
 		_mode = SurfaceMode.RECOVERY
 		_status = NEUTRAL_SHIELD_TEXT
-		_lifecycle_audit.append("disconnect_after_acknowledgement_safe")
+		_lifecycle_audit.append("post_commit_disconnect_recovery_preserved")
 		_refresh_ui()
-		return {"accepted": true, "private_state_cleared": private_state_cleared()}
+		return {
+			"accepted": true,
+			"mode": mode_name(),
+			"pending_public_result": true,
+			"private_state_cleared": private_state_cleared(),
+		}
 	_private_surface.disconnect_surface()
 	_private_projection_result.clear()
 	_adapter.clear_loaded_fixture()

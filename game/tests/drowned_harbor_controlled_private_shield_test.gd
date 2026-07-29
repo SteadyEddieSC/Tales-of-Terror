@@ -594,53 +594,37 @@ func _test_disconnect_and_reconnect_matrix() -> void:
 	_expect(not during.begin_handoff(stale).get("accepted", true), "stale reconnect fails closed")
 	during.free()
 
-	var after: DrownedHarborControlledPrivateShieldShell = _new_shell()
-	after.begin_handoff(current)
-	_arm_acknowledgement(after, 6)
-	after.acknowledge(_ack_request(current))
-	_expect(
-		after.handle_disconnect().get("private_state_cleared", false),
-		"disconnect after ack stays clear"
-	)
-	_expect(after._prototype_commit_count() == 1, "post-ack disconnect does not recommit")
-	_expect(
-		after.restore_public().get("accepted", false),
-		"post-ack reconnect restores sanitized result"
-	)
-	var next_request: Dictionary = _request("DH-FIX-003")
-	_expect(
-		after.begin_handoff(next_request).get("accepted", false),
-		"next distinct handoff begins after disconnect recovery"
-	)
-	_arm_acknowledgement(after, 4)
-	_expect(
-		after.acknowledge(_ack_request(next_request)).get("accepted", false),
-		"next distinct handoff acknowledges after disconnect recovery"
-	)
-	_expect(
-		after.restore_public().get("accepted", false),
-		"next distinct handoff restores after disconnect recovery"
-	)
-	_expect(
-		after._prototype_commit_count() == 2, "disconnect sequence records both distinct handoffs"
-	)
-	after.free()
-
 
 func _test_post_commit_control_matrix() -> void:
-	_exercise_post_commit_control("DH-FIX-003", 4, "cancel", false, false)
-	_exercise_post_commit_control("DH-FIX-007", 6, "interruption", false, false)
-	_exercise_post_commit_control("DH-FIX-003", 4, "cancel", true, false)
-	_exercise_post_commit_control("DH-FIX-007", 6, "interruption", true, false)
-	_exercise_post_commit_control("DH-FIX-003", 4, "repeated controls", false, true)
+	_exercise_post_commit_control("DH-FIX-003", 4, ["cancel"], false)
+	_exercise_post_commit_control("DH-FIX-007", 6, ["interruption"], false)
+	_exercise_post_commit_control("DH-FIX-003", 4, ["cancel"], true)
+	_exercise_post_commit_control("DH-FIX-007", 6, ["interruption"], true)
+	_exercise_post_commit_control(
+		"DH-FIX-003",
+		4,
+		["cancel", "interruption", "cancel", "interruption", "cancel", "interruption"],
+		false,
+	)
+	_exercise_post_commit_control("DH-FIX-003", 4, ["disconnect"], true)
+	_exercise_post_commit_control("DH-FIX-007", 6, ["cancel", "disconnect"], false)
+	_exercise_post_commit_control("DH-FIX-003", 4, ["interruption", "disconnect"], false)
+	_exercise_post_commit_control(
+		"DH-FIX-007", 6, ["disconnect", "disconnect", "disconnect"], false
+	)
+	_exercise_post_commit_control(
+		"DH-FIX-003",
+		4,
+		["cancel", "interruption", "disconnect", "cancel", "disconnect", "interruption"],
+		false,
+	)
 
 
 func _exercise_post_commit_control(
 	fixture_id: String,
 	steps: int,
-	control: String,
+	controls: Array[String],
 	fail_first: bool,
-	repeat_controls: bool,
 ) -> void:
 	_private_commit_signals.clear()
 	_public_event_signals.clear()
@@ -648,14 +632,18 @@ func _exercise_post_commit_control(
 	shell.prototype_private_commit_recorded.connect(_record_private_commit_signal)
 	shell.prototype_public_event_emitted.connect(_record_public_event_signal)
 	var request: Dictionary = _request(fixture_id)
-	_expect(shell.begin_handoff(request).get("accepted", false), "%s handoff begins" % control)
+	var label: String = " -> ".join(controls)
+	_expect(shell.begin_handoff(request).get("accepted", false), "%s handoff begins" % label)
 	var source: Dictionary = shell.fixture_signature()
 	_arm_acknowledgement(shell, steps)
 	var acknowledged: Dictionary = shell.acknowledge(_ack_request(request))
-	_expect(acknowledged.get("accepted", false), "%s acknowledgement commits" % control)
+	_expect(acknowledged.get("accepted", false), "%s acknowledgement commits" % label)
 	var pending_before: String = _pending_result_bytes(shell)
-	_expect(not pending_before.is_empty(), "%s retains a pending sanitized result" % control)
-	if control == "cancel" and not fail_first:
+	var pending_snapshot: Dictionary = shell._pending_public_result_snapshot()
+	var outputs_before: String = JSON.stringify(shell.privacy_outputs(), "", true)
+	var identities: PackedStringArray = shell._private_event_identities_snapshot()
+	_expect(not pending_before.is_empty(), "%s retains a pending sanitized result" % label)
+	if controls.has("cancel") and not fail_first:
 		var public_text: String = JSON.stringify(shell.public_snapshot(), "", true).to_lower()
 		_expect("cancel" not in public_text, "post-commit shield does not advertise Cancel")
 		_expect(
@@ -667,78 +655,72 @@ func _exercise_post_commit_control(
 	if fail_first:
 		_expect(
 			shell.restore_public(false).get("code") == "public_restoration_failed",
-			"%s path records an explicit restoration failure" % control,
+			"%s path records an explicit restoration failure" % label,
 		)
-	if repeat_controls:
-		var outputs_before: String = JSON.stringify(shell.privacy_outputs(), "", true)
-		var identities: PackedStringArray = shell._private_event_identities_snapshot()
-		for index: int in range(3):
-			var cancelled: Dictionary = shell.dispatch_semantic_action("ui_cancel_action")
-			var interrupted: Dictionary = shell.interrupt_presentation()
-			_expect(
-				(
-					cancelled.get("code") == "public_restoration_pending"
-					and interrupted.get("accepted", false)
-				),
-				"repeated control pair %d remains governed" % (index + 1),
-			)
-		_expect(
-			(
-				JSON.stringify(shell.privacy_outputs(), "", true) == outputs_before
-				and shell._private_event_identities_snapshot() == identities
-				and source.get("stable_seat_id") == "seat_03"
-				and source.get("source_revision") == 31
-				and source.get("rng_cursor") == 9
-			),
-			"repeated controls preserve diagnostics, identity, stable-seat, revision, and RNG",
-		)
-	else:
-		var result: Dictionary = (
-			shell.dispatch_semantic_action("ui_cancel_action")
-			if control == "cancel"
-			else shell.interrupt_presentation()
-		)
+	for index: int in range(controls.size()):
+		var control: String = controls[index]
+		var result: Dictionary = {}
+		match control:
+			"cancel":
+				result = shell.dispatch_semantic_action("ui_cancel_action")
+			"interruption":
+				result = shell.interrupt_presentation()
+			"disconnect":
+				result = shell.handle_disconnect()
 		_expect(
 			(
 				result.get("code") == "public_restoration_pending"
 				if control == "cancel"
 				else result.get("accepted", false)
 			),
-			"%s remains governed while restoration is pending" % control,
+			"%s control %d remains governed" % [label, index + 1],
 		)
-	_expect(_pending_result_bytes(shell) == pending_before, "%s preserves pending bytes" % control)
-	_expect(
-		shell.mode_name() == "recovery" and shell.private_state_cleared(),
-		"%s remains clear and recoverable" % control,
-	)
-	_expect(
-		(
-			shell._prototype_commit_count() == 1
-			and shell._private_event_identities_snapshot().size() == 1
-			and shell._public_event_count_snapshot() == 0
-			and _private_commit_signals.size() == 1
-			and _public_event_signals.is_empty()
-		),
-		"%s emits no duplicate or early event" % control,
-	)
-	var next_fixture: String = "DH-FIX-007" if fixture_id == "DH-FIX-003" else "DH-FIX-003"
-	_expect(
-		not shell.begin_handoff(_request(next_fixture)).get("accepted", true),
-		"%s keeps the next handoff blocked" % control,
-	)
-	_expect(
-		_pending_result_bytes(shell) == pending_before, "blocked handoff preserves pending bytes"
-	)
-	_expect(shell.restore_public().get("accepted", false), "%s restoration retries" % control)
-	_expect_single_projection(shell)
+		_expect(
+			_pending_result_bytes(shell) == pending_before, "%s preserves pending bytes" % label
+		)
+		_expect(
+			shell.mode_name() == "recovery" and shell.private_state_cleared(),
+			"%s remains clear and recoverable" % label,
+		)
+		_expect(
+			(
+				(
+					shell._exactly_once_projection_evidence()
+					== PackedInt32Array([1, 1, 0, 0, 0, 0, 0, 0])
+				)
+				and _private_commit_signals.size() == 1
+				and _public_event_signals.is_empty()
+				and shell._private_event_identities_snapshot() == identities
+				and JSON.stringify(shell.privacy_outputs(), "", true) == outputs_before
+			),
+			"%s emits no event or output during pending control" % label,
+		)
 	_expect(
 		(
 			acknowledged.get("fixture_unchanged", false)
 			and not str(source.get("stable_seat_id", "")).is_empty()
+			and (
+				int(source.get("source_revision", -1))
+				== int(pending_snapshot.get("source_revision", -2))
+			)
+			and int(pending_snapshot.get("result_revision", -1)) >= 0
 			and int(source.get("rng_cursor", -1)) >= 0
 		),
-		"%s preserves stable-seat and RNG evidence" % control,
+		"%s preserves stable-seat, source/result revision, and RNG evidence" % label,
 	)
+	var next_fixture: String = "DH-FIX-007" if fixture_id == "DH-FIX-003" else "DH-FIX-003"
+	_expect(
+		not shell.begin_handoff(_request(next_fixture)).get("accepted", true),
+		"%s keeps the next handoff blocked" % label,
+	)
+	_expect(
+		_pending_result_bytes(shell) == pending_before, "blocked handoff preserves pending bytes"
+	)
+	_expect(shell.restore_public().get("accepted", false), "%s restoration retries" % label)
+	_expect_single_projection(shell)
+	var public_bytes: String = JSON.stringify(shell.privacy_outputs(), "", true).to_lower()
+	for hint: String in ["desirable", "undesirable"]:
+		_expect(hint not in public_bytes, "%s excludes public %s leakage" % [label, hint])
 	var next_begun: Dictionary = shell.begin_handoff(_request(next_fixture))
 	var next_deferred: Dictionary = shell.cancel_or_defer()
 	_expect(

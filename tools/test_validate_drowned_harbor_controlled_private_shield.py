@@ -327,6 +327,66 @@ def main() -> int:
             ),
         ),
         (
+            "pending disconnect is restricted to RESTORING",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "func handle_disconnect() -> Dictionary:\n"
+                "\tif not _pending_public_result.is_empty():",
+                "func handle_disconnect() -> Dictionary:\n"
+                "\tif _mode == SurfaceMode.RESTORING:",
+            ),
+        ),
+        (
+            "pending disconnect moves to neutral shield",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "\t\t_mode = SurfaceMode.RECOVERY\n"
+                "\t\t_status = NEUTRAL_SHIELD_TEXT\n"
+                "\t\t_lifecycle_audit.append(\"post_commit_disconnect_recovery_preserved\")",
+                "\t\t_mode = SurfaceMode.NEUTRAL_SHIELD\n"
+                "\t\t_status = NEUTRAL_SHIELD_TEXT\n"
+                "\t\t_lifecycle_audit.append(\"post_commit_disconnect_recovery_preserved\")",
+            ),
+        ),
+        (
+            "pending disconnect clears result",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "func handle_disconnect() -> Dictionary:\n",
+                "func handle_disconnect() -> Dictionary:\n\t_pending_public_result.clear()\n",
+            ),
+        ),
+        (
+            "pending disconnect full clear permits a new handoff",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "func handle_disconnect() -> Dictionary:\n"
+                "\tif not _pending_public_result.is_empty():\n"
+                "\t\t_clear_private_state_preserving_public_result()",
+                "func handle_disconnect() -> Dictionary:\n"
+                "\tif not _pending_public_result.is_empty():\n"
+                "\t\t_clear_private_application_state()",
+            ),
+        ),
+        (
+            "pending disconnect creates a second private commit",
+            lambda: source_mutation(
+                SHELL_PATH,
+                'append("post_commit_disconnect_recovery_preserved")',
+                'append("post_commit_disconnect_recovery_preserved")\n'
+                "\t\t_commit_count += 1",
+            ),
+        ),
+        (
+            "pending disconnect emits a public event early",
+            lambda: source_mutation(
+                SHELL_PATH,
+                'append("post_commit_disconnect_recovery_preserved")',
+                'append("post_commit_disconnect_recovery_preserved")\n'
+                "\t\tprototype_public_event_emitted.emit({})",
+            ),
+        ),
+        (
             "post-interruption restoration impossible",
             lambda: source_mutation(
                 SHELL_PATH,
@@ -354,7 +414,7 @@ def main() -> int:
             ),
         ),
         (
-            "post-control restoration omits public history entry",
+            "post-control or disconnect restoration omits public history entry",
             lambda: source_mutation(
                 SHELL_PATH,
                 "_public_history.append(event.duplicate(true))",

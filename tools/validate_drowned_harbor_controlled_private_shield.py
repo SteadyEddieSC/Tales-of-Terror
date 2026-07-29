@@ -597,6 +597,41 @@ def validate_godot_sources_text(
         "_pending_public_result.clear()" not in cancel,
         "Cancel must not clear a committed pending public result",
     )
+    disconnect = shell[
+        shell.index("func handle_disconnect(") : shell.index("func interrupt_presentation(")
+    ]
+    for phrase in (
+        "if not _pending_public_result.is_empty():",
+        "_clear_private_state_preserving_public_result()",
+        "_mode = SurfaceMode.RECOVERY",
+        "post_commit_disconnect_recovery_preserved",
+        '"pending_public_result": true',
+    ):
+        require(phrase in disconnect, f"post-commit disconnect recovery missing: {phrase}")
+    require(
+        "SurfaceMode.RESTORING" not in disconnect,
+        "pending-result disconnect recovery must not depend on RESTORING mode",
+    )
+    require(
+        "_pending_public_result.clear()" not in disconnect
+        and "_clear_private_application_state()" not in disconnect,
+        "disconnect must preserve a committed pending public result",
+    )
+    for prohibited in (
+        "_commit_count += 1",
+        "_public_event_count += 1",
+        "prototype_private_commit_recorded.emit",
+        "prototype_public_event_emitted.emit",
+        "restore_public(",
+    ):
+        require(prohibited not in disconnect, f"disconnect recovery emitted or committed: {prohibited}")
+    require(
+        disconnect.index("if not _pending_public_result.is_empty():")
+        < disconnect.index("_clear_private_state_preserving_public_result()")
+        < disconnect.index("_mode = SurfaceMode.RECOVERY")
+        < disconnect.index('"pending_public_result": true'),
+        "pending-result disconnect recovery order drifted",
+    )
     interruption = shell[
         shell.index("func interrupt_presentation(") : shell.index("func open_help(")
     ]
@@ -669,6 +704,8 @@ def validate_godot_sources_text(
         "_test_sequential_handoffs_and_identity_scoped_exactly_once",
         "_test_post_commit_control_matrix",
         "_exercise_post_commit_control",
+        '"disconnect", "disconnect", "disconnect"',
+        '"cancel", "interruption", "disconnect"',
         "_test_disconnect_and_reconnect_matrix",
         "_test_public_restoration_failure_recovers_deterministically",
         "_test_production_and_export_boundaries",
