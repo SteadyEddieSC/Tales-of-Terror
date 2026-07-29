@@ -267,6 +267,112 @@ def main() -> int:
             ),
         ),
         (
+            "RESTORING Cancel clears pending result",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "func cancel_or_defer() -> Dictionary:\n",
+                (
+                    "func cancel_or_defer() -> Dictionary:\n"
+                    "\tif _mode == SurfaceMode.RESTORING:\n"
+                    "\t\t_pending_public_result.clear()\n"
+                ),
+            ),
+        ),
+        (
+            "RECOVERY Cancel clears pending result",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "func cancel_or_defer() -> Dictionary:\n",
+                (
+                    "func cancel_or_defer() -> Dictionary:\n"
+                    "\tif _mode == SurfaceMode.RECOVERY:\n"
+                    "\t\t_pending_public_result.clear()\n"
+                ),
+            ),
+        ),
+        (
+            "post-commit shield advertises Cancel",
+            lambda: source_mutation(
+                SHELL_PATH,
+                'controller_prompts = "RESTORATION PENDING  |  X / H: HELP"',
+                'controller_prompts = "B / ESC: CANCEL  |  X / H: HELP"',
+            ),
+        ),
+        (
+            "pending interruption moves to neutral shield",
+            lambda: source_mutation(
+                SHELL_PATH,
+                (
+                    "\t\t_mode = SurfaceMode.RECOVERY\n"
+                    "\t\t_status = NEUTRAL_SHIELD_TEXT\n"
+                    "\t\t_lifecycle_audit.append(\"post_commit_interruption_recovery_preserved\")"
+                ),
+                (
+                    "\t\t_mode = SurfaceMode.NEUTRAL_SHIELD\n"
+                    "\t\t_status = NEUTRAL_SHIELD_TEXT\n"
+                    "\t\t_lifecycle_audit.append(\"post_commit_interruption_recovery_preserved\")"
+                ),
+            ),
+        ),
+        (
+            "pending interruption clears result",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "func interrupt_presentation() -> Dictionary:\n",
+                (
+                    "func interrupt_presentation() -> Dictionary:\n"
+                    "\tif not _pending_public_result.is_empty():\n"
+                    "\t\t_pending_public_result.clear()\n"
+                ),
+            ),
+        ),
+        (
+            "post-interruption restoration impossible",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "if _mode not in [SurfaceMode.RESTORING, SurfaceMode.RECOVERY]:",
+                "if _mode != SurfaceMode.RESTORING:",
+            ),
+        ),
+        (
+            "new handoff allowed before pending restoration",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "or not _pending_public_result.is_empty()",
+                "or false # pending restoration ignored",
+            ),
+        ),
+        (
+            "post-commit Cancel creates second private commit",
+            lambda: source_mutation(
+                SHELL_PATH,
+                'append("post_commit_cancel_rejected_restoration_preserved")',
+                (
+                    'append("post_commit_cancel_rejected_restoration_preserved")\n'
+                    "\t\t_commit_count += 1"
+                ),
+            ),
+        ),
+        (
+            "post-control restoration omits public history entry",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "_public_history.append(event.duplicate(true))",
+                "pass # post-control history omitted",
+            ),
+        ),
+        (
+            "post-control restoration duplicates public event",
+            lambda: source_mutation(
+                SHELL_PATH,
+                "prototype_public_event_emitted.emit(event.duplicate(true))",
+                (
+                    "prototype_public_event_emitted.emit(event.duplicate(true))\n"
+                    "\t\tprototype_public_event_emitted.emit(event.duplicate(true))"
+                ),
+            ),
+        ),
+        (
             "missing payload clearing",
             lambda: source_mutation(SURFACE_PATH, "\t_private_payload.clear()", "\tpass # payload retained"),
         ),

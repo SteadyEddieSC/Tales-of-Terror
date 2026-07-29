@@ -25,6 +25,12 @@ var _public_event_signals: Array[Dictionary] = []
 
 
 func _initialize() -> void:
+	if OS.get_cmdline_user_args().has("--post-commit-only"):
+		_test_post_commit_control_matrix()
+		if _failures == 0:
+			print("Drowned Harbor post-commit control tests passed")
+		quit(_failures)
+		return
 	_test_fixture_inventory_and_bindings()
 	_test_neutral_shield_precedes_private_request()
 	_test_bargain_authorized_reveal_and_acknowledgement()
@@ -36,6 +42,7 @@ func _initialize() -> void:
 	_test_deterministic_repeated_inputs_are_byte_equivalent()
 	_test_presentation_and_help_consume_no_rng()
 	_test_sequential_handoffs_and_identity_scoped_exactly_once()
+	_test_post_commit_control_matrix()
 	_test_fail_closed_request_matrix()
 	_test_private_surface_unavailable_and_no_phone_fallback()
 	_test_disconnect_and_reconnect_matrix()
@@ -553,6 +560,10 @@ func _test_private_surface_unavailable_and_no_phone_fallback() -> void:
 		shell.public_snapshot().get("public_text") == "PRIVATE REVIEW IN PROGRESS",
 		"fallback remains neutral"
 	)
+	_expect(
+		"CANCEL" in str(shell.public_snapshot().get("controller_prompts", "")),
+		"pre-commit fallback still advertises governed Cancel/Defer",
+	)
 	_expect(shell._prototype_commit_count() == 0, "no-phone fallback commits nothing")
 	_expect(shell.private_surface_snapshot().is_empty(), "no-phone fallback exposes no terms")
 	_expect(
@@ -616,12 +627,132 @@ func _test_disconnect_and_reconnect_matrix() -> void:
 	after.free()
 
 
+func _test_post_commit_control_matrix() -> void:
+	_exercise_post_commit_control("DH-FIX-003", 4, "cancel", false, false)
+	_exercise_post_commit_control("DH-FIX-007", 6, "interruption", false, false)
+	_exercise_post_commit_control("DH-FIX-003", 4, "cancel", true, false)
+	_exercise_post_commit_control("DH-FIX-007", 6, "interruption", true, false)
+	_exercise_post_commit_control("DH-FIX-003", 4, "repeated controls", false, true)
+
+
+func _exercise_post_commit_control(
+	fixture_id: String,
+	steps: int,
+	control: String,
+	fail_first: bool,
+	repeat_controls: bool,
+) -> void:
+	_private_commit_signals.clear()
+	_public_event_signals.clear()
+	var shell: DrownedHarborControlledPrivateShieldShell = _new_shell()
+	shell.prototype_private_commit_recorded.connect(_record_private_commit_signal)
+	shell.prototype_public_event_emitted.connect(_record_public_event_signal)
+	var request: Dictionary = _request(fixture_id)
+	_expect(shell.begin_handoff(request).get("accepted", false), "%s handoff begins" % control)
+	var source: Dictionary = shell.fixture_signature()
+	_arm_acknowledgement(shell, steps)
+	var acknowledged: Dictionary = shell.acknowledge(_ack_request(request))
+	_expect(acknowledged.get("accepted", false), "%s acknowledgement commits" % control)
+	var pending_before: String = _pending_result_bytes(shell)
+	_expect(not pending_before.is_empty(), "%s retains a pending sanitized result" % control)
+	if control == "cancel" and not fail_first:
+		var public_text: String = JSON.stringify(shell.public_snapshot(), "", true).to_lower()
+		_expect("cancel" not in public_text, "post-commit shield does not advertise Cancel")
+		_expect(
+			"cancel" not in str(shell.open_help().get("guidance", "")).to_lower(),
+			"post-commit Help does not advertise Cancel",
+		)
+		for hint: String in ["bargain", "objective", "seat_03", "surrender", "black_bell"]:
+			_expect(hint not in public_text, "post-commit shield excludes %s hint" % hint)
+	if fail_first:
+		_expect(
+			shell.restore_public(false).get("code") == "public_restoration_failed",
+			"%s path records an explicit restoration failure" % control,
+		)
+	if repeat_controls:
+		var outputs_before: String = JSON.stringify(shell.privacy_outputs(), "", true)
+		var identities: PackedStringArray = shell._private_event_identities_snapshot()
+		for index: int in range(3):
+			var cancelled: Dictionary = shell.dispatch_semantic_action("ui_cancel_action")
+			var interrupted: Dictionary = shell.interrupt_presentation()
+			_expect(
+				(
+					cancelled.get("code") == "public_restoration_pending"
+					and interrupted.get("accepted", false)
+				),
+				"repeated control pair %d remains governed" % (index + 1),
+			)
+		_expect(
+			(
+				JSON.stringify(shell.privacy_outputs(), "", true) == outputs_before
+				and shell._private_event_identities_snapshot() == identities
+				and source.get("stable_seat_id") == "seat_03"
+				and source.get("source_revision") == 31
+				and source.get("rng_cursor") == 9
+			),
+			"repeated controls preserve diagnostics, identity, stable-seat, revision, and RNG",
+		)
+	else:
+		var result: Dictionary = (
+			shell.dispatch_semantic_action("ui_cancel_action")
+			if control == "cancel"
+			else shell.interrupt_presentation()
+		)
+		_expect(
+			(
+				result.get("code") == "public_restoration_pending"
+				if control == "cancel"
+				else result.get("accepted", false)
+			),
+			"%s remains governed while restoration is pending" % control,
+		)
+	_expect(_pending_result_bytes(shell) == pending_before, "%s preserves pending bytes" % control)
+	_expect(
+		shell.mode_name() == "recovery" and shell.private_state_cleared(),
+		"%s remains clear and recoverable" % control,
+	)
+	_expect(
+		(
+			shell._prototype_commit_count() == 1
+			and shell._private_event_identities_snapshot().size() == 1
+			and shell._public_event_count_snapshot() == 0
+			and _private_commit_signals.size() == 1
+			and _public_event_signals.is_empty()
+		),
+		"%s emits no duplicate or early event" % control,
+	)
+	var next_fixture: String = "DH-FIX-007" if fixture_id == "DH-FIX-003" else "DH-FIX-003"
+	_expect(
+		not shell.begin_handoff(_request(next_fixture)).get("accepted", true),
+		"%s keeps the next handoff blocked" % control,
+	)
+	_expect(
+		_pending_result_bytes(shell) == pending_before, "blocked handoff preserves pending bytes"
+	)
+	_expect(shell.restore_public().get("accepted", false), "%s restoration retries" % control)
+	_expect_single_projection(shell)
+	_expect(
+		(
+			acknowledged.get("fixture_unchanged", false)
+			and not str(source.get("stable_seat_id", "")).is_empty()
+			and int(source.get("rng_cursor", -1)) >= 0
+		),
+		"%s preserves stable-seat and RNG evidence" % control,
+	)
+	var next_begun: Dictionary = shell.begin_handoff(_request(next_fixture))
+	var next_deferred: Dictionary = shell.cancel_or_defer()
+	_expect(
+		next_begun.get("accepted", false) and next_deferred.get("accepted", false),
+		"next distinct handoff begins and can defer",
+	)
+	shell.free()
+
+
 func _test_cancellation_and_interruption_clear_state() -> void:
 	var cancelled: DrownedHarborControlledPrivateShieldShell = _new_shell()
 	cancelled.begin_handoff(_request("DH-FIX-003"))
 	_expect(cancelled.cancel_or_defer().get("accepted", false), "cancellation succeeds")
 	_expect(cancelled.private_state_cleared(), "cancellation clears private state")
-	_expect(cancelled._prototype_commit_count() == 0, "cancellation commits nothing")
 	cancelled.free()
 
 	var interrupted: DrownedHarborControlledPrivateShieldShell = _new_shell()
@@ -807,6 +938,32 @@ func _arm_acknowledgement(
 		shell.dispatch_semantic_action("ui_confirm").get("accepted", false),
 		"semantic Confirm arms explicit acknowledgement",
 	)
+
+
+func _pending_result_bytes(shell: DrownedHarborControlledPrivateShieldShell) -> String:
+	return JSON.stringify(shell._pending_public_result_snapshot(), "", true)
+
+
+func _expect_single_projection(shell: DrownedHarborControlledPrivateShieldShell) -> void:
+	var evidence_ok: bool = (
+		shell._exactly_once_projection_evidence() == PackedInt32Array([1, 1, 1, 1, 1, 1, 1, 1])
+		and _private_commit_signals.size() == 1
+		and _public_event_signals.size() == 1
+	)
+	_expect(evidence_ok, "restoration retains one identity, count, signal, and output")
+	var outputs: Dictionary = shell.privacy_outputs()
+	var public_bytes: String = JSON.stringify(
+		{"outputs": outputs, "snapshot": shell.public_snapshot()}, "", true
+	)
+	_expect(PRIVATE_MARKER not in public_bytes, "restoration leaks no private marker")
+	var duplicate: Dictionary = shell.restore_public()
+	var duplicate_safe: bool = (
+		shell._pending_public_result_snapshot().is_empty()
+		and not duplicate.get("accepted", true)
+		and shell._public_event_count_snapshot() == 1
+		and _public_event_signals.size() == 1
+	)
+	_expect(duplicate_safe, "restoration clears pending state and rejects duplicate restoration")
 
 
 func _record_private_commit_signal(metadata: Dictionary) -> void:

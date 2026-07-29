@@ -13,7 +13,7 @@ The fixture inventory is exactly `DH-FIX-001` through `DH-FIX-007`. There is no 
 
 ## Neutral shield contract
 
-`DrownedHarborControlledPrivateShieldShell` replaces the public presentation with an information-neutral neutral shield before any private payload is requested. The shared screen says only `PRIVATE REVIEW IN PROGRESS`; its color, icon, animation, layout, captions, focus, controller prompts, timing field, shared audio requests, and empty seat rail carry no seat, topic, target, benefit, cost, desirability, inherited-state, choice, or result hint. Critical cancel and Help guidance remains text-readable with voice disabled.
+`DrownedHarborControlledPrivateShieldShell` replaces the public presentation with an information-neutral neutral shield before any private payload is requested. The shared screen says only `PRIVATE REVIEW IN PROGRESS`; its color, icon, animation, layout, captions, focus, controller prompts, timing field, shared audio requests, and empty seat rail carry no seat, topic, target, benefit, cost, desirability, inherited-state, choice, or result hint. Before commitment, critical Cancel/Defer and Help guidance remains text-readable with voice disabled. While sanitized public restoration is pending, the shield replaces Cancel with neutral `RESTORATION PENDING` and Help guidance.
 
 The initial private focus is informational or cancellation-oriented. Confirm/acknowledge is never the initial focus. Timeout, passive focus, held input, animation completion, disconnect, reconnect, or private-surface availability cannot accept a handoff.
 
@@ -39,7 +39,7 @@ The inherited-state handoff retains `seat_07`, controller governance, form, heal
 
 ## Clearing and public restoration
 
-Before public restoration, the model clears the private payload, private event, derived private presentation, revealing focus/selection, pending acknowledgement, binding/handoff references, private caption request, and private audio requests. The shell then clears its projection and adapter reference. Only after those checks succeed can it project a sanitized public event and resolution. A restoration failure remains behind the neutral shield and retries deterministically. A subsequent handoff cannot open while uncleared private state or a pending public restoration exists.
+Before public restoration, the model clears the private payload, private event, derived private presentation, revealing focus/selection, pending acknowledgement, binding/handoff references, private caption request, and private audio requests. The shell then clears its projection and adapter reference. Only after those checks succeed can it project a sanitized public event and resolution. Once acknowledgement commits, semantic Cancel rejects with `public_restoration_pending`, preserves the pending event identity and sanitized resolution byte-equivalently, and moves or remains in recovery. A presentation interruption with a pending result performs only private-layer clearing and also moves or remains in recovery. Restoration failure, repeated Cancel, and repeated interruption therefore retain one deterministic reprojection path without recommit, duplicate public output, a new handoff, or private diagnostics. A subsequent handoff cannot open while uncleared private state or a pending public restoration exists.
 
 This is an application-state and projection proof; it does not claim secure-memory erasure, privacy certification, or security certification.
 

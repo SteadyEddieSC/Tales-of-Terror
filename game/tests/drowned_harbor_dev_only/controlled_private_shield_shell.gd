@@ -297,6 +297,20 @@ func restore_public(succeeds: bool = true) -> Dictionary:
 
 
 func cancel_or_defer() -> Dictionary:
+	if not _pending_public_result.is_empty():
+		_clear_private_state_preserving_public_result()
+		_help_open = false
+		_mode = SurfaceMode.RECOVERY
+		_status = NEUTRAL_SHIELD_TEXT
+		_lifecycle_audit.append("post_commit_cancel_rejected_restoration_preserved")
+		_refresh_ui()
+		return {
+			"accepted": false,
+			"code": "public_restoration_pending",
+			"commit_count": _commit_count,
+			"pending_public_result": true,
+			"private_state_cleared": private_state_cleared(),
+		}
 	_clear_private_application_state()
 	_help_open = false
 	_mode = SurfaceMode.PUBLIC_READY
@@ -325,6 +339,19 @@ func handle_disconnect() -> Dictionary:
 
 
 func interrupt_presentation() -> Dictionary:
+	if not _pending_public_result.is_empty():
+		_clear_private_state_preserving_public_result()
+		_help_open = false
+		_mode = SurfaceMode.RECOVERY
+		_status = NEUTRAL_SHIELD_TEXT
+		_lifecycle_audit.append("post_commit_interruption_recovery_preserved")
+		_refresh_ui()
+		return {
+			"accepted": true,
+			"mode": mode_name(),
+			"pending_public_result": true,
+			"private_state_cleared": private_state_cleared(),
+		}
 	_private_surface.clear_private_state()
 	_private_projection_result.clear()
 	_adapter.clear_loaded_fixture()
@@ -340,9 +367,12 @@ func open_help() -> Dictionary:
 	_help_open = true
 	_status = NEUTRAL_SHIELD_TEXT
 	_refresh_ui()
+	var guidance: String = "Use the authorized private surface, or cancel and continue safely."
+	if not _pending_public_result.is_empty():
+		guidance = "Public restoration is pending. Retry the governed restoration."
 	return {
 		"accepted": true,
-		"guidance": "Use the authorized private surface, or cancel and continue safely.",
+		"guidance": guidance,
 		"public_snapshot": public_snapshot(),
 	}
 
@@ -381,11 +411,14 @@ func public_snapshot() -> Dictionary:
 			SurfaceMode.RECOVERY,
 		]
 	):
+		var controller_prompts: String = "B / ESC: CANCEL  |  X / H: HELP"
+		if not _pending_public_result.is_empty():
+			controller_prompts = "RESTORATION PENDING  |  X / H: HELP"
 		return {
 			"animation": NEUTRAL_SHIELD_ANIMATION,
 			"caption": NEUTRAL_SHIELD_TEXT,
 			"color": NEUTRAL_SHIELD_COLOR,
-			"controller_prompts": "B / ESC: CANCEL  |  X / H: HELP",
+			"controller_prompts": controller_prompts,
 			"focus": NEUTRAL_SHIELD_FOCUS,
 			"help_open": _help_open,
 			"icon": NEUTRAL_SHIELD_ICON,
@@ -466,6 +499,25 @@ func _public_event_identities_snapshot() -> PackedStringArray:
 	return identities
 
 
+func _pending_public_result_snapshot() -> Dictionary:
+	return _pending_public_result.duplicate(true)
+
+
+func _exactly_once_projection_evidence() -> PackedInt32Array:
+	return PackedInt32Array(
+		[
+			_commit_count,
+			_committed_private_event_identities.size(),
+			_public_event_count,
+			_committed_public_event_identities.size(),
+			_public_history.size(),
+			_public_replay.size(),
+			_public_transcript.size(),
+			_mirrored_output.size(),
+		]
+	)
+
+
 func mode_name() -> String:
 	return str(SurfaceMode.keys()[_mode]).to_lower()
 
@@ -496,6 +548,12 @@ func _clear_private_application_state() -> void:
 	_private_surface.clear_private_state()
 	_private_projection_result.clear()
 	_pending_public_result.clear()
+	_adapter.clear_loaded_fixture()
+
+
+func _clear_private_state_preserving_public_result() -> void:
+	_private_surface.clear_private_state()
+	_private_projection_result.clear()
 	_adapter.clear_loaded_fixture()
 
 

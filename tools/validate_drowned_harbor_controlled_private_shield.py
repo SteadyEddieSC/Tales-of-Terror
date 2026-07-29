@@ -480,6 +480,10 @@ def validate_godot_sources_text(
         < begin_handoff.index('append("private_payload_requested")'),
         "source lifecycle must enter the neutral shield before private request",
     )
+    require(
+        "or not _pending_public_result.is_empty()" in begin_handoff,
+        "new handoff must remain blocked while public restoration is pending",
+    )
     combined_runtime = adapter + surface + shell
     require("timeout" not in combined_runtime.lower(), "timeout authority is prohibited")
     require(
@@ -557,6 +561,11 @@ def validate_godot_sources_text(
     ):
         require(component in identity_builder, f"governed event identity missing: {component}")
     restoration = shell[shell.index("func restore_public(") : shell.index("func cancel_or_defer(")]
+    require(
+        "if _mode not in [SurfaceMode.RESTORING, SurfaceMode.RECOVERY]:"
+        in restoration,
+        "public restoration must remain callable from restoring and recovery modes",
+    )
     for phrase in (
         "_committed_public_event_identities.has(event_identity)",
         "_committed_public_event_identities[event_identity] = true",
@@ -566,6 +575,73 @@ def validate_godot_sources_text(
         "prototype_public_event_emitted.emit(event.duplicate(true))",
     ):
         require(phrase in restoration, f"identity-scoped public restoration missing: {phrase}")
+    for phrase in (
+        "_public_history.append(event.duplicate(true))",
+        "_public_replay.append(event.duplicate(true))",
+        "prototype_public_event_emitted.emit(event.duplicate(true))",
+    ):
+        require(
+            restoration.count(phrase) == 1,
+            f"public restoration exactly-once operation drifted: {phrase}",
+        )
+    cancel = shell[shell.index("func cancel_or_defer(") : shell.index("func handle_disconnect(")]
+    for phrase in (
+        "if not _pending_public_result.is_empty():",
+        "_clear_private_state_preserving_public_result()",
+        "_mode = SurfaceMode.RECOVERY",
+        '"code": "public_restoration_pending"',
+        "_clear_private_application_state()",
+    ):
+        require(phrase in cancel, f"mode-aware Cancel path missing: {phrase}")
+    require(
+        "_pending_public_result.clear()" not in cancel,
+        "Cancel must not clear a committed pending public result",
+    )
+    interruption = shell[
+        shell.index("func interrupt_presentation(") : shell.index("func open_help(")
+    ]
+    for phrase in (
+        "if not _pending_public_result.is_empty():",
+        "_clear_private_state_preserving_public_result()",
+        "_mode = SurfaceMode.RECOVERY",
+        "post_commit_interruption_recovery_preserved",
+    ):
+        require(phrase in interruption, f"post-commit interruption recovery missing: {phrase}")
+    require(
+        "_pending_public_result.clear()" not in interruption,
+        "interruption must not clear a committed pending public result",
+    )
+    preserving_clear = shell[
+        shell.index("func _clear_private_state_preserving_public_result(") : shell.index(
+            "func _reject_pending_action("
+        )
+    ]
+    for phrase in (
+        "_private_surface.clear_private_state()",
+        "_private_projection_result.clear()",
+        "_adapter.clear_loaded_fixture()",
+    ):
+        require(phrase in preserving_clear, f"private-only clearing helper missing: {phrase}")
+    require(
+        "_pending_public_result" not in preserving_clear,
+        "private-only clearing helper must preserve the pending public result",
+    )
+    public_snapshot = shell[
+        shell.index("func public_snapshot(") : shell.index("func private_surface_snapshot(")
+    ]
+    require(
+        "if not _pending_public_result.is_empty():" in public_snapshot
+        and 'controller_prompts = "RESTORATION PENDING  |  X / H: HELP"'
+        in public_snapshot,
+        "post-commit shield must advertise only neutral restoration-pending guidance",
+    )
+    help_path = shell[shell.index("func open_help(") : shell.index("func dispatch_semantic_action(")]
+    require(
+        "if not _pending_public_result.is_empty():" in help_path
+        and 'guidance = "Public restoration is pending. Retry the governed restoration."'
+        in help_path,
+        "post-commit Help must not advertise destructive cancellation",
+    )
     for prohibited in (
         "Time.get_ticks",
         "Time.get_unix",
@@ -591,6 +667,8 @@ def validate_godot_sources_text(
         "_test_private_values_never_enter_public_outputs",
         "_test_application_private_state_clears_before_public_restore",
         "_test_sequential_handoffs_and_identity_scoped_exactly_once",
+        "_test_post_commit_control_matrix",
+        "_exercise_post_commit_control",
         "_test_disconnect_and_reconnect_matrix",
         "_test_public_restoration_failure_recovers_deterministically",
         "_test_production_and_export_boundaries",
