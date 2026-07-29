@@ -94,8 +94,8 @@ def main() -> int:
     root = make_fixture()
     try:
         fixture_count, negative_count = validate(root)
-        assert fixture_count == 6
-        assert negative_count >= 26
+        assert fixture_count == 7
+        assert negative_count >= 31
     finally:
         shutil.rmtree(root)
 

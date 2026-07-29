@@ -128,6 +128,16 @@ EXPECTED_TRACE_BINDINGS = {
         False,
         {"invalid_action_recovery_projected"},
     ),
+    "DH-FIX-007": (
+        "DH-IS-016",
+        "DH-UI-016",
+        "controlled_private_surface",
+        True,
+        {
+            "inherited_private_state_acknowledged",
+            "stable_seat_human_takeover_committed",
+        },
+    ),
 }
 PUBLIC_SOURCE_PREFIXES = (
     "public.",
@@ -759,8 +769,8 @@ def validate_package(
     fixtures = package["fixtures"]
     require(
         isinstance(fixtures, list)
-        and len(fixtures) == 6,
-        "fixture package must contain exactly six fixtures",
+        and len(fixtures) == 7,
+        "fixture package must contain exactly seven fixtures",
     )
     fixture_ids = [fixture["fixture_id"] for fixture in fixtures]
     require(len(fixture_ids) == len(set(fixture_ids)), "fixture IDs contain duplicates")

@@ -327,7 +327,12 @@
         },
         "diagnostic_nonplayer": {
           "fixture_revision": "p0.14",
-          "authoring_note": "synthetic only"
+          "authoring_note": "synthetic only",
+          "controller_authority_id": "controller_authority_03",
+          "handoff_id": "dh_private_bargain_handoff_003",
+          "handoff_revision": 1,
+          "expected_trace_id": "DH-IS-007",
+          "valid_until_counter": 4
         }
       },
       "projection_map": {
@@ -815,6 +820,171 @@
       "human_validation_required": true,
       "human_evidence_claimed": false,
       "notes": "Synthetic recovery projection. It models no reducer and must leave authoritative state, RNG cursor, and stable-seat identity unchanged."
+    },
+    {
+      "fixture_id": "DH-FIX-007",
+      "title": "Inherited controlled-private state handoff projection",
+      "trace_id": "DH-IS-016",
+      "storyboard_id": "DH-UI-016",
+      "fixture_kind": "controlled_private_commit_projection",
+      "privacy_surface": "controlled_private_surface",
+      "status": "synthetic_test_only",
+      "seed": 9116,
+      "source_revision": 71,
+      "result_revision": 72,
+      "rng_cursor_before": 21,
+      "rng_cursor_after": 21,
+      "authoritative_commit": true,
+      "active_stable_seat_id": "seat_07",
+      "authorized_actor_kinds": [
+        "approved_takeover_controller"
+      ],
+      "projection_request": {
+        "fixture_id": "DH-FIX-007",
+        "source_revision": 71,
+        "actor_kind": "approved_takeover_controller",
+        "stable_seat_id": "seat_07",
+        "intent": "project_inherited_private_state_handoff"
+      },
+      "source_state": {
+        "public": {
+          "stage": "reusable_system",
+          "handoff_status": "neutral_shield_active",
+          "public_resolution": "Control transferred to the existing stable seat after private state was cleared.",
+          "caption": "Private review is complete. The existing stable seat continues.",
+          "history_label": "Stable-seat control transfer completed"
+        },
+        "seat_public": {
+          "seat_id": "seat_07",
+          "control_source": "game_control",
+          "location": "bellhouse_roof",
+          "public_form": "living",
+          "condition": "injured",
+          "health": 2,
+          "inventory_count": 1,
+          "history_count": 8,
+          "ending_identity": "seat_07_existing_ending_identity"
+        },
+        "private": {
+          "authorized_seat_id": "seat_07",
+          "role": "PRIVATE_HARBOR_WITNESS",
+          "faction": "PRIVATE_LANTERN_KEEPERS",
+          "objective": "PRIVATE_CARRY_THE_LAST_NAME_TO_LIGHTHOUSE",
+          "condition": "PRIVATE_SALT_FEVER_UNRESOLVED",
+          "inventory": [
+            "PRIVATE_CRACKED_GLASS_TOKEN"
+          ],
+          "knowledge": [
+            "PRIVATE_BELLHOUSE_ROOF_ROUTE"
+          ],
+          "surrogate_recap": [
+            "PRIVATE_SURROGATE_REFUSED_LEDGER_ERASURE"
+          ],
+          "obligations": [
+            "PRIVATE_RETURN_NAME_BEFORE_LAST_LIGHT"
+          ],
+          "legal_actions": [
+            "acknowledge_private_state",
+            "review_private_inventory",
+            "review_private_objective",
+            "review_surrogate_recap"
+          ]
+        },
+        "diagnostic_nonplayer": {
+          "fixture_revision": "p0.17",
+          "authoring_note": "synthetic only",
+          "controller_authority_id": "takeover_controller_authority_07",
+          "handoff_id": "dh_inherited_state_handoff_007",
+          "handoff_revision": 1,
+          "expected_trace_id": "DH-IS-016",
+          "valid_until_counter": 6
+        }
+      },
+      "projection_map": {
+        "public": {
+          "handoff_status": "public.handoff_status",
+          "public_resolution": "public.public_resolution",
+          "caption": "public.caption",
+          "history_label": "public.history_label",
+          "seat_id": "seat_public.seat_id"
+        },
+        "private": {
+          "seat_id": "private.authorized_seat_id",
+          "role": "private.role",
+          "faction": "private.faction",
+          "objective": "private.objective",
+          "condition": "private.condition",
+          "inventory": "private.inventory",
+          "knowledge": "private.knowledge",
+          "surrogate_recap": "private.surrogate_recap",
+          "obligations": "private.obligations",
+          "legal_actions": "private.legal_actions"
+        }
+      },
+      "expected_events": [
+        {
+          "event_key": "inherited_private_state_acknowledged",
+          "classification": "private",
+          "exactly_once": true,
+          "payload_map": {
+            "seat_id": "private.authorized_seat_id",
+            "objective": "private.objective",
+            "result_revision": "$result_revision"
+          }
+        },
+        {
+          "event_key": "stable_seat_human_takeover_committed",
+          "classification": "public",
+          "exactly_once": true,
+          "payload_map": {
+            "seat_id": "seat_public.seat_id",
+            "result_revision": "$result_revision",
+            "source_revision": "$source_revision"
+          }
+        }
+      ],
+      "negative_cases": [
+        {
+          "case_id": "stale_revision",
+          "mutation": {
+            "source_revision_delta": -1
+          },
+          "expected_error": "stale_source_revision"
+        },
+        {
+          "case_id": "unauthorized_actor",
+          "mutation": {
+            "actor_kind": "spectator"
+          },
+          "expected_error": "unauthorized_actor"
+        },
+        {
+          "case_id": "wrong_stable_seat",
+          "mutation": {
+            "stable_seat_id": "seat_99"
+          },
+          "expected_error": "wrong_stable_seat"
+        },
+        {
+          "case_id": "unknown_intent",
+          "mutation": {
+            "intent": "unknown_fixture_intent"
+          },
+          "expected_error": "unauthorized_intent"
+        },
+        {
+          "case_id": "private_surface_missing",
+          "mutation": {
+            "privacy_surface": "public_shared"
+          },
+          "expected_error": "private_surface_required"
+        }
+      ],
+      "stable_seat_identity_before": "seat_07",
+      "stable_seat_identity_after": "seat_07",
+      "human_validation_required": true,
+      "human_evidence_claimed": false,
+      "notes": "Synthetic inherited private-state handoff. It transfers controller knowledge only, preserves the evolved stable seat and all prior state, consumes no RNG, and creates no production authority."
     }
   ],
   "human_validation_required": true,

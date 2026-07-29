@@ -299,7 +299,7 @@ def main() -> int:
             lambda root: rewrite_json(
                 root,
                 MANIFEST_PATH,
-                lambda data: data.__setitem__("future_work_issues", [85, 86]),
+                lambda data: data.__setitem__("future_work_issues", [84, 85, 86]),
             ),
         ),
         (

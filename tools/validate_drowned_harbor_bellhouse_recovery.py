@@ -40,6 +40,7 @@ EXPECTED_CATALOG_DIGEST = (
 EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
+    "res://tests/drowned_harbor_controlled_private_shield_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 EXPECTED_COMPONENTS = [
@@ -49,6 +50,10 @@ EXPECTED_COMPONENTS = [
     "res://tests/drowned_harbor_dev_only/bellhouse_fixture_adapter.gd",
     "res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.gd",
     "res://tests/drowned_harbor_dev_only/bellhouse_decision_shell.tscn",
+    "res://tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/controlled_private_surface.gd",
+    "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd",
+    "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn",
 ]
 
 
@@ -303,7 +308,7 @@ def validate_godot_components(root: Path, package: dict[str, Any]) -> None:
     for path in (ADAPTER_PATH, SHELL_PATH, SCENE_PATH, TEST_PATH):
         require((root / path).is_file(), f"required P0.16 component missing: {path}")
         require(
-            str(path).startswith("game/tests/"),
+            path.as_posix().startswith("game/tests/"),
             f"P0.16 component escaped the test tree: {path}",
         )
     for path in (
@@ -440,12 +445,12 @@ def validate_input_contract(root: Path) -> None:
 def validate_manifest_and_production_boundary(root: Path) -> None:
     manifest = read_json(root / MANIFEST_PATH)
     require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83],
-        "manifest must record issue #83 as completed bounded work",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84],
+        "manifest must record issue #84 as completed bounded work",
     )
     require(
-        manifest.get("future_work_issues") == [84, 85, 86],
-        "issues #84 through #86 must remain future work",
+        manifest.get("future_work_issues") == [85, 86],
+        "issues #85 and #86 must remain future work",
     )
     require(
         manifest.get("allowed_entry_points") == EXPECTED_ENTRY_POINTS,
@@ -456,7 +461,7 @@ def validate_manifest_and_production_boundary(root: Path) -> None:
         "manifest P0.16 component set drifted",
     )
     require(
-        str(TECHNICAL_PATH) in manifest.get("source_authorities", []),
+        TECHNICAL_PATH.as_posix() in manifest.get("source_authorities", []),
         "manifest is missing the P0.16 technical authority",
     )
     for field in (
