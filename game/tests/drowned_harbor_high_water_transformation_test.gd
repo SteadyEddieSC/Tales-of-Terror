@@ -11,11 +11,26 @@ const SCENE_PATH: String = (
 	"res://tests/drowned_harbor_dev_only/" + "high_water_transformation_shell.tscn"
 )
 const PRIVATE_MARKER: String = "PRIVATE_"
+const UID_CASES: Array[Dictionary] = [
+	{
+		"uid_path": "res://tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd.uid",
+		"resource_path": "res://tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd",
+	},
+	{
+		"uid_path": "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.gd.uid",
+		"resource_path": "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.gd",
+	},
+	{
+		"uid_path": "res://tests/drowned_harbor_high_water_transformation_test.gd.uid",
+		"resource_path": "res://tests/drowned_harbor_high_water_transformation_test.gd",
+	},
+]
 
 var _failures: int = 0
 
 
 func _initialize() -> void:
+	_test_canonical_uid_sidecars_round_trip_and_remain_test_only()
 	_test_exact_fixture_load_and_identity()
 	_test_complete_full_and_skip_are_byte_equivalent()
 	_test_exactly_once_event_and_duplicate_reprojection()
@@ -38,6 +53,43 @@ func _initialize() -> void:
 	if _failures == 0:
 		print("Drowned Harbor High Water deterministic transformation tests passed")
 	quit(_failures)
+
+
+func _test_canonical_uid_sidecars_round_trip_and_remain_test_only() -> void:
+	var textual_uids: Dictionary = {}
+	var numeric_uids: Dictionary = {}
+	for uid_case: Dictionary in UID_CASES:
+		var uid_path: String = uid_case.get("uid_path", "")
+		var resource_path: String = uid_case.get("resource_path", "")
+		var uid_text: String = FileAccess.get_file_as_string(uid_path).strip_edges()
+		_expect(not uid_text.is_empty(), "%s contains one UID" % uid_path)
+		var numeric_uid: int = ResourceUID.text_to_id(uid_text)
+		_expect(numeric_uid != ResourceUID.INVALID_ID, "%s parses to a valid UID" % uid_path)
+		_expect(
+			ResourceUID.id_to_text(numeric_uid) == uid_text,
+			"%s round-trips through Godot ResourceUID" % uid_path,
+		)
+		_expect(not textual_uids.has(uid_text), "%s textual UID is distinct" % uid_path)
+		_expect(not numeric_uids.has(numeric_uid), "%s numeric UID is distinct" % uid_path)
+		textual_uids[uid_text] = true
+		numeric_uids[numeric_uid] = true
+		var script_resource: Script = load(resource_path)
+		_expect(script_resource != null, "%s associated script loads" % resource_path)
+		_expect(
+			ResourceUID.get_id_path(numeric_uid) == resource_path,
+			"%s UID is registered only to its intended test script" % uid_path,
+		)
+	_expect(textual_uids.size() == 3, "three canonical textual UIDs are unique")
+	_expect(numeric_uids.size() == 3, "three canonical numeric UIDs are unique")
+	var packed: PackedScene = load(SCENE_PATH)
+	_expect(packed != null, "canonical UID correction preserves High Water scene loading")
+	if packed != null:
+		var instance: Node = packed.instantiate()
+		_expect(
+			instance is DrownedHarborHighWaterTransformationShell,
+			"canonical UID correction preserves the intended test-only shell",
+		)
+		instance.free()
 
 
 func _test_exact_fixture_load_and_identity() -> void:

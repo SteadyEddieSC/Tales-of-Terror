@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Iterable
@@ -29,6 +30,17 @@ SCENE_PATH = Path(
     "game/tests/drowned_harbor_dev_only/high_water_transformation_shell.tscn"
 )
 TEST_PATH = Path("game/tests/drowned_harbor_high_water_transformation_test.gd")
+UID_SIDECAR_PATHS = (
+    ADAPTER_PATH.with_suffix(".gd.uid"),
+    SHELL_PATH.with_suffix(".gd.uid"),
+    TEST_PATH.with_suffix(".gd.uid"),
+)
+EXPECTED_UID_TEXTS = {
+    ADAPTER_PATH.with_suffix(".gd.uid"): "uid://c5s0l3fkk448w",
+    SHELL_PATH.with_suffix(".gd.uid"): "uid://c5s0l3fkln84w",
+    TEST_PATH.with_suffix(".gd.uid"): "uid://c5s0l3fklpldw",
+}
+CANONICAL_UID_PATTERN = re.compile(r"uid://[a-y0-8]{13}")
 ISOLATION_TEST_PATH = Path("game/tests/drowned_harbor_prototype_isolation_test.gd")
 MANIFEST_PATH = Path("game/tests/drowned_harbor_prototype_manifest_v1.json")
 README_PATH = Path("game/tests/drowned_harbor_dev_only/README.md")
@@ -133,6 +145,100 @@ def read_json(path: Path) -> dict[str, Any]:
         raise HighWaterValidationError(f"invalid JSON in {path}: {exc}") from exc
     require(isinstance(value, dict), f"JSON root must be an object: {path}")
     return value
+
+
+def tracked_uid_contents(root: Path = ROOT) -> dict[Path, str]:
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "-z", "--", "*.gd.uid"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise HighWaterValidationError(
+            "tracked Godot UID inventory could not be read"
+        ) from exc
+    paths = [
+        Path(value.decode("utf-8"))
+        for value in result.stdout.split(b"\0")
+        if value
+    ]
+    contents: dict[Path, str] = {}
+    for path in paths:
+        try:
+            contents[path] = (root / path).read_text(encoding="utf-8")
+        except FileNotFoundError as exc:
+            raise HighWaterValidationError(
+                f"tracked Godot UID sidecar is missing: {path}"
+            ) from exc
+    return contents
+
+
+def validate_uid_sidecar_contents(
+    new_contents: dict[Path, str],
+    tracked_contents: dict[Path, str],
+) -> None:
+    require(
+        tuple(new_contents) == UID_SIDECAR_PATHS,
+        "High Water UID sidecar inventory or order drifted",
+    )
+    authorized = {Path(value) for value in AUTHORIZED_PATHS}
+    textual_uids: list[str] = []
+    for path in UID_SIDECAR_PATHS:
+        require(path in authorized, f"High Water UID sidecar is unauthorized: {path}")
+        require(
+            path.is_relative_to(Path("game/tests")),
+            f"High Water UID sidecar escaped the test-only tree: {path}",
+        )
+        content = new_contents[path]
+        require(
+            content.endswith("\n") and content.count("\n") == 1 and "\r" not in content,
+            f"{path} must contain exactly one UID and a trailing newline",
+        )
+        uid_text = content[:-1]
+        require(uid_text.startswith("uid://"), f"{path} is missing the uid:// prefix")
+        payload = uid_text.removeprefix("uid://")
+        require(payload != "", f"{path} UID payload is empty")
+        require(len(payload) <= 13, f"{path} UID payload exceeds 13 characters")
+        require(len(payload) == 13, f"{path} must use the generated 13-character convention")
+        require(
+            CANONICAL_UID_PATTERN.fullmatch(uid_text) is not None,
+            f"{path} UID uses a noncanonical Godot character",
+        )
+        require(
+            uid_text == EXPECTED_UID_TEXTS[path],
+            f"{path} canonical round-trip UID identity drifted",
+        )
+        textual_uids.append(uid_text)
+    require(len(set(textual_uids)) == 3, "High Water UID sidecars must be distinct")
+    for path, content in tracked_contents.items():
+        if path in UID_SIDECAR_PATHS:
+            continue
+        other_uid = content.strip()
+        for uid_text in textual_uids:
+            require(
+                other_uid != uid_text,
+                f"High Water UID duplicates tracked sidecar {path}",
+            )
+
+
+def validate_uid_sidecars(root: Path = ROOT) -> None:
+    tracked_contents = tracked_uid_contents(root)
+    require(
+        all(path in tracked_contents for path in UID_SIDECAR_PATHS),
+        "all three High Water UID sidecars must exist and remain tracked",
+    )
+    for path in UID_SIDECAR_PATHS:
+        require((root / path).is_file(), f"required High Water UID sidecar missing: {path}")
+        require(
+            (root / path.with_suffix("")).is_file(),
+            f"High Water UID sidecar has no associated script: {path}",
+        )
+    validate_uid_sidecar_contents(
+        {path: tracked_contents[path] for path in UID_SIDECAR_PATHS},
+        tracked_contents,
+    )
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -736,6 +842,7 @@ def validate_godot_sources_text(
         "_test_no_duplicate_outputs_or_signals",
         "_test_repeated_projection_and_second_shell_are_deterministic",
         "_test_gameplay_and_unsupported_inputs_fail_closed",
+        "_test_canonical_uid_sidecars_round_trip_and_remain_test_only",
     ):
         require(phrase in test, f"focused Godot coverage missing: {phrase}")
     require(
@@ -944,6 +1051,7 @@ def validate(root: Path = ROOT) -> tuple[int, int, str]:
     fixture = validate_fixture_package(package, schema)
     proof = validate_deterministic_model(fixture)
     validate_governed_sources(root)
+    validate_uid_sidecars(root)
     validate_godot_sources_text(
         (root / ADAPTER_PATH).read_text(encoding="utf-8"),
         (root / SHELL_PATH).read_text(encoding="utf-8"),

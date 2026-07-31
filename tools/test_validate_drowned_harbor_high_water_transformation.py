@@ -25,6 +25,7 @@ from validate_drowned_harbor_high_water_transformation import (
     SUMMARY_PATH,
     TECHNICAL_PATH,
     TEST_PATH,
+    UID_SIDECAR_PATHS,
     WORKFLOW_PATH,
     HighWaterValidationError,
     fixture_by_id,
@@ -33,7 +34,9 @@ from validate_drowned_harbor_high_water_transformation import (
     validate_fixture_package,
     validate_godot_sources_text,
     validate_manifest_and_production_boundary,
+    validate_uid_sidecar_contents,
     validate_workflow_text,
+    tracked_uid_contents,
 )
 
 ROOT = Path(".")
@@ -148,6 +151,15 @@ def documentation_mutation(old: str, new: str) -> None:
     validate_documentation_text(technical, summary.replace(old, new, 1), readme)
 
 
+def uid_mutation(mutate: Callable[[dict[Path, str]], None]) -> None:
+    tracked = tracked_uid_contents(ROOT)
+    contents = {path: tracked[path] for path in UID_SIDECAR_PATHS}
+    mutate(contents)
+    mutated_tracked = tracked.copy()
+    mutated_tracked.update(contents)
+    validate_uid_sidecar_contents(contents, mutated_tracked)
+
+
 def high_water_fixture(package: dict) -> dict:
     return fixture_by_id(package, "DH-FIX-004")
 
@@ -167,6 +179,44 @@ def main() -> int:
     )
 
     mutations: list[tuple[str, Mutation]] = [
+        (
+            "overlength UID payload",
+            lambda: uid_mutation(
+                lambda contents: contents.__setitem__(
+                    UID_SIDECAR_PATHS[0], "uid://dhhighwateradp1\n"
+                )
+            ),
+        ),
+        (
+            "duplicate UID between new sidecars",
+            lambda: uid_mutation(
+                lambda contents: contents.__setitem__(
+                    UID_SIDECAR_PATHS[1], contents[UID_SIDECAR_PATHS[0]]
+                )
+            ),
+        ),
+        (
+            "invalid canonical UID character",
+            lambda: uid_mutation(
+                lambda contents: contents.__setitem__(
+                    UID_SIDECAR_PATHS[0], "uid://c5s0l3fkk44zw\n"
+                )
+            ),
+        ),
+        (
+            "missing UID prefix",
+            lambda: uid_mutation(
+                lambda contents: contents.__setitem__(
+                    UID_SIDECAR_PATHS[0], "c5s0l3fkk448w\n"
+                )
+            ),
+        ),
+        (
+            "empty UID file",
+            lambda: uid_mutation(
+                lambda contents: contents.__setitem__(UID_SIDECAR_PATHS[0], "")
+            ),
+        ),
         (
             "skip generates different result bytes",
             lambda: source_mutation(
