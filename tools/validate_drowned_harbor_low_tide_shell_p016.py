@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Retain the P0.15 Low Tide proof after P0.16 manifest progression."""
+"""Retain the P0.15 Low Tide proof through P0.18 manifest progression."""
 
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_controlled_private_shield_test.gd",
+    "res://tests/drowned_harbor_high_water_transformation_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 EXPECTED_COMPONENTS = [
@@ -27,19 +28,22 @@ EXPECTED_COMPONENTS = [
     "res://tests/drowned_harbor_dev_only/controlled_private_surface.gd",
     "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd",
     "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn",
+    "res://tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.gd",
+    "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.tscn",
 ]
 
 
 def validate_manifest_and_production_boundary(root: Path = ROOT) -> None:
-    """Validate P0.16 progression without weakening the Low Tide contract."""
+    """Validate P0.18 progression without weakening the Low Tide contract."""
     manifest = inherited.read_json(root / inherited.MANIFEST_PATH)
     inherited.require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84],
-        "manifest must record issue #84 as completed bounded work",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85],
+        "manifest must record exact completed work through issue #85",
     )
     inherited.require(
-        manifest.get("future_work_issues") == [85, 86],
-        "issues #85 and #86 must remain future work",
+        manifest.get("future_work_issues") == [86],
+        "issue #86 must remain the exact future work inventory",
     )
     inherited.require(
         manifest.get("allowed_entry_points") == EXPECTED_ENTRY_POINTS,
@@ -140,7 +144,7 @@ def main() -> int:
         )
         return 1
     print(
-        "Validated the full P0.15 Low Tide contract against P0.17 manifest progression"
+        "Validated the full P0.15 Low Tide contract through P0.18 manifest progression"
     )
     return 0
 

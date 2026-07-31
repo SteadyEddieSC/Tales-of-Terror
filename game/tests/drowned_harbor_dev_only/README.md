@@ -16,6 +16,9 @@ Everything in this directory is synthetic, test-only, and excluded from ordinary
 - `controlled_private_surface.gd` — local deterministic private-surface abstraction and clearing lifecycle.
 - `controlled_private_shield_shell.gd` — information-neutral shared-screen shield and sanitized restoration shell.
 - `controlled_private_shield_shell.tscn` — explicit test-only controlled-private scene.
+- `high_water_fixture_adapter.gd` — fail-closed exact reader and canonical result preparer for `DH-FIX-004`.
+- `high_water_transformation_shell.gd` — exactly-once High Water lifecycle and read-only transformed-board shell.
+- `high_water_transformation_shell.tscn` — explicit test-only High Water scene using placeholder geometry.
 
 ## P0.15 Low Tide boundary
 
@@ -55,6 +58,16 @@ Exactly-once tracking is scoped to deterministic fixture/handoff/source/result/e
 
 The no-phone fallback stays neutral, permits governed cancellation, deferral, and Help, and commits nothing. `DH-FIX-007` retains the same stable seat and existing state; it does not heal, reroll, restore inventory, reset objectives or conditions, erase history, or change ending identity.
 
+## P0.18 High Water deterministic transformation boundary
+
+The P0.18 proof binds `DH-FIX-004` to `DH-UI-008` / `DH-IS-008` and presents its settled result through the read-only obligations of `DH-UI-009` / `DH-IS-009`. Because the governed authored sources contain no concrete public Lighthouse Council direction, the bounded fixture extension uses `synthetic_council_direction_fixture_004`; it is synthetic test identity, not production story canon.
+
+The adapter validates fixture, trace, storyboard, actor, stable seat, source/result revisions, event key, once-only marker, public categories, route continuity, public hazards, explicit unchanged mechanism set, objective, form, seat locations, legal inspection inventory, and persistent summary. It prepares one canonical authoritative after-state and deterministic event identity before presentation branches. Full placeholder presentation and semantic skip commit the same result once, consume no RNG, emit one public event, and produce byte-equivalent state, payload, history, transformed board, summary, captions, transcript, replay, mirror, form, position, and inspection inventory.
+
+Pre-commit failures commit nothing. Post-commit caption, voice, projection, transcript, or replay failure preserves High Water and routes to the persistent public recap; post-commit recovery reprojects the existing result rather than recomputing. Duplicate transformation, skip, acknowledgement, replay, and recovery cannot append a second event, history, transcript, replay, mirror, or signal. Control remains blocked until the fixture-declared persistent summary exists and is acknowledged, then `seat_04` becomes the deterministic focus destination.
+
+The transformed-board proof retains recognizable Low-Tide placeholder geography and labels open, submerged, flooded-passable, water-only, unstable, damaged, and collapsed states with text plus shape/pattern descriptions. Its legal action inventory is inspection-only. It does not implement movement, route confirmation, rescue, hazards, encounters, factions, forms, resources, Last Light, endings, final water simulation, final animation, camera effects, final art, final audio, balance, or production authority.
+
 ## Privacy and evidence boundary
 
 Only public and approved seat-public fields are projected. Private fixture markers are deliberately present in the source fixtures so tests can prove they do not enter the public screen, captions, transcript, replay, diagnostics, recovery, or events.
@@ -70,6 +83,8 @@ python tools/validate_drowned_harbor_bellhouse_recovery.py
 python tools/test_validate_drowned_harbor_bellhouse_recovery.py
 python tools/validate_drowned_harbor_controlled_private_shield.py
 python tools/test_validate_drowned_harbor_controlled_private_shield.py
+python tools/validate_drowned_harbor_high_water_transformation.py
+python tools/test_validate_drowned_harbor_high_water_transformation.py
 python tools/validate_drowned_harbor_low_tide_shell_p016.py
 python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
 python tools/validate_drowned_harbor_projection_fixtures_p016.py
@@ -83,8 +98,9 @@ Godot 4.7.1-stable:
 ```bash
 godot --headless --path game --script res://tests/drowned_harbor_bellhouse_recovery_test.gd
 godot --headless --path game --script res://tests/drowned_harbor_controlled_private_shield_test.gd
+godot --headless --path game --script res://tests/drowned_harbor_high_water_transformation_test.gd
 godot --headless --path game --script res://tests/drowned_harbor_low_tide_shell_test.gd
 godot --headless --path game --script res://tests/drowned_harbor_prototype_isolation_test.gd
 ```
 
-Drowned Harbor remains development-only and absent from the production Tale catalog and provider. Lantern House remains the sole production/default Tale. Issue #44 is completed. Issue #39 remains the deferred human-evidence authority. Issues #85 and #86 remain blocked.
+Drowned Harbor remains development-only and absent from the production Tale catalog and provider. Lantern House remains the sole production/default Tale. Issue #44 is completed. Issue #39 remains the deferred human-evidence authority. Issue #86 remains future and blocked.

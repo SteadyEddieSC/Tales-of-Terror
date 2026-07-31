@@ -17,10 +17,14 @@ P016_TECHNICAL_AUTHORITY = (
 P017_TECHNICAL_AUTHORITY = (
     "docs/technical/Drowned_Harbor_Controlled_Private_Shield_Proof_v1.md"
 )
+P018_TECHNICAL_AUTHORITY = (
+    "docs/technical/Drowned_Harbor_High_Water_Deterministic_Transformation_v1.md"
+)
 EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_controlled_private_shield_test.gd",
+    "res://tests/drowned_harbor_high_water_transformation_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 EXPECTED_COMPONENTS = [
@@ -34,18 +38,21 @@ EXPECTED_COMPONENTS = [
     "res://tests/drowned_harbor_dev_only/controlled_private_surface.gd",
     "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd",
     "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn",
+    "res://tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.gd",
+    "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.tscn",
 ]
 
 
 def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
     """Run the inherited closed contract with P0.16 issue progression."""
     inherited.require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84],
-        "completed prototype work must be exactly issues #80 through #84",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85],
+        "completed prototype work must be exactly issues #80 through #85",
     )
     inherited.require(
-        manifest.get("future_work_issues") == [85, 86],
-        "future work issue set must remain #85 and #86",
+        manifest.get("future_work_issues") == [86],
+        "future work issue set must remain exactly #86",
     )
     inherited.require(
         P016_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
@@ -54,6 +61,10 @@ def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
     inherited.require(
         P017_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
         "P0.17 controlled-private technical authority must remain registered",
+    )
+    inherited.require(
+        P018_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
+        "P0.18 High Water technical authority must remain registered",
     )
     adjusted = copy.deepcopy(manifest)
     adjusted["completed_work_issues"] = [80, 81, 82]
@@ -89,7 +100,7 @@ def main() -> int:
         )
         return 1
     print(
-        "Validated inherited prototype isolation through P0.17 entry points, "
+        "Validated inherited prototype isolation through P0.18 entry points, "
         "components, issue progression, source authority, production invariance, "
         "and exports"
     )
