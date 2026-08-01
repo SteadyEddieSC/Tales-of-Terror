@@ -13,17 +13,17 @@ ROOT = Path(".")
 
 
 def validate_prototype_manifest(root: Path = ROOT) -> None:
-    """Retain the inherited engine while advancing through issue #84."""
+    """Retain the inherited engine while advancing through issue #85."""
     manifest: dict[str, Any] = inherited.read_json(
         root / inherited.PROTOTYPE_MANIFEST_PATH
     )
     inherited.require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84],
-        "prototype manifest must record completed work issues #80 through #84",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85],
+        "prototype manifest must record completed work issues #80 through #85",
     )
     inherited.require(
-        manifest.get("future_work_issues") == [85, 86],
-        "prototype manifest must leave issues #85 and #86 as future work",
+        manifest.get("future_work_issues") == [86],
+        "prototype manifest must leave issue #86 as future work",
     )
     inherited.require(
         manifest.get("fixture_packages")
@@ -68,7 +68,7 @@ def main() -> int:
         return 1
     package = inherited.read_json(ROOT / inherited.PACKAGE_PATH)
     print(
-        "Validated inherited projection engine through P0.17: "
+        "Validated inherited projection engine through P0.18: "
         f"{fixture_count} fixtures, {negative_count} fail-closed request cases, "
         f"canonical identity {inherited.canonical_sha256(package)}"
     )

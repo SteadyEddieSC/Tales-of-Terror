@@ -1,0 +1,249 @@
+name: Drowned Harbor High Water deterministic transformation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/drowned-harbor-high-water-transformation.yml'
+      - 'docs/preproduction/P0.18_Release_Summary.md'
+      - 'docs/technical/Drowned_Harbor_High_Water_Deterministic_Transformation_v1.md'
+      - 'game/tests/drowned_harbor_high_water_transformation_test.gd'
+      - 'game/tests/drowned_harbor_high_water_transformation_test.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/README.md'
+      - 'game/tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd'
+      - 'game/tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.gd'
+      - 'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.tscn'
+      - 'game/tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json'
+      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'tools/validate_drowned_harbor_high_water_transformation.py'
+      - 'tools/test_validate_drowned_harbor_high_water_transformation.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+      - 'tools/validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/validate_drowned_harbor_low_tide_shell_p016.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-high-water-transformation.yml'
+      - 'docs/preproduction/P0.18_Release_Summary.md'
+      - 'docs/technical/Drowned_Harbor_High_Water_Deterministic_Transformation_v1.md'
+      - 'game/tests/drowned_harbor_high_water_transformation_test.gd'
+      - 'game/tests/drowned_harbor_high_water_transformation_test.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/README.md'
+      - 'game/tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd'
+      - 'game/tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.gd'
+      - 'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.gd.uid'
+      - 'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.tscn'
+      - 'game/tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json'
+      - 'game/tests/drowned_harbor_prototype_isolation_test.gd'
+      - 'game/tests/drowned_harbor_prototype_manifest_v1.json'
+      - 'tools/validate_drowned_harbor_high_water_transformation.py'
+      - 'tools/test_validate_drowned_harbor_high_water_transformation.py'
+      - 'tools/validate_drowned_harbor_projection_fixtures_p016.py'
+      - 'tools/validate_drowned_harbor_prototype_isolation_p016.py'
+      - 'tools/validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/validate_drowned_harbor_bellhouse_recovery.py'
+      - 'tools/validate_drowned_harbor_low_tide_shell_p016.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Exactly-once High Water, skip equivalence, recovery, and read-only board
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Enforce exact P0.18 release boundary
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.head_ref == 'agent/p0.18-drowned-harbor-high-water-transformation'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          python - <<'PY'
+          import os
+          import subprocess
+
+          expected = {
+              '.github/workflows/drowned-harbor-high-water-transformation.yml',
+              'docs/preproduction/P0.18_Release_Summary.md',
+              'docs/technical/Drowned_Harbor_High_Water_Deterministic_Transformation_v1.md',
+              'game/tests/drowned_harbor_high_water_transformation_test.gd',
+              'game/tests/drowned_harbor_high_water_transformation_test.gd.uid',
+              'game/tests/drowned_harbor_dev_only/README.md',
+              'game/tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd',
+              'game/tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd.uid',
+              'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.gd',
+              'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.gd.uid',
+              'game/tests/drowned_harbor_dev_only/high_water_transformation_shell.tscn',
+              'game/tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json',
+              'game/tests/drowned_harbor_prototype_isolation_test.gd',
+              'game/tests/drowned_harbor_prototype_manifest_v1.json',
+              'tools/test_validate_drowned_harbor_high_water_transformation.py',
+              'tools/validate_drowned_harbor_high_water_transformation.py',
+              'tools/validate_drowned_harbor_projection_fixtures_p016.py',
+              'tools/validate_drowned_harbor_prototype_isolation_p016.py',
+              'tools/validate_drowned_harbor_controlled_private_shield.py',
+              'tools/validate_drowned_harbor_bellhouse_recovery.py',
+              'tools/validate_drowned_harbor_low_tide_shell_p016.py',
+          }
+          output = subprocess.check_output(
+              ['git', 'diff', '--name-only', f"origin/{os.environ['BASE_REF']}...HEAD"],
+              text=True,
+          )
+          actual = {line for line in output.splitlines() if line}
+          if actual != expected:
+              raise SystemExit(
+                  'P0.18 path boundary mismatch; '
+                  f'missing={sorted(expected - actual)}; '
+                  f'unexpected={sorted(actual - expected)}'
+              )
+          print('Validated exact 21-path P0.18 release boundary')
+          PY
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Install pinned validation dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+
+      - name: Validate P0.18 and inherited Drowned Harbor contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/p018-python
+          run_check() {
+            name="$1"
+            shift
+            set +e
+            "$@" 2>&1 | tee "artifacts/p018-python/${name}.txt"
+            status=${PIPESTATUS[0]}
+            set -e
+            echo "$status" > "artifacts/p018-python/${name}.status"
+            if [ "$status" -ne 0 ]; then exit "$status"; fi
+          }
+          run_check high-water-validator \
+            python tools/validate_drowned_harbor_high_water_transformation.py
+          run_check high-water-mutations \
+            python tools/test_validate_drowned_harbor_high_water_transformation.py
+          run_check controlled-private-validator \
+            python tools/validate_drowned_harbor_controlled_private_shield.py
+          run_check controlled-private-mutations \
+            python tools/test_validate_drowned_harbor_controlled_private_shield.py
+          run_check bellhouse-validator \
+            python tools/validate_drowned_harbor_bellhouse_recovery.py
+          run_check bellhouse-mutations \
+            python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          run_check low-tide-validator \
+            python tools/validate_drowned_harbor_low_tide_shell_p016.py
+          run_check low-tide-mutations \
+            python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
+          run_check projection-validator \
+            python tools/validate_drowned_harbor_projection_fixtures_p016.py
+          run_check projection-mutations \
+            python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
+          run_check isolation-validator \
+            python tools/validate_drowned_harbor_prototype_isolation_p016.py
+          run_check isolation-mutations \
+            python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
+
+      - name: Check P0.18 GDScript formatting and lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/p018-gdscript
+          set +e
+          gdformat --check \
+            game/tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd \
+            game/tests/drowned_harbor_dev_only/high_water_transformation_shell.gd \
+            game/tests/drowned_harbor_high_water_transformation_test.gd \
+            game/tests/drowned_harbor_prototype_isolation_test.gd \
+            2>&1 | tee artifacts/p018-gdscript/gdformat.txt
+          format_status=${PIPESTATUS[0]}
+          set -e
+          echo "$format_status" > artifacts/p018-gdscript/gdformat.status
+          if [ "$format_status" -ne 0 ]; then exit "$format_status"; fi
+          set +e
+          gdlint \
+            game/tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd \
+            game/tests/drowned_harbor_dev_only/high_water_transformation_shell.gd \
+            game/tests/drowned_harbor_high_water_transformation_test.gd \
+            game/tests/drowned_harbor_prototype_isolation_test.gd \
+            2>&1 | tee artifacts/p018-gdscript/gdlint.txt
+          lint_status=${PIPESTATUS[0]}
+          set -e
+          echo "$lint_status" > artifacts/p018-gdscript/gdlint.status
+          if [ "$lint_status" -ne 0 ]; then exit "$lint_status"; fi
+
+      - name: Download checksum-pinned Godot 4.7.1 stable
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
+          curl -fsSL -o godot.zip "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | sha512sum --check -
+          unzip -q godot.zip -d .godot-bin
+          chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
+          mkdir -p artifacts/p018-godot
+
+      - name: Run typed import and focused plus inherited Godot suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot=.godot-bin/Godot_v4.7.1-stable_linux.x86_64
+          run_godot() {
+            name="$1"
+            shift
+            set +e
+            "$godot" "$@" 2>&1 | tee "artifacts/p018-godot/${name}.txt"
+            status=${PIPESTATUS[0]}
+            set -e
+            echo "$status" > "artifacts/p018-godot/${name}.status"
+            if [ "$status" -ne 0 ]; then exit "$status"; fi
+          }
+          run_godot typed-import --headless --editor --path game --quit
+          run_godot high-water-test --headless --path game \
+            --script res://tests/drowned_harbor_high_water_transformation_test.gd
+          run_godot low-tide-test --headless --path game \
+            --script res://tests/drowned_harbor_low_tide_shell_test.gd
+          run_godot bellhouse-test --headless --path game \
+            --script res://tests/drowned_harbor_bellhouse_recovery_test.gd
+          run_godot controlled-private-test --headless --path game \
+            --script res://tests/drowned_harbor_controlled_private_shield_test.gd
+          run_godot isolation-test --headless --path game \
+            --script res://tests/drowned_harbor_prototype_isolation_test.gd
+
+      - name: Upload P0.18 evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p018-high-water-transformation-evidence
+          path: |
+            artifacts/p018-python
+            artifacts/p018-gdscript
+            artifacts/p018-godot
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove generated evidence
+        if: always()
+        run: rm -rf artifacts/p018-python artifacts/p018-gdscript artifacts/p018-godot .godot-bin godot.zip
+
+      - name: Prove repository remains clean
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"

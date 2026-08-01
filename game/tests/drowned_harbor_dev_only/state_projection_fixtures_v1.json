@@ -446,6 +446,7 @@
       },
       "source_state": {
         "public": {
+          "council_direction": "synthetic_council_direction_fixture_004",
           "stage_before": "lighthouse_council",
           "stage_after": "high_water",
           "board_before": {
@@ -463,11 +464,30 @@
           "changed_categories": [
             "route",
             "hazard",
+            "mechanism",
             "objective"
           ],
+          "public_hazards_before": [
+            "mudflat_instability"
+          ],
+          "public_hazards_after": [
+            "submerged_causeway",
+            "collapsed_archive_street"
+          ],
+          "public_mechanism_changes": [],
+          "objective_before": "Carry the Lighthouse Council direction to the final Low-Tide board state.",
           "objective_after": "Reach the lighthouse or launch the lifeboat before Last Light.",
+          "legal_inspection_actions": [
+            "inspect_transformed_geography",
+            "inspect_route_states",
+            "inspect_public_hazards",
+            "inspect_stable_seat",
+            "inspect_public_form",
+            "inspect_current_objective"
+          ],
           "caption": "High Water is active. Land and water routes have changed as shown.",
           "history_label": "High Water transformation",
+          "persistent_summary": "Council direction synthetic_council_direction_fixture_004 committed. High Water is active. Routes: open and unstable Low-Tide geography became submerged, flooded-passable, water-only, and collapsed routes. Hazards: mudflat instability became submerged-causeway and collapsed-street hazards. Mechanisms: no fixture-declared mechanism changes. Objective: reach the lighthouse or launch the lifeboat before Last Light. Seat seat_04 remains living and moves from salt_market to salt_market_platform. Read-only transformed-board inspection is available.",
           "once_only_marker": "high_water_committed"
         },
         "seat_public": {
@@ -475,6 +495,8 @@
           "control_source": "game_control",
           "location_before": "salt_market",
           "location_after": "salt_market_platform",
+          "public_form_before": "living",
+          "public_form_after": "living",
           "public_form": "living",
           "condition": "ready"
         },
@@ -490,14 +512,21 @@
       },
       "projection_map": {
         "public": {
+          "council_direction": "public.council_direction",
           "stage_before": "public.stage_before",
           "stage_after": "public.stage_after",
           "board_before": "public.board_before",
           "board_after": "public.board_after",
           "changed_categories": "public.changed_categories",
+          "public_hazards_before": "public.public_hazards_before",
+          "public_hazards_after": "public.public_hazards_after",
+          "public_mechanism_changes": "public.public_mechanism_changes",
+          "objective_before": "public.objective_before",
           "objective": "public.objective_after",
+          "legal_inspection_actions": "public.legal_inspection_actions",
           "caption": "public.caption",
           "history_label": "public.history_label",
+          "persistent_summary": "public.persistent_summary",
           "once_only_marker": "public.once_only_marker",
           "active_seat": "seat_public"
         },
@@ -509,6 +538,7 @@
           "classification": "public",
           "exactly_once": true,
           "payload_map": {
+            "council_direction": "public.council_direction",
             "stage": "public.stage_after",
             "changed_categories": "public.changed_categories",
             "seat_id": "seat_public.seat_id",

@@ -10,6 +10,7 @@
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_controlled_private_shield_test.gd",
+    "res://tests/drowned_harbor_high_water_transformation_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd"
   ],
   "production_catalog_path": "res://data/tales/tale_catalog_v1.json",
@@ -42,17 +43,18 @@
     "docs/technical/Drowned_Harbor_Deterministic_State_Projection_Fixtures_v1.md",
     "docs/technical/Drowned_Harbor_Low_Tide_Shared_Screen_Shell_v1.md",
     "docs/technical/Drowned_Harbor_Bellhouse_Decision_Recovery_v1.md",
-    "docs/technical/Drowned_Harbor_Controlled_Private_Shield_Proof_v1.md"
+    "docs/technical/Drowned_Harbor_Controlled_Private_Shield_Proof_v1.md",
+    "docs/technical/Drowned_Harbor_High_Water_Deterministic_Transformation_v1.md"
   ],
   "completed_work_issues": [
     80,
     81,
     82,
     83,
-    84
+    84,
+    85
   ],
   "future_work_issues": [
-    85,
     86
   ],
   "fixture_packages": [
@@ -68,9 +70,12 @@
     "res://tests/drowned_harbor_dev_only/controlled_private_fixture_adapter.gd",
     "res://tests/drowned_harbor_dev_only/controlled_private_surface.gd",
     "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd",
-    "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn"
+    "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn",
+    "res://tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.gd",
+    "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.tscn"
   ],
   "human_validation_required": true,
   "human_evidence_claimed": false,
-  "notes": "This manifest proves only an isolated development boundary, seven synthetic deterministic state/projection fixtures, one fixture-backed Low Tide shared-screen shell, one fixture-backed Bellhouse decision plus invalid-action recovery shell, and one controlled-private shield proof for DH-FIX-003 and DH-FIX-007. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, security-certified, accessibility-compliant, or production-ready. The shells use placeholder geometry and governed synthetic fixture data only. The Bellhouse shell records one synthetic exactly-once prototype result but creates no production runtime authority, final Ledger mechanic, balance value, production reducer, production save, network behavior, Companion behavior, High Water transformation, or ending logic. The controlled-private proof uses a local test abstraction only; it adds no account, network endpoint, Companion change, cloud service, telemetry, production private-device implementation, or raw controller or personal identity. Its neutral shield enters before private data is requested, and application-level private payload, captions, audio requests, focus, acknowledgement, and handoff references clear before public restoration. It does not claim secure-memory erasure or certification. DH-FIX-007 preserves the same stable seat, health, condition, inventory, objective, history, ending identity, controller authority contract, source revision, and RNG cursor; it does not create a character, reroll, heal, restore inventory, reset objectives or conditions, or erase history. Preview, inspect, focus, Help, cancellation, acknowledgement presentation, clearing, transcript, replay, invalid-action recovery, and reprojection preserve fixture state, stable-seat identity, and deterministic RNG. The recovery fixture remains independent from the Bellhouse fixture so its different stable seat and reusable-system context do not contaminate the Bellhouse decision. The fixtures and shells do not create a reducer, provider, Tale package, final mechanic, production save, network behavior, Companion behavior, runtime authority, production asset, or ordinary playable export. They do not establish privacy certification, security certification, accessibility certification, physical-controller evidence, television-readability evidence, or human playtest evidence. Issue #39 remains the human-evidence authority. Issue #44 is complete and its supported dependency graph remains unchanged. Issues #85 and #86 remain blocked."
+  "notes": "This manifest proves only an isolated development boundary, seven synthetic deterministic state/projection fixtures, one fixture-backed Low Tide shared-screen shell, one fixture-backed Bellhouse decision plus invalid-action recovery shell, one controlled-private shield proof for DH-FIX-003 and DH-FIX-007, and one deterministic High Water transformation plus read-only transformed-board proof for DH-FIX-004. It does not make Drowned Harbor playable, selectable, shipped, balanced, fun, readable on a television, controller-validated, privacy-certified, security-certified, accessibility-compliant, or production-ready. The shells use placeholder geometry and governed synthetic fixture data only. The Bellhouse shell records one synthetic exactly-once prototype result but creates no production runtime authority, final Ledger mechanic, balance value, production reducer, production save, network behavior, Companion behavior, or ending logic. The controlled-private proof uses a local test abstraction only; it adds no account, network endpoint, Companion change, cloud service, telemetry, production private-device implementation, or raw controller or personal identity. Its neutral shield enters before private data is requested, and application-level private payload, captions, audio requests, focus, acknowledgement, and handoff references clear before public restoration. It does not claim secure-memory erasure or certification. DH-FIX-007 preserves the same stable seat, health, condition, inventory, objective, history, ending identity, controller authority contract, source revision, and RNG cursor; it does not create a character, reroll, heal, restore inventory, reset objectives or conditions, or erase history. DH-FIX-004 uses the plainly synthetic non-canon Council direction synthetic_council_direction_fixture_004, prepares one canonical High Water result before full-versus-skip presentation diverges, commits and emits exactly once, consumes no RNG, preserves seat_04, and exposes only fixture-derived read-only transformed-board inspections after a persistent recap is acknowledged. Its post-commit recovery reprojects rather than recomputes. Preview, inspect, focus, Help, cancellation, acknowledgement presentation, clearing, transcript, replay, invalid-action recovery, and reprojection preserve fixture state, stable-seat identity, and deterministic RNG. The recovery fixture remains independent from the Bellhouse fixture so its different stable seat and reusable-system context do not contaminate the Bellhouse decision. The fixtures and shells do not create a reducer, provider, Tale package, final mechanic, production save, network behavior, Companion behavior, runtime authority, production asset, or ordinary playable export. They do not establish privacy certification, security certification, accessibility certification, physical-controller evidence, television-readability evidence, or human playtest evidence. Issue #39 remains the human-evidence authority. Issue #44 is complete and its supported dependency graph remains unchanged. Issue #86 remains future and blocked."
 }

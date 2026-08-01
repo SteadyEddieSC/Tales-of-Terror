@@ -71,6 +71,7 @@ EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_controlled_private_shield_test.gd",
+    "res://tests/drowned_harbor_high_water_transformation_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 EXPECTED_COMPONENTS = [
@@ -84,6 +85,9 @@ EXPECTED_COMPONENTS = [
     "res://tests/drowned_harbor_dev_only/controlled_private_surface.gd",
     "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.gd",
     "res://tests/drowned_harbor_dev_only/controlled_private_shield_shell.tscn",
+    "res://tests/drowned_harbor_dev_only/high_water_fixture_adapter.gd",
+    "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.gd",
+    "res://tests/drowned_harbor_dev_only/high_water_transformation_shell.tscn",
 ]
 
 
@@ -756,9 +760,9 @@ def validate_manifest_and_production_boundary(
     package_lock: dict[str, Any],
 ) -> None:
     require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84]
-        and manifest.get("future_work_issues") == [85, 86],
-        "prototype issue progression must activate only #84",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85]
+        and manifest.get("future_work_issues") == [86],
+        "prototype issue progression must be exact through P0.18",
     )
     require(manifest.get("allowed_entry_points") == EXPECTED_ENTRY_POINTS, "entry points drifted")
     require(manifest.get("prototype_components") == EXPECTED_COMPONENTS, "components drifted")
