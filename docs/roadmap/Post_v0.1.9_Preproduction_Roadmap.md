@@ -1,7 +1,7 @@
 # Post-v0.1.9 Preproduction Roadmap — Superseded Historical Record
 
-**Status:** Superseded as the active roadmap after completion of P0.19  
-**Original baseline:** `2151696e76147cc9fbe7f56709e585753cb331a3`  
+**Status:** Superseded as the active roadmap after completion of P0.19
+**Original baseline:** `2151696e76147cc9fbe7f56709e585753cb331a3`
 **Successor:** [Post-P0.19 Production-Candidate Roadmap](Post_P0.19_Production_Candidate_Roadmap.md)
 
 This document originally governed the separate P-prefixed preproduction stream that began after playable release v0.1.9. Its foundational direction remains historically important, but its former identification of P0.1 as the current target, its unresolved issue #44 state, and its global local/Codex block are no longer current project status.
