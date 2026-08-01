@@ -132,7 +132,7 @@ def main() -> int:
         ),
         (
             "roadmap_marks_runtime_active",
-            lambda root: replace_text(root, ROADMAP_PATH, "**State:** planned blocked", "**State:** active runtime"),
+            lambda root: replace_text(root, ROADMAP_PATH, "Only P0.21 is active", "v0.2.0-alpha.1 is active runtime"),
         ),
         (
             "technical_drops_human_boundary",
