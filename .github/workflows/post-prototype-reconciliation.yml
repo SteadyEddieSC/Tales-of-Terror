@@ -1,38 +1,50 @@
-name: Post-prototype reconciliation
+name: Post-prototype status succession
 
 on:
   pull_request:
     paths:
+      - '.github/workflows/p021-production-architecture.yml'
       - '.github/workflows/post-prototype-reconciliation.yml'
       - 'README.md'
-      - 'docs/preproduction/P0.20_Release_Summary.md'
       - 'docs/preproduction/README.md'
+      - 'docs/preproduction/P0.21_Release_Summary.md'
       - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/preproduction/drowned_harbor_production_compilation_contract_schema_v1.json'
+      - 'docs/preproduction/drowned_harbor_production_compilation_contract_v1.json'
+      - 'docs/preproduction/P0.21_Implementation_Issue_Set.md'
+      - 'docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md'
       - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
-      - 'docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md'
-      - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_p021_production_architecture.py'
+      - 'tools/test_validate_p021_production_architecture.py'
       - 'tools/validate_post_prototype_reconciliation.py'
+      - 'tools/test_validate_post_prototype_reconciliation.py'
   push:
     branches:
       - main
-      - docs/p0.20-post-prototype-reconciliation
+      - docs/p0.21-production-architecture-contract
     paths:
+      - '.github/workflows/p021-production-architecture.yml'
       - '.github/workflows/post-prototype-reconciliation.yml'
       - 'README.md'
-      - 'docs/preproduction/P0.20_Release_Summary.md'
       - 'docs/preproduction/README.md'
+      - 'docs/preproduction/P0.21_Release_Summary.md'
       - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/preproduction/drowned_harbor_production_compilation_contract_schema_v1.json'
+      - 'docs/preproduction/drowned_harbor_production_compilation_contract_v1.json'
+      - 'docs/preproduction/P0.21_Implementation_Issue_Set.md'
+      - 'docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md'
       - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
-      - 'docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md'
-      - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_p021_production_architecture.py'
+      - 'tools/test_validate_p021_production_architecture.py'
       - 'tools/validate_post_prototype_reconciliation.py'
+      - 'tools/test_validate_post_prototype_reconciliation.py'
 
 permissions:
   contents: read
 
 jobs:
-  reconciliation:
-    name: Validate current status and production roadmap
+  succession:
+    name: Preserve P0.20 history and validate P0.21 status
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -44,10 +56,10 @@ jobs:
         with:
           python-version: 3.11.9
 
-      - name: Validate exact P0.20 reconciliation
+      - name: Validate post-prototype status succession
         run: python tools/validate_post_prototype_reconciliation.py
 
-      - name: Run fail-closed mutation suite
+      - name: Run succession fail-closed mutations
         run: python tools/test_validate_post_prototype_reconciliation.py
 
       - name: Preserve historical P0.8 contracts
