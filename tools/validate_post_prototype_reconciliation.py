@@ -103,8 +103,7 @@ def validate_status(data: dict[str, Any]) -> None:
     require(drowned.get("successor_implementation_issue") is None, "successor issue must remain unset")
     require(drowned.get("successor_implementation_authorized") is False, "successor implementation is not authorized")
 
-    automation = drowned.get("aggregate_automation")
-    require(automation == {
+    require(drowned.get("aggregate_automation") == {
         "profile_id": "DH-AUTO-P019-V1",
         "sequences": 12,
         "repetitions": 2,
@@ -138,8 +137,7 @@ def validate_status(data: dict[str, Any]) -> None:
         "state": "merged",
     }, "P0.20 merge record drift")
 
-    current = data.get("current_release")
-    require(current == {
+    require(data.get("current_release") == {
         "release_id": "P0.21",
         "issue": 98,
         "branch": "docs/p0.21-production-architecture-contract",
@@ -147,8 +145,7 @@ def validate_status(data: dict[str, Any]) -> None:
         "runtime_authority_created": False,
     }, "current release must be P0.21 issue #98")
 
-    next_release = data.get("recommended_next_release")
-    require(next_release == {
+    require(data.get("recommended_next_release") == {
         "release_id": "v0.2.0-alpha.1",
         "title": "Production Tale Scaffold",
         "state": "planned_blocked",
@@ -163,7 +160,6 @@ def validate_status(data: dict[str, Any]) -> None:
     require(architecture.get("runtime_input") is False, "architecture contract may not be a runtime input")
     require(architecture.get("normal_library_visible") is False, "Drowned Harbor may not be normally visible")
     require(architecture.get("ordinary_export_included") is False, "Drowned Harbor may not enter ordinary exports")
-
     require(data.get("runtime_implementation_authorized") is False, "runtime implementation may not be authorized")
     require(data.get("human_evidence_claimed") is False, "human evidence may not be claimed")
 
@@ -223,15 +219,38 @@ def validate_docs(root: Path) -> None:
     ):
         require(phrase in p021_summary, f"P0.21 summary missing: {phrase}")
 
-    stale = (
+    combined = "\n".join((readme, preprod, roadmap, p021_summary))
+    for phrase in (
         "Current package:** P0.20",
         "Current active package:** P0.20",
         "P0.21 must remain planned, not active",
         "Companion workflow intentionally remains red",
         "Codex/local implementation is considered blocked",
-    )
-    combined = "\n".join((readme, preprod, roadmap, p021_summary))
-    foris_file(), "historical package index missing")
+    ):
+        require(phrase not in combined, f"stale claim retained: {phrase}")
+
+
+def validate_git_boundary(root: Path) -> None:
+    try:
+        output = subprocess.check_output(
+            ["git", "diff", "--name-only", f"{BASELINE}...HEAD"],
+            cwd=root,
+            text=True,
+            stderr=subprocess.STDOUT,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError) as exc:
+        raise ValidationError(f"unable to evaluate git boundary: {exc}") from exc
+    actual = {line.strip() for line in output.splitlines() if line.strip()}
+    require(actual == ALLOWED_PATHS, f"path boundary mismatch: missing={sorted(ALLOWED_PATHS-actual)} unexpected={sorted(actual-ALLOWED_PATHS)}")
+    require("docs/preproduction/preproduction_package_index_v1.json" not in actual, "historical package index changed")
+    require("tools/validate_preproduction_package_traceability.py" not in actual, "historical P0.8 validator changed")
+    require(not any(path.startswith(("game/", "services/", "web/", "packaging/")) for path in actual), "runtime/service/export path changed")
+
+
+def validate(root: Path = ROOT, check_git: bool = True) -> None:
+    validate_status(read_json(root, STATUS_PATH))
+    validate_docs(root)
+    require((root / FROZEN_INDEX_PATH).is_file(), "historical package index missing")
     if check_git:
         validate_git_boundary(root)
 
