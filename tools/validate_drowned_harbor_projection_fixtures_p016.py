@@ -13,17 +13,17 @@ ROOT = Path(".")
 
 
 def validate_prototype_manifest(root: Path = ROOT) -> None:
-    """Retain the inherited engine while advancing through issue #85."""
+    """Retain the inherited engine while advancing through issue #86."""
     manifest: dict[str, Any] = inherited.read_json(
         root / inherited.PROTOTYPE_MANIFEST_PATH
     )
     inherited.require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85],
-        "prototype manifest must record completed work issues #80 through #85",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85, 86],
+        "prototype manifest must record completed work issues #80 through #86",
     )
     inherited.require(
-        manifest.get("future_work_issues") == [86],
-        "prototype manifest must leave issue #86 as future work",
+        manifest.get("future_work_issues") == [],
+        "prototype manifest future work inventory must be empty after P0.19",
     )
     inherited.require(
         manifest.get("fixture_packages")
@@ -32,6 +32,20 @@ def validate_prototype_manifest(root: Path = ROOT) -> None:
             "state_projection_fixtures_v1.json"
         ],
         "prototype manifest fixture package registration drifted",
+    )
+    inherited.require(
+        manifest.get("automation_profiles")
+        == [
+            "res://tests/drowned_harbor_dev_only/"
+            "prototype_automation_profile_v1.json"
+        ],
+        "P0.19 automation profile registration drifted",
+    )
+    inherited.require(
+        "docs/technical/"
+        "Drowned_Harbor_Prototype_Automation_Export_Exclusion_v1.md"
+        in manifest.get("source_authorities", []),
+        "P0.19 technical authority is missing",
     )
     for field in (
         "production_catalog_registered",
@@ -68,7 +82,7 @@ def main() -> int:
         return 1
     package = inherited.read_json(ROOT / inherited.PACKAGE_PATH)
     print(
-        "Validated inherited projection engine through P0.18: "
+        "Validated inherited projection engine through P0.19: "
         f"{fixture_count} fixtures, {negative_count} fail-closed request cases, "
         f"canonical identity {inherited.canonical_sha256(package)}"
     )

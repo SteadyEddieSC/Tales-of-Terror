@@ -20,11 +20,18 @@ P017_TECHNICAL_AUTHORITY = (
 P018_TECHNICAL_AUTHORITY = (
     "docs/technical/Drowned_Harbor_High_Water_Deterministic_Transformation_v1.md"
 )
+P019_TECHNICAL_AUTHORITY = (
+    "docs/technical/Drowned_Harbor_Prototype_Automation_Export_Exclusion_v1.md"
+)
+AUTOMATION_PROFILE = (
+    "res://tests/drowned_harbor_dev_only/prototype_automation_profile_v1.json"
+)
 EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_low_tide_shell_test.gd",
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_controlled_private_shield_test.gd",
     "res://tests/drowned_harbor_high_water_transformation_test.gd",
+    "res://tests/drowned_harbor_prototype_automation_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 EXPECTED_COMPONENTS = [
@@ -47,12 +54,12 @@ EXPECTED_COMPONENTS = [
 def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
     """Run the inherited closed contract with P0.16 issue progression."""
     inherited.require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85],
-        "completed prototype work must be exactly issues #80 through #85",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85, 86],
+        "completed prototype work must be exactly issues #80 through #86",
     )
     inherited.require(
-        manifest.get("future_work_issues") == [86],
-        "future work issue set must remain exactly #86",
+        manifest.get("future_work_issues") == [],
+        "future work issue set must be empty after P0.19",
     )
     inherited.require(
         P016_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
@@ -66,9 +73,18 @@ def validate_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
         P018_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
         "P0.18 High Water technical authority must remain registered",
     )
+    inherited.require(
+        P019_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
+        "P0.19 automation technical authority must remain registered",
+    )
+    inherited.require(
+        manifest.get("automation_profiles") == [AUTOMATION_PROFILE],
+        "P0.19 automation profile registration drifted",
+    )
     adjusted = copy.deepcopy(manifest)
     adjusted["completed_work_issues"] = [80, 81, 82]
     adjusted["future_work_issues"] = [83, 84, 85, 86]
+    adjusted.pop("automation_profiles", None)
     original_validate_manifest(adjusted, root)
 
 
@@ -100,7 +116,7 @@ def main() -> int:
         )
         return 1
     print(
-        "Validated inherited prototype isolation through P0.18 entry points, "
+        "Validated inherited prototype isolation through P0.19 entry points, "
         "components, issue progression, source authority, production invariance, "
         "and exports"
     )

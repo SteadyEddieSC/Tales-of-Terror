@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Retain the P0.15 Low Tide proof through P0.18 manifest progression."""
+"""Retain the P0.15 Low Tide proof through P0.19 manifest progression."""
 
 from __future__ import annotations
 
@@ -15,8 +15,15 @@ EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_controlled_private_shield_test.gd",
     "res://tests/drowned_harbor_high_water_transformation_test.gd",
+    "res://tests/drowned_harbor_prototype_automation_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
+P019_TECHNICAL_AUTHORITY = (
+    "docs/technical/Drowned_Harbor_Prototype_Automation_Export_Exclusion_v1.md"
+)
+AUTOMATION_PROFILE = (
+    "res://tests/drowned_harbor_dev_only/prototype_automation_profile_v1.json"
+)
 EXPECTED_COMPONENTS = [
     "res://tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd",
     "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd",
@@ -35,15 +42,15 @@ EXPECTED_COMPONENTS = [
 
 
 def validate_manifest_and_production_boundary(root: Path = ROOT) -> None:
-    """Validate P0.18 progression without weakening the Low Tide contract."""
+    """Validate P0.19 progression without weakening the Low Tide contract."""
     manifest = inherited.read_json(root / inherited.MANIFEST_PATH)
     inherited.require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85],
-        "manifest must record exact completed work through issue #85",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85, 86],
+        "manifest must record exact completed work through issue #86",
     )
     inherited.require(
-        manifest.get("future_work_issues") == [86],
-        "issue #86 must remain the exact future work inventory",
+        manifest.get("future_work_issues") == [],
+        "future work inventory must be empty after P0.19",
     )
     inherited.require(
         manifest.get("allowed_entry_points") == EXPECTED_ENTRY_POINTS,
@@ -52,6 +59,14 @@ def validate_manifest_and_production_boundary(root: Path = ROOT) -> None:
     inherited.require(
         manifest.get("prototype_components") == EXPECTED_COMPONENTS,
         "manifest component set drifted",
+    )
+    inherited.require(
+        P019_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
+        "manifest is missing the P0.19 technical authority",
+    )
+    inherited.require(
+        manifest.get("automation_profiles") == [AUTOMATION_PROFILE],
+        "P0.19 automation profile registration drifted",
     )
     for field in (
         "production_catalog_registered",
@@ -144,7 +159,7 @@ def main() -> int:
         )
         return 1
     print(
-        "Validated the full P0.15 Low Tide contract through P0.18 manifest progression"
+        "Validated the full P0.15 Low Tide contract through P0.19 manifest progression"
     )
     return 0
 

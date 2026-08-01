@@ -47,6 +47,12 @@ README_PATH = Path("game/tests/drowned_harbor_dev_only/README.md")
 TECHNICAL_PATH = Path(
     "docs/technical/Drowned_Harbor_High_Water_Deterministic_Transformation_v1.md"
 )
+P019_TECHNICAL_AUTHORITY = (
+    "docs/technical/Drowned_Harbor_Prototype_Automation_Export_Exclusion_v1.md"
+)
+AUTOMATION_PROFILE = (
+    "res://tests/drowned_harbor_dev_only/prototype_automation_profile_v1.json"
+)
 SUMMARY_PATH = Path("docs/preproduction/P0.18_Release_Summary.md")
 WORKFLOW_PATH = Path(
     ".github/workflows/drowned-harbor-high-water-transformation.yml"
@@ -85,6 +91,7 @@ EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_controlled_private_shield_test.gd",
     "res://tests/drowned_harbor_high_water_transformation_test.gd",
+    "res://tests/drowned_harbor_prototype_automation_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 EXPECTED_COMPONENTS = [
@@ -869,18 +876,26 @@ def validate_manifest_and_production_boundary(
     package_lock: dict[str, Any],
 ) -> None:
     require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85],
-        "completed work must be exactly issues #80 through #85",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85, 86],
+        "completed work must be exactly issues #80 through #86",
     )
     require(
-        manifest.get("future_work_issues") == [86],
-        "future work must remain exactly issue #86",
+        manifest.get("future_work_issues") == [],
+        "future work must be empty after P0.19",
     )
     require(manifest.get("allowed_entry_points") == EXPECTED_ENTRY_POINTS, "entry points drifted")
     require(manifest.get("prototype_components") == EXPECTED_COMPONENTS, "components drifted")
     require(
         TECHNICAL_PATH.as_posix() in manifest.get("source_authorities", []),
         "P0.18 technical authority is not registered",
+    )
+    require(
+        P019_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
+        "P0.19 technical authority is not registered",
+    )
+    require(
+        manifest.get("automation_profiles") == [AUTOMATION_PROFILE],
+        "P0.19 automation profile registration drifted",
     )
     require(manifest.get("human_validation_required") is True, "human validation must remain required")
     for field in (

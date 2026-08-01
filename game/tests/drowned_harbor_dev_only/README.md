@@ -2,6 +2,16 @@
 
 Everything in this directory is synthetic, test-only, and excluded from ordinary Windows and Linux exports by the existing `tests/*` export rule.
 
+## P0.19 aggregate automation
+
+`prototype_automation_profile_v1.json` is the closed `DH-AUTO-P019-V1` deterministic headless machine profile. Its aggregate entry point reuses the existing Low Tide, Bellhouse, controlled-private, and High Water adapters and shells; it is not a runtime component and adds no new gameplay. `DH-FIX-005` remains projection-only through the existing fixture engine.
+
+The twelve-sequence matrix repeats every sequence twice, compares canonical public evidence, covers fail-closed and idempotent paths, and bounds every governed case to 32 finite steps without wall-clock timing. It reports privacy-leak and deadlock findings without emitting private fixture contents.
+
+Permanent Godot workflow integration runs the aggregate entry point. Portable workflow integration separately scans exact-head Windows/Linux native exports and assembled bundles using test paths, fixture identities, exact private sentinels, events, profile/manifest names, and component/entry filenames. Generated evidence is uploaded outside the portable inner bundles and removed from the source tree.
+
+Lantern House remains the sole production/default Tale. No Drowned Harbor catalog/provider/save/report/runtime authority is created. The automation does not establish human, physical-controller, television, accessibility, privacy/security certification, fun, fairness, balance, pacing, tension, comprehension, household-playtest, remote-device, public-release, or production-readiness evidence. Issue #39 remains the human-evidence authority. Issue #86 is complete only after merge, and P0.19 authorizes no successor implementation issue.
+
 ## Current package
 
 - `state_projection_fixture_schema_v1.json` — closed P0.17 fixture schema.
