@@ -1,7 +1,7 @@
 # Preproduction and Production-Planning Index
 
-**Status:** Internal design, prototype, and planning material  
-**Current package:** P0.20 — Post-Prototype Reconciliation & Production Decision Pack  
+**Status:** Internal design, prototype, and planning material
+**Current package:** P0.20 — Post-Prototype Reconciliation & Production Decision Pack
 **Protected-main baseline reconciled:** `836716b6857323f36abcc4728ee05e01d31cd843`
 
 ## Current authorities
