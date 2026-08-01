@@ -13,7 +13,7 @@ This repository contains a functional **internal vertical slice** plus a complet
 
 Lantern House remains the sole production/default Tale.
 
-- **Current protected-main baseline for this status:** `836716b6857323f36abcc4728ee05e01d31cd843`
+- **Protected-main baseline reconciled by this status:** `836716b6857323f36abcc4728ee05e01d31cd843`
 - **Latest completed preproduction package:** P0.19 — Drowned Harbor Prototype Automation and Export Exclusion
 - **Current reconciliation package:** P0.20 — Post-Prototype Reconciliation & Production Decision Pack
 - **Companion dependency security issue #44:** completed
@@ -27,7 +27,7 @@ Lantern House remains the sole production/default Tale.
 
 **Expanded pitch:** Friends gather around one television and enter an authored horror **Tale** hosted by **The Underteller**, an undead master of ceremonies who introduces the story, reacts to public choices, and presents the ending. Players explore a shifting **Living Board**, collect clues and items, face deterministic checks and events, and decide when to cooperate, bargain, conceal information, or pursue a private objective. A rule-based Director adjusts authored pacing within strict limits, while transformations, betrayals, third factions, and Restless afterlife forms keep the group involved until the final scene.
 
-## What is playable today
+## What exists today
 
 The current production runtime proves a complete controller-first route through Lantern House:
 
@@ -53,9 +53,11 @@ The reusable production foundations include:
 - controller-first Tale selection, replay-safe actions, and automated 1–8-seat completion evidence;
 - Windows and Linux internal exports, including Linux validation relevant to Batocera.
 
-Lantern House is an integration route, not the final standard for story volume, art, atmosphere, encounter variety, balance, or replayability.
+## Current production Tale: Lantern House
 
-## Drowned Harbor status
+Lantern House remains the sole production Tale. It is an integration route used to prove that the project’s major systems work together, not the final standard for story volume, art, atmosphere, encounter variety, balance, or replayability.
+
+## Future Tale in design: Drowned Harbor
 
 **Drowned Harbor is not a production Tale and is not ordinarily playable.**
 
@@ -92,6 +94,10 @@ Its planned stages remain:
 4. **High Water**
 5. **Last Light**
 
+## Story mode: Tales
+
+A **Tale** is a self-contained authored horror adventure with its own location, board, stages, encounters, roles, social structure, transformation rules, ending logic, dialogue, visual language, sound direction, and accessibility presentation. A Tale may support standalone, Chronicle, Quick Fright, cooperative, betrayal, hunted, outbreak, mystery, rival-team, or survival structures. Unsupported seat counts or social layouts must use an authored safe fallback rather than producing a broken session.
+
 ## Next development direction
 
 The recommended next stream is a staged Drowned Harbor production candidate, beginning with a documentation and architecture contract rather than immediately registering a second Tale.
@@ -121,7 +127,7 @@ No runtime release begins without:
 - exact validation expectations;
 - independent Release Management review.
 
-## Intended finished game
+## What the finished game is aiming for
 
 The target is a replayable digital horror-board-game platform built around multiple authored settings and rule variants.
 
