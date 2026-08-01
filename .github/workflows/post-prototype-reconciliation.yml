@@ -1,0 +1,62 @@
+name: Post-prototype reconciliation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/post-prototype-reconciliation.yml'
+      - 'README.md'
+      - 'docs/preproduction/P0.20_Release_Summary.md'
+      - 'docs/preproduction/README.md'
+      - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
+      - 'docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md'
+      - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_post_prototype_reconciliation.py'
+  push:
+    branches:
+      - main
+      - docs/p0.20-post-prototype-reconciliation
+    paths:
+      - '.github/workflows/post-prototype-reconciliation.yml'
+      - 'README.md'
+      - 'docs/preproduction/P0.20_Release_Summary.md'
+      - 'docs/preproduction/README.md'
+      - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
+      - 'docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md'
+      - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_post_prototype_reconciliation.py'
+
+permissions:
+  contents: read
+
+jobs:
+  reconciliation:
+    name: Validate current status and production roadmap
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Validate exact P0.20 reconciliation
+        run: python tools/validate_post_prototype_reconciliation.py
+
+      - name: Run fail-closed mutation suite
+        run: python tools/test_validate_post_prototype_reconciliation.py
+
+      - name: Preserve historical P0.8 contracts
+        run: |
+          python tools/validate_preproduction_package_traceability.py
+          python tools/test_validate_preproduction_package_traceability.py
+
+      - name: Prove clean source tree
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
