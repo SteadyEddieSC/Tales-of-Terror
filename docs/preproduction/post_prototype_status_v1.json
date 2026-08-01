@@ -2,7 +2,7 @@
   "status_kind": "post_prototype_project_status",
   "schema_version": 1,
   "as_of_date": "2026-08-01",
-  "protected_main": "836716b6857323f36abcc4728ee05e01d31cd843",
+  "protected_main_at_reconciliation_start": "836716b6857323f36abcc4728ee05e01d31cd843",
   "playable_release": "v0.1.9",
   "production": {
     "default_tale_id": "lantern_house_vertical_slice",
