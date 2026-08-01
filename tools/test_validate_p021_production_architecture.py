@@ -75,6 +75,10 @@ def expect_failure(name: str, mutate) -> None:
 def main() -> int:
     mutations = [
         (
+            "nested_schema_opened",
+            lambda root: edit_json(root, SCHEMA_PATH, lambda data: data["properties"]["authority_ownership"].update(additionalProperties=True)),
+        ),
+        (
             "runtime_authorized",
             lambda root: edit_json(root, CONTRACT_PATH, lambda data: data["authorization"].update(runtime_implementation=True)),
         ),
@@ -112,7 +116,7 @@ def main() -> int:
         ),
         (
             "successor_issue_created",
-            lambda root: edit_json(root, CONTRACT_PATH, lambda data: data["implementation_stages"][0].update(github_issue=99)),
+            lambda root: edit_json(root, CONTRACT_PATH, lambda data: data["implementation_stages"][0].update(github_issue=100)),
         ),
         (
             "successor_activated",
