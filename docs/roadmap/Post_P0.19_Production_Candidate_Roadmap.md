@@ -1,8 +1,8 @@
 # Post-P0.19 Drowned Harbor Production-Candidate Roadmap
 
-**Version:** 1.0  
-**Status:** Planning authority; no successor implementation issue activated  
-**Reconciled protected-main baseline:** `836716b6857323f36abcc4728ee05e01d31cd843`  
+**Version:** 1.0
+**Status:** Planning authority; no successor implementation issue activated
+**Reconciled protected-main baseline:** `836716b6857323f36abcc4728ee05e01d31cd843`
 **Working title status:** Terror Turn and The Underteller remain provisional pending issue #7
 
 ## 1. Decision
@@ -72,7 +72,7 @@ No stage below is active merely because it appears in this roadmap.
 
 ### P0.21 — Production Architecture & Tale-Compilation Contract
 
-**Type:** documentation, schemas, validators, implementation issue set  
+**Type:** documentation, schemas, validators, implementation issue set
 **Recommended owner:** Release Management; Codex not expected
 
 Deliver:
@@ -90,7 +90,7 @@ Exit: implementation-ready contract and separately blocked runtime issues. No pr
 
 ### v0.2.0-alpha.1 — Production Tale Scaffold
 
-**Type:** runtime implementation  
+**Type:** runtime implementation
 **Recommended owner:** Codex for implementation, Release Management for governance
 
 Deliver:
