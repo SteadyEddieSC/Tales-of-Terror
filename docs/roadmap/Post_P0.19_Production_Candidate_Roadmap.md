@@ -1,15 +1,15 @@
 # Post-P0.19 Drowned Harbor Production-Candidate Roadmap
 
-**Version:** 1.0
-**Status:** Planning authority; no successor implementation issue activated
-**Reconciled protected-main baseline:** `836716b6857323f36abcc4728ee05e01d31cd843`
+**Version:** 1.1
+**Status:** P0.21 planning stage active; no runtime successor issue activated
+**Reconciled protected-main baseline:** `58f6f4e4ece9bbdd5932216c87aacc064e48e05a`
 **Working title status:** Terror Turn and The Underteller remain provisional pending issue #7
 
 ## 1. Decision
 
-The P0.13–P0.19 isolated-prototype program is complete. Further test-only shells would provide diminishing value compared with integrating the proven contracts into a real Tale.
+The P0.13–P0.19 isolated-prototype program and P0.20 reconciliation are complete. Further test-only shells would provide diminishing value compared with integrating the proven contracts into a real Tale.
 
-The recommended direction is a staged **v0.2.0 Drowned Harbor production-candidate stream**, beginning with a bounded architecture and compilation contract. This roadmap authorizes planning only. It does not activate P0.21, create production authority, register Drowned Harbor, or authorize Codex implementation.
+The governed direction is a staged **v0.2.0 Drowned Harbor production-candidate stream**. P0.21 is the sole active planning release and defines the architecture and compilation boundary. It does not create production authority, register Drowned Harbor, expose it in the normal Tale Library, include it in ordinary exports, activate a runtime issue, or authorize Codex implementation.
 
 ## 2. Current baseline
 
@@ -29,7 +29,21 @@ Drowned Harbor has governed design and media direction plus seven deterministic 
 - controlled-private bargain and inherited-state handoff;
 - High Water transformation and transformed-board presentation.
 
-P0.19 adds aggregate automation and export exclusion. Drowned Harbor remains test-only, production-unregistered, absent from the normal Tale Library, and excluded from ordinary exports.
+P0.19 added aggregate automation and export exclusion. Drowned Harbor remains test-only, production-unregistered, absent from the normal Tale Library, and excluded from ordinary exports.
+
+### P0.21 planning authority
+
+P0.21 defines:
+
+- design-reference-to-production output mapping;
+- ownership boundaries for stage state, reducer/event authority, private projection, Director inputs, RNG, and presentation;
+- future package/provider/catalog identities without registering them;
+- developer-only explicit admission rules;
+- save, restore, migration, replay, exactly-once, reset, and rematch rules;
+- asset, localization, provenance, fallback, rollback, and removal rules;
+- blocked implementation issue definitions for later stages.
+
+The machine-readable contract remains planning-only and is not a runtime input.
 
 ### Open gates
 
@@ -66,46 +80,53 @@ Use Codex only after a separately authorized issue requires substantial local wo
 
 Codex must never activate, merge, or close the release. It returns a draft PR and exact candidate head to Release Management.
 
-## 4. Planned release sequence
+## 4. Governed release sequence
 
-No stage below is active merely because it appears in this roadmap.
+Only P0.21 is active. Every later stage is `planned_blocked`, has no GitHub issue, and requires separate authorization.
 
 ### P0.21 — Production Architecture & Tale-Compilation Contract
 
-**Type:** documentation, schemas, validators, implementation issue set
-**Recommended owner:** Release Management; Codex not expected
+**State:** active planning
+**Type:** documentation, schemas, validators, implementation issue definitions
+**Owner:** Release Management; Codex not required
 
 Deliver:
 
 - authoritative mapping from authoring-reference data to production Tale package/runtime structures;
-- ownership boundaries for stage state, reducer/event authority, private projection, Director inputs, and presentation;
+- ownership boundaries for stage state, reducer/event authority, private projection, Director inputs, RNG, and presentation;
 - production package identity and versioning rules;
 - hidden internal registration strategy that does not expose an incomplete Tale in the normal library;
 - save, restore, migration, replay, and exactly-once rules;
-- asset, localization, and provenance compilation rules;
-- bounded child issues for alpha.1 through release candidate;
-- explicit rollback and removal path.
+- asset, localization, provenance, fallback, rollback, and removal rules;
+- bounded blocked definitions for alpha.1 through release candidate;
+- fail-closed machine contract, validators, and mutation tests.
 
-Exit: implementation-ready contract and separately blocked runtime issues. No production registration.
+Exit: implementation-ready contract and inactive stage definitions. No production registration.
 
 ### v0.2.0-alpha.1 — Production Tale Scaffold
 
+**State:** planned blocked
+**GitHub issue:** none
 **Type:** runtime implementation
 **Recommended owner:** Codex for implementation, Release Management for governance
 
 Deliver:
 
 - production Drowned Harbor package skeleton;
-- provider implementation behind an internal development gate;
+- static provider implementation behind a developer-only explicit gate;
 - production stage graph and state identities;
 - reducer/event scaffolding;
 - save/restore and migration envelope;
-- deterministic package/catalog/provider tests;
+- deterministic package/provider/admission tests;
+- rollback/removal path;
 - no test-fixture authority in the production path.
 
 Exit: runtime can enter and leave the hidden Drowned Harbor scaffold through production architecture while Lantern House remains the normal default.
 
 ### v0.2.0-alpha.2 — End-to-End Graybox
+
+**State:** planned blocked
+**GitHub issue:** none
 
 Deliver one complete placeholder-art route:
 
@@ -117,11 +138,14 @@ Deliver one complete placeholder-art route:
 6. ending and epilogue;
 7. rematch/title cleanup.
 
-Include production movement, stage transitions, Council decision authority, transformation, ending resolution, and failure recovery.
+Include production movement, stage transitions, Council decision authority, transformation, ending resolution, failure recovery, save/restore, and replay equivalence.
 
 Exit: a deterministic session can finish without Drowned Harbor test fixtures or prototype shells.
 
 ### v0.2.0-alpha.3 — Systems & Replayability
+
+**State:** planned blocked
+**GitHub issue:** none
 
 Deliver:
 
@@ -139,6 +163,9 @@ Exit: content-complete graybox with meaningful route and outcome variation.
 
 ### v0.2.0-beta — Presentation & Content Integration
 
+**State:** planned blocked
+**GitHub issue:** none
+
 Deliver:
 
 - production shared-screen UI and controller glyphs;
@@ -152,11 +179,14 @@ Deliver:
 
 Exit: feature-complete internal beta with replaceable temporary media clearly labeled.
 
-### v0.2.0 Release Candidate — Hardening & Distribution Readiness
+### v0.2.0-rc — Hardening & Distribution Readiness
+
+**State:** planned blocked
+**GitHub issue:** none
 
 Deliver:
 
-- clean install, upgrade, migration, reset, and uninstall behavior;
+- clean install, upgrade, migration, reset, rollback, and uninstall behavior;
 - deterministic regression, performance, memory, and long-session automation;
 - dependency and security audit;
 - privacy and Companion deployment decision;
@@ -182,15 +212,18 @@ A later separate decision may choose:
 - Lantern House remains the sole normal production/default Tale.
 - Drowned Harbor remains hidden or unregistered until a bounded release explicitly changes that state.
 - Test fixtures and prototype shells never become production authority by path reuse.
+- Authoring references are compilation inputs, never runtime inputs.
 - Private devices remain optional.
 - Stable-seat identity survives disconnect, reconnect, control-source change, transformation, defeat, and continuation.
 - Shared output never exposes private terms or desirability hints.
-- Automation is not human, accessibility, privacy/security certification, fun, fairness, balance, television-readability, or production-readiness evidence.
+- Rejected actions remain state-and-RNG no-ops.
+- Save migration is explicit and versioned or fails closed.
+- Automation is not human evidence and is not accessibility, privacy/security certification, fun, fairness, balance, television-readability, or production-readiness evidence.
 - Issue #39 remains the human-evidence authority.
 - Issue #7 remains the public-branding gate.
 
 ## 7. Immediate next action
 
-Complete P0.20 and review it on one exact candidate head. After P0.20 merges, the project owner may separately authorize **P0.21 — Production Architecture & Tale-Compilation Contract**.
+Complete P0.21 on one exact candidate head and merge only after independent Release Management review and all applicable workflows pass.
 
-No runtime Codex prompt is needed during P0.20. Codex becomes appropriate at v0.2.0-alpha.1 or earlier only when P0.21 identifies a genuinely local implementation task.
+After P0.21 merges, the project owner may separately authorize **v0.2.0-alpha.1 — Production Tale Scaffold**. No runtime Codex prompt is created until that separate authorization.
