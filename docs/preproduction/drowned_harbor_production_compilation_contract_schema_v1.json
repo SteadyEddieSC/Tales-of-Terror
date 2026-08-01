@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-production-compilation-contract-v1.json",
+  "title": "Drowned Harbor Production Compilation Contract v1",
+  "description": "Closed planning-only contract mapping design references to future reviewed production authorities. This schema is not a runtime Tale input.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_kind",
+    "schema_version",
+    "release",
+    "authorization",
+    "immutable_inputs",
+    "compilation_pipeline",
+    "authority_ownership",
+    "admission",
+    "persistence",
+    "localization_and_assets",
+    "rollback",
+    "implementation_stages",
+    "evidence_boundaries"
+  ],
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "repo_path": {
+      "type": "string",
+      "pattern": "^(docs|game|tools|\\.github)/[A-Za-z0-9_./-]+$"
+    },
+    "immutable_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "role",
+        "compilation_input",
+        "runtime_input",
+        "mutable_by_p021"
+      ],
+      "properties": {
+        "path": {"$ref": "#/$defs/repo_path"},
+        "role": {"$ref": "#/$defs/stable_id"},
+        "compilation_input": {"type": "boolean", "const": true},
+        "runtime_input": {"type": "boolean", "const": false},
+        "mutable_by_p021": {"type": "boolean", "const": false}
+      }
+    },
+    "target_output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "owner",
+        "status",
+        "runtime_registered",
+        "source_traceability_required"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/stable_id"},
+        "owner": {"$ref": "#/$defs/stable_id"},
+        "status": {"type": "string", "const": "future_required"},
+        "runtime_registered": {"type": "boolean", "const": false},
+        "source_traceability_required": {"type": "boolean", "const": true}
+      }
+    },
+    "implementation_stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_id",
+        "title",
+        "state",
+        "github_issue",
+        "codex_expected",
+        "activation_authorized"
+      ],
+      "properties": {
+        "release_id": {"type": "string", "minLength": 4},
+        "title": {"type": "string", "minLength": 8},
+        "state": {"type": "string", "const": "planned_blocked"},
+        "github_issue": {"type": "null"},
+        "codex_expected": {"type": "boolean"},
+        "activation_authorized": {"type": "boolean", "const": false}
+      }
+    }
+  },
+  "properties": {
+    "contract_kind": {
+      "type": "string",
+      "const": "drowned_harbor_production_compilation_contract"
+    },
+    "schema_version": {"type": "integer", "const": 1},
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release_id", "issue", "baseline", "branch", "state"],
+      "properties": {
+        "release_id": {"type": "string", "const": "P0.21"},
+        "issue": {"type": "integer", "const": 98},
+        "baseline": {
+          "type": "string",
+          "const": "58f6f4e4ece9bbdd5932216c87aacc064e48e05a"
+        },
+        "branch": {
+          "type": "string",
+          "const": "docs/p0.21-production-architecture-contract"
+        },
+        "state": {"type": "string", "const": "active_planning"}
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planning_only",
+        "runtime_implementation",
+        "production_package",
+        "provider_registration",
+        "catalog_registration",
+        "normal_library_visibility",
+        "ordinary_export_inclusion",
+        "successor_issue_created",
+        "human_evidence_claimed"
+      ],
+      "properties": {
+        "planning_only": {"type": "boolean", "const": true},
+        "runtime_implementation": {"type": "boolean", "const": false},
+        "production_package": {"type": "boolean", "const": false},
+        "provider_registration": {"type": "boolean", "const": false},
+        "catalog_registration": {"type": "boolean", "const": false},
+        "normal_library_visibility": {"type": "boolean", "const": false},
+        "ordinary_export_inclusion": {"type": "boolean", "const": false},
+        "successor_issue_created": {"type": "boolean", "const": false},
+        "human_evidence_claimed": {"type": "boolean", "const": false}
+      }
+    },
+    "immutable_inputs": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/immutable_input"}
+    },
+    "compilation_pipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_kind",
+        "runtime_input",
+        "target_outputs",
+        "prohibited_features",
+        "traceability_policy"
+      ],
+      "properties": {
+        "input_kind": {"type": "string", "const": "tale_authoring_reference"},
+        "runtime_input": {"type": "boolean", "const": false},
+        "target_outputs": {
+          "type": "array",
+          "minItems": 11,
+          "maxItems": 11,
+          "items": {"$ref": "#/$defs/target_output"}
+        },
+        "prohibited_features": {
+          "type": "array",
+          "minItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "arbitrary_code_generation",
+              "class_names",
+              "script_paths",
+              "callbacks",
+              "expressions",
+              "remote_content",
+              "network_urls",
+              "credentials",
+              "telemetry",
+              "untrusted_execution",
+              "dynamic_provider_registration",
+              "best_effort_identity_guessing"
+            ]
+          }
+        },
+        "traceability_policy": {
+          "type": "string",
+          "const": "every_output_maps_to_repository_authority_and_stable_authoring_ids"
+        }
+      }
+    },
+    "authority_ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_progression",
+        "authoritative_mutations",
+        "public_history",
+        "private_terms",
+        "rng_streams",
+        "director_inputs",
+        "presentation",
+        "ending_attribution",
+        "rejected_action_policy",
+        "stable_seat_policy",
+        "privacy_classes"
+      ]
+    },
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "normal_default_tale",
+        "normal_production_tale_count",
+        "future_tale_id",
+        "future_provider_id",
+        "future_package_kind",
+        "future_package_schema_version",
+        "internal_gate",
+        "normal_library_visible",
+        "ordinary_export_included",
+        "dynamic_registration",
+        "candidate_commit_policy"
+      ]
+    },
+    "persistence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stable_id_policy",
+        "snapshot_selection",
+        "migration_policy",
+        "replay_policy",
+        "exactly_once_policy",
+        "rng_policy",
+        "reset_policy",
+        "rematch_policy",
+        "digest_policy"
+      ]
+    },
+    "localization_and_assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "governed_text_keys",
+        "captions_and_transcripts",
+        "asset_identity",
+        "placeholder_policy",
+        "provenance_policy",
+        "optional_media_fallback",
+        "authority_independent_of_media"
+      ]
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trigger",
+        "action",
+        "save_behavior",
+        "catalog_behavior",
+        "provider_behavior"
+      ]
+    },
+    "implementation_stages": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {"$ref": "#/$defs/implementation_stage"}
+    },
+    "evidence_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "automation_is_human_evidence",
+        "physical_controller_validated",
+        "television_readability_validated",
+        "accessibility_certified",
+        "privacy_certified",
+        "security_certified",
+        "fun_validated",
+        "balance_validated",
+        "production_ready",
+        "public_release_authorized"
+      ]
+    }
+  }
+}
