@@ -247,7 +247,9 @@ func _run_sequence(sequence_id: String) -> Dictionary:
 		"bellhouse_recovery_first":
 			result = _run_bellhouse(true)
 		"stale_revision_rejection":
-			result = _run_rejections("stale")
+			result = _sequence_bundle(
+				[_run_rejections("stale"), _run_low_request_contract_rejections()]
+			)
 		"wrong_authority_wrong_seat_rejection":
 			result = _run_rejections("authority")
 		"duplicate_replay_idempotence":
@@ -487,6 +489,66 @@ func _run_rejections(kind: String) -> Dictionary:
 		"governed_cases": 4,
 		"rejections": 4,
 	}
+
+
+func _run_low_request_contract_rejections() -> Dictionary:
+	var unknown_adapter: DrownedHarborLowTideFixtureAdapter = LOW_ADAPTER.new()
+	var unknown_loaded: Dictionary = unknown_adapter.load_fixture()
+	var unknown_before: Dictionary = _low_request_invariants(unknown_adapter)
+	var unknown_request: Dictionary = unknown_adapter.default_request()
+	unknown_request["intent"] = "unknown_fixture_intent"
+	var unknown_rejected: Dictionary = unknown_adapter.project(unknown_request)
+	var unknown_code: String = str(unknown_rejected.get("reason", "")).get_slice(":", 0)
+	var unknown_ok: bool = (
+		unknown_loaded.get("accepted", false)
+		and not unknown_rejected.get("accepted", true)
+		and unknown_code == "unauthorized_intent"
+		and _low_request_invariants(unknown_adapter) == unknown_before
+		and _low_rejection_is_public_safe(unknown_rejected)
+	)
+	_scan_public_evidence(unknown_rejected)
+
+	var malformed_adapter: DrownedHarborLowTideFixtureAdapter = LOW_ADAPTER.new()
+	var malformed_loaded: Dictionary = malformed_adapter.load_fixture()
+	var malformed_before: Dictionary = _low_request_invariants(malformed_adapter)
+	var malformed_request: Dictionary = malformed_adapter.default_request()
+	malformed_request.erase("intent")
+	var malformed_rejected: Dictionary = malformed_adapter.project(malformed_request)
+	var malformed_code: String = str(malformed_rejected.get("reason", "")).get_slice(":", 0)
+	var malformed_ok: bool = (
+		malformed_loaded.get("accepted", false)
+		and not malformed_rejected.get("accepted", true)
+		and malformed_code == "malformed_request"
+		and _low_request_invariants(malformed_adapter) == malformed_before
+		and _low_rejection_is_public_safe(malformed_rejected)
+	)
+	_scan_public_evidence(malformed_rejected)
+
+	return {
+		"accepted": unknown_ok and malformed_ok,
+		"governed_cases": 2,
+		"rejection_identifiers": PackedStringArray([unknown_code, malformed_code]),
+		"rejections": 2,
+	}
+
+
+func _low_request_invariants(adapter: DrownedHarborLowTideFixtureAdapter) -> Dictionary:
+	return {
+		"result_revision": adapter.result_revision(),
+		"rng_cursor": adapter.rng_cursor(),
+		"source_fingerprint": adapter.source_fingerprint(),
+		"source_revision": adapter.source_revision(),
+		"stable_seat_id": adapter.stable_seat_id(),
+	}
+
+
+func _low_rejection_is_public_safe(rejected: Dictionary) -> bool:
+	var text: String = JSON.stringify(rejected, "", true)
+	return (
+		not "PRIVATE_" in text
+		and not "archive_culvert" in text
+		and not "bellmarked_candidate" in text
+	)
 
 
 func _run_duplicates() -> Dictionary:

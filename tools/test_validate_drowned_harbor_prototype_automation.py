@@ -25,12 +25,15 @@ from validate_drowned_harbor_prototype_automation import (
     README_PATH,
     SUMMARY_PATH,
     TECHNICAL_PATH,
+    TEST_PATH,
     UID_PATH,
     WORKFLOW_PATH,
+    ISOLATION_TEST_PATH,
     AutomationValidationError,
     read_json,
     sha256_file,
     validate_documentation,
+    validate_godot_source,
     validate_manifest,
     validate_production_boundary,
     validate_profile,
@@ -93,6 +96,15 @@ def workflow_mutation(target: Path, old: str, new: str) -> None:
         values[GODOT_WORKFLOW_PATH],
         values[PORTABLE_WORKFLOW_PATH],
     )
+
+
+def godot_source_mutation(old: str, new: str) -> None:
+    source = (ROOT / TEST_PATH).read_text(encoding="utf-8")
+    if old not in source:
+        raise AssertionError(f"Godot source mutation target missing: {old}")
+    source = source.replace(old, new, 1)
+    isolation = (ROOT / ISOLATION_TEST_PATH).read_text(encoding="utf-8")
+    validate_godot_source(source, isolation)
 
 
 def documentation_mutation(old: str, new: str) -> None:
@@ -225,6 +237,20 @@ def main() -> int:
         ("missing evidence status", lambda: workflow_mutation(PORTABLE_WORKFLOW_PATH, "p019-windows-native.status", "removed-windows-native.status")),
         ("malformed new UID", lambda: uid_mutation("uid://not-canonical-z\n")),
         ("duplicate new UID", lambda: uid_mutation((ROOT / UID_PATH).read_text(encoding="utf-8"), True)),
+        (
+            "omitted aggregate unknown-intent case",
+            lambda: godot_source_mutation(
+                'unknown_request["intent"] = "unknown_fixture_intent"',
+                'unknown_request["intent"] = "project_low_tide_public_action"',
+            ),
+        ),
+        (
+            "omitted aggregate malformed-request case",
+            lambda: godot_source_mutation(
+                'malformed_request.erase("intent")',
+                'malformed_request["intent"] = malformed_request.get("intent", "")',
+            ),
+        ),
         ("documentation human evidence claim", lambda: documentation_mutation("Machine evidence boundary", "Machine evidence boundary\n\nHuman validated.")),
         ("documentation certification claim", lambda: documentation_mutation("Machine evidence boundary", "Machine evidence boundary\n\nPrivacy certified.")),
     ]

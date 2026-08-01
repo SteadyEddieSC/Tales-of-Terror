@@ -457,6 +457,65 @@ def validate_godot_source(test: str, isolation: str) -> None:
         "max_steps_per_case",
     ):
         require(token in test, f"aggregate Godot source obligation missing: {token}")
+    request_helper_match = re.search(
+        r"func _run_low_request_contract_rejections\(\) -> Dictionary:\n"
+        r"(?P<body>.*?)(?=\n\nfunc )",
+        test,
+        re.DOTALL,
+    )
+    require(request_helper_match is not None, "aggregate request-contract rejection helper missing")
+    request_helper = request_helper_match.group("body") if request_helper_match else ""
+    require(
+        re.search(
+            r'"stale_revision_rejection":\s*result = _sequence_bundle\(\s*\[\s*'
+            r'_run_rejections\("stale"\),\s*_run_low_request_contract_rejections\(\)\s*\]\s*\)',
+            test,
+            re.DOTALL,
+        )
+        is not None,
+        "aggregate request-contract helper is not executed in the sequence matrix",
+    )
+    require(request_helper.count("LOW_ADAPTER.new()") == 2, "request-contract cases need two fresh adapters")
+    require(request_helper.count(".load_fixture()") == 2, "request-contract cases must load DH-FIX-001 twice")
+    require(request_helper.count(".default_request()") == 2, "request-contract cases must start exact")
+    require(request_helper.count(".project(") == 2, "request-contract cases must execute both requests")
+    for token in (
+        'unknown_request["intent"] = "unknown_fixture_intent"',
+        'not unknown_rejected.get("accepted", true)',
+        'unknown_code == "unauthorized_intent"',
+        'malformed_request.erase("intent")',
+        'not malformed_rejected.get("accepted", true)',
+        'malformed_code == "malformed_request"',
+        '_low_rejection_is_public_safe(unknown_rejected)',
+        '_low_rejection_is_public_safe(malformed_rejected)',
+        '"governed_cases": 2',
+        '"rejections": 2',
+    ):
+        require(token in request_helper, f"aggregate request-contract execution missing: {token}")
+    require(
+        request_helper.count("_low_request_invariants(unknown_adapter)") == 2,
+        "unknown-intent case does not prove governed no-mutation invariants",
+    )
+    require(
+        request_helper.count("_low_request_invariants(malformed_adapter)") == 2,
+        "malformed-request case does not prove governed no-mutation invariants",
+    )
+    invariant_helper_match = re.search(
+        r"func _low_request_invariants\(.*?\) -> Dictionary:\n"
+        r"(?P<body>.*?)(?=\n\nfunc )",
+        test,
+        re.DOTALL,
+    )
+    require(invariant_helper_match is not None, "Low Tide governed-invariant helper missing")
+    invariant_helper = invariant_helper_match.group("body") if invariant_helper_match else ""
+    for token in (
+        "adapter.source_fingerprint()",
+        "adapter.source_revision()",
+        "adapter.result_revision()",
+        "adapter.rng_cursor()",
+        "adapter.stable_seat_id()",
+    ):
+        require(token in invariant_helper, f"Low Tide no-mutation invariant missing: {token}")
     require("PRIVATE_" in test and "_scan_public_evidence" in test, "private leak guard missing")
     require("prototype_automation_profile_v1.json" in isolation, "isolation profile coverage missing")
     require("drowned_harbor_prototype_automation_test.gd" in isolation, "isolation entry coverage missing")
