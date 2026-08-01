@@ -2,7 +2,7 @@
   "status_kind": "post_prototype_project_status",
   "schema_version": 1,
   "as_of_date": "2026-08-01",
-  "protected_main": "836716b6857323f36abcc4728ee05e01d31cd843",
+  "protected_main": "58f6f4e4ece9bbdd5932216c87aacc064e48e05a",
   "playable_release": "v0.1.9",
   "production": {
     "default_tale_id": "lantern_house_vertical_slice",
@@ -69,7 +69,8 @@
     {"release_id": "P0.16", "pull_request": 91, "merged_main_sha": "854d9ea5db1ed4e942ff9e4a2a04af1c76ad803e", "title": "Bellhouse Decision & Invalid-Action Recovery", "state": "merged"},
     {"release_id": "P0.17", "pull_request": 93, "merged_main_sha": "61d7d1ad11d5609ff8780dc6e1035b254f7b1bd2", "title": "Drowned Harbor Controlled-Private Shield Proof", "state": "merged"},
     {"release_id": "P0.18", "pull_request": 94, "merged_main_sha": "c681e37612b3631c78b4f6cc05137a3df5dbd445", "title": "Drowned Harbor High Water Deterministic Transformation Proof", "state": "merged"},
-    {"release_id": "P0.19", "pull_request": 95, "merged_main_sha": "836716b6857323f36abcc4728ee05e01d31cd843", "title": "Drowned Harbor Prototype Automation and Export Exclusion", "state": "merged"}
+    {"release_id": "P0.19", "pull_request": 95, "merged_main_sha": "836716b6857323f36abcc4728ee05e01d31cd843", "title": "Drowned Harbor Prototype Automation and Export Exclusion", "state": "merged"},
+    {"release_id": "P0.20", "pull_request": 97, "merged_main_sha": "58f6f4e4ece9bbdd5932216c87aacc064e48e05a", "title": "Post-Prototype Reconciliation & Production Decision Pack", "state": "merged"}
   ],
   "historical_contracts": {
     "p01_p07_package_index": "docs/preproduction/preproduction_package_index_v1.json",
@@ -77,18 +78,29 @@
     "post_v019_roadmap": "docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md",
     "post_v019_roadmap_status": "superseded_historical_record"
   },
+  "production_architecture": {
+    "contract_path": "docs/preproduction/drowned_harbor_production_compilation_contract_v1.json",
+    "schema_path": "docs/preproduction/drowned_harbor_production_compilation_contract_schema_v1.json",
+    "technical_path": "docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md",
+    "state": "active_planning",
+    "runtime_input": false,
+    "normal_library_visible": false,
+    "ordinary_export_included": false
+  },
   "current_release": {
-    "release_id": "P0.20",
-    "issue": 96,
-    "branch": "docs/p0.20-post-prototype-reconciliation",
-    "type": "documentation_governance_validation",
+    "release_id": "P0.21",
+    "issue": 98,
+    "branch": "docs/p0.21-production-architecture-contract",
+    "type": "documentation_schema_validation",
     "runtime_authority_created": false
   },
   "recommended_next_release": {
-    "release_id": "P0.21",
-    "title": "Production Architecture & Tale-Compilation Contract",
-    "state": "planned_not_active",
-    "codex_required": false
+    "release_id": "v0.2.0-alpha.1",
+    "title": "Production Tale Scaffold",
+    "state": "planned_blocked",
+    "github_issue": null,
+    "codex_required": true,
+    "activation_authorized": false
   },
   "runtime_implementation_authorized": false,
   "human_evidence_claimed": false
