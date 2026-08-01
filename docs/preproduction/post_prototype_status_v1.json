@@ -1,0 +1,95 @@
+{
+  "status_kind": "post_prototype_project_status",
+  "schema_version": 1,
+  "as_of_date": "2026-08-01",
+  "protected_main": "836716b6857323f36abcc4728ee05e01d31cd843",
+  "playable_release": "v0.1.9",
+  "production": {
+    "default_tale_id": "lantern_house_vertical_slice",
+    "tale_count": 1,
+    "drowned_harbor_catalog_registered": false,
+    "drowned_harbor_provider_registered": false,
+    "drowned_harbor_normal_library_visible": false,
+    "drowned_harbor_ordinary_export_included": false
+  },
+  "drowned_harbor": {
+    "status": "development_only_export_excluded",
+    "ordinary_playable": false,
+    "fixture_count": 7,
+    "focused_feature_families": [
+      "low_tide_shared_screen",
+      "bellhouse_decision_and_recovery",
+      "controlled_private_shield",
+      "high_water_transformation"
+    ],
+    "aggregate_automation": {
+      "profile_id": "DH-AUTO-P019-V1",
+      "sequences": 12,
+      "repetitions": 2,
+      "governed_cases": 33,
+      "fail_closed_rejections": 12,
+      "private_leaks": 0,
+      "deadlocks": 0
+    },
+    "completed_work_issues": [80, 81, 82, 83, 84, 85, 86],
+    "successor_implementation_issue": null,
+    "successor_implementation_authorized": false
+  },
+  "companion_security": {
+    "issue": 44,
+    "state": "completed",
+    "merge_sha": "add20c80b8c7f382e3accf28e1efa2a6c0bad9d8",
+    "wrangler": "4.114.0",
+    "miniflare": "4.20260722.0",
+    "sharp": "0.35.2",
+    "workers_types": "5.20260722.1",
+    "audit_high_or_critical": 0
+  },
+  "gates": [
+    {"issue": 7, "state": "open", "purpose": "professional naming clearance"},
+    {"issue": 39, "state": "deferred_open", "purpose": "human household and remote evidence"}
+  ],
+  "unrelated_open_pull_requests": [32],
+  "preproduction_releases": [
+    {"release_id": "P0.1", "pull_request": 65, "merged_main_sha": "53a9db5ba1c665ae6ba42873c8aed6e84806890c", "title": "Preproduction Narrative & Continuity Foundation", "state": "merged"},
+    {"release_id": "P0.2", "pull_request": 66, "merged_main_sha": "cd78cc68f80c5546ea91bd0a9431642eba1e4d30", "title": "Drowned Harbor Dialogue and Localization Corpus", "state": "merged"},
+    {"release_id": "P0.3", "pull_request": 67, "merged_main_sha": "e0cc8932904569f2b4b9b918da7d2727984464de", "title": "Drowned Harbor Visual Development & Asset Brief Pack", "state": "merged"},
+    {"release_id": "P0.4", "pull_request": 68, "merged_main_sha": "8270b2d322321c2cee28404794780e012477ffcb", "title": "Drowned Harbor Audio Direction & SFX Brief Pack", "state": "merged"},
+    {"release_id": "P0.5", "pull_request": 69, "merged_main_sha": "dc64c864cd4c334c958aff1d104aa903ec109131", "title": "Drowned Harbor Music Direction & Adaptive Score Brief Pack", "state": "merged"},
+    {"release_id": "P0.6", "pull_request": 70, "merged_main_sha": "9c477561ba4cd9de9244ac29ff30e3da16ed0e44", "title": "Underteller Voice Direction, Casting & Recorded Dialogue Preparation", "state": "merged"},
+    {"release_id": "P0.7", "pull_request": 71, "merged_main_sha": "6ea08389f09e5dc6162f63abe65105860b36f22e", "title": "Localization, Captions & Accessible Narrative Presentation", "state": "merged"},
+    {"release_id": "P0.8", "pull_request": 72, "merged_main_sha": "9efbd703194a4947e45d57595939ca60903c4221", "title": "Preproduction Package Index, Cross-Media Traceability & Codex Return Handoff", "state": "merged"},
+    {"release_id": "P0.9", "pull_request": 76, "merged_main_sha": "8010ee3298938a3eb60319ecc9ce834c3b488c29", "title": "Tale Authoring Schema & Design-Only Drowned Harbor Reference Package", "state": "merged"},
+    {"release_id": "P0.10", "pull_request": 77, "merged_main_sha": "d701dc2a677bd5eab212ac71b78713377bd5696b", "title": "Drowned Harbor Shared-Screen Storyboard & Interaction Pack", "state": "merged"},
+    {"release_id": "P0.11", "pull_request": 78, "merged_main_sha": "0cb4aaaf3b82097a4dcaf38d2ff41d3047e9cd4f", "title": "Drowned Harbor Interaction-State & Implementation Traceability Pack", "state": "merged"},
+    {"release_id": "P0.12", "pull_request": 87, "merged_main_sha": "33ded0d2eca9a9e2bb794778df3a40fd908643d1", "title": "Drowned Harbor Implementation Issue Set & Prototype Authorization Decision Pack", "state": "merged"},
+    {"release_id": "P0.13", "pull_request": 88, "merged_main_sha": "a4a4af81081b3b6ea419f98bed6c2d3ae9bf1e83", "title": "Game Vision, README & Drowned Harbor Prototype Isolation Foundation", "state": "merged"},
+    {"release_id": "P0.14", "pull_request": 89, "merged_main_sha": "0aeb3921eeb917296f32d096b8051e482894fe88", "title": "Drowned Harbor Deterministic State & Projection Fixtures", "state": "merged"},
+    {"release_id": "P0.15", "pull_request": 90, "merged_main_sha": "1d27a1584fc9f8513e9322875477133b77ef8050", "title": "Drowned Harbor Low-Tide Shared-Screen Prototype Shell", "state": "merged"},
+    {"release_id": "P0.16", "pull_request": 91, "merged_main_sha": "854d9ea5db1ed4e942ff9e4a2a04af1c76ad803e", "title": "Bellhouse Decision & Invalid-Action Recovery", "state": "merged"},
+    {"release_id": "P0.17", "pull_request": 93, "merged_main_sha": "61d7d1ad11d5609ff8780dc6e1035b254f7b1bd2", "title": "Drowned Harbor Controlled-Private Shield Proof", "state": "merged"},
+    {"release_id": "P0.18", "pull_request": 94, "merged_main_sha": "c681e37612b3631c78b4f6cc05137a3df5dbd445", "title": "Drowned Harbor High Water Deterministic Transformation Proof", "state": "merged"},
+    {"release_id": "P0.19", "pull_request": 95, "merged_main_sha": "836716b6857323f36abcc4728ee05e01d31cd843", "title": "Drowned Harbor Prototype Automation and Export Exclusion", "state": "merged"}
+  ],
+  "historical_contracts": {
+    "p01_p07_package_index": "docs/preproduction/preproduction_package_index_v1.json",
+    "p01_p07_package_index_status": "frozen_historical_contract",
+    "post_v019_roadmap": "docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md",
+    "post_v019_roadmap_status": "superseded_historical_record"
+  },
+  "current_release": {
+    "release_id": "P0.20",
+    "issue": 96,
+    "branch": "docs/p0.20-post-prototype-reconciliation",
+    "type": "documentation_governance_validation",
+    "runtime_authority_created": false
+  },
+  "recommended_next_release": {
+    "release_id": "P0.21",
+    "title": "Production Architecture & Tale-Compilation Contract",
+    "state": "planned_not_active",
+    "codex_required": false
+  },
+  "runtime_implementation_authorized": false,
+  "human_evidence_claimed": false
+}
