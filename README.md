@@ -2,19 +2,34 @@
 
 A controller-first, 1–8 player digital horror board-game adventure about surviving living storybook Tales, navigating shifting alliances, and staying meaningfully involved even after defeat.
 
-> **Naming status:** `Terror Turn` and `The Underteller` are provisional names pending the legal, storefront, domain, and common-law review tracked by issue #7. The repository remains `SteadyEddieSC/Tales-of-Terror` until that review is complete.
+> **Naming status:** `Terror Turn` and `The Underteller` remain provisional pending the legal and common-law review tracked by issue #7. The repository remains `SteadyEddieSC/Tales-of-Terror` until that gate is resolved.
+
+## Current project status
+
+This repository contains a functional **internal vertical slice** plus a completed, isolated future-Tale prototype program. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
+
+- **Current playable version:** `v0.1.9`
+- **Sole production/default Tale:** `lantern_house_vertical_slice` — Lantern House
+
+Lantern House remains the sole production/default Tale.
+
+- **Current protected-main baseline for this status:** `836716b6857323f36abcc4728ee05e01d31cd843`
+- **Latest completed preproduction package:** P0.19 — Drowned Harbor Prototype Automation and Export Exclusion
+- **Current reconciliation package:** P0.20 — Post-Prototype Reconciliation & Production Decision Pack
+- **Companion dependency security issue #44:** completed
+- **Human-evidence issue #39:** deferred and still authoritative
+- **Naming issue #7:** open
+- **Unrelated Dependabot PR #32:** not part of feature releases
 
 ## Elevator pitch
 
 **One sentence:** Terror Turn is a shared-screen horror board game where 1–8 players explore a living storybook world, make dangerous group and private choices, survive a mid-story **Terror Turn**, and may change sides, transform, or return in an afterlife role instead of being eliminated.
 
-**Expanded pitch:** Friends gather around one television and enter an authored horror **Tale** hosted by **The Underteller**, an undead master of ceremonies who introduces the story, reacts to public choices, and presents the ending. Players explore a shifting **Living Board**, collect clues and items, face deterministic checks and events, and decide when to cooperate, bargain, conceal information, or pursue a private objective. The rule-based Director adjusts authored pacing within strict limits, while transformations, betrayals, third factions, and Restless afterlife forms keep the group involved until the final scene.
+**Expanded pitch:** Friends gather around one television and enter an authored horror **Tale** hosted by **The Underteller**, an undead master of ceremonies who introduces the story, reacts to public choices, and presents the ending. Players explore a shifting **Living Board**, collect clues and items, face deterministic checks and events, and decide when to cooperate, bargain, conceal information, or pursue a private objective. A rule-based Director adjusts authored pacing within strict limits, while transformations, betrayals, third factions, and Restless afterlife forms keep the group involved until the final scene.
 
-## What exists today
+## What is playable today
 
-This repository contains a functional **internal vertical slice**, not a finished game.
-
-The current runtime proves a complete controller-first route through one small authored Tale:
+The current production runtime proves a complete controller-first route through Lantern House:
 
 1. title and setup;
 2. a 1–8 stable-seat local lobby;
@@ -22,95 +37,54 @@ The current runtime proves a complete controller-first route through one small a
 4. public briefing;
 5. controller-owned private reveal ceremonies;
 6. explicit player-owned interactions through the Tale;
-7. a deterministic ending with mixed outcomes;
+7. deterministic mixed outcomes;
 8. rematch or return to title.
 
-The current production build includes foundations for:
+The reusable production foundations include:
 
 - local shared-screen controller and keyboard play;
 - stable seats that retain roles, inventory, state, and ownership through disconnect and reconnect;
-- smooth shared exploration mapped onto an authoritative Living Board;
+- an authoritative Living Board;
 - deterministic turns, cards, events, checks, and board mutations;
 - an authored, rule-based Dread Director with bounded pacing and recovery behavior;
 - cooperative, betrayal, faction, transformation, and Restless afterlife systems;
 - public, seat-private, faction-private, and controlled-private information boundaries;
 - optional browser companion devices through a local development prototype;
-- controller-first Tale selection, private reveals, replay-safe actions, and automated 1–8-seat playthrough evidence;
+- controller-first Tale selection, replay-safe actions, and automated 1–8-seat completion evidence;
 - Windows and Linux internal exports, including Linux validation relevant to Batocera.
 
-### What the current build is not
+Lantern House is an integration route, not the final standard for story volume, art, atmosphere, encounter variety, balance, or replayability.
 
-The current build is not a content-complete game, public demo, commercial release, balance-certified experience, deployed online service, or finished campaign. Its visuals and content are primarily foundation and vertical-slice material.
+## Drowned Harbor status
 
-Automated tests establish deterministic mechanical behavior, privacy boundaries, package identity, export integrity, and deadlock resistance. **Automation is not human evidence** for fun, tension, fairness, comprehension, physical-controller behavior, living-room television readability, accessibility compliance, household networking, remote-device behavior, or privacy certification.
+**Drowned Harbor is not a production Tale and is not ordinarily playable.**
 
-## Current production Tale: Lantern House
+The P0.1–P0.19 program produced a deep governed design package and then proved selected high-risk interaction families under `game/tests/`:
 
-**Lantern House remains the sole production Tale.**
+- seven synthetic deterministic state/projection fixtures;
+- Low Tide shared-screen presentation;
+- Bellhouse decision and invalid-action recovery;
+- controlled-private Harbor bargain and inherited-state handoff;
+- High Water deterministic transformation and transformed-board presentation;
+- aggregate cross-family deterministic automation;
+- permanent Windows/Linux ordinary-export exclusion evidence.
 
-It is a deliberately modest vertical slice used to prove that the project’s major systems can operate together. Players enter an iron threshold, reveal an archive, make public route and courage decisions, gain and play a card, experience a bounded Director response, and may continue through a Restless action after defeat before the ending resolves.
+The isolated prototype remains:
 
-Lantern House is an integration route, not the final standard for story volume, art, balance, atmosphere, encounter variety, or replayability.
+- development-only;
+- explicit-test-script-only;
+- unregistered in the production Tale catalog and provider;
+- absent from the normal Tale Library;
+- without production saves, reports, reducer authority, networking, or final assets;
+- excluded from ordinary Windows and Linux exports.
 
-## What the finished game is aiming for
+P0.19 completed every currently authorized child issue, #80 through #86. It did not authorize a successor implementation issue.
 
-The target game is a replayable digital horror-board-game platform built around multiple authored settings and rule variants rather than one endlessly repeated scenario.
-
-The intended experience includes:
-
-- **multiple Tales** with distinct boards, mysteries, threats, roles, factions, transformations, items, hazards, and endings;
-- **Chronicle Campaigns** that connect several Tales while remembering selected consequences;
-- standalone Tales for a complete single-session story;
-- shorter **Quick Fright** sessions;
-- cooperative, hidden-betrayal, one-versus-many, outbreak, mystery, rival-team, and survival structures;
-- a Living Board that can reveal, flood, burn, collapse, rotate, split, or otherwise change during play;
-- a signature **Terror Turn** where the board, objective, allegiance, or player form changes in a memorable authored reversal;
-- meaningful defeat states through **Restless** roles such as witnesses, wraiths, guardians, monster minions, or replacement investigators;
-- optional private companion devices that enhance hidden information without being required to play;
-- presentation profiles for **Spooky**, **Grim**, and **Gore & Dread**, with equivalent gameplay rules;
-- an original modern storybook-horror look with expressive outlines, painterly materials, dramatic lighting, and readable living-room silhouettes;
-- Windows and Linux first, followed later by additional living-room and companion platforms after the local game is proven.
-
-The finished game should feel like opening a dangerous illustrated board game that can remember what the group did, turn allies against one another, and let the dead keep influencing the story.
-
-## Story mode: Tales
-
-A **Tale** is the project’s main story-mode unit: a self-contained authored horror adventure with its own location, premise, board, stages, encounters, social structure, transformation rules, ending logic, dialogue, visual language, sound direction, and accessibility presentation.
-
-A Tale can be played in several ways depending on its authored support:
-
-- **Standalone Tale** — one complete story in a single session;
-- **Chronicle Campaign** — linked Tales with selected persistent consequences;
-- **Quick Fright** — a shorter authored route;
-- **Betrayal** — one or more hidden loyalties may be revealed;
-- **Hunted** — one player may become the Horror;
-- **Outbreak** — defeated or transformed players may join a growing third faction;
-- **Mystery, Rival Teams, or Last Light** — Tale-specific structures with different objectives and endings.
-
-The same Tale does not have to support every mode. Unsupported seat counts or social layouts must use an authored safe fallback rather than producing a broken or nonsensical game.
-
-### How a Tale session should feel
-
-A typical session is intended to flow like this:
-
-1. players join stable seats with controllers;
-2. the group chooses a Tale and supported mode;
-3. The Underteller presents the premise and public objective;
-4. private roles, motives, or information are revealed safely;
-5. the group explores the board, resolves events, uses items, and makes public or private decisions;
-6. the Director adjusts authored pressure without reading hidden information;
-7. a Terror Turn may transform the board, loyalties, objectives, or player forms;
-8. defeated players continue through an authored Restless or transformed role when supported;
-9. the final choice resolves several possible winners, losses, escapes, transformations, or partial outcomes;
-10. The Underteller delivers an epilogue based on what actually happened.
-
-## Future Tale in design: Drowned Harbor
-
-**Drowned Harbor is not a production Tale.** It is the first deeply developed future-Tale design package and the current visual, narrative, audio, music, voice, accessibility, UI, and interaction-trace test case for the authoring pipeline.
+### Drowned Harbor premise
 
 At an impossible low tide, a drowned coastal town rises from black tidal mud. Travelers cross a broken causeway toward a Bellhouse, Salt Market, lifeboat shed, flooded archive, and distant lighthouse. The town’s leaders once wrecked ships and used a ledger-and-bell ritual to erase the harbor from memory, but one missing name left the ritual incomplete. As the sea returns, the group must recover the truth, decide whom to trust, survive the **High Water Terror Turn**, and choose whether the harbor is sealed, released, raised, abandoned, or remembered.
 
-Its planned stages are:
+Its planned stages remain:
 
 1. **Low Tide Arrival**
 2. **Bellhouse Ledger**
@@ -118,47 +92,94 @@ Its planned stages are:
 4. **High Water**
 5. **Last Light**
 
-Drowned Harbor currently exists as governed design material plus an export-excluded development-isolation manifest under `game/tests/`. It is not selectable from the normal Tale Library, has no production provider or Tale package, contains no final assets, and is not included in ordinary playable exports.
+## Next development direction
+
+The recommended next stream is a staged Drowned Harbor production candidate, beginning with a documentation and architecture contract rather than immediately registering a second Tale.
+
+1. **P0.20** — current-state reconciliation and production decision.
+2. **P0.21** — production architecture and Tale-compilation contract.
+3. **v0.2.0-alpha.1** — hidden/internal production Tale scaffold.
+4. **v0.2.0-alpha.2** — complete end-to-end graybox route.
+5. **v0.2.0-alpha.3** — roles, factions, items, hazards, Restless systems, endings, and replayability.
+6. **v0.2.0-beta** — production UI, approved media, accessibility presentation, and content integration.
+7. **v0.2.0 release candidate** — packaging, security, performance, migration, attribution, and distribution hardening.
+
+This sequence is planning only until each bounded issue is separately authorized. See [Post-P0.19 Production-Candidate Roadmap](docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md).
+
+## Development routing
+
+The Release Management chat owns live GitHub reconciliation, issue and release activation, exact-head review, CI diagnosis, bounded GitHub-native corrections, guarded merges, and post-merge verification.
+
+Codex should be used only when an active issue genuinely requires substantial local multi-file implementation, Godot editor work, repeated local build/debug cycles, Windows-specific execution, filesystem exploration, or binary/asset handling. Creating a roadmap or finding an existing PR is not by itself a reason to consume Codex resources.
+
+No runtime release begins without:
+
+- an explicit active issue;
+- an exact protected-main baseline;
+- one bounded branch and draft PR;
+- declared paths and exclusions;
+- exact validation expectations;
+- independent Release Management review.
+
+## Intended finished game
+
+The target is a replayable digital horror-board-game platform built around multiple authored settings and rule variants.
+
+The intended experience includes:
+
+- multiple Tales with distinct boards, mysteries, threats, roles, factions, transformations, items, hazards, and endings;
+- standalone Tales and linked Chronicle Campaigns;
+- shorter Quick Fright sessions;
+- cooperative, hidden-betrayal, one-versus-many, outbreak, mystery, rival-team, and survival structures;
+- a Living Board that can reveal, flood, burn, collapse, rotate, split, or otherwise change;
+- a signature Terror Turn where the board, objective, allegiance, or player form changes;
+- meaningful defeat states through Restless roles;
+- optional private companion devices that are never required;
+- Spooky, Grim, and Gore & Dread presentation profiles with mechanically equivalent rules;
+- an original modern storybook-horror look readable on a living-room television.
 
 ## The Underteller and the Director
 
-**The Underteller** is the fictional host and interface voice. He introduces Tales, frames choices, acknowledges public consequences, recaps connected chapters, and delivers epilogues. He is not intended to secretly decide the rules.
+**The Underteller** is the fictional host and interface voice. He introduces Tales, frames choices, acknowledges public consequences, recaps connected chapters, and delivers epilogues. He does not secretly decide the rules.
 
-The **Director** is the underlying authored pacing system. It begins as local, deterministic, and explainable—not as a cloud language model. It can adjust legal event weights, clues, scarcity, spawn timing, music, lighting, and hints within a Tale’s declared limits. It cannot inspect unrevealed roles, private objectives, hidden targets, private messages, or pending private transformations.
+The **Director** is the underlying authored pacing system. It begins local, deterministic, and explainable—not as a cloud language model. It may adjust legal event weights, clues, scarcity, spawn timing, music, lighting, and hints within a Tale’s declared limits. It may not inspect unrevealed roles, private objectives, hidden targets, private messages, or pending private transformations.
 
 ## Design pillars
 
-1. **Board game first** — choices and state must remain understandable and reproducible.
+1. **Board game first** — choices and state remain understandable and reproducible.
 2. **Horror is social** — tension comes from the group as well as the monsters.
-3. **No player becomes irrelevant** — defeat should change participation, not end it.
+3. **No player becomes irrelevant** — defeat changes participation rather than ending it.
 4. **Every chapter tells a memorable story** — mechanics serve an authored arc.
-5. **Readable on a living-room television** — silhouettes, symbols, text, and focus must remain clear.
-6. **Private devices are optional** — they may improve hidden information but cannot be required.
+5. **Readable on a living-room television** — silhouettes, symbols, text, and focus remain clear.
+6. **Private devices are optional** — they enhance hidden information but are not required.
 7. **Systems before content volume** — reusable foundations come before a large Tale catalog.
 8. **Quality over speed** — major claims require the right automated and human evidence.
 
-## Development and production boundaries
+## Technical and production boundaries
 
 - Godot **4.7.1-stable**, typed GDScript, Compatibility renderer.
-- 960×540 logical world viewport with 16:9 output and scalable high-resolution UI.
-- Windows and Linux first; Batocera is validated through Linux builds.
+- 960×540 logical world viewport with 16:9 output and scalable UI.
+- Windows and Linux first.
 - Native Godot authority owns gameplay in the current architecture.
 - The production Tale catalog contains exactly one entry: Lantern House.
-- Test-only synthetic or prototype content must remain under export-excluded paths.
+- Test-only synthetic and prototype content remains under export-excluded paths.
+- The supported Companion development dependency graph is Wrangler 4.114.0 → Miniflare 4.20260722.0 → Sharp 0.35.2, with Workers Types 5.20260722.1.
 - Production Cloudflare deployment, accounts, matchmaking, campaign persistence, full remote play, and security certification remain deferred.
 - Issue #39 remains the authority for future human household and remote playtest evidence.
-- Issue #44 remains open for real Companion dependency remediation; the known audit may not be suppressed or represented as green.
+
+Automation establishes bounded deterministic behavior, privacy separation, package identity, export integrity, and deadlock resistance. It is not human evidence for fun, tension, fairness, comprehension, physical-controller behavior, television readability, accessibility compliance, household networking, remote-device behavior, privacy certification, security certification, or production readiness.
 
 ## Repository map
 
 - `game/` — Godot project and production runtime
-- `game/tests/` — export-excluded automated tests, fixtures, and isolated prototype proofs
+- `game/tests/` — export-excluded tests, fixtures, and isolated prototype proofs
 - `docs/gdd/` — canonical living Game Design Document
 - `docs/tales/` — governed Tale design and authoring packages
 - `docs/technical/` — architecture, contracts, tooling, and isolation rules
-- `docs/preproduction/` — P0.x package records, schemas, and cross-media traceability
+- `docs/preproduction/` — P0.x package records, schemas, and current status
+- `docs/roadmap/` — historical and current roadmaps
 - `docs/decisions/` — design and architecture decisions
-- `docs/playtests/` — automated evidence and carefully labeled human-test records
+- `docs/playtests/` — automated evidence and carefully classified human records
 - `art/` and `audio/` — source and exports when approved
 - `web/companion/` — accessible browser companion prototype
 - `services/room-service/` — ephemeral Cloudflare-compatible room coordinator
@@ -166,17 +187,7 @@ The **Director** is the underlying authored pacing system. It begins as local, d
 
 ## Validation
 
-GitHub Actions currently checks:
-
-- repository integrity and formatting;
-- Godot import, smoke, standalone, simulation, replay, privacy, Tale, and deadlock tests;
-- GDScript linting and canonical formatting;
-- Windows and Linux portable internal builds;
-- Tale package, catalog, provider, and export boundaries;
-- preproduction package, dialogue, media, accessibility, authoring, storyboard, interaction, and prototype-authorization contracts;
-- Companion service and browser behavior.
-
-The Companion workflow intentionally remains red while issue #44’s dependency vulnerability is unresolved. This is a tracked security gate, not a reason to weaken or suppress the audit.
+GitHub Actions checks repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor prototype isolation and export exclusion, preproduction contracts, and Companion service/browser behavior.
 
 ## Documentation and licensing
 
