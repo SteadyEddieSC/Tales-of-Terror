@@ -47,6 +47,12 @@ jobs:
           python tools/test_portable_bundle.py
           python tools/pilot_evidence.py validate-templates
           python tools/test_pilot_evidence.py
+          python tools/validate_drowned_harbor_prototype_automation.py
+          mkdir -p builds/artifacts/p019-export
+          printf 'not_run\n' > builds/artifacts/p019-export/p019-windows-native.status
+          printf 'not_run\n' > builds/artifacts/p019-export/p019-linux-native.status
+          printf 'not_run\n' > builds/artifacts/p019-export/p019-windows-bundle.status
+          printf 'not_run\n' > builds/artifacts/p019-export/p019-linux-bundle.status
       - name: Export exact-head Windows and Linux native builds
         shell: bash
         run: |
@@ -65,6 +71,30 @@ jobs:
             echo 'Export contained a denylisted runtime resource'
             exit 1
           fi
+          set +e
+          python tools/validate_drowned_harbor_prototype_automation.py native-export \
+            --platform windows \
+            --source-sha "$SOURCE_SHA" \
+            --preset "Internal Windows x86_64" \
+            --native builds/export/windows/lantern_house_internal.exe \
+            --export-log builds/export/windows/export.log \
+            --output builds/artifacts/p019-export/windows-native.json \
+            2>&1 | tee builds/artifacts/p019-export/windows-native.txt
+          windows_status=${PIPESTATUS[0]}
+          echo "$windows_status" > builds/artifacts/p019-export/p019-windows-native.status
+          python tools/validate_drowned_harbor_prototype_automation.py native-export \
+            --platform linux \
+            --source-sha "$SOURCE_SHA" \
+            --preset "Internal Linux x86_64" \
+            --native builds/export/linux/lantern_house_internal.x86_64 \
+            --export-log builds/export/linux/export.log \
+            --output builds/artifacts/p019-export/linux-native.json \
+            2>&1 | tee builds/artifacts/p019-export/linux-native.txt
+          linux_status=${PIPESTATUS[0]}
+          set -e
+          echo "$linux_status" > builds/artifacts/p019-export/p019-linux-native.status
+          test "$windows_status" -eq 0
+          test "$linux_status" -eq 0
       - name: Assemble and validate bounded session bundles
         shell: bash
         run: |
@@ -76,6 +106,32 @@ jobs:
             builds/bundles/lantern-house-internal-playtest-v0.1.9-windows-x86_64
           python tools/portable_bundle.py validate-bundle \
             builds/bundles/lantern-house-internal-playtest-v0.1.9-linux-x86_64
+          set +e
+          python tools/validate_drowned_harbor_prototype_automation.py bundle-export \
+            --platform windows \
+            --source-sha "$SOURCE_SHA" \
+            --preset "Internal Windows x86_64" \
+            --native builds/export/windows/lantern_house_internal.exe \
+            --export-log builds/export/windows/export.log \
+            --bundle builds/bundles/lantern-house-internal-playtest-v0.1.9-windows-x86_64 \
+            --output builds/artifacts/p019-export/windows-bundle.json \
+            2>&1 | tee builds/artifacts/p019-export/windows-bundle.txt
+          windows_status=${PIPESTATUS[0]}
+          echo "$windows_status" > builds/artifacts/p019-export/p019-windows-bundle.status
+          python tools/validate_drowned_harbor_prototype_automation.py bundle-export \
+            --platform linux \
+            --source-sha "$SOURCE_SHA" \
+            --preset "Internal Linux x86_64" \
+            --native builds/export/linux/lantern_house_internal.x86_64 \
+            --export-log builds/export/linux/export.log \
+            --bundle builds/bundles/lantern-house-internal-playtest-v0.1.9-linux-x86_64 \
+            --output builds/artifacts/p019-export/linux-bundle.json \
+            2>&1 | tee builds/artifacts/p019-export/linux-bundle.txt
+          linux_status=${PIPESTATUS[0]}
+          set -e
+          echo "$linux_status" > builds/artifacts/p019-export/p019-linux-bundle.status
+          test "$windows_status" -eq 0
+          test "$linux_status" -eq 0
       - name: Smoke native Linux executable and optional launcher
         shell: bash
         run: |
@@ -148,4 +204,12 @@ jobs:
             builds/linux-direct-smoke.txt
             builds/linux-launcher-smoke.txt
           if-no-files-found: error
+          retention-days: 14
+      - name: Upload P0.19 Drowned Harbor export exclusion evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p019-drowned-harbor-export-exclusion-evidence
+          path: builds/artifacts/p019-export
+          if-no-files-found: warn
           retention-days: 14

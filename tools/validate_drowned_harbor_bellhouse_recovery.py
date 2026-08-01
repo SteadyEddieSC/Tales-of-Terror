@@ -42,8 +42,15 @@ EXPECTED_ENTRY_POINTS = [
     "res://tests/drowned_harbor_bellhouse_recovery_test.gd",
     "res://tests/drowned_harbor_controlled_private_shield_test.gd",
     "res://tests/drowned_harbor_high_water_transformation_test.gd",
+    "res://tests/drowned_harbor_prototype_automation_test.gd",
     "res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
+P019_TECHNICAL_AUTHORITY = (
+    "docs/technical/Drowned_Harbor_Prototype_Automation_Export_Exclusion_v1.md"
+)
+AUTOMATION_PROFILE = (
+    "res://tests/drowned_harbor_dev_only/prototype_automation_profile_v1.json"
+)
 EXPECTED_COMPONENTS = [
     "res://tests/drowned_harbor_dev_only/low_tide_fixture_adapter.gd",
     "res://tests/drowned_harbor_dev_only/low_tide_shared_screen_shell.gd",
@@ -449,12 +456,12 @@ def validate_input_contract(root: Path) -> None:
 def validate_manifest_and_production_boundary(root: Path) -> None:
     manifest = read_json(root / MANIFEST_PATH)
     require(
-        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85],
-        "manifest must record exact completed work through issue #85",
+        manifest.get("completed_work_issues") == [80, 81, 82, 83, 84, 85, 86],
+        "manifest must record exact completed work through issue #86",
     )
     require(
-        manifest.get("future_work_issues") == [86],
-        "issue #86 must remain the exact future work inventory",
+        manifest.get("future_work_issues") == [],
+        "future work inventory must be empty after P0.19",
     )
     require(
         manifest.get("allowed_entry_points") == EXPECTED_ENTRY_POINTS,
@@ -467,6 +474,14 @@ def validate_manifest_and_production_boundary(root: Path) -> None:
     require(
         TECHNICAL_PATH.as_posix() in manifest.get("source_authorities", []),
         "manifest is missing the P0.16 technical authority",
+    )
+    require(
+        P019_TECHNICAL_AUTHORITY in manifest.get("source_authorities", []),
+        "manifest is missing the P0.19 technical authority",
+    )
+    require(
+        manifest.get("automation_profiles") == [AUTOMATION_PROFILE],
+        "P0.19 automation profile registration drifted",
     )
     for field in (
         "production_catalog_registered",

@@ -4,6 +4,10 @@ const MANIFEST_PATH: String = "res://tests/drowned_harbor_prototype_manifest_v1.
 const PRODUCTION_CATALOG_PATH: String = "res://data/tales/tale_catalog_v1.json"
 const PRODUCTION_PROVIDER_PATH: String = "res://src/session/tale_provider_registry.gd"
 const EXPORT_PRESETS_PATH: String = "res://export_presets.cfg"
+const PROJECT_PATH: String = "res://project.godot"
+const AUTOMATION_PROFILE_PATH: String = (
+	"res://tests/drowned_harbor_dev_only/" + "prototype_automation_profile_v1.json"
+)
 const DROWNED_HARBOR_PRODUCTION_PACKAGE: String = (
 	"res://data/tales/drowned_harbor/" + "tale_package_v1.json"
 )
@@ -12,6 +16,7 @@ const EXPECTED_ENTRY_POINTS: PackedStringArray = [
 	"res://tests/drowned_harbor_bellhouse_recovery_test.gd",
 	"res://tests/drowned_harbor_controlled_private_shield_test.gd",
 	"res://tests/drowned_harbor_high_water_transformation_test.gd",
+	"res://tests/drowned_harbor_prototype_automation_test.gd",
 	"res://tests/drowned_harbor_prototype_isolation_test.gd",
 ]
 const EXPECTED_COMPONENTS: PackedStringArray = [
@@ -82,7 +87,7 @@ func _test_development_manifest_is_fail_closed() -> void:
 	var entry_points: Array = manifest.get("allowed_entry_points", [])
 	_expect(
 		PackedStringArray(entry_points) == EXPECTED_ENTRY_POINTS,
-		"declares the exact five bounded test entry points",
+		"declares the exact six bounded test entry points",
 	)
 	for entry_point: Variant in entry_points:
 		_expect(
@@ -140,13 +145,13 @@ func _test_development_manifest_is_fail_closed() -> void:
 	_expect(
 		(
 			PackedInt32Array(manifest.get("completed_work_issues", []))
-			== PackedInt32Array([80, 81, 82, 83, 84, 85])
+			== PackedInt32Array([80, 81, 82, 83, 84, 85, 86])
 		),
-		"records issues #80 through #85 as completed bounded packages",
+		"records issues #80 through #86 as completed bounded packages",
 	)
 	_expect(
-		PackedInt32Array(manifest.get("future_work_issues", [])) == PackedInt32Array([86]),
-		"keeps issue #86 blocked for a future release",
+		PackedInt32Array(manifest.get("future_work_issues", [])).is_empty(),
+		"keeps the future-work issue inventory empty",
 	)
 	_expect(
 		(
@@ -154,6 +159,22 @@ func _test_development_manifest_is_fail_closed() -> void:
 			in manifest.get("source_authorities", [])
 		),
 		"registers the P0.18 technical authority",
+	)
+	_expect(
+		(
+			"docs/technical/Drowned_Harbor_Prototype_Automation_Export_Exclusion_v1.md"
+			in manifest.get("source_authorities", [])
+		),
+		"registers the P0.19 technical authority",
+	)
+	_expect(
+		manifest.get("automation_profiles") == [AUTOMATION_PROFILE_PATH],
+		"registers exactly one test-only automation profile",
+	)
+	_expect(FileAccess.file_exists(AUTOMATION_PROFILE_PATH), "automation profile exists")
+	_expect(
+		AUTOMATION_PROFILE_PATH.begins_with("res://tests/"),
+		"automation profile stays under the test tree",
 	)
 	_expect(
 		manifest.get("human_validation_required") == true,
@@ -216,6 +237,19 @@ func _test_normal_runtime_has_no_drowned_harbor_registration() -> void:
 		registry.provider_ids() == PackedStringArray(["lantern_house_authorities_v1"]),
 		"production provider allowlist remains Lantern House only",
 	)
+	var project_text: String = FileAccess.get_file_as_string(PROJECT_PATH)
+	_expect(
+		'run/main_scene="res://src/main/Main.tscn"' in project_text,
+		"production startup remains the reviewed Main scene",
+	)
+	_expect(
+		"drowned_harbor_prototype_automation" not in project_text,
+		"aggregate automation is not production-startup reachable",
+	)
+	_expect(
+		"prototype_automation_profile_v1.json" not in project_text,
+		"automation profile is not production-startup reachable",
+	)
 
 
 func _test_windows_and_linux_exports_exclude_tests() -> void:
@@ -234,6 +268,9 @@ func _test_windows_and_linux_exports_exclude_tests() -> void:
 		"drowned_harbor_low_tide_shell_test.gd",
 		"drowned_harbor_bellhouse_recovery_test.gd",
 		"drowned_harbor_controlled_private_shield_test.gd",
+		"drowned_harbor_high_water_transformation_test.gd",
+		"drowned_harbor_prototype_automation_test.gd",
+		"prototype_automation_profile_v1.json",
 		"low_tide_fixture_adapter.gd",
 		"low_tide_shared_screen_shell.gd",
 		"low_tide_shared_screen_shell.tscn",

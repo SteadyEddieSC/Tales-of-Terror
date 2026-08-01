@@ -1,0 +1,130 @@
+{
+  "profile_kind": "drowned_harbor_prototype_automation",
+  "schema_version": 1,
+  "profile_id": "DH-AUTO-P019-V1",
+  "status": "synthetic_test_only_export_excluded",
+  "classification": {
+    "automated": true,
+    "deterministic": true,
+    "headless": true,
+    "machine_evidence": true,
+    "human_playtest_evidence": false,
+    "physical_controller_evidence": false,
+    "television_evidence": false,
+    "accessibility_compliance": false,
+    "privacy_certification": false,
+    "security_certification": false,
+    "fun_evidence": false,
+    "pacing_evidence": false,
+    "fairness_evidence": false,
+    "balance_evidence": false,
+    "comprehension_evidence": false,
+    "production_readiness_evidence": false
+  },
+  "godot_version": "4.7.1-stable",
+  "prototype_manifest_path": "res://tests/drowned_harbor_prototype_manifest_v1.json",
+  "fixture_package_path": "res://tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json",
+  "aggregate_test_entry_point": "res://tests/drowned_harbor_prototype_automation_test.gd",
+  "feature_families": [
+    {
+      "family_id": "low_tide_public_action",
+      "fixtures": ["DH-FIX-001"],
+      "trace_storyboard_pairs": ["DH-IS-003/DH-UI-003"],
+      "focused_test": "res://tests/drowned_harbor_low_tide_shell_test.gd"
+    },
+    {
+      "family_id": "bellhouse_decision_and_recovery",
+      "fixtures": ["DH-FIX-002", "DH-FIX-006"],
+      "trace_storyboard_pairs": ["DH-IS-004/DH-UI-004", "DH-IS-019/DH-UI-019"],
+      "focused_test": "res://tests/drowned_harbor_bellhouse_recovery_test.gd"
+    },
+    {
+      "family_id": "controlled_private_shield_and_handoff",
+      "fixtures": ["DH-FIX-003", "DH-FIX-007"],
+      "trace_storyboard_pairs": ["DH-IS-007/DH-UI-007", "DH-IS-016/DH-UI-016"],
+      "focused_test": "res://tests/drowned_harbor_controlled_private_shield_test.gd"
+    },
+    {
+      "family_id": "high_water_transformation",
+      "fixtures": ["DH-FIX-004"],
+      "trace_storyboard_pairs": ["DH-IS-008/DH-UI-008", "DH-IS-009/DH-UI-009"],
+      "focused_test": "res://tests/drowned_harbor_high_water_transformation_test.gd"
+    }
+  ],
+  "projection_only_fixtures": [
+    {
+      "fixture_id": "DH-FIX-005",
+      "trace_storyboard_pair": "DH-IS-010/DH-UI-010",
+      "runtime_shell": false,
+      "validation_path": "existing_projection_fixture_engine"
+    }
+  ],
+  "determinism": {
+    "repetitions_per_sequence": 2,
+    "max_steps_per_case": 32,
+    "canonical_evidence_comparison": "utf8_json_sorted_keys_compact_sha256",
+    "sequence_ids": [
+      "canonical_forward",
+      "reverse",
+      "high_water_full_presentation",
+      "high_water_semantic_skip",
+      "controlled_private_unavailable_surface",
+      "controlled_private_disconnect_interruption",
+      "bellhouse_recovery_first",
+      "stale_revision_rejection",
+      "wrong_authority_wrong_seat_rejection",
+      "duplicate_replay_idempotence",
+      "repeated_fresh_shell_equivalence",
+      "post_commit_reprojection"
+    ]
+  },
+  "coverage": {
+    "public_evidence_only": true,
+    "private_fixture_values_forbidden_from_output": true,
+    "stale_revision": true,
+    "wrong_authority": true,
+    "wrong_stable_seat": true,
+    "invalid_intent": true,
+    "unavailable_surface": true,
+    "replay": true,
+    "duplicate_request": true,
+    "high_water_full_skip_equivalence": true,
+    "controlled_private_disconnect": true,
+    "controlled_private_interruption": true,
+    "bellhouse_recovery": true,
+    "high_water_recovery": true,
+    "bounded_no_deadlock": true
+  },
+  "production_boundary": {
+    "catalog_path": "res://data/tales/tale_catalog_v1.json",
+    "catalog_sha256": "2b478fd0d11fa075c2050409193aa06e6b9ca4dcf6efd4e4c550a9f3a5ff9db6",
+    "default_tale_id": "lantern_house_vertical_slice",
+    "lantern_house_package_sha256": "abb39d6bfbdf8d7de108379f08180c13efb99bbffa3e53f30eaaa8de7f459dee",
+    "provider_path": "res://src/session/tale_provider_registry.gd",
+    "project_entry_point": "res://src/main/Main.tscn",
+    "production_authority_created": false,
+    "ordinary_export_presets": ["Internal Windows x86_64", "Internal Linux x86_64"],
+    "ordinary_exports_include_prototype": false
+  },
+  "forbidden_export_inventory": {
+    "path_prefixes": ["res://tests/", "drowned_harbor_dev_only"],
+    "fixture_ids": ["DH-FIX-001", "DH-FIX-002", "DH-FIX-003", "DH-FIX-004", "DH-FIX-005", "DH-FIX-006", "DH-FIX-007"],
+    "public_markers": [
+      "synthetic_council_direction_fixture_004",
+      "high_water_transformation_committed",
+      "drowned_harbor_prototype_manifest_v1.json",
+      "prototype_automation_profile_v1.json",
+      "drowned_harbor_prototype_automation_test.gd",
+      "DH-AUTO-P019-V1"
+    ],
+    "prototype_filename_inventory_source": "exact_manifest_components_and_entry_points",
+    "private_sentinel_source": "derive_exact_PRIVATE_values_from_fixture_package"
+  },
+  "evidence": {
+    "summary_prefix": "DROWNED_HARBOR_AUTOMATION_EVIDENCE:",
+    "source_sha_required": true,
+    "source_sha_format": "lowercase_hex_40",
+    "generated_evidence_cleanup_required": true,
+    "human_evidence_claimed": false
+  }
+}
