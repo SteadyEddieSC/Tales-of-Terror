@@ -48,6 +48,109 @@ IMMUTABLE_INPUTS = {
     "docs/technical/Tale_Runtime_Providers.md",
 }
 
+EXPECTED_ROOT = {
+    "contract_kind",
+    "schema_version",
+    "release",
+    "authorization",
+    "immutable_inputs",
+    "compilation_pipeline",
+    "authority_ownership",
+    "admission",
+    "persistence",
+    "localization_and_assets",
+    "rollback",
+    "implementation_stages",
+    "evidence_boundaries",
+}
+
+EXPECTED_NESTED_SCHEMA_FIELDS = {
+    "release": {"release_id", "issue", "baseline", "branch", "state"},
+    "authorization": {
+        "planning_only",
+        "runtime_implementation",
+        "production_package",
+        "provider_registration",
+        "catalog_registration",
+        "normal_library_visibility",
+        "ordinary_export_inclusion",
+        "successor_issue_created",
+        "human_evidence_claimed",
+    },
+    "compilation_pipeline": {
+        "input_kind",
+        "runtime_input",
+        "target_outputs",
+        "prohibited_features",
+        "traceability_policy",
+    },
+    "authority_ownership": {
+        "stage_progression",
+        "authoritative_mutations",
+        "public_history",
+        "private_terms",
+        "rng_streams",
+        "director_inputs",
+        "presentation",
+        "ending_attribution",
+        "rejected_action_policy",
+        "stable_seat_policy",
+        "privacy_classes",
+    },
+    "admission": {
+        "normal_default_tale",
+        "normal_production_tale_count",
+        "future_tale_id",
+        "future_provider_id",
+        "future_package_kind",
+        "future_package_schema_version",
+        "internal_gate",
+        "normal_library_visible",
+        "ordinary_export_included",
+        "dynamic_registration",
+        "candidate_commit_policy",
+    },
+    "persistence": {
+        "stable_id_policy",
+        "snapshot_selection",
+        "migration_policy",
+        "replay_policy",
+        "exactly_once_policy",
+        "rng_policy",
+        "reset_policy",
+        "rematch_policy",
+        "digest_policy",
+    },
+    "localization_and_assets": {
+        "governed_text_keys",
+        "captions_and_transcripts",
+        "asset_identity",
+        "placeholder_policy",
+        "provenance_policy",
+        "optional_media_fallback",
+        "authority_independent_of_media",
+    },
+    "rollback": {
+        "trigger",
+        "action",
+        "save_behavior",
+        "catalog_behavior",
+        "provider_behavior",
+    },
+    "evidence_boundaries": {
+        "automation_is_human_evidence",
+        "physical_controller_validated",
+        "television_readability_validated",
+        "accessibility_certified",
+        "privacy_certified",
+        "security_certified",
+        "fun_validated",
+        "balance_validated",
+        "production_ready",
+        "public_release_authorized",
+    },
+}
+
 EXPECTED_OUTPUTS = [
     "scenario_stage_graph",
     "board_authority",
@@ -103,59 +206,59 @@ def read_json(root: Path, path: Path) -> dict[str, Any]:
     return value
 
 
+def require_closed_schema_object(node: Any, expected: set[str], label: str) -> None:
+    require(isinstance(node, dict), f"schema object missing: {label}")
+    require(node.get("type") == "object", f"schema object type drift: {label}")
+    require(node.get("additionalProperties") is False, f"schema object must remain closed: {label}")
+    required = node.get("required")
+    properties = node.get("properties")
+    require(isinstance(required, list) and set(required) == expected, f"schema required fields drift: {label}")
+    require(isinstance(properties, dict) and set(properties) == expected, f"schema properties drift: {label}")
+
+
 def validate_schema(schema: dict[str, Any]) -> None:
     require(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "unexpected schema dialect")
-    require(schema.get("type") == "object", "schema root must be object")
-    require(schema.get("additionalProperties") is False, "schema root must be closed")
-    required = schema.get("required")
-    expected = {
-        "contract_kind",
-        "schema_version",
-        "release",
-        "authorization",
-        "immutable_inputs",
-        "compilation_pipeline",
-        "authority_ownership",
-        "admission",
-        "persistence",
-        "localization_and_assets",
-        "rollback",
-        "implementation_stages",
-        "evidence_boundaries",
-    }
-    require(isinstance(required, list) and set(required) == expected, "schema required-field set drift")
-    properties = schema.get("properties")
-    require(isinstance(properties, dict) and set(properties) == expected, "schema property set drift")
+    require_closed_schema_object(schema, EXPECTED_ROOT, "root")
+    properties = schema["properties"]
     require(properties["contract_kind"].get("const") == "drowned_harbor_production_compilation_contract", "schema contract kind drift")
     require(properties["schema_version"].get("const") == 1, "schema version drift")
-    release_props = properties["release"].get("properties", {})
-    require(release_props.get("release_id", {}).get("const") == "P0.21", "schema release drift")
-    require(release_props.get("issue", {}).get("const") == 98, "schema issue drift")
-    require(release_props.get("baseline", {}).get("const") == BASELINE, "schema baseline drift")
+
+    for name, fields in EXPECTED_NESTED_SCHEMA_FIELDS.items():
+        require_closed_schema_object(properties.get(name), fields, name)
+
+    release_props = properties["release"]["properties"]
+    require(release_props["release_id"].get("const") == "P0.21", "schema release drift")
+    require(release_props["issue"].get("const") == 98, "schema issue drift")
+    require(release_props["baseline"].get("const") == BASELINE, "schema baseline drift")
+
+    definitions = schema.get("$defs")
+    require(isinstance(definitions, dict), "schema definitions missing")
+    require_closed_schema_object(
+        definitions.get("immutable_input"),
+        {"path", "role", "compilation_input", "runtime_input", "mutable_by_p021"},
+        "$defs.immutable_input",
+    )
+    require_closed_schema_object(
+        definitions.get("target_output"),
+        {"id", "owner", "status", "runtime_registered", "source_traceability_required"},
+        "$defs.target_output",
+    )
+    require_closed_schema_object(
+        definitions.get("implementation_stage"),
+        {"release_id", "title", "state", "github_issue", "codex_expected", "activation_authorized"},
+        "$defs.implementation_stage",
+    )
+
+    prohibited = properties["compilation_pipeline"]["properties"]["prohibited_features"]
+    require(prohibited.get("minItems") == 12 and prohibited.get("maxItems") == 12, "schema prohibited-feature count drift")
 
 
 def validate_contract(data: dict[str, Any]) -> None:
-    expected_root = {
-        "contract_kind",
-        "schema_version",
-        "release",
-        "authorization",
-        "immutable_inputs",
-        "compilation_pipeline",
-        "authority_ownership",
-        "admission",
-        "persistence",
-        "localization_and_assets",
-        "rollback",
-        "implementation_stages",
-        "evidence_boundaries",
-    }
-    require(set(data) == expected_root, "contract root field set drift")
+    require(set(data) == EXPECTED_ROOT, "contract root field set drift")
     require(data["contract_kind"] == "drowned_harbor_production_compilation_contract", "contract kind drift")
     require(data["schema_version"] == 1, "contract schema version drift")
 
-    release = data["release"]
-    require(release == {
+    require(data["release"] == {
         "release_id": "P0.21",
         "issue": 98,
         "baseline": BASELINE,
@@ -195,8 +298,8 @@ def validate_contract(data: dict[str, Any]) -> None:
         require(entry.get("status") == "future_required", "target output must remain future-required")
         require(entry.get("runtime_registered") is False, "target output may not be runtime-registered")
         require(entry.get("source_traceability_required") is True, "target output must retain source traceability")
-    prohibited = set(pipeline.get("prohibited_features", []))
-    required_prohibited = {
+
+    require(set(pipeline.get("prohibited_features", [])) == {
         "arbitrary_code_generation",
         "class_names",
         "script_paths",
@@ -209,12 +312,10 @@ def validate_contract(data: dict[str, Any]) -> None:
         "untrusted_execution",
         "dynamic_provider_registration",
         "best_effort_identity_guessing",
-    }
-    require(prohibited == required_prohibited, "prohibited compilation feature set drift")
+    }, "prohibited compilation feature set drift")
     require(pipeline.get("traceability_policy") == "every_output_maps_to_repository_authority_and_stable_authoring_ids", "traceability policy drift")
 
-    ownership = data["authority_ownership"]
-    expected_ownership = {
+    require(data["authority_ownership"] == {
         "stage_progression": "rules_session_reducer",
         "authoritative_mutations": "rules_session_reducer",
         "public_history": "native_session_public_projection",
@@ -226,11 +327,9 @@ def validate_contract(data: dict[str, Any]) -> None:
         "rejected_action_policy": "state_and_rng_noop_for_invalid_stale_duplicate_wrong_seat_or_unavailable",
         "stable_seat_policy": "seat_owns_state_across_disconnect_surrogate_return_transformation_defeat_and_continuation",
         "privacy_classes": EXPECTED_PRIVACY,
-    }
-    require(ownership == expected_ownership, "authority ownership drift")
+    }, "authority ownership drift")
 
-    admission = data["admission"]
-    require(admission == {
+    require(data["admission"] == {
         "normal_default_tale": "lantern_house_vertical_slice",
         "normal_production_tale_count": 1,
         "future_tale_id": "drowned_harbor",
@@ -284,16 +383,14 @@ def validate_status(data: dict[str, Any]) -> None:
         "title": "Post-Prototype Reconciliation & Production Decision Pack",
         "state": "merged",
     }, "P0.20 release record drift")
-    current = data.get("current_release")
-    require(current == {
+    require(data.get("current_release") == {
         "release_id": "P0.21",
         "issue": 98,
         "branch": "docs/p0.21-production-architecture-contract",
         "type": "documentation_schema_validation",
         "runtime_authority_created": False,
     }, "current P0.21 status drift")
-    next_release = data.get("recommended_next_release")
-    require(next_release == {
+    require(data.get("recommended_next_release") == {
         "release_id": "v0.2.0-alpha.1",
         "title": "Production Tale Scaffold",
         "state": "planned_blocked",
@@ -362,14 +459,14 @@ def validate_docs(root: Path) -> None:
     for label, phrases in required.items():
         for phrase in phrases:
             require(phrase in docs[label], f"{label} missing required phrase: {phrase}")
-    prohibited = [
+
+    combined = "\n".join(docs.values())
+    for phrase in (
         "does not activate P0.21",
         "Current package:** P0.20",
         "Drowned Harbor is a production Tale",
         "successor implementation issue activated",
-    ]
-    combined = "\n".join(docs.values())
-    for phrase in prohibited:
+    ):
         require(phrase not in combined, f"stale or prohibited claim retained: {phrase}")
 
 
