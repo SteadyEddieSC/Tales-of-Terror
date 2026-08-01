@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed mutation tests for the P0.20 reconciliation validator."""
+"""Fail-closed mutation tests for P0.20 history and P0.21 succession."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from pathlib import Path
 from validate_post_prototype_reconciliation import (
     CURRENT_ROADMAP_PATH,
     HISTORICAL_ROADMAP_PATH,
+    P020_SUMMARY_PATH,
     PREPROD_README_PATH,
     README_PATH,
     STATUS_PATH,
@@ -29,6 +30,7 @@ def copy_fixture(target: Path) -> None:
         PREPROD_README_PATH,
         HISTORICAL_ROADMAP_PATH,
         CURRENT_ROADMAP_PATH,
+        P020_SUMMARY_PATH,
         SUMMARY_PATH,
         Path("docs/preproduction/preproduction_package_index_v1.json"),
     ):
@@ -38,7 +40,7 @@ def copy_fixture(target: Path) -> None:
 
 
 def expect_failure(name: str, mutate) -> None:
-    with tempfile.TemporaryDirectory(prefix="p020-mutation-") as directory:
+    with tempfile.TemporaryDirectory(prefix="post-prototype-mutation-") as directory:
         target = Path(directory)
         copy_fixture(target)
         mutate(target)
@@ -70,19 +72,21 @@ def main() -> int:
         ("issue_44_reopened", lambda root: edit_json(root, lambda data: data["companion_security"].update(state="open"))),
         ("drowned_harbor_registered", lambda root: edit_json(root, lambda data: data["production"].update(drowned_harbor_catalog_registered=True))),
         ("successor_authorized", lambda root: edit_json(root, lambda data: data["drowned_harbor"].update(successor_implementation_authorized=True))),
-        ("successor_issue_created", lambda root: edit_json(root, lambda data: data["drowned_harbor"].update(successor_implementation_issue=97))),
-        ("missing_p019", lambda root: edit_json(root, lambda data: data.update(preproduction_releases=data["preproduction_releases"][:-1]))),
+        ("successor_issue_created", lambda root: edit_json(root, lambda data: data["recommended_next_release"].update(github_issue=99))),
+        ("missing_p020", lambda root: edit_json(root, lambda data: data.update(preproduction_releases=data["preproduction_releases"][:-1]))),
+        ("wrong_p020_sha", lambda root: edit_json(root, lambda data: data["preproduction_releases"][-1].update(merged_main_sha="0" * 40))),
         ("wrong_default_tale", lambda root: edit_json(root, lambda data: data["production"].update(default_tale_id="drowned_harbor"))),
         ("human_evidence_claimed", lambda root: edit_json(root, lambda data: data.update(human_evidence_claimed=True))),
+        ("current_release_reverted", lambda root: edit_json(root, lambda data: data["current_release"].update(release_id="P0.20"))),
+        ("alpha1_activated", lambda root: edit_json(root, lambda data: data["recommended_next_release"].update(activation_authorized=True))),
         ("roadmap_stage_removed", lambda root: replace_text(root, CURRENT_ROADMAP_PATH, "### v0.2.0-alpha.2 — End-to-End Graybox", "### Removed stage")),
         ("historical_not_superseded", lambda root: replace_text(root, HISTORICAL_ROADMAP_PATH, "Superseded Historical Record", "Current Roadmap")),
-        ("preproduction_p01_current", lambda root: replace_text(root, PREPROD_README_PATH, "Current package:** P0.20", "Current package:** P0.1")),
-        ("readme_issue_44_stale", lambda root: replace_text(root, README_PATH, "issue #44:** completed", "Issue #44 remains open")),
+        ("preproduction_p020_current", lambda root: replace_text(root, PREPROD_README_PATH, "Current package:** P0.21", "Current package:** P0.20")),
         ("readme_drowned_production", lambda root: replace_text(root, README_PATH, "Drowned Harbor is not a production Tale and is not ordinarily playable", "Drowned Harbor is a production Tale and is ordinarily playable")),
     ]
     for name, mutation in mutations:
         expect_failure(name, mutation)
-    print(f"P0.20 mutation suite passed: {len(mutations)}")
+    print(f"Post-prototype succession mutation suite passed: {len(mutations)}")
     return 0
 
 

@@ -6,16 +6,17 @@ A controller-first, 1–8 player digital horror board-game adventure about survi
 
 ## Current project status
 
-This repository contains a functional **internal vertical slice** plus a completed, isolated future-Tale prototype program. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
+This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, and an active production-architecture planning contract. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
 
 - **Current playable version:** `v0.1.9`
 - **Sole production/default Tale:** `lantern_house_vertical_slice` — Lantern House
 
 Lantern House remains the sole production/default Tale.
 
-- **Protected-main baseline reconciled by this status:** `836716b6857323f36abcc4728ee05e01d31cd843`
-- **Latest completed preproduction package:** P0.19 — Drowned Harbor Prototype Automation and Export Exclusion
-- **Current reconciliation package:** P0.20 — Post-Prototype Reconciliation & Production Decision Pack
+- **Protected-main baseline for P0.21:** `58f6f4e4ece9bbdd5932216c87aacc064e48e05a`
+- **Latest completed planning package:** P0.20 — Post-Prototype Reconciliation & Production Decision Pack
+- **Current active package:** P0.21 — Production Architecture & Tale-Compilation Contract
+- **Next runtime stage:** v0.2.0-alpha.1 — planned, blocked, and not active
 - **Companion dependency security issue #44:** completed
 - **Human-evidence issue #39:** deferred and still authoritative
 - **Naming issue #7:** open
@@ -80,7 +81,7 @@ The isolated prototype remains:
 - without production saves, reports, reducer authority, networking, or final assets;
 - excluded from ordinary Windows and Linux exports.
 
-P0.19 completed every currently authorized child issue, #80 through #86. It did not authorize a successor implementation issue.
+P0.19 completed every authorized prototype child issue, #80 through #86. P0.20 reconciled that state and authorized only the next planning stage.
 
 ### Drowned Harbor premise
 
@@ -98,25 +99,46 @@ Its planned stages remain:
 
 A **Tale** is a self-contained authored horror adventure with its own location, board, stages, encounters, roles, social structure, transformation rules, ending logic, dialogue, visual language, sound direction, and accessibility presentation. A Tale may support standalone, Chronicle, Quick Fright, cooperative, betrayal, hunted, outbreak, mystery, rival-team, or survival structures. Unsupported seat counts or social layouts must use an authored safe fallback rather than producing a broken session.
 
+## Active P0.21 architecture contract
+
+P0.21 defines the seam between Drowned Harbor’s design-only authoring reference and future production authorities. It does not compile, register, expose, or ship Drowned Harbor.
+
+The contract establishes:
+
+- authoring references as compilation inputs, never runtime inputs;
+- separate reviewed outputs for scenario, board, rules/reducer, Director, social/private, localization, package, provider, catalog, migration, and validation;
+- `RulesSession` ownership of stage progression and authoritative mutations;
+- `BoardState` ownership of board authority;
+- `RoleSession` ownership of social and private authority;
+- named native-authority RNG streams;
+- public and authorized aggregate Director inputs only;
+- read-only presentation projections;
+- state-and-RNG no-op rejection for invalid, stale, duplicate, wrong-seat, unavailable, or malformed actions;
+- explicit versioned migration or fail-closed restore;
+- developer-only explicit admission that cannot affect the normal Tale Library or ordinary exports;
+- asset, localization, provenance, fallback, rollback, and removal rules.
+
+The planning-only future identities are Tale ID `drowned_harbor`, provider ID `drowned_harbor_authorities_v1`, and package kind/schema `tale` / `1`. None is registered by P0.21.
+
+See [P0.21 Production Architecture Contract](docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md), [machine-readable contract](docs/preproduction/drowned_harbor_production_compilation_contract_v1.json), and [blocked implementation issue set](docs/preproduction/P0.21_Implementation_Issue_Set.md).
+
 ## Next development direction
 
-The recommended next stream is a staged Drowned Harbor production candidate, beginning with a documentation and architecture contract rather than immediately registering a second Tale.
+1. **P0.20** — completed reconciliation and production decision.
+2. **P0.21** — active production architecture and Tale-compilation contract.
+3. **v0.2.0-alpha.1** — planned blocked production Tale scaffold.
+4. **v0.2.0-alpha.2** — planned blocked complete end-to-end graybox route.
+5. **v0.2.0-alpha.3** — planned blocked systems and replayability.
+6. **v0.2.0-beta** — planned blocked production presentation and content integration.
+7. **v0.2.0-rc** — planned blocked hardening and distribution readiness.
 
-1. **P0.20** — current-state reconciliation and production decision.
-2. **P0.21** — production architecture and Tale-compilation contract.
-3. **v0.2.0-alpha.1** — hidden/internal production Tale scaffold.
-4. **v0.2.0-alpha.2** — complete end-to-end graybox route.
-5. **v0.2.0-alpha.3** — roles, factions, items, hazards, Restless systems, endings, and replayability.
-6. **v0.2.0-beta** — production UI, approved media, accessibility presentation, and content integration.
-7. **v0.2.0 release candidate** — packaging, security, performance, migration, attribution, and distribution hardening.
-
-This sequence is planning only until each bounded issue is separately authorized. See [Post-P0.19 Production-Candidate Roadmap](docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md).
+Only P0.21 is active. Every runtime stage requires separate owner authorization and a fresh governed issue. See [Post-P0.19 Production-Candidate Roadmap](docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md).
 
 ## Development routing
 
-The Release Management chat owns live GitHub reconciliation, issue and release activation, exact-head review, CI diagnosis, bounded GitHub-native corrections, guarded merges, and post-merge verification.
+The Release Management chat owns live GitHub reconciliation, issue and release activation, architecture, exact-head review, CI diagnosis, bounded GitHub-native corrections, guarded merges, and post-merge verification.
 
-Codex should be used only when an active issue genuinely requires substantial local multi-file implementation, Godot editor work, repeated local build/debug cycles, Windows-specific execution, filesystem exploration, or binary/asset handling. Creating a roadmap or finding an existing PR is not by itself a reason to consume Codex resources.
+Codex is not required for P0.21. It should be used after a separately authorized runtime issue genuinely requires substantial local multi-file implementation, Godot editor work, repeated local build/debug cycles, Windows-specific execution, filesystem exploration, or binary/asset handling. v0.2.0-alpha.1 is expected to be the first such stage.
 
 No runtime release begins without:
 
@@ -193,7 +215,7 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 
 ## Validation
 
-GitHub Actions checks repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor prototype isolation and export exclusion, preproduction contracts, and Companion service/browser behavior.
+GitHub Actions checks repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor prototype isolation and export exclusion, preproduction contracts, P0.21 architecture/status succession, and Companion service/browser behavior.
 
 ## Documentation and licensing
 

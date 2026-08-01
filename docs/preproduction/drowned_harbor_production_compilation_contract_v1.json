@@ -1,0 +1,276 @@
+{
+  "contract_kind": "drowned_harbor_production_compilation_contract",
+  "schema_version": 1,
+  "release": {
+    "release_id": "P0.21",
+    "issue": 98,
+    "baseline": "58f6f4e4ece9bbdd5932216c87aacc064e48e05a",
+    "branch": "docs/p0.21-production-architecture-contract",
+    "state": "active_planning"
+  },
+  "authorization": {
+    "planning_only": true,
+    "runtime_implementation": false,
+    "production_package": false,
+    "provider_registration": false,
+    "catalog_registration": false,
+    "normal_library_visibility": false,
+    "ordinary_export_inclusion": false,
+    "successor_issue_created": false,
+    "human_evidence_claimed": false
+  },
+  "immutable_inputs": [
+    {
+      "path": "docs/preproduction/tale_authoring_reference_schema_v1.json",
+      "role": "authoring_schema",
+      "compilation_input": true,
+      "runtime_input": false,
+      "mutable_by_p021": false
+    },
+    {
+      "path": "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json",
+      "role": "authoring_reference",
+      "compilation_input": true,
+      "runtime_input": false,
+      "mutable_by_p021": false
+    },
+    {
+      "path": "docs/technical/Tale_Authoring_Reference_Contract_v1.md",
+      "role": "authoring_contract",
+      "compilation_input": true,
+      "runtime_input": false,
+      "mutable_by_p021": false
+    },
+    {
+      "path": "docs/technical/Tale_Catalog_Contract.md",
+      "role": "catalog_contract",
+      "compilation_input": true,
+      "runtime_input": false,
+      "mutable_by_p021": false
+    },
+    {
+      "path": "docs/technical/Tale_Package_Contract.md",
+      "role": "package_contract",
+      "compilation_input": true,
+      "runtime_input": false,
+      "mutable_by_p021": false
+    },
+    {
+      "path": "docs/technical/Tale_Runtime_Providers.md",
+      "role": "provider_contract",
+      "compilation_input": true,
+      "runtime_input": false,
+      "mutable_by_p021": false
+    }
+  ],
+  "compilation_pipeline": {
+    "input_kind": "tale_authoring_reference",
+    "runtime_input": false,
+    "target_outputs": [
+      {
+        "id": "scenario_stage_graph",
+        "owner": "scenario_authority",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "board_authority",
+        "owner": "board_state",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "rules_reducer_authority",
+        "owner": "rules_session",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "director_content",
+        "owner": "dread_director",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "social_private_authority",
+        "owner": "role_session",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "localization_catalog",
+        "owner": "presentation_projection",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "tale_package",
+        "owner": "tale_package_loader",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "provider_registration",
+        "owner": "static_provider_registry",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "catalog_entry",
+        "owner": "production_tale_catalog",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "migration_envelope",
+        "owner": "restore_coordinator",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      },
+      {
+        "id": "validation_evidence",
+        "owner": "release_management",
+        "status": "future_required",
+        "runtime_registered": false,
+        "source_traceability_required": true
+      }
+    ],
+    "prohibited_features": [
+      "arbitrary_code_generation",
+      "class_names",
+      "script_paths",
+      "callbacks",
+      "expressions",
+      "remote_content",
+      "network_urls",
+      "credentials",
+      "telemetry",
+      "untrusted_execution",
+      "dynamic_provider_registration",
+      "best_effort_identity_guessing"
+    ],
+    "traceability_policy": "every_output_maps_to_repository_authority_and_stable_authoring_ids"
+  },
+  "authority_ownership": {
+    "stage_progression": "rules_session_reducer",
+    "authoritative_mutations": "rules_session_reducer",
+    "public_history": "native_session_public_projection",
+    "private_terms": "role_session_private_projection",
+    "rng_streams": "named_native_authority_streams",
+    "director_inputs": "public_and_authorized_aggregate_state_only",
+    "presentation": "read_only_projection_consumers",
+    "ending_attribution": "authoritative_rules_and_social_resolution",
+    "rejected_action_policy": "state_and_rng_noop_for_invalid_stale_duplicate_wrong_seat_or_unavailable",
+    "stable_seat_policy": "seat_owns_state_across_disconnect_surrogate_return_transformation_defeat_and_continuation",
+    "privacy_classes": [
+      "controlled_reveal_private",
+      "faction_private",
+      "public",
+      "seat_private"
+    ]
+  },
+  "admission": {
+    "normal_default_tale": "lantern_house_vertical_slice",
+    "normal_production_tale_count": 1,
+    "future_tale_id": "drowned_harbor",
+    "future_provider_id": "drowned_harbor_authorities_v1",
+    "future_package_kind": "tale",
+    "future_package_schema_version": 1,
+    "internal_gate": "developer_only_explicit_launch",
+    "normal_library_visible": false,
+    "ordinary_export_included": false,
+    "dynamic_registration": false,
+    "candidate_commit_policy": "validate_complete_candidate_before_authority_commit"
+  },
+  "persistence": {
+    "stable_id_policy": "authoring_ids_become_immutable_after_runtime_adoption",
+    "snapshot_selection": "select_validated_tale_identity_before_restore",
+    "migration_policy": "explicit_versioned_migration_or_fail_closed",
+    "replay_policy": "equal_authoritative_inputs_and_seeds_produce_equivalent_outcomes",
+    "exactly_once_policy": "stable_event_identity_persisted_and_deduplicated",
+    "rng_policy": "named_authority_owned_streams_only",
+    "reset_policy": "clear_all_drowned_harbor_session_authorities_and_return_to_normal_default",
+    "rematch_policy": "rebuild_through_validated_provider_and_package_path",
+    "digest_policy": "package_and_catalog_digests_are_provenance_only"
+  },
+  "localization_and_assets": {
+    "governed_text_keys": "closed_localization_catalog_with_reviewed_keys",
+    "captions_and_transcripts": "public_projection_complete_and_persistent_text_capable",
+    "asset_identity": "repository_relative_reviewed_provenance_records",
+    "placeholder_policy": "explicitly_labeled_replaceable_internal_only",
+    "provenance_policy": "license_source_status_and_attribution_required_before_production_use",
+    "optional_media_fallback": "safe_text_or_original_placeholder_without_authority_change",
+    "authority_independent_of_media": true
+  },
+  "rollback": {
+    "trigger": "validation_identity_migration_privacy_or_export_boundary_failure",
+    "action": "remove_hidden_admission_and_fail_closed_without_partial_authority",
+    "save_behavior": "preserve_unmodified_or_reject_with_actionable_diagnostic",
+    "catalog_behavior": "normal_catalog_remains_lantern_house_only",
+    "provider_behavior": "unregistered_or_hidden_provider_removed_atomically"
+  },
+  "implementation_stages": [
+    {
+      "release_id": "v0.2.0-alpha.1",
+      "title": "Production Tale Scaffold",
+      "state": "planned_blocked",
+      "github_issue": null,
+      "codex_expected": true,
+      "activation_authorized": false
+    },
+    {
+      "release_id": "v0.2.0-alpha.2",
+      "title": "End-to-End Graybox",
+      "state": "planned_blocked",
+      "github_issue": null,
+      "codex_expected": true,
+      "activation_authorized": false
+    },
+    {
+      "release_id": "v0.2.0-alpha.3",
+      "title": "Systems & Replayability",
+      "state": "planned_blocked",
+      "github_issue": null,
+      "codex_expected": true,
+      "activation_authorized": false
+    },
+    {
+      "release_id": "v0.2.0-beta",
+      "title": "Presentation & Content Integration",
+      "state": "planned_blocked",
+      "github_issue": null,
+      "codex_expected": true,
+      "activation_authorized": false
+    },
+    {
+      "release_id": "v0.2.0-rc",
+      "title": "Hardening & Distribution Readiness",
+      "state": "planned_blocked",
+      "github_issue": null,
+      "codex_expected": false,
+      "activation_authorized": false
+    }
+  ],
+  "evidence_boundaries": {
+    "automation_is_human_evidence": false,
+    "physical_controller_validated": false,
+    "television_readability_validated": false,
+    "accessibility_certified": false,
+    "privacy_certified": false,
+    "security_certified": false,
+    "fun_validated": false,
+    "balance_validated": false,
+    "production_ready": false,
+    "public_release_authorized": false
+  }
+}

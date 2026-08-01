@@ -1,4 +1,4 @@
-name: Post-prototype status succession
+name: P0.21 production architecture validation
 
 on:
   pull_request:
@@ -43,10 +43,10 @@ permissions:
   contents: read
 
 jobs:
-  succession:
-    name: Preserve P0.20 history and validate P0.21 status
+  architecture:
+    name: Validate compilation contract and blocked implementation stages
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -56,16 +56,28 @@ jobs:
         with:
           python-version: 3.11.9
 
-      - name: Validate post-prototype status succession
-        run: python tools/validate_post_prototype_reconciliation.py
+      - name: Validate P0.21 production architecture
+        run: python tools/validate_p021_production_architecture.py
 
-      - name: Run succession fail-closed mutations
-        run: python tools/test_validate_post_prototype_reconciliation.py
+      - name: Run P0.21 fail-closed mutations
+        run: python tools/test_validate_p021_production_architecture.py
 
-      - name: Preserve historical P0.8 contracts
+      - name: Validate status succession
         run: |
-          python tools/validate_preproduction_package_traceability.py
-          python tools/test_validate_preproduction_package_traceability.py
+          python tools/validate_post_prototype_reconciliation.py
+          python tools/test_validate_post_prototype_reconciliation.py
+
+      - name: Preserve design-only authoring contracts
+        run: |
+          python tools/validate_tale_authoring_reference.py
+          python tools/test_validate_tale_authoring_reference.py
+
+      - name: Preserve production package and catalog contracts
+        run: |
+          python tools/tale_package.py validate
+          python tools/test_tale_package.py
+          python tools/tale_catalog.py validate
+          python tools/test_tale_catalog.py
 
       - name: Prove clean source tree
         if: always()
