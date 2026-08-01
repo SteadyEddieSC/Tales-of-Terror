@@ -173,7 +173,7 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 - Production Cloudflare deployment, accounts, matchmaking, campaign persistence, full remote play, and security certification remain deferred.
 - Issue #39 remains the authority for future human household and remote playtest evidence.
 
-Automation establishes bounded deterministic behavior, privacy separation, package identity, export integrity, and deadlock resistance. It is not human evidence for fun, tension, fairness, comprehension, physical-controller behavior, television readability, accessibility compliance, household networking, remote-device behavior, privacy certification, security certification, or production readiness.
+**Automation is not human evidence.** It establishes bounded deterministic behavior, privacy separation, package identity, export integrity, and deadlock resistance. It does not establish fun, tension, fairness, comprehension, physical-controller behavior, television readability, accessibility compliance, household networking, remote-device behavior, privacy certification, security certification, or production readiness.
 
 ## Repository map
 
