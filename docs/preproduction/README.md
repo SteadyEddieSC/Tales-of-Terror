@@ -1,7 +1,7 @@
 # Preproduction and Production-Planning Index
 
-**Status:** Internal design, developer-only runtime, and planning material  
-**Current package:** P0.23 — Alpha.3 Systems & Replayability Contract & Implementation Plan  
+**Status:** Internal design, developer-only runtime, and planning material
+**Current package:** P0.23 — Alpha.3 Systems & Replayability Contract & Implementation Plan
 **Protected-main baseline reconciled:** `4e28ce1d7b471c9be1113986647ccbc3147c0d9d`
 
 ## Current authorities

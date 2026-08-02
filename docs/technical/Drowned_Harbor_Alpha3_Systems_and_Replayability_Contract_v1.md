@@ -1,8 +1,8 @@
 # Drowned Harbor Alpha.3 Systems & Replayability Contract v1
 
-**Release:** P0.23  
-**Issue:** #106  
-**Baseline:** `4e28ce1d7b471c9be1113986647ccbc3147c0d9d`  
+**Release:** P0.23
+**Issue:** #106
+**Baseline:** `4e28ce1d7b471c9be1113986647ccbc3147c0d9d`
 **Status:** Planning authority only; no runtime implementation
 
 ## Purpose

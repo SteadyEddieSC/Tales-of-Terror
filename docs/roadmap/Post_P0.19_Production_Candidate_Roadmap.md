@@ -1,7 +1,7 @@
 # Post-P0.19 Drowned Harbor Production-Candidate Roadmap
 
-**Version:** 1.3  
-**Status:** P0.23 Alpha.3 systems/replayability planning active; Alpha.3 runtime blocked  
+**Version:** 1.3
+**Status:** P0.23 Alpha.3 systems/replayability planning active; Alpha.3 runtime blocked
 **Reconciled protected-main baseline:** `4e28ce1d7b471c9be1113986647ccbc3147c0d9d`
 
 ## Current decision
