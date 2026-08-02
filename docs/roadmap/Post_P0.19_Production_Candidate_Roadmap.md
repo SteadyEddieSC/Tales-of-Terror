@@ -1,8 +1,8 @@
 # Post-P0.19 Drowned Harbor Production-Candidate Roadmap
 
-**Version:** 1.2  
-**Status:** P0.22 alpha.2 planning active; alpha.2 runtime blocked  
-**Reconciled protected-main baseline:** `85b77d5216472afdb4abb7598917d5052eed180a`  
+**Version:** 1.2
+**Status:** P0.22 alpha.2 planning active; alpha.2 runtime blocked
+**Reconciled protected-main baseline:** `85b77d5216472afdb4abb7598917d5052eed180a`
 **Working title status:** Terror Turn and The Underteller remain provisional pending issue #7
 
 ## 1. Current decision
@@ -41,8 +41,8 @@ or create a successor release.
 
 ### P0.21 — Production Architecture & Tale-Compilation Contract
 
-**State:** completed  
-**Issue/PR:** #98 / #99  
+**State:** completed
+**Issue/PR:** #98 / #99
 **Merge:** `4efdd76efdf2aa34823dae5d3624a3dca3f0a349`
 
 Defines authority ownership, compilation boundaries, package/provider admission,
@@ -50,8 +50,8 @@ persistence, privacy, export isolation, and blocked implementation stages.
 
 ### v0.2.0-alpha.1 — Production Tale Scaffold
 
-**State:** completed internal runtime scaffold  
-**Issue/PR:** #100 / #101  
+**State:** completed internal runtime scaffold
+**Issue/PR:** #100 / #101
 **Merge:** `85b77d5216472afdb4abb7598917d5052eed180a`
 
 Provides the native developer-only scaffold, version-1 package/scenario/snapshot,
@@ -60,8 +60,8 @@ exclusion. It is not normally playable.
 
 ### P0.22 — Alpha.2 Graybox Route Contract & Implementation Plan
 
-**State:** active planning  
-**Issue:** #102  
+**State:** active planning
+**Issue:** #102
 **Owner:** Release Management; Codex not required
 
 Delivers:
@@ -81,8 +81,8 @@ activated by P0.22.
 
 ### v0.2.0-alpha.2 — End-to-End Graybox
 
-**State:** `planned_blocked`  
-**GitHub issue:** none  
+**State:** `planned_blocked`
+**GitHub issue:** none
 **Recommended owner:** Codex at Very High effort after separate authorization
 
 Implement one complete placeholder-art route:
