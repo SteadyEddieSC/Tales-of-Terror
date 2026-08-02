@@ -141,15 +141,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p artifacts/alpha1/python
+          log_root="$RUNNER_TEMP/alpha1-python"
+          rm -rf "$log_root"
+          mkdir -p "$log_root"
+          trap 'mkdir -p artifacts/alpha1/python; cp -a "$log_root/." artifacts/alpha1/python/' EXIT
           run_check() {
             name="$1"
             shift
             set +e
-            "$@" 2>&1 | tee "artifacts/alpha1/python/${name}.txt"
+            "$@" 2>&1 | tee "$log_root/${name}.txt"
             status=${PIPESTATUS[0]}
             set -e
-            echo "$status" > "artifacts/alpha1/python/${name}.status"
+            echo "$status" > "$log_root/${name}.status"
             test "$status" -eq 0
           }
           run_check scaffold-validator python tools/validate_drowned_harbor_production_scaffold.py
