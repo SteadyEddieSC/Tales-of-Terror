@@ -1,50 +1,56 @@
-name: P0.21 production architecture validation
+name: Frozen P0.21 production architecture preservation
 
 on:
   pull_request:
     paths:
       - '.github/workflows/p021-production-architecture.yml'
+      - '.github/workflows/p022-alpha2-graybox-contract.yml'
       - '.github/workflows/post-prototype-reconciliation.yml'
-      - 'README.md'
-      - 'docs/preproduction/README.md'
-      - 'docs/preproduction/P0.21_Release_Summary.md'
-      - 'docs/preproduction/post_prototype_status_v1.json'
-      - 'docs/preproduction/drowned_harbor_production_compilation_contract_schema_v1.json'
-      - 'docs/preproduction/drowned_harbor_production_compilation_contract_v1.json'
       - 'docs/preproduction/P0.21_Implementation_Issue_Set.md'
-      - 'docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md'
+      - 'docs/preproduction/P0.22_Alpha2_Implementation_Issue.md'
+      - 'docs/preproduction/README.md'
+      - 'docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_schema_v1.json'
+      - 'docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json'
+      - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/releases/P0.22-alpha2-graybox-contract.md'
       - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
-      - 'tools/validate_p021_production_architecture.py'
+      - 'docs/technical/Drowned_Harbor_Alpha2_Graybox_Route_Contract_v1.md'
       - 'tools/test_validate_p021_production_architecture.py'
-      - 'tools/validate_post_prototype_reconciliation.py'
+      - 'tools/test_validate_p022_alpha2_graybox_contract.py'
       - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_p021_production_architecture.py'
+      - 'tools/validate_p022_alpha2_graybox_contract.py'
+      - 'tools/validate_post_prototype_reconciliation.py'
   push:
     branches:
       - main
-      - docs/p0.21-production-architecture-contract
+      - docs/p0.22-alpha2-graybox-contract
     paths:
       - '.github/workflows/p021-production-architecture.yml'
+      - '.github/workflows/p022-alpha2-graybox-contract.yml'
       - '.github/workflows/post-prototype-reconciliation.yml'
-      - 'README.md'
-      - 'docs/preproduction/README.md'
-      - 'docs/preproduction/P0.21_Release_Summary.md'
-      - 'docs/preproduction/post_prototype_status_v1.json'
-      - 'docs/preproduction/drowned_harbor_production_compilation_contract_schema_v1.json'
-      - 'docs/preproduction/drowned_harbor_production_compilation_contract_v1.json'
       - 'docs/preproduction/P0.21_Implementation_Issue_Set.md'
-      - 'docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md'
+      - 'docs/preproduction/P0.22_Alpha2_Implementation_Issue.md'
+      - 'docs/preproduction/README.md'
+      - 'docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_schema_v1.json'
+      - 'docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json'
+      - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/releases/P0.22-alpha2-graybox-contract.md'
       - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
-      - 'tools/validate_p021_production_architecture.py'
+      - 'docs/technical/Drowned_Harbor_Alpha2_Graybox_Route_Contract_v1.md'
       - 'tools/test_validate_p021_production_architecture.py'
-      - 'tools/validate_post_prototype_reconciliation.py'
+      - 'tools/test_validate_p022_alpha2_graybox_contract.py'
       - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_p021_production_architecture.py'
+      - 'tools/validate_p022_alpha2_graybox_contract.py'
+      - 'tools/validate_post_prototype_reconciliation.py'
 
 permissions:
   contents: read
 
 jobs:
   architecture:
-    name: Validate compilation contract and blocked implementation stages
+    name: Preserve merged P0.21 authority and validate P0.22 succession
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -56,14 +62,15 @@ jobs:
         with:
           python-version: 3.11.9
 
-      - name: Validate P0.21 production architecture
-        run: python tools/validate_p021_production_architecture.py
-
-      - name: Run P0.21 fail-closed mutations
-        run: python tools/test_validate_p021_production_architecture.py
-
-      - name: Validate status succession
+      - name: Preserve frozen P0.21 production architecture
         run: |
+          python tools/validate_p021_production_architecture.py
+          python tools/test_validate_p021_production_architecture.py
+
+      - name: Validate current P0.22 route contract and status succession
+        run: |
+          python tools/validate_p022_alpha2_graybox_contract.py
+          python tools/test_validate_p022_alpha2_graybox_contract.py
           python tools/validate_post_prototype_reconciliation.py
           python tools/test_validate_post_prototype_reconciliation.py
 
