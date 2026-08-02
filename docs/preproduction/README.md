@@ -1,7 +1,7 @@
 # Preproduction and Production-Planning Index
 
-**Status:** Internal design, prototype, runtime-scaffold, and planning material  
-**Current package:** P0.22 — Alpha.2 Graybox Route Contract & Implementation Plan  
+**Status:** Internal design, prototype, runtime-scaffold, and planning material
+**Current package:** P0.22 — Alpha.2 Graybox Route Contract & Implementation Plan
 **Protected-main baseline reconciled:** `85b77d5216472afdb4abb7598917d5052eed180a`
 
 ## Current authorities
