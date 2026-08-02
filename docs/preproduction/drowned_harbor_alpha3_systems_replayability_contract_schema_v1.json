@@ -1,0 +1,291 @@
+{
+  "$id": "https://steadyeddiesc.example/schemas/drowned-harbor-alpha3-systems-replayability-contract-v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Closed planning-only P0.23 contract. Not a runtime input.",
+  "properties": {
+    "authorization": {
+      "additionalProperties": false,
+      "properties": {
+        "alpha3_activation_authorized": {"type": "boolean"},
+        "alpha3_issue_created": {"type": "boolean"},
+        "human_evidence_claimed": {"type": "boolean"},
+        "normal_library_visibility": {"type": "boolean"},
+        "ordinary_export_inclusion": {"type": "boolean"},
+        "planning_only": {"const": true,"type": "boolean"},
+        "runtime_implementation": {"const": false,"type": "boolean"}
+      },
+      "required": ["planning_only","runtime_implementation","alpha3_issue_created","alpha3_activation_authorized","normal_library_visibility","ordinary_export_inclusion","human_evidence_claimed"],
+      "type": "object"
+    },
+    "content_system": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_owners": {"type": "object"},
+        "cards": {"type": "array"},
+        "encounters_by_stage": {"type": "object"},
+        "hazards": {"type": "array"},
+        "invalid_or_duplicate_action_consumes_no_item_card_resource_or_rng": {"type": "boolean"},
+        "item_state_model": {"type": "array"},
+        "items": {"type": "array"},
+        "ownership_classes": {"type": "array"},
+        "resources": {"type": "array"},
+        "transfer_preserves_condition_charges_and_hidden_information": {"type": "boolean"}
+      },
+      "required": ["authority_owners","items","cards","resources","hazards","encounters_by_stage","item_state_model","ownership_classes","transfer_preserves_condition_charges_and_hidden_information","invalid_or_duplicate_action_consumes_no_item_card_resource_or_rng"],
+      "type": "object"
+    },
+    "continuation_system": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_owner": {"type": "string"},
+        "continuation_identity": {"type": "string"},
+        "continuation_preserves": {"type": "array"},
+        "permanent_inactive_seat_without_attributed_terminal_result": {"type": "boolean"},
+        "replacement_forms": {"type": "array"},
+        "restless_forms": {"type": "array"},
+        "selection_priority": {"type": "array"}
+      },
+      "required": ["authority_owner","restless_forms","replacement_forms","selection_priority","continuation_preserves","continuation_identity","permanent_inactive_seat_without_attributed_terminal_result"],
+      "type": "object"
+    },
+    "contract_kind": {"const": "drowned_harbor_alpha3_systems_replayability_contract","type": "string"},
+    "deferred_modes": {"type": "array"},
+    "director_system": {
+      "additionalProperties": false,
+      "properties": {
+        "anti_repeat_window": {"type": "integer"},
+        "authority_owner": {"type": "string"},
+        "candidate_selection_identity": {"type": "string"},
+        "input_allowlist": {"type": "array"},
+        "private_inputs_forbidden": {"type": "array"},
+        "rng_stream": {"type": "string"},
+        "selection_policy": {"type": "string"},
+        "unbounded_generation_allowed": {"type": "boolean"}
+      },
+      "required": ["authority_owner","candidate_selection_identity","rng_stream","anti_repeat_window","input_allowlist","private_inputs_forbidden","selection_policy","unbounded_generation_allowed"],
+      "type": "object"
+    },
+    "ending_system": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_owner": {"type": "string"},
+        "ending_ids": {"type": "array"},
+        "ending_requires_named_role": {"type": "boolean"},
+        "ending_resolution_identity": {"type": "string"},
+        "every_reachable_ending_attributes_every_active_faction": {"type": "boolean"},
+        "every_reachable_ending_attributes_every_stable_seat": {"type": "boolean"},
+        "mixed_outcomes_supported": {"type": "boolean"},
+        "private_attribution_owner": {"type": "string"}
+      },
+      "required": ["authority_owner","ending_ids","ending_resolution_identity","every_reachable_ending_attributes_every_stable_seat","every_reachable_ending_attributes_every_active_faction","private_attribution_owner","ending_requires_named_role","mixed_outcomes_supported"],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "accessibility_certified": {"type": "boolean"},
+        "automation_is_human_evidence": {"type": "boolean"},
+        "fun_pacing_fairness_or_balance_validated": {"type": "boolean"},
+        "physical_controller_validated": {"type": "boolean"},
+        "privacy_or_security_certified": {"type": "boolean"},
+        "production_ready": {"type": "boolean"},
+        "public_release_authorized": {"type": "boolean"},
+        "television_readability_validated": {"type": "boolean"}
+      },
+      "required": ["automation_is_human_evidence","physical_controller_validated","television_readability_validated","accessibility_certified","privacy_or_security_certified","fun_pacing_fairness_or_balance_validated","production_ready","public_release_authorized"],
+      "type": "object"
+    },
+    "faction_system": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_owner": {"type": "string"},
+        "bellmarked_count_by_seat_count": {"type": "object"},
+        "bellmarked_reveal_policy": {"type": "string"},
+        "faction_assignment_identity": {"type": "string"},
+        "no_hidden_faction_required_for_valid_route": {"type": "boolean"},
+        "private_factions": {"type": "array"},
+        "public_factions": {"type": "array"}
+      },
+      "required": ["authority_owner","public_factions","private_factions","bellmarked_count_by_seat_count","bellmarked_reveal_policy","faction_assignment_identity","no_hidden_faction_required_for_valid_route"],
+      "type": "object"
+    },
+    "implementation_issue": {
+      "additionalProperties": false,
+      "properties": {
+        "activation_authorized": {"const": false,"type": "boolean"},
+        "branch": {"type": "string"},
+        "codex_expected": {"type": "boolean"},
+        "draft_pr_title": {"type": "string"},
+        "github_issue": {"type": "null"},
+        "issue_definition_path": {"type": "string"},
+        "recommended_codex_effort": {"type": "string"},
+        "release_id": {"type": "string"},
+        "state": {"const": "planned_blocked","type": "string"},
+        "title": {"type": "string"}
+      },
+      "required": ["release_id","title","state","github_issue","branch","draft_pr_title","codex_expected","recommended_codex_effort","activation_authorized","issue_definition_path"],
+      "type": "object"
+    },
+    "inherited_alpha2": {
+      "additionalProperties": false,
+      "properties": {
+        "developer_only": {"type": "boolean"},
+        "issue": {"type": "integer"},
+        "localization_digest": {"type": "string"},
+        "merged_main_sha": {"type": "string"},
+        "ordinary_export_included": {"type": "boolean"},
+        "package_digest": {"type": "string"},
+        "provider_id": {"type": "string"},
+        "provider_version": {"type": "integer"},
+        "pull_request": {"type": "integer"},
+        "release_id": {"type": "string"},
+        "scenario_digest": {"type": "string"},
+        "snapshot_version": {"type": "integer"}
+      },
+      "required": ["release_id","issue","pull_request","merged_main_sha","package_digest","scenario_digest","localization_digest","snapshot_version","provider_id","provider_version","developer_only","ordinary_export_included"],
+      "type": "object"
+    },
+    "mode_plans": {"type": "array"},
+    "objective_system": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_identity": {"type": "string"},
+        "assignment_policy": {"type": "string"},
+        "authority_owner": {"type": "string"},
+        "bellmarked_objective_families": {"type": "array"},
+        "living_objective_families": {"type": "array"},
+        "shared_projection_exposes_only_completion_status": {"type": "boolean"},
+        "tidebound_objective_families": {"type": "array"}
+      },
+      "required": ["authority_owner","living_objective_families","bellmarked_objective_families","tidebound_objective_families","assignment_policy","assignment_identity","shared_projection_exposes_only_completion_status"],
+      "type": "object"
+    },
+    "persistence": {
+      "additionalProperties": false,
+      "properties": {
+        "exactly_once_identities": {"type": "array"},
+        "migration_policy": {"type": "string"},
+        "processed_request_and_event_ids_persisted": {"type": "boolean"},
+        "replay_policy": {"type": "string"},
+        "rollback_policy": {"type": "string"},
+        "save_boundaries": {"type": "array"},
+        "snapshot_version": {"type": "integer"}
+      },
+      "required": ["snapshot_version","migration_policy","processed_request_and_event_ids_persisted","exactly_once_identities","save_boundaries","replay_policy","rollback_policy"],
+      "type": "object"
+    },
+    "privacy": {
+      "additionalProperties": false,
+      "properties": {
+        "classes": {"type": "array"},
+        "director_private_access": {"type": "boolean"},
+        "private_projection_owner": {"type": "string"},
+        "reconnect_reprojection_policy": {"type": "string"},
+        "shared_output_policy": {"type": "string"},
+        "surrogate_private_access": {"type": "boolean"}
+      },
+      "required": ["classes","private_projection_owner","shared_output_policy","director_private_access","reconnect_reprojection_policy","surrogate_private_access"],
+      "type": "object"
+    },
+    "release": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline": {"const": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d","type": "string"},
+        "branch": {"type": "string"},
+        "issue": {"const": 106,"type": "integer"},
+        "release_id": {"const": "P0.23","type": "string"},
+        "state": {"type": "string"}
+      },
+      "required": ["release_id","issue","baseline","branch","state"],
+      "type": "object"
+    },
+    "replayability": {
+      "additionalProperties": false,
+      "properties": {
+        "coverage_obligations": {"type": "array"},
+        "deadlock_free_required": {"type": "boolean"},
+        "maximum_accepted_actions_per_run": {"type": "integer"},
+        "maximum_rejections_before_diagnostic": {"type": "integer"},
+        "minimum_total_runs": {"type": "integer"},
+        "mode_seat_matrix": {"type": "object"},
+        "named_rng_streams": {"type": "array"},
+        "repeat_each_case": {"type": "integer"},
+        "seed_set": {"type": "array"}
+      },
+      "required": ["named_rng_streams","seed_set","mode_seat_matrix","repeat_each_case","minimum_total_runs","coverage_obligations","maximum_accepted_actions_per_run","maximum_rejections_before_diagnostic","deadlock_free_required"],
+      "type": "object"
+    },
+    "rescue_system": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_owner": {"type": "string"},
+        "capacity_resource": {"type": "string"},
+        "failed_rescue_is_state_and_rng_noop": {"type": "boolean"},
+        "rescue_targets": {"type": "array"},
+        "stranded_state_persists_across_disconnect_restore_and_replay": {"type": "boolean"},
+        "unrescued_defeat_routes_to_continuation_or_attributed_terminal_result": {"type": "boolean"}
+      },
+      "required": ["authority_owner","rescue_targets","capacity_resource","stranded_state_persists_across_disconnect_restore_and_replay","failed_rescue_is_state_and_rng_noop","unrescued_defeat_routes_to_continuation_or_attributed_terminal_result"],
+      "type": "object"
+    },
+    "role_system": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_identity": {"type": "string"},
+        "assignment_policy": {"type": "string"},
+        "authority_owner": {"type": "string"},
+        "duplicate_archetype_instances_allowed_after_six_seats": {"type": "boolean"},
+        "generic_alternative_required_for_every_role_capability": {"type": "boolean"},
+        "role_archetype_order": {"type": "array"},
+        "role_required_for_ending": {"type": "boolean"}
+      },
+      "required": ["authority_owner","role_archetype_order","assignment_policy","duplicate_archetype_instances_allowed_after_six_seats","generic_alternative_required_for_every_role_capability","role_required_for_ending","assignment_identity"],
+      "type": "object"
+    },
+    "schema_version": {"const": 1,"type": "integer"},
+    "target_versions": {
+      "additionalProperties": false,
+      "properties": {
+        "localization_version": {"type": "integer"},
+        "package_version": {"type": "integer"},
+        "provider_version": {"type": "integer"},
+        "scenario_version": {"type": "integer"},
+        "snapshot_version": {"type": "integer"}
+      },
+      "required": ["package_version","scenario_version","localization_version","provider_version","snapshot_version"],
+      "type": "object"
+    },
+    "traceability": {
+      "additionalProperties": false,
+      "properties": {
+        "future_outputs": {"type": "array"},
+        "runtime_may_load_authoring_references": {"type": "boolean"},
+        "runtime_may_load_prototype_fixtures": {"type": "boolean"},
+        "source_authorities": {"type": "array"},
+        "source_ledger_policy": {"type": "string"}
+      },
+      "required": ["runtime_may_load_authoring_references","runtime_may_load_prototype_fixtures","source_authorities","future_outputs","source_ledger_policy"],
+      "type": "object"
+    },
+    "transformation_system": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_owner": {"type": "string"},
+        "conversion_identity": {"type": "string"},
+        "conversion_offer_privacy": {"type": "string"},
+        "conversion_preserves": {"type": "array"},
+        "duplicate_conversion_policy": {"type": "string"},
+        "eligibility_sources": {"type": "array"},
+        "mid_session_cure_supported": {"type": "boolean"},
+        "refusal_policy": {"type": "string"},
+        "tidebound_eligible_after_stage": {"type": "string"}
+      },
+      "required": ["authority_owner","tidebound_eligible_after_stage","eligibility_sources","conversion_offer_privacy","refusal_policy","mid_session_cure_supported","conversion_preserves","conversion_identity","duplicate_conversion_policy"],
+      "type": "object"
+    }
+  },
+  "required": ["contract_kind","schema_version","release","authorization","inherited_alpha2","target_versions","mode_plans","deferred_modes","role_system","objective_system","faction_system","transformation_system","continuation_system","content_system","rescue_system","director_system","ending_system","persistence","privacy","replayability","traceability","implementation_issue","evidence"],
+  "title": "Drowned Harbor Alpha.3 Systems & Replayability Contract v1",
+  "type": "object"
+}
