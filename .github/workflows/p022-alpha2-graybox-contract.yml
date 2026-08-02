@@ -1,0 +1,117 @@
+name: P0.22 alpha.2 graybox route contract
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/p021-production-architecture.yml'
+      - '.github/workflows/p022-alpha2-graybox-contract.yml'
+      - '.github/workflows/post-prototype-reconciliation.yml'
+      - 'docs/preproduction/P0.21_Implementation_Issue_Set.md'
+      - 'docs/preproduction/P0.22_Alpha2_Implementation_Issue.md'
+      - 'docs/preproduction/README.md'
+      - 'docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_schema_v1.json'
+      - 'docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json'
+      - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/releases/P0.22-alpha2-graybox-contract.md'
+      - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
+      - 'docs/technical/Drowned_Harbor_Alpha2_Graybox_Route_Contract_v1.md'
+      - 'tools/test_validate_p021_production_architecture.py'
+      - 'tools/test_validate_p022_alpha2_graybox_contract.py'
+      - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_p021_production_architecture.py'
+      - 'tools/validate_p022_alpha2_graybox_contract.py'
+      - 'tools/validate_post_prototype_reconciliation.py'
+  push:
+    branches:
+      - main
+      - docs/p0.22-alpha2-graybox-contract
+    paths:
+      - '.github/workflows/p021-production-architecture.yml'
+      - '.github/workflows/p022-alpha2-graybox-contract.yml'
+      - '.github/workflows/post-prototype-reconciliation.yml'
+      - 'docs/preproduction/P0.21_Implementation_Issue_Set.md'
+      - 'docs/preproduction/P0.22_Alpha2_Implementation_Issue.md'
+      - 'docs/preproduction/README.md'
+      - 'docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_schema_v1.json'
+      - 'docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json'
+      - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/releases/P0.22-alpha2-graybox-contract.md'
+      - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
+      - 'docs/technical/Drowned_Harbor_Alpha2_Graybox_Route_Contract_v1.md'
+      - 'tools/test_validate_p021_production_architecture.py'
+      - 'tools/test_validate_p022_alpha2_graybox_contract.py'
+      - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_p021_production_architecture.py'
+      - 'tools/validate_p022_alpha2_graybox_contract.py'
+      - 'tools/validate_post_prototype_reconciliation.py'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Validate alpha.2 route contract and blocked implementation plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Validate P0.22 alpha.2 graybox route contract
+        run: |
+          python tools/validate_p022_alpha2_graybox_contract.py
+          python tools/test_validate_p022_alpha2_graybox_contract.py
+
+      - name: Preserve P0.21 architecture and validate project succession
+        run: |
+          python tools/validate_p021_production_architecture.py
+          python tools/test_validate_p021_production_architecture.py
+          python tools/validate_post_prototype_reconciliation.py
+          python tools/test_validate_post_prototype_reconciliation.py
+
+      - name: Preserve design-only authoring contracts
+        run: |
+          python tools/validate_tale_authoring_reference.py
+          python tools/test_validate_tale_authoring_reference.py
+
+      - name: Preserve production package and catalog contracts
+        run: |
+          python tools/tale_package.py validate
+          python tools/test_tale_package.py
+          python tools/tale_catalog.py validate
+          python tools/test_tale_catalog.py
+
+      - name: Parse governed JSON and workflow YAML
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import yaml
+
+          for path in (
+              Path('docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json'),
+              Path('docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_schema_v1.json'),
+              Path('docs/preproduction/post_prototype_status_v1.json'),
+          ):
+              with path.open(encoding='utf-8') as handle:
+                  json.load(handle)
+          for path in (
+              Path('.github/workflows/p021-production-architecture.yml'),
+              Path('.github/workflows/p022-alpha2-graybox-contract.yml'),
+              Path('.github/workflows/post-prototype-reconciliation.yml'),
+          ):
+              with path.open(encoding='utf-8') as handle:
+                  yaml.safe_load(handle)
+          print('Governed JSON and workflow YAML parsed')
+          PY
+
+      - name: Prove clean source tree
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
