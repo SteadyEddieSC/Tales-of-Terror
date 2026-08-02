@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.0-alpha.2 - Drowned Harbor End-to-End Graybox (Internal Candidate)
+
+- Added the issue #104 developer-only eight-stage, seven-transition Drowned Harbor graybox route with placeholder presentation and deterministic cooperative completion for one through eight stable seats.
+- Added package, scenario, localization, and snapshot v2 authorities; explicit alpha.1 snapshot-v1 migration; BoardState movement; RulesSession progression; RoleSession privacy and epilogue attribution; and coordinator-owned cleanup.
+- Persisted exactly-once `council_commitment_id` and `high_water_transformation_id` values across save, restore, replay, retry, disconnect, surrogate control, reconnect, and deterministic recovery.
+- Extended ordinary Windows and Linux export exclusions and actual PCK scanning while preserving Lantern House as the sole normal/default Tale and leaving normal catalog, provider, library, navigation, and fallback behavior unchanged.
+- Automation is machine evidence only; issue #39 remains the human-evidence authority, and no production-readiness or public-release claim is made.
+
 ## v0.2.0-alpha.1 - Drowned Harbor Production Tale Scaffold (Internal Candidate)
 
 - Added a developer-gated, export-excluded Drowned Harbor native authority scaffold with one empty stage and explicit terminal cleanup.

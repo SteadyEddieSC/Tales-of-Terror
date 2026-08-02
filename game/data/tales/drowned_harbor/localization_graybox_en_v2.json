@@ -1,0 +1,24 @@
+{
+  "catalog_kind": "governed_placeholder_localization",
+  "schema_version": 1,
+  "catalog_id": "drowned_harbor_graybox_en_v2",
+  "catalog_version": 2,
+  "locale": "en",
+  "status": "temporary_internal_placeholder",
+  "entries": {
+    "tale.drowned_harbor.alpha2.display_name": "Drowned Harbor — Developer Graybox",
+    "tale.drowned_harbor.alpha2.briefing": "Internal deterministic route proof with placeholder presentation.",
+    "stage.low_tide_arrival_v1": "Low Tide Arrival",
+    "stage.bellhouse_ledger_v1": "Bellhouse Ledger",
+    "stage.lighthouse_council_v1": "Lighthouse Council",
+    "stage.high_water_v1": "High Water",
+    "stage.last_light_v1": "Last Light",
+    "stage.ending_resolution_v1": "Ending Resolution",
+    "stage.epilogue_attribution_v1": "Epilogue Attribution",
+    "stage.rematch_title_cleanup_v1": "Session Cleanup",
+    "summary.high_water": "High Water is committed. The harbor route changed atomically.",
+    "summary.epilogue": "The crew completed the cooperative harbor route.",
+    "summary.cleanup": "Drowned Harbor authority cleared before title return.",
+    "diagnostic.deadlock": "No governed progress was accepted. Reinspect the current public action list or restore the last checkpoint."
+  }
+}

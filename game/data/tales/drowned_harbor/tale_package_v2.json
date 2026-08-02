@@ -1,0 +1,118 @@
+{
+  "package_kind": "tale",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "package_version": 2,
+  "provider": {
+    "provider_id": "drowned_harbor_authorities_v1",
+    "provider_version": 2,
+    "board_reference": "drowned_harbor_graybox_board_v2",
+    "rules_reference": "drowned_harbor_graybox_rules_v2",
+    "director_reference": "drowned_harbor_graybox_director_v2",
+    "social_reference": "drowned_harbor_graybox_social_v2"
+  },
+  "display": {
+    "display_key": "tale.drowned_harbor.alpha2.display_name",
+    "briefing_key": "tale.drowned_harbor.alpha2.briefing",
+    "status": "temporary_internal_placeholder"
+  },
+  "compatibility": {
+    "engine": "godot_4_7_1",
+    "minimum_seats": 1,
+    "maximum_seats": 8,
+    "supported_modes": ["cooperative_public_safe_route"],
+    "admission_policy": "developer_only_explicit_launch",
+    "unknown_field_policy": "reject",
+    "deterministic": true
+  },
+  "content": {
+    "scenario_path": "res://data/scenarios/drowned_harbor_graybox_v2.json",
+    "scenario_id": "drowned_harbor_graybox_v2",
+    "scenario_sha256": "5927dba92238512fdc74b10387ea7378f00d74a462445749d6493a512b7d7a0d",
+    "board_reference": "drowned_harbor_graybox_board_v2",
+    "rules_reference": "drowned_harbor_graybox_rules_v2",
+    "director_reference": "drowned_harbor_graybox_director_v2",
+    "social_reference": "drowned_harbor_graybox_social_v2"
+  },
+  "stage_graph": {
+    "entry_stage": "low_tide_arrival_v1",
+    "terminal_stage": "rematch_title_cleanup_v1",
+    "stage_order": [
+      "low_tide_arrival_v1",
+      "bellhouse_ledger_v1",
+      "lighthouse_council_v1",
+      "high_water_v1",
+      "last_light_v1",
+      "ending_resolution_v1",
+      "epilogue_attribution_v1",
+      "rematch_title_cleanup_v1"
+    ],
+    "transition_order": [
+      "transition_low_tide_to_bellhouse",
+      "transition_bellhouse_to_council",
+      "transition_council_to_high_water",
+      "transition_high_water_to_last_light",
+      "transition_last_light_to_ending",
+      "transition_ending_to_epilogue",
+      "transition_epilogue_to_cleanup"
+    ]
+  },
+  "fallbacks": {
+    "invalid_candidate": "reject_before_session_commit",
+    "unsupported_snapshot": "reject_without_fallback",
+    "interruption": "restore_exact_checkpoint_or_reproject_existing_result",
+    "missing_optional_media": "use_governed_placeholder_text",
+    "exit": "clear_authority_then_return_to_lantern_house_default"
+  },
+  "privacy": {
+    "classes": ["public", "controlled_reveal_private", "seat_private", "faction_private"],
+    "private_projection_owner": "role_session",
+    "director_input_policy": "closed_public_aggregate_allowlist",
+    "shared_output_policy": "public_projection_only"
+  },
+  "localization": {
+    "catalog_path": "res://data/tales/drowned_harbor/localization_graybox_en_v2.json",
+    "catalog_id": "drowned_harbor_graybox_en_v2",
+    "catalog_sha256": "137919b02a572fc1c844521c38633bf27ad49bcb9d1fe8a83147db2210d1a227"
+  },
+  "inventory": {
+    "actions": [
+      "move_to_landmark", "confirm_low_tide_arrival", "inspect_ledger", "commit_bellhouse_choice",
+      "recover_bellhouse_choice", "submit_council_commitment", "resolve_council_commitment",
+      "acknowledge_high_water", "apply_high_water_transformation", "move_to_last_light_route",
+      "commit_last_light_action", "resolve_last_light", "resolve_ending",
+      "resolve_epilogue_attribution", "acknowledge_epilogue", "request_rematch", "return_to_title"
+    ],
+    "connectors": ["gate_to_market", "market_to_bellhouse", "bellhouse_to_council", "council_to_channel", "channel_to_beacon"],
+    "events": ["low_tide_arrival_completed", "bellhouse_choice_committed", "council_resolved", "high_water_transformation_applied", "last_light_resolved", "ending_resolved", "epilogue_acknowledged", "drowned_harbor_session_cleared"],
+    "factions": ["harbor_cooperative_fixture"],
+    "privacy_classes": ["public", "controlled_reveal_private", "seat_private", "faction_private"],
+    "roles": ["harbor_graybox_participant"],
+    "spaces": ["harbor_gate", "low_tide_market", "bellhouse", "lighthouse_council", "high_water_channel", "last_light_beacon"],
+    "stages": ["low_tide_arrival_v1", "bellhouse_ledger_v1", "lighthouse_council_v1", "high_water_v1", "last_light_v1", "ending_resolution_v1", "epilogue_attribution_v1", "rematch_title_cleanup_v1"],
+    "transitions": ["transition_low_tide_to_bellhouse", "transition_bellhouse_to_council", "transition_council_to_high_water", "transition_high_water_to_last_light", "transition_last_light_to_ending", "transition_ending_to_epilogue", "transition_epilogue_to_cleanup"]
+  },
+  "persistence": {
+    "snapshot_version": 2,
+    "identity_selection": "validate_tale_package_provider_and_snapshot_before_state",
+    "migration_policy": "explicit_alpha1_snapshot_v1_to_alpha2_snapshot_v2_or_fail_closed",
+    "exactly_once_policy": "persist_processed_request_event_council_and_high_water_identities",
+    "rng_policy": "four_named_authority_owned_streams",
+    "atomic_high_water_restore": "before_or_after_only",
+    "best_effort_restore": false
+  },
+  "source_ledger": [
+    {"role": "route_contract", "path": "docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json", "reference": "drowned_harbor_alpha2_graybox_route_contract"},
+    {"role": "scenario_manifest", "path": "game/data/scenarios/drowned_harbor_graybox_v2.json", "reference": "drowned_harbor_graybox_v2"},
+    {"role": "localization_catalog", "path": "game/data/tales/drowned_harbor/localization_graybox_en_v2.json", "reference": "drowned_harbor_graybox_en_v2"},
+    {"role": "scoped_provider", "path": "game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_scoped_provider.gd", "reference": "drowned_harbor_authorities_v1"},
+    {"role": "board_authority", "path": "game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_board_authority.gd", "reference": "board_state"},
+    {"role": "rules_authority", "path": "game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_rules_authority.gd", "reference": "rules_session"},
+    {"role": "private_projection_authority", "path": "game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_role_authority.gd", "reference": "role_session"}
+  ],
+  "identity_policy": {
+    "algorithm": "sha256",
+    "canonicalization": "utf8_json_sorted_object_keys_compact_arrays_preserved",
+    "non_authoritative_metadata_excluded": []
+  }
+}
