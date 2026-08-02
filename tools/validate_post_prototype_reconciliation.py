@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate preserved P0.20 history and the exact P0.21 status succession."""
+"""Validate preserved release history and current P0.22 status succession."""
 
 from __future__ import annotations
 
@@ -10,45 +10,40 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-BASELINE = "58f6f4e4ece9bbdd5932216c87aacc064e48e05a"
 ROOT = Path(".")
+BASELINE = "85b77d5216472afdb4abb7598917d5052eed180a"
+P021_MERGE = "4efdd76efdf2aa34823dae5d3624a3dca3f0a349"
 STATUS_PATH = Path("docs/preproduction/post_prototype_status_v1.json")
-README_PATH = Path("README.md")
 PREPROD_README_PATH = Path("docs/preproduction/README.md")
 HISTORICAL_ROADMAP_PATH = Path("docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md")
 CURRENT_ROADMAP_PATH = Path("docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md")
 P020_SUMMARY_PATH = Path("docs/preproduction/P0.20_Release_Summary.md")
-SUMMARY_PATH = Path("docs/preproduction/P0.21_Release_Summary.md")
+P021_SUMMARY_PATH = Path("docs/preproduction/P0.21_Release_Summary.md")
 FROZEN_INDEX_PATH = Path("docs/preproduction/preproduction_package_index_v1.json")
+P022_RELEASE_PATH = Path("docs/releases/P0.22-alpha2-graybox-contract.md")
 
 ALLOWED_PATHS = {
     ".github/workflows/p021-production-architecture.yml",
+    ".github/workflows/p022-alpha2-graybox-contract.yml",
     ".github/workflows/post-prototype-reconciliation.yml",
-    "README.md",
-    "docs/preproduction/README.md",
-    "docs/preproduction/P0.21_Release_Summary.md",
-    "docs/preproduction/post_prototype_status_v1.json",
-    "docs/preproduction/drowned_harbor_production_compilation_contract_schema_v1.json",
-    "docs/preproduction/drowned_harbor_production_compilation_contract_v1.json",
     "docs/preproduction/P0.21_Implementation_Issue_Set.md",
-    "docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md",
+    "docs/preproduction/P0.22_Alpha2_Implementation_Issue.md",
+    "docs/preproduction/README.md",
+    "docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_schema_v1.json",
+    "docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json",
+    "docs/preproduction/post_prototype_status_v1.json",
+    "docs/releases/P0.22-alpha2-graybox-contract.md",
     "docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md",
-    "tools/validate_p021_production_architecture.py",
+    "docs/technical/Drowned_Harbor_Alpha2_Graybox_Route_Contract_v1.md",
     "tools/test_validate_p021_production_architecture.py",
-    "tools/validate_post_prototype_reconciliation.py",
+    "tools/test_validate_p022_alpha2_graybox_contract.py",
     "tools/test_validate_post_prototype_reconciliation.py",
+    "tools/validate_p021_production_architecture.py",
+    "tools/validate_p022_alpha2_graybox_contract.py",
+    "tools/validate_post_prototype_reconciliation.py",
 }
-
-EXPECTED_RELEASES = [f"P0.{index}" for index in range(1, 21)]
-EXPECTED_COMPLETED_ISSUES = list(range(80, 87))
-REQUIRED_STAGES = [
-    "P0.21 — Production Architecture & Tale-Compilation Contract",
-    "v0.2.0-alpha.1 — Production Tale Scaffold",
-    "v0.2.0-alpha.2 — End-to-End Graybox",
-    "v0.2.0-alpha.3 — Systems & Replayability",
-    "v0.2.0-beta — Presentation & Content Integration",
-    "v0.2.0-rc — Hardening & Distribution Readiness",
-]
+EXPECTED_RELEASES = [f"P0.{index}" for index in range(1, 22)]
+EXPECTED_COMPLETED_ISSUES = [80, 81, 82, 83, 84, 85, 86, 100]
 
 
 class ValidationError(ValueError):
@@ -69,138 +64,140 @@ def read_text(root: Path, path: Path) -> str:
 
 def read_json(root: Path, path: Path) -> dict[str, Any]:
     try:
-        data = json.loads(read_text(root, path))
+        value = json.loads(read_text(root, path))
     except json.JSONDecodeError as exc:
         raise ValidationError(f"invalid JSON: {path}: {exc}") from exc
-    require(isinstance(data, dict), f"JSON root must be an object: {path}")
-    return data
+    require(isinstance(value, dict), f"JSON root must be object: {path}")
+    return value
 
 
 def validate_status(data: dict[str, Any]) -> None:
-    require(data.get("status_kind") == "post_prototype_project_status", "unexpected status_kind")
-    require(data.get("schema_version") == 1, "unexpected schema version")
-    require(data.get("protected_main") == BASELINE, "protected-main baseline drift")
+    require(data.get("status_kind") == "post_prototype_project_status", "status kind drift")
+    require(data.get("schema_version") == 1, "status schema drift")
+    require(data.get("as_of_date") == "2026-08-01", "status date drift")
+    require(data.get("protected_main") == BASELINE, "protected-main drift")
     require(data.get("playable_release") == "v0.1.9", "playable release drift")
 
-    production = data.get("production")
-    require(isinstance(production, dict), "production must be an object")
-    require(production.get("default_tale_id") == "lantern_house_vertical_slice", "Lantern House must remain default")
-    require(production.get("tale_count") == 1, "production Tale count must remain one")
-    for field in (
+    production = data.get("production", {})
+    require(production.get("default_tale_id") == "lantern_house_vertical_slice", "Lantern House default drift")
+    require(production.get("tale_count") == 1, "normal Tale count drift")
+    for key in (
         "drowned_harbor_catalog_registered",
         "drowned_harbor_provider_registered",
         "drowned_harbor_normal_library_visible",
         "drowned_harbor_ordinary_export_included",
     ):
-        require(production.get(field) is False, f"{field} must remain false")
+        require(production.get(key) is False, f"production boundary changed: {key}")
 
-    drowned = data.get("drowned_harbor")
-    require(isinstance(drowned, dict), "drowned_harbor must be an object")
-    require(drowned.get("status") == "development_only_export_excluded", "unexpected Drowned Harbor status")
-    require(drowned.get("ordinary_playable") is False, "Drowned Harbor may not be ordinarily playable")
-    require(drowned.get("fixture_count") == 7, "fixture count must remain seven")
+    drowned = data.get("drowned_harbor", {})
+    require(drowned.get("status") == "developer_only_alpha1_scaffold_export_excluded", "Drowned Harbor status drift")
+    require(drowned.get("ordinary_playable") is False, "Drowned Harbor became ordinarily playable")
+    require(drowned.get("fixture_count") == 7, "prototype fixture count drift")
     require(drowned.get("completed_work_issues") == EXPECTED_COMPLETED_ISSUES, "completed issue inventory drift")
-    require(drowned.get("successor_implementation_issue") is None, "successor issue must remain unset")
-    require(drowned.get("successor_implementation_authorized") is False, "successor implementation is not authorized")
+    require(drowned.get("successor_implementation_issue") is None, "alpha.2 issue created prematurely")
+    require(drowned.get("successor_implementation_authorized") is False, "alpha.2 authorized prematurely")
+    alpha1 = drowned.get("alpha1_scaffold", {})
+    require(alpha1.get("issue") == 100 and alpha1.get("pull_request") == 101, "alpha.1 issue/PR record drift")
+    require(alpha1.get("merged_main_sha") == BASELINE, "alpha.1 merge SHA drift")
+    require(alpha1.get("developer_only") is True, "alpha.1 developer gate drift")
+    require(alpha1.get("normal_library_visible") is False, "alpha.1 normal visibility drift")
+    require(alpha1.get("ordinary_export_included") is False, "alpha.1 export boundary drift")
 
-    require(drowned.get("aggregate_automation") == {
-        "profile_id": "DH-AUTO-P019-V1",
-        "sequences": 12,
-        "repetitions": 2,
-        "governed_cases": 33,
-        "fail_closed_rejections": 12,
-        "private_leaks": 0,
-        "deadlocks": 0,
-    }, "P0.19 aggregate evidence drift")
-
-    companion = data.get("companion_security")
-    require(isinstance(companion, dict), "companion_security must be an object")
-    require(companion.get("issue") == 44, "unexpected Companion issue")
-    require(companion.get("state") == "completed", "issue #44 must be completed")
-    require(companion.get("wrangler") == "4.114.0", "Wrangler version drift")
-    require(companion.get("miniflare") == "4.20260722.0", "Miniflare version drift")
-    require(companion.get("sharp") == "0.35.2", "Sharp version drift")
-    require(companion.get("workers_types") == "5.20260722.1", "Workers Types version drift")
-    require(companion.get("audit_high_or_critical") == 0, "Companion audit must remain zero high/critical")
+    companion = data.get("companion_security", {})
+    require(companion.get("issue") == 44 and companion.get("state") == "completed", "Companion issue state drift")
+    require(companion.get("wrangler") == "4.114.0", "Wrangler drift")
+    require(companion.get("miniflare") == "4.20260722.0", "Miniflare drift")
+    require(companion.get("sharp") == "0.35.2", "Sharp drift")
+    require(companion.get("workers_types") == "5.20260722.1", "Workers Types drift")
+    require(companion.get("audit_high_or_critical") == 0, "Companion audit drift")
 
     releases = data.get("preproduction_releases")
-    require(isinstance(releases, list) and len(releases) == 20, "status must contain P0.1 through P0.20")
-    release_ids = [entry.get("release_id") for entry in releases if isinstance(entry, dict)]
-    require(release_ids == EXPECTED_RELEASES, "preproduction release order/inventory drift")
-    require(all(entry.get("state") == "merged" for entry in releases), "every P0.1-P0.20 entry must be merged")
-    require(all(re.fullmatch(r"[0-9a-f]{40}", str(entry.get("merged_main_sha", ""))) for entry in releases), "invalid merge SHA")
+    require(isinstance(releases, list) and len(releases) == 21, "P0.1-P0.21 history length drift")
+    require([row.get("release_id") for row in releases] == EXPECTED_RELEASES, "preproduction release order drift")
+    require(all(row.get("state") == "merged" for row in releases), "preproduction release state drift")
+    require(all(re.fullmatch(r"[0-9a-f]{40}", str(row.get("merged_main_sha", ""))) for row in releases), "invalid preproduction SHA")
     require(releases[-1] == {
-        "release_id": "P0.20",
-        "pull_request": 97,
-        "merged_main_sha": BASELINE,
-        "title": "Post-Prototype Reconciliation & Production Decision Pack",
+        "release_id": "P0.21",
+        "pull_request": 99,
+        "merged_main_sha": P021_MERGE,
+        "title": "Production Architecture & Tale-Compilation Contract",
         "state": "merged",
-    }, "P0.20 merge record drift")
+    }, "P0.21 history record drift")
+
+    runtime = data.get("runtime_releases")
+    require(isinstance(runtime, list) and len(runtime) == 1, "runtime release history drift")
+    require(runtime[0] == {
+        "release_id": "v0.2.0-alpha.1",
+        "issue": 100,
+        "pull_request": 101,
+        "merged_main_sha": BASELINE,
+        "title": "Drowned Harbor Production Tale Scaffold",
+        "state": "merged_internal_candidate",
+        "normal_library_visible": False,
+        "ordinary_export_included": False,
+    }, "alpha.1 runtime history drift")
+
+    architecture = data.get("production_architecture", {})
+    require(architecture.get("state") == "merged_authority", "P0.21 architecture state drift")
+    require(architecture.get("merged_main_sha") == P021_MERGE, "P0.21 architecture SHA drift")
+    require(architecture.get("runtime_input") is False, "architecture contract became runtime input")
+
+    planning = data.get("alpha2_planning", {})
+    require(planning.get("state") == "active_planning", "P0.22 planning state drift")
+    require(planning.get("runtime_input") is False, "P0.22 contract became runtime input")
+    require(planning.get("runtime_issue_created") is False, "alpha.2 issue created")
+    require(planning.get("activation_authorized") is False, "alpha.2 activation authorized")
 
     require(data.get("current_release") == {
-        "release_id": "P0.21",
-        "issue": 98,
-        "branch": "docs/p0.21-production-architecture-contract",
+        "release_id": "P0.22",
+        "issue": 102,
+        "branch": "docs/p0.22-alpha2-graybox-contract",
         "type": "documentation_schema_validation",
         "runtime_authority_created": False,
-    }, "current release must be P0.21 issue #98")
-
+    }, "current release drift")
     require(data.get("recommended_next_release") == {
-        "release_id": "v0.2.0-alpha.1",
-        "title": "Production Tale Scaffold",
+        "release_id": "v0.2.0-alpha.2",
+        "title": "Drowned Harbor End-to-End Graybox",
         "state": "planned_blocked",
         "github_issue": None,
         "codex_required": True,
+        "recommended_codex_effort": "very_high",
         "activation_authorized": False,
-    }, "alpha.1 must remain planned, blocked, and inactive")
-
-    architecture = data.get("production_architecture")
-    require(isinstance(architecture, dict), "production architecture status missing")
-    require(architecture.get("state") == "active_planning", "P0.21 architecture must be active planning")
-    require(architecture.get("runtime_input") is False, "architecture contract may not be a runtime input")
-    require(architecture.get("normal_library_visible") is False, "Drowned Harbor may not be normally visible")
-    require(architecture.get("ordinary_export_included") is False, "Drowned Harbor may not enter ordinary exports")
-    require(data.get("runtime_implementation_authorized") is False, "runtime implementation may not be authorized")
-    require(data.get("human_evidence_claimed") is False, "human evidence may not be claimed")
+    }, "recommended alpha.2 state drift")
+    require(data.get("runtime_implementation_authorized") is False, "runtime implementation authorized")
+    require(data.get("human_evidence_claimed") is False, "human evidence claimed")
 
 
 def validate_docs(root: Path) -> None:
-    readme = read_text(root, README_PATH)
     preprod = read_text(root, PREPROD_README_PATH)
     historical = read_text(root, HISTORICAL_ROADMAP_PATH)
     roadmap = read_text(root, CURRENT_ROADMAP_PATH)
-    p020_summary = read_text(root, P020_SUMMARY_PATH)
-    p021_summary = read_text(root, SUMMARY_PATH)
+    p020 = read_text(root, P020_SUMMARY_PATH)
+    p021 = read_text(root, P021_SUMMARY_PATH)
+    p022 = read_text(root, P022_RELEASE_PATH)
 
     for phrase in (
-        "Current active package:** P0.21",
-        "P0.20 — Post-Prototype Reconciliation & Production Decision Pack",
-        "Drowned Harbor is not a production Tale and is not ordinarily playable",
-        "issue #44:** completed",
-        "Lantern House remains the sole production/default Tale",
+        "Current package:** P0.22",
+        "P0.21: production architecture",
+        "v0.2.0-alpha.1: developer-only production scaffold",
+        "Alpha.2 remains `planned_blocked`",
         "Automation is not human evidence",
-    ):
-        require(phrase in readme, f"README missing: {phrase}")
-
-    for phrase in (
-        "Current package:** P0.21",
-        "P0.20 merged through PR #97",
-        "planned_blocked",
-        "Issue #44 is complete",
-        "Codex is not required for P0.21",
     ):
         require(phrase in preprod, f"preproduction index missing: {phrase}")
 
-    require("Superseded Historical Record" in historical, "historical roadmap must remain superseded")
-    require("Post_P0.19_Production_Candidate_Roadmap.md" in historical, "historical roadmap must retain successor link")
-    require("P0.1 is current" not in historical, "historical roadmap may not present P0.1 as current")
+    require("Superseded Historical Record" in historical, "historical roadmap lost superseded status")
+    require("Post_P0.19_Production_Candidate_Roadmap.md" in historical, "historical successor link missing")
 
-    for stage in REQUIRED_STAGES:
-        require(stage in roadmap, f"roadmap missing stage: {stage}")
-    require("P0.21 planning stage active" in roadmap, "roadmap must identify P0.21 as active")
-    require("Only P0.21 is active" in roadmap, "roadmap must block all later stages")
-    require("Codex must never activate, merge, or close the release" in roadmap, "Codex boundary missing")
-    require("Lantern House remains the sole normal production/default Tale" in roadmap, "production invariant missing")
+    for phrase in (
+        "P0.22 alpha.2 planning active; alpha.2 runtime blocked",
+        "P0.21 — Production Architecture & Tale-Compilation Contract",
+        "v0.2.0-alpha.1 — Production Tale Scaffold",
+        "**State:** completed internal runtime scaffold",
+        "v0.2.0-alpha.2 — End-to-End Graybox",
+        "**State:** `planned_blocked`",
+        "No alpha.2 GitHub issue, branch, or Codex prompt is created",
+    ):
+        require(phrase in roadmap, f"current roadmap missing: {phrase}")
 
     for phrase in (
         "P0.1–P0.19 are recorded as merged",
@@ -209,25 +206,22 @@ def validate_docs(root: Path) -> None:
         "No runtime",
         "No human",
     ):
-        require(phrase in p020_summary, f"P0.20 historical summary missing: {phrase}")
+        require(phrase in p020, f"P0.20 history drift: {phrase}")
 
     for phrase in (
-        "P0.1–P0.20 remain recorded as merged",
         "It does not compile, register, expose, or ship Drowned Harbor",
+        "P0.1–P0.20 remain recorded as merged",
         "Automation is not human evidence",
-        "Codex is not needed for P0.21",
     ):
-        require(phrase in p021_summary, f"P0.21 summary missing: {phrase}")
+        require(phrase in p021, f"P0.21 history drift: {phrase}")
 
-    combined = "\n".join((readme, preprod, roadmap, p021_summary))
     for phrase in (
-        "Current package:** P0.20",
-        "Current active package:** P0.20",
-        "P0.21 must remain planned, not active",
-        "Companion workflow intentionally remains red",
-        "Codex/local implementation is considered blocked",
+        "P0.22 converts the broad alpha.2 milestone",
+        "No `game/**` path changes",
+        "runtime issue remains",
+        "Automation is machine evidence only",
     ):
-        require(phrase not in combined, f"stale claim retained: {phrase}")
+        require(phrase in p022, f"P0.22 release record missing: {phrase}")
 
 
 def validate_git_boundary(root: Path) -> None:
@@ -242,15 +236,14 @@ def validate_git_boundary(root: Path) -> None:
         raise ValidationError(f"unable to evaluate git boundary: {exc}") from exc
     actual = {line.strip() for line in output.splitlines() if line.strip()}
     require(actual == ALLOWED_PATHS, f"path boundary mismatch: missing={sorted(ALLOWED_PATHS-actual)} unexpected={sorted(actual-ALLOWED_PATHS)}")
-    require("docs/preproduction/preproduction_package_index_v1.json" not in actual, "historical package index changed")
-    require("tools/validate_preproduction_package_traceability.py" not in actual, "historical P0.8 validator changed")
-    require(not any(path.startswith(("game/", "services/", "web/", "packaging/")) for path in actual), "runtime/service/export path changed")
+    require(not any(path.startswith(("game/", "services/", "web/", "packaging/", "art/", "audio/")) for path in actual), "runtime/service/media path changed")
+    require("docs/preproduction/preproduction_package_index_v1.json" not in actual, "frozen historical package index changed")
 
 
 def validate(root: Path = ROOT, check_git: bool = True) -> None:
     validate_status(read_json(root, STATUS_PATH))
     validate_docs(root)
-    require((root / FROZEN_INDEX_PATH).is_file(), "historical package index missing")
+    require((root / FROZEN_INDEX_PATH).is_file(), "frozen historical package index missing")
     if check_git:
         validate_git_boundary(root)
 
@@ -265,7 +258,7 @@ def main() -> int:
     except ValidationError as exc:
         print(f"Post-prototype succession validation failed: {exc}")
         return 1
-    print("Post-prototype history and P0.21 status succession validated")
+    print("Post-prototype history through P0.21, alpha.1, and active P0.22 validated")
     return 0
 
 
