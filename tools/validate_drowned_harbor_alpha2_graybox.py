@@ -432,7 +432,11 @@ def _authorized_path(path: str) -> bool:
 
 def validate_git_boundary(root: Path = ROOT) -> None:
     require(_run_git(root, "rev-parse", "origin/main") == BASELINE, "protected origin/main changed")
-    branch = os.environ.get("GITHUB_HEAD_REF") or _run_git(root, "branch", "--show-current")
+    branch = (
+        os.environ.get("GITHUB_HEAD_REF")
+        or os.environ.get("GITHUB_REF_NAME")
+        or _run_git(root, "branch", "--show-current")
+    )
     require(branch == BRANCH, f"wrong alpha.2 branch: {branch}")
     require(_run_git(root, "merge-base", "HEAD", BASELINE) == BASELINE, "branch baseline changed")
     changed = set(filter(None, _run_git(root, "diff", "--name-only", BASELINE).splitlines()))
