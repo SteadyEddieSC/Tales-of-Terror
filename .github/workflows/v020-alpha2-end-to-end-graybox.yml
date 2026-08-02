@@ -1,0 +1,274 @@
+name: v0.2.0-alpha.2 Drowned Harbor end-to-end graybox
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v020-alpha2-end-to-end-graybox.yml'
+      - 'CHANGELOG.md'
+      - 'docs/releases/v0.2.0-alpha.2-end-to-end-graybox.md'
+      - 'docs/playtests/v0.2.0-alpha.2-end-to-end-graybox-evidence.md'
+      - 'game/data/scenarios/drowned_harbor_graybox_v2.json'
+      - 'game/data/tales/drowned_harbor/**'
+      - 'game/src/tales/drowned_harbor/**'
+      - 'game/tests/drowned_harbor_alpha2_graybox/**'
+      - 'game/export_presets.cfg'
+      - 'tools/portable_bundle.py'
+      - 'tools/validate_drowned_harbor_production_scaffold.py'
+      - 'tools/validate_drowned_harbor_alpha2_graybox.py'
+      - 'tools/test_validate_drowned_harbor_alpha2_graybox.py'
+      - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
+  push:
+    branches: [main, feature/v0.2.0-alpha.2-end-to-end-graybox]
+    paths:
+      - '.github/workflows/v020-alpha2-end-to-end-graybox.yml'
+      - 'CHANGELOG.md'
+      - 'docs/releases/v0.2.0-alpha.2-end-to-end-graybox.md'
+      - 'docs/playtests/v0.2.0-alpha.2-end-to-end-graybox-evidence.md'
+      - 'game/data/scenarios/drowned_harbor_graybox_v2.json'
+      - 'game/data/tales/drowned_harbor/**'
+      - 'game/src/tales/drowned_harbor/**'
+      - 'game/tests/drowned_harbor_alpha2_graybox/**'
+      - 'game/export_presets.cfg'
+      - 'tools/portable_bundle.py'
+      - 'tools/validate_drowned_harbor_production_scaffold.py'
+      - 'tools/validate_drowned_harbor_alpha2_graybox.py'
+      - 'tools/test_validate_drowned_harbor_alpha2_graybox.py'
+      - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  graybox:
+    name: Deterministic route and ordinary-export exclusion
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      GODOT_TEMPLATE_SHA256: 86409db6200b6f8fd3230989c2d2002851f3dd18acf11d7bdbafddf5a0dd0f72
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+
+      - name: Enforce alpha.2 protected-base path boundary
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.head_ref == 'feature/v0.2.0-alpha.2-end-to-end-graybox'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$BASE_REF" --depth=1
+          python - <<'PY'
+          import os
+          import subprocess
+
+          expected = {
+              '.github/workflows/v020-alpha1-production-tale-scaffold.yml',
+              '.github/workflows/v020-alpha2-end-to-end-graybox.yml',
+              'CHANGELOG.md',
+              'docs/playtests/v0.2.0-alpha.2-end-to-end-graybox-evidence.md',
+              'docs/releases/v0.2.0-alpha.2-end-to-end-graybox.md',
+              'game/data/scenarios/drowned_harbor_graybox_v2.json',
+              'game/data/tales/drowned_harbor/localization_graybox_en_v2.json',
+              'game/data/tales/drowned_harbor/tale_package_v2.json',
+              'game/export_presets.cfg',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_board_authority.gd',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_board_authority.gd.uid',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_board_definition.gd',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_board_definition.gd.uid',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_director_content.gd',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_director_content.gd.uid',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_role_authority.gd',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_role_authority.gd.uid',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_rules_authority.gd',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_rules_authority.gd.uid',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_scoped_provider.gd',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_scoped_provider.gd.uid',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_session.gd',
+              'game/src/tales/drowned_harbor/alpha2/drowned_harbor_alpha2_session.gd.uid',
+              'game/src/tales/drowned_harbor/drowned_harbor_developer_admission_gate.gd',
+              'game/tests/drowned_harbor_alpha2_graybox/drowned_harbor_alpha2_graybox_test.gd',
+              'game/tests/drowned_harbor_alpha2_graybox/drowned_harbor_alpha2_graybox_test.gd.uid',
+              'tools/portable_bundle.py',
+              'tools/test_validate_drowned_harbor_alpha2_graybox.py',
+              'tools/validate_drowned_harbor_alpha2_graybox.py',
+              'tools/validate_drowned_harbor_production_scaffold.py',
+          }
+          output = subprocess.check_output(
+              ['git', 'diff', '--name-only', f"origin/{os.environ['BASE_REF']}...HEAD"],
+              text=True,
+          )
+          actual = {line for line in output.splitlines() if line}
+          if actual != expected:
+              raise SystemExit(
+                  'alpha.2 path boundary mismatch; '
+                  f'missing={sorted(expected - actual)}; '
+                  f'unexpected={sorted(actual - expected)}'
+              )
+          print('Validated exact 30-path alpha.2 protected-base inventory')
+          PY
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Install pinned validation dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+
+      - name: Run alpha.2 and inherited offline validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          log_root="$RUNNER_TEMP/alpha2-python"
+          rm -rf "$log_root"
+          mkdir -p "$log_root"
+          trap 'mkdir -p artifacts/alpha2/python; cp -a "$log_root/." artifacts/alpha2/python/' EXIT
+          run_check() {
+            name="$1"
+            shift
+            set +e
+            "$@" 2>&1 | tee "$log_root/${name}.txt"
+            status=${PIPESTATUS[0]}
+            set -e
+            echo "$status" > "$log_root/${name}.status"
+            test "$status" -eq 0
+          }
+          run_check alpha2-validator python tools/validate_drowned_harbor_alpha2_graybox.py
+          run_check alpha2-mutations python tools/test_validate_drowned_harbor_alpha2_graybox.py
+          run_check alpha1-validator python tools/validate_drowned_harbor_production_scaffold.py --skip-git-boundary
+          run_check alpha1-mutations python tools/test_validate_drowned_harbor_production_scaffold.py
+          run_check p021-validator python tools/validate_p021_production_architecture.py --skip-git-boundary
+          run_check p021-mutations python tools/test_validate_p021_production_architecture.py
+          run_check isolation python tools/validate_drowned_harbor_prototype_isolation_p016.py
+          run_check isolation-mutations python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
+          run_check prototype-automation python tools/validate_drowned_harbor_prototype_automation.py
+          run_check prototype-automation-mutations python tools/test_validate_drowned_harbor_prototype_automation.py
+          run_check controlled-private python tools/validate_drowned_harbor_controlled_private_shield.py
+          run_check controlled-private-mutations python tools/test_validate_drowned_harbor_controlled_private_shield.py
+          run_check bellhouse python tools/validate_drowned_harbor_bellhouse_recovery.py
+          run_check bellhouse-mutations python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          run_check low-tide python tools/validate_drowned_harbor_low_tide_shell_p016.py
+          run_check low-tide-mutations python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
+          run_check projection python tools/validate_drowned_harbor_projection_fixtures_p016.py
+          run_check projection-mutations python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
+          run_check tale-package python tools/test_tale_package.py
+          run_check tale-catalog python tools/test_tale_catalog.py
+          run_check portable-policy python tools/portable_bundle.py validate-repository
+
+      - name: Check first-party GDScript formatting and lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/alpha2/gdscript
+          mapfile -t scripts < <(find game -type f -name '*.gd' -not -path 'game/addons/*' | sort)
+          gdformat --check "${scripts[@]}" 2>&1 | tee artifacts/alpha2/gdscript/gdformat.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha2/gdscript/gdformat.status
+          gdlint "${scripts[@]}" 2>&1 | tee artifacts/alpha2/gdscript/gdlint.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha2/gdscript/gdlint.status
+
+      - name: Download checksum-pinned Godot 4.7.1 stable and templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
+          tool_root="$RUNNER_TEMP/godot-4.7.1-alpha2"
+          mkdir -p "$tool_root"
+          curl -fsSL -o "$tool_root/godot.zip" "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | (cd "$tool_root" && sha512sum --check -)
+          curl -fsSL -o "$tool_root/export-templates.tpz" "$base/Godot_v4.7.1-stable_export_templates.tpz"
+          echo "$GODOT_TEMPLATE_SHA256  export-templates.tpz" | (cd "$tool_root" && sha256sum --check -)
+          unzip -q "$tool_root/godot.zip" -d "$tool_root/godot-bin"
+          chmod +x "$tool_root/godot-bin/Godot_v4.7.1-stable_linux.x86_64"
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.7.1.stable"
+          unzip -q "$tool_root/export-templates.tpz" -d "$tool_root/export-template-staging"
+          cp -a "$tool_root/export-template-staging/templates/." "$HOME/.local/share/godot/export_templates/4.7.1.stable/"
+          echo "$tool_root/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Run typed import, focused proof, and native regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/alpha2/godot
+          godot=Godot_v4.7.1-stable_linux.x86_64
+          run_godot() {
+            name="$1"
+            shift
+            set +e
+            "$godot" "$@" 2>&1 | tee "artifacts/alpha2/godot/${name}.txt"
+            status=${PIPESTATUS[0]}
+            set -e
+            echo "$status" > "artifacts/alpha2/godot/${name}.status"
+            test "$status" -eq 0
+          }
+          run_godot typed-import --headless --editor --path game --quit
+          run_godot alpha2 --headless --path game --script res://tests/drowned_harbor_alpha2_graybox/drowned_harbor_alpha2_graybox_test.gd
+          run_godot alpha1 --headless --path game --script res://tests/drowned_harbor_production_scaffold/drowned_harbor_production_scaffold_test.gd
+          run_godot replay --headless --path game --script res://tests/tale_replay_equivalence_test.gd
+          run_godot prototype-automation --headless --path game --script res://tests/drowned_harbor_prototype_automation_test.gd
+          run_godot prototype-isolation --headless --path game --script res://tests/drowned_harbor_prototype_isolation_test.gd
+          run_godot low-tide --headless --path game --script res://tests/drowned_harbor_low_tide_shell_test.gd
+          run_godot bellhouse --headless --path game --script res://tests/drowned_harbor_bellhouse_recovery_test.gd
+          run_godot controlled-private --headless --path game --script res://tests/drowned_harbor_controlled_private_shield_test.gd
+          run_godot high-water-prototype --headless --path game --script res://tests/drowned_harbor_high_water_transformation_test.gd
+          run_godot main-smoke --headless --path game --quit-after 3
+
+      - name: Run GUT regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/alpha2/gut game/test-results
+          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
+            --script res://addons/gut/gut_cmdln.gd \
+            -gexit -gjunit_xml_file=res://test-results/gut-junit.xml \
+            2>&1 | tee artifacts/alpha2/gut/gut.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha2/gut/gut.status
+          cp game/test-results/gut-junit.xml artifacts/alpha2/gut/gut-junit.xml
+
+      - name: Generate and inspect actual Windows and Linux PCK inventories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p builds/alpha2/windows builds/alpha2/linux artifacts/alpha2/export
+          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
+            --export-pack "Internal Windows x86_64" "$PWD/builds/alpha2/windows/lantern_house_internal.pck" \
+            2>&1 | tee artifacts/alpha2/export/windows-export.log
+          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
+            --export-pack "Internal Linux x86_64" "$PWD/builds/alpha2/linux/lantern_house_internal.pck" \
+            2>&1 | tee artifacts/alpha2/export/linux-export.log
+          python tools/validate_drowned_harbor_alpha2_graybox.py export-inventory --platform windows \
+            --pck builds/alpha2/windows/lantern_house_internal.pck \
+            --export-log artifacts/alpha2/export/windows-export.log --source-sha "$SOURCE_SHA" \
+            --output artifacts/alpha2/export/windows.json \
+            | tee artifacts/alpha2/export/windows.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha2/export/windows.status
+          python tools/validate_drowned_harbor_alpha2_graybox.py export-inventory --platform linux \
+            --pck builds/alpha2/linux/lantern_house_internal.pck \
+            --export-log artifacts/alpha2/export/linux-export.log --source-sha "$SOURCE_SHA" \
+            --output artifacts/alpha2/export/linux.json \
+            | tee artifacts/alpha2/export/linux.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha2/export/linux.status
+
+      - name: Upload bounded alpha.2 machine evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p020-alpha2-drowned-harbor-graybox-evidence
+          path: artifacts/alpha2
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove generated evidence and exports
+        if: always()
+        run: rm -rf artifacts/alpha2 builds/alpha2 game/.godot game/test-results
+
+      - name: Prove source tree remains clean
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"

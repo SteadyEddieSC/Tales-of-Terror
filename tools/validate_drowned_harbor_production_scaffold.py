@@ -580,6 +580,11 @@ def validate_static(root: Path = ROOT, *, git_boundary: bool = True) -> dict[str
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--skip-git-boundary",
+        action="store_true",
+        help="skip only the frozen alpha.1 Git coordinate and path-boundary checks",
+    )
     subparsers = parser.add_subparsers(dest="command")
     export = subparsers.add_parser("export-inventory")
     export.add_argument("--platform", required=True, choices=("windows", "linux"))
@@ -596,7 +601,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "export-inventory":
             result = validate_export_inventory(args.platform, args.pck, args.export_log, args.source_sha)
         else:
-            result = validate_static()
+            result = validate_static(git_boundary=not args.skip_git_boundary)
     except ValidationError as exc:
         print(f"Drowned Harbor alpha.1 validation failed: {exc}", file=sys.stderr)
         return 1

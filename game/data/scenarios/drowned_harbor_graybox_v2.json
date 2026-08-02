@@ -1,0 +1,81 @@
+{
+  "scenario_kind": "drowned_harbor_end_to_end_graybox",
+  "schema_version": 1,
+  "scenario_id": "drowned_harbor_graybox_v2",
+  "scenario_version": 2,
+  "tale_id": "drowned_harbor",
+  "authority_references": {
+    "board": "drowned_harbor_graybox_board_v2",
+    "director": "drowned_harbor_graybox_director_v2",
+    "rules": "drowned_harbor_graybox_rules_v2",
+    "social": "drowned_harbor_graybox_social_v2"
+  },
+  "stage_order": [
+    "low_tide_arrival_v1",
+    "bellhouse_ledger_v1",
+    "lighthouse_council_v1",
+    "high_water_v1",
+    "last_light_v1",
+    "ending_resolution_v1",
+    "epilogue_attribution_v1",
+    "rematch_title_cleanup_v1"
+  ],
+  "transitions": [
+    {"id": "transition_low_tide_to_bellhouse", "from": "low_tide_arrival_v1", "to": "bellhouse_ledger_v1", "owner": "rules_session"},
+    {"id": "transition_bellhouse_to_council", "from": "bellhouse_ledger_v1", "to": "lighthouse_council_v1", "owner": "rules_session"},
+    {"id": "transition_council_to_high_water", "from": "lighthouse_council_v1", "to": "high_water_v1", "owner": "rules_session", "exactly_once_identity": "council_commitment_id"},
+    {"id": "transition_high_water_to_last_light", "from": "high_water_v1", "to": "last_light_v1", "owner": "rules_session", "exactly_once_identity": "high_water_transformation_id"},
+    {"id": "transition_last_light_to_ending", "from": "last_light_v1", "to": "ending_resolution_v1", "owner": "rules_session"},
+    {"id": "transition_ending_to_epilogue", "from": "ending_resolution_v1", "to": "epilogue_attribution_v1", "owner": "rules_session"},
+    {"id": "transition_epilogue_to_cleanup", "from": "epilogue_attribution_v1", "to": "rematch_title_cleanup_v1", "owner": "session_coordinator"}
+  ],
+  "stage_intents": {
+    "low_tide_arrival_v1": ["move_to_landmark", "confirm_low_tide_arrival"],
+    "bellhouse_ledger_v1": ["inspect_ledger", "commit_bellhouse_choice", "recover_bellhouse_choice"],
+    "lighthouse_council_v1": ["submit_council_commitment", "resolve_council_commitment"],
+    "high_water_v1": ["acknowledge_high_water", "apply_high_water_transformation"],
+    "last_light_v1": ["move_to_last_light_route", "commit_last_light_action", "resolve_last_light"],
+    "ending_resolution_v1": ["resolve_ending"],
+    "epilogue_attribution_v1": ["resolve_epilogue_attribution", "acknowledge_epilogue"],
+    "rematch_title_cleanup_v1": ["request_rematch", "return_to_title"]
+  },
+  "board": {
+    "spaces": ["harbor_gate", "low_tide_market", "bellhouse", "lighthouse_council", "high_water_channel", "last_light_beacon"],
+    "connectors": ["gate_to_market", "market_to_bellhouse", "bellhouse_to_council", "council_to_channel", "channel_to_beacon"],
+    "high_water_atomic_mutations": [
+      {"kind": "connector_state", "connector_id": "gate_to_market", "state": "closed"},
+      {"kind": "hazard", "space_id": "high_water_channel", "hazard_id": "high_water_surge", "active": true},
+      {"kind": "feature", "space_id": "last_light_beacon", "feature_id": "last_light_active", "active": true}
+    ]
+  },
+  "determinism": {
+    "rng_streams": [
+      "drowned_harbor_route_authority",
+      "drowned_harbor_board_authority",
+      "drowned_harbor_social_authority",
+      "drowned_harbor_director_authority"
+    ],
+    "wall_clock_dependency": false,
+    "presentation_dependency": false,
+    "maximum_accepted_actions": 96,
+    "maximum_rejections_before_diagnostic": 8
+  },
+  "privacy": {
+    "classes": ["public", "controlled_reveal_private", "seat_private", "faction_private"],
+    "private_projection_owner": "role_session",
+    "shared_output": "public_only",
+    "director_input_allowlist": ["authoritative_revision", "connected_seat_count", "stage_id", "public_progress", "public_pressure", "public_recovery_count"]
+  },
+  "persistence": {
+    "snapshot_version": 2,
+    "migration_policy": "explicit_alpha1_snapshot_v1_to_alpha2_snapshot_v2_or_fail_closed",
+    "processed_request_and_event_ids_persisted": true,
+    "atomic_high_water_restore": "before_or_after_only"
+  },
+  "admission": {
+    "policy": "developer_only_explicit_launch",
+    "normal_catalog_registered": false,
+    "normal_provider_registered": false,
+    "ordinary_export_authorized": false
+  }
+}

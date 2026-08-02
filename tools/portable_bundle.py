@@ -426,7 +426,8 @@ def validate_repository() -> None:
         'src/exploration/ExplorationShowcase.tscn,'
         'src/exploration/exploration_showcase.gd,'
         'data/scenarios/drowned_harbor_scaffold_v1.json,'
-        'data/tales/drowned_harbor/*,src/tales/drowned_harbor/*"'
+        'data/tales/drowned_harbor/*,src/tales/drowned_harbor/*,'
+        'data/scenarios/drowned_harbor_graybox_v2.json"'
     )
     required_preset_fragments = (
         'name="Internal Windows x86_64"',
