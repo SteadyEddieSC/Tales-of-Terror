@@ -1,8 +1,8 @@
 # Drowned Harbor Alpha.2 Graybox Route Contract v1
 
-**Release:** P0.22  
-**Issue:** #102  
-**Protected-main baseline:** `85b77d5216472afdb4abb7598917d5052eed180a`  
+**Release:** P0.22
+**Issue:** #102
+**Protected-main baseline:** `85b77d5216472afdb4abb7598917d5052eed180a`
 **Status:** Active planning contract; no alpha.2 runtime authority
 
 ## 1. Purpose
