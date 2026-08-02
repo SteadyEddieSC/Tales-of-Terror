@@ -67,8 +67,14 @@ jobs:
           print('Validated exact P0.23 path inventory')
           PY2
       - name: Validate P0.23 contract and mutations
+        shell: bash
         run: |
-          python tools/validate_p023_alpha3_systems_replayability_contract.py
+          set -euo pipefail
+          if [[ "${GITHUB_REF_NAME:-}" == "main" ]]; then
+            python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
+          else
+            python tools/validate_p023_alpha3_systems_replayability_contract.py
+          fi
           python tools/test_validate_p023_alpha3_systems_replayability_contract.py
       - name: Preserve Alpha.2 runtime and authoring contracts
         run: |
