@@ -1,1 +1,80 @@
-{"status_kind":"post_prototype_project_status","schema_version":1,"as_of_date":"2026-08-01","protected_main":"85b77d5216472afdb4abb7598917d5052eed180a","playable_release":"v0.1.9","production":{"default_tale_id":"lantern_house_vertical_slice","tale_count":1,"drowned_harbor_catalog_registered":false,"drowned_harbor_provider_registered":false,"drowned_harbor_normal_library_visible":false,"drowned_harbor_ordinary_export_included":false},"drowned_harbor":{"status":"developer_only_alpha1_scaffold_export_excluded","ordinary_playable":false,"fixture_count":7,"focused_feature_families":["low_tide_shared_screen","bellhouse_decision_and_recovery","controlled_private_shield","high_water_transformation"],"aggregate_automation":{"profile_id":"DH-AUTO-P019-V1","sequences":12,"repetitions":2,"governed_cases":33,"fail_closed_rejections":12,"private_leaks":0,"deadlocks":0},"completed_work_issues":[80,81,82,83,84,85,86,100],"alpha1_scaffold":{"release_id":"v0.2.0-alpha.1","issue":100,"pull_request":101,"merged_main_sha":"85b77d5216472afdb4abb7598917d5052eed180a","tale_id":"drowned_harbor","provider_id":"drowned_harbor_authorities_v1","package_version":1,"scenario_version":1,"snapshot_version":1,"developer_only":true,"normal_library_visible":false,"ordinary_export_included":false},"successor_implementation_issue":null,"successor_implementation_authorized":false},"companion_security":{"issue":44,"state":"completed","merge_sha":"add20c80b8c7f382e3accf28e1efa2a6c0bad9d8","wrangler":"4.114.0","miniflare":"4.20260722.0","sharp":"0.35.2","workers_types":"5.20260722.1","audit_high_or_critical":0},"gates":[{"issue":7,"state":"open","purpose":"professional naming clearance"},{"issue":39,"state":"deferred_open","purpose":"human household and remote evidence"}],"unrelated_open_pull_requests":[32],"preproduction_releases":[{"release_id":"P0.1","pull_request":65,"merged_main_sha":"53a9db5ba1c665ae6ba42873c8aed6e84806890c","title":"Preproduction Narrative & Continuity Foundation","state":"merged"},{"release_id":"P0.2","pull_request":66,"merged_main_sha":"cd78cc68f80c5546ea91bd0a9431642eba1e4d30","title":"Drowned Harbor Dialogue and Localization Corpus","state":"merged"},{"release_id":"P0.3","pull_request":67,"merged_main_sha":"e0cc8932904569f2b4b9b918da7d2727984464de","title":"Drowned Harbor Visual Development & Asset Brief Pack","state":"merged"},{"release_id":"P0.4","pull_request":68,"merged_main_sha":"8270b2d322321c2cee28404794780e012477ffcb","title":"Drowned Harbor Audio Direction & SFX Brief Pack","state":"merged"},{"release_id":"P0.5","pull_request":69,"merged_main_sha":"dc64c864cd4c334c958aff1d104aa903ec109131","title":"Drowned Harbor Music Direction & Adaptive Score Brief Pack","state":"merged"},{"release_id":"P0.6","pull_request":70,"merged_main_sha":"9c477561ba4cd9de9244ac29ff30e3da16ed0e44","title":"Underteller Voice Direction, Casting & Recorded Dialogue Preparation","state":"merged"},{"release_id":"P0.7","pull_request":71,"merged_main_sha":"6ea08389f09e5dc6162f63abe65105860b36f22e","title":"Localization, Captions & Accessible Narrative Presentation","state":"merged"},{"release_id":"P0.8","pull_request":72,"merged_main_sha":"9efbd703194a4947e45d57595939ca60903c4221","title":"Preproduction Package Index, Cross-Media Traceability & Codex Return Handoff","state":"merged"},{"release_id":"P0.9","pull_request":76,"merged_main_sha":"8010ee3298938a3eb60319ecc9ce834c3b488c29","title":"Tale Authoring Schema & Design-Only Drowned Harbor Reference Package","state":"merged"},{"release_id":"P0.10","pull_request":77,"merged_main_sha":"d701dc2a677bd5eab212ac71b78713377bd5696b","title":"Drowned Harbor Shared-Screen Storyboard & Interaction Pack","state":"merged"},{"release_id":"P0.11","pull_request":78,"merged_main_sha":"0cb4aaaf3b82097a4dcaf38d2ff41d3047e9cd4f","title":"Drowned Harbor Interaction-State & Implementation Traceability Pack","state":"merged"},{"release_id":"P0.12","pull_request":87,"merged_main_sha":"33ded0d2eca9a9e2bb794778df3a40fd908643d1","title":"Drowned Harbor Implementation Issue Set & Prototype Authorization Decision Pack","state":"merged"},{"release_id":"P0.13","pull_request":88,"merged_main_sha":"a4a4af81081b3b6ea419f98bed6c2d3ae9bf1e83","title":"Game Vision, README & Drowned Harbor Prototype Isolation Foundation","state":"merged"},{"release_id":"P0.14","pull_request":89,"merged_main_sha":"0aeb3921eeb917296f32d096b8051e482894fe88","title":"Drowned Harbor Deterministic State & Projection Fixtures","state":"merged"},{"release_id":"P0.15","pull_request":90,"merged_main_sha":"1d27a1584fc9f8513e9322875477133b77ef8050","title":"Drowned Harbor Low-Tide Shared-Screen Prototype Shell","state":"merged"},{"release_id":"P0.16","pull_request":91,"merged_main_sha":"854d9ea5db1ed4e942ff9e4a2a04af1c76ad803e","title":"Bellhouse Decision & Invalid-Action Recovery","state":"merged"},{"release_id":"P0.17","pull_request":93,"merged_main_sha":"61d7d1ad11d5609ff8780dc6e1035b254f7b1bd2","title":"Drowned Harbor Controlled-Private Shield Proof","state":"merged"},{"release_id":"P0.18","pull_request":94,"merged_main_sha":"c681e37612b3631c78b4f6cc05137a3df5dbd445","title":"Drowned Harbor High Water Deterministic Transformation Proof","state":"merged"},{"release_id":"P0.19","pull_request":95,"merged_main_sha":"836716b6857323f36abcc4728ee05e01d31cd843","title":"Drowned Harbor Prototype Automation and Export Exclusion","state":"merged"},{"release_id":"P0.20","pull_request":97,"merged_main_sha":"58f6f4e4ece9bbdd5932216c87aacc064e48e05a","title":"Post-Prototype Reconciliation & Production Decision Pack","state":"merged"},{"release_id":"P0.21","pull_request":99,"merged_main_sha":"4efdd76efdf2aa34823dae5d3624a3dca3f0a349","title":"Production Architecture & Tale-Compilation Contract","state":"merged"}],"runtime_releases":[{"release_id":"v0.2.0-alpha.1","issue":100,"pull_request":101,"merged_main_sha":"85b77d5216472afdb4abb7598917d5052eed180a","title":"Drowned Harbor Production Tale Scaffold","state":"merged_internal_candidate","normal_library_visible":false,"ordinary_export_included":false}],"historical_contracts":{"p01_p07_package_index":"docs/preproduction/preproduction_package_index_v1.json","p01_p07_package_index_status":"frozen_historical_contract","post_v019_roadmap":"docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md","post_v019_roadmap_status":"superseded_historical_record"},"production_architecture":{"contract_path":"docs/preproduction/drowned_harbor_production_compilation_contract_v1.json","schema_path":"docs/preproduction/drowned_harbor_production_compilation_contract_schema_v1.json","technical_path":"docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md","state":"merged_authority","merged_main_sha":"4efdd76efdf2aa34823dae5d3624a3dca3f0a349","runtime_input":false,"normal_library_visible":false,"ordinary_export_included":false},"alpha2_planning":{"contract_path":"docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json","schema_path":"docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_schema_v1.json","technical_path":"docs/technical/Drowned_Harbor_Alpha2_Graybox_Route_Contract_v1.md","implementation_issue_path":"docs/preproduction/P0.22_Alpha2_Implementation_Issue.md","state":"active_planning","runtime_input":false,"runtime_issue_created":false,"activation_authorized":false},"current_release":{"release_id":"P0.22","issue":102,"branch":"docs/p0.22-alpha2-graybox-contract","type":"documentation_schema_validation","runtime_authority_created":false},"recommended_next_release":{"release_id":"v0.2.0-alpha.2","title":"Drowned Harbor End-to-End Graybox","state":"planned_blocked","github_issue":null,"codex_required":true,"recommended_codex_effort":"very_high","activation_authorized":false},"runtime_implementation_authorized":false,"human_evidence_claimed":false}
+{
+  "alpha3_planning": {
+    "activation_authorized": false,
+    "contract_path": "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json",
+    "implementation_issue_path": "docs/preproduction/P0.23_Alpha3_Implementation_Issue.md",
+    "runtime_input": false,
+    "runtime_issue_created": false,
+    "schema_path": "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json",
+    "state": "active_planning",
+    "technical_path": "docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md"
+  },
+  "as_of_date": "2026-08-02",
+  "current_release": {
+    "branch": "docs/p0.23-alpha3-systems-replayability-contract",
+    "issue": 106,
+    "release_id": "P0.23",
+    "runtime_authority_created": false,
+    "type": "documentation_schema_validation"
+  },
+  "drowned_harbor": {
+    "alpha2": {
+      "developer_only": true,
+      "issue": 104,
+      "merged_main_sha": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
+      "ordinary_export_included": false,
+      "package_version": 2,
+      "pull_request": 105,
+      "release_id": "v0.2.0-alpha.2",
+      "scenario_version": 2,
+      "snapshot_version": 2
+    },
+    "ordinary_playable": false,
+    "status": "developer_only_alpha2_end_to_end_graybox_export_excluded"
+  },
+  "gates": [
+    {
+      "issue": 7,
+      "purpose": "professional naming clearance",
+      "state": "open"
+    },
+    {
+      "issue": 39,
+      "purpose": "human household and remote evidence",
+      "state": "deferred_open"
+    }
+  ],
+  "human_evidence_claimed": false,
+  "playable_release": "v0.1.9",
+  "preserved_authorities": {
+    "alpha1_merge": "85b77d5216472afdb4abb7598917d5052eed180a",
+    "alpha2_merge": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
+    "p01_p07_package_index": "docs/preproduction/preproduction_package_index_v1.json",
+    "p021_merge": "4efdd76efdf2aa34823dae5d3624a3dca3f0a349",
+    "p022_merge": "da86c0aa74bc0442862c97e3c371f6b714da4d0a"
+  },
+  "production": {
+    "default_tale_id": "lantern_house_vertical_slice",
+    "drowned_harbor_catalog_registered": false,
+    "drowned_harbor_normal_library_visible": false,
+    "drowned_harbor_ordinary_export_included": false,
+    "drowned_harbor_provider_registered": false,
+    "tale_count": 1
+  },
+  "protected_main": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
+  "recommended_next_release": {
+    "activation_authorized": false,
+    "codex_required": true,
+    "github_issue": null,
+    "recommended_codex_effort": "very_high",
+    "release_id": "v0.2.0-alpha.3",
+    "state": "planned_blocked",
+    "title": "Drowned Harbor Systems & Replayability"
+  },
+  "runtime_implementation_authorized": false,
+  "schema_version": 2,
+  "status_kind": "post_prototype_project_status",
+  "unrelated_open_pull_requests": [
+    32
+  ]
+}
