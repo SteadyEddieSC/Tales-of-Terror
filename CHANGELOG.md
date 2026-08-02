@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.0-alpha.1 - Drowned Harbor Production Tale Scaffold (Internal Candidate)
+
+- Added a developer-gated, export-excluded Drowned Harbor native authority scaffold with one empty stage and explicit terminal cleanup.
+- Added closed package, scenario, governed placeholder-localization, scoped-provider, deterministic snapshot, named-RNG, and exactly-once identities without registering the Tale in normal production discovery.
+- Added fail-closed candidate construction, restore, rejection, reset, exit, rematch, and rollback proofs plus actual Windows/Linux PCK inventory and identity-marker exclusion checks.
+- Preserved Lantern House as the sole normal/default Tale and left catalog, central provider registry, navigation, Companion, dependencies, production content, and development-only Drowned Harbor fixtures unchanged.
+- Classified all evidence as automated internal machine evidence; issue #39 remains the human-evidence authority and issue #7 remains the naming gate.
+
 ## v0.1.9 - Automated Playthrough & Deadlock Lab
 
 - Added an export-excluded deterministic virtual-player lab that completes the accepted Lantern House route across 1–8 stable seats, four seeds, and five legal strategy profiles.

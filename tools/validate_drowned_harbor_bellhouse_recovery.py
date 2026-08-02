@@ -10,6 +10,11 @@ import sys
 from pathlib import Path
 from typing import Any, Iterable
 
+from validate_drowned_harbor_production_scaffold import (
+    ValidationError as ScaffoldValidationError,
+    validate_static as validate_scaffold,
+)
+
 ROOT = Path(".")
 FIXTURE_PATH = Path(
     "game/tests/drowned_harbor_dev_only/state_projection_fixtures_v1.json"
@@ -75,6 +80,20 @@ class BellhouseRecoveryValidationError(ValueError):
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise BellhouseRecoveryValidationError(message)
+
+
+def validate_reviewed_alpha1_scaffold_if_present(root: Path = ROOT) -> None:
+    """Keep Bellhouse isolated while recognizing only the reviewed issue #100 scaffold."""
+    scaffold_root = root / "game/data/tales/drowned_harbor"
+    if not scaffold_root.exists():
+        return
+    require(scaffold_root.is_dir(), "Drowned Harbor Tale path must be a directory")
+    try:
+        validate_scaffold(root, git_boundary=False)
+    except (ScaffoldValidationError, OSError, UnicodeError) as exc:
+        raise BellhouseRecoveryValidationError(
+            "Drowned Harbor Tale directory is not the exact reviewed issue #100 alpha.1 scaffold"
+        ) from exc
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -537,10 +556,7 @@ def validate_manifest_and_production_boundary(root: Path) -> None:
         'packedstringarray([lantern_house_provider_id])' in provider.replace('"', ""),
         "production provider allowlist drifted",
     )
-    require(
-        not (root / "game/data/tales/drowned_harbor").exists(),
-        "Drowned Harbor production Tale directory may not exist",
-    )
+    validate_reviewed_alpha1_scaffold_if_present(root)
     presets = (root / EXPORT_PRESETS_PATH).read_text(encoding="utf-8")
     require(presets.count("tests/*") == 2, "both exports must exclude tests/*")
     for filename in (

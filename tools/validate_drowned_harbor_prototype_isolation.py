@@ -9,6 +9,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from validate_drowned_harbor_production_scaffold import (
+    ValidationError as ScaffoldValidationError,
+    validate_static as validate_scaffold,
+)
+
 ROOT = Path(".")
 MANIFEST_PATH = Path("game/tests/drowned_harbor_prototype_manifest_v1.json")
 CATALOG_PATH = Path("game/data/tales/tale_catalog_v1.json")
@@ -84,6 +89,20 @@ class IsolationValidationError(ValueError):
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise IsolationValidationError(message)
+
+
+def validate_reviewed_alpha1_scaffold_if_present(root: Path = ROOT) -> None:
+    """Permit only the exact issue #100 scaffold; preserve the historical absent state."""
+    scaffold_root = root / "game/data/tales/drowned_harbor"
+    if not scaffold_root.exists():
+        return
+    require(scaffold_root.is_dir(), "Drowned Harbor Tale path must be a directory")
+    try:
+        validate_scaffold(root, git_boundary=False)
+    except (ScaffoldValidationError, OSError, UnicodeError) as exc:
+        raise IsolationValidationError(
+            "Drowned Harbor Tale directory is not the exact reviewed issue #100 alpha.1 scaffold"
+        ) from exc
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -326,10 +345,7 @@ def validate_production_catalog(root: Path = ROOT) -> None:
         "drowned_harbor" not in provider_text,
         "production provider registry may not reference Drowned Harbor",
     )
-    require(
-        not (root / "game/data/tales/drowned_harbor").exists(),
-        "Drowned Harbor production Tale directory may not exist",
-    )
+    validate_reviewed_alpha1_scaffold_if_present(root)
 
 
 def validate_export_boundary(root: Path = ROOT) -> None:
@@ -414,9 +430,20 @@ def validate(root: Path = ROOT) -> None:
     validate_readme(root)
 
 
+def validate_current_contract(root: Path = ROOT) -> None:
+    """Route the standalone command through the exact merged manifest progression."""
+    manifest = read_json(root / MANIFEST_PATH)
+    if "automation_profiles" not in manifest:
+        validate(root)
+        return
+    from validate_drowned_harbor_prototype_isolation_p016 import validate as validate_p019
+
+    validate_p019(root)
+
+
 def main() -> int:
     try:
-        validate(ROOT)
+        validate_current_contract(ROOT)
     except (IsolationValidationError, OSError) as exc:
         print(
             f"Drowned Harbor prototype isolation validation failed: {exc}",
