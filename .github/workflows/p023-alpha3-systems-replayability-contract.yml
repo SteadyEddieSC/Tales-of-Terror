@@ -1,0 +1,107 @@
+name: P0.23 Alpha.3 systems and replayability contract
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/p021-production-architecture.yml'
+      - '.github/workflows/p022-alpha2-graybox-contract.yml'
+      - '.github/workflows/p023-alpha3-systems-replayability-contract.yml'
+      - '.github/workflows/post-prototype-reconciliation.yml'
+      - 'docs/preproduction/P0.21_Implementation_Issue_Set.md'
+      - 'docs/preproduction/P0.23_Alpha3_Implementation_Issue.md'
+      - 'docs/preproduction/README.md'
+      - 'docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json'
+      - 'docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json'
+      - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/releases/P0.23-alpha3-systems-replayability-contract.md'
+      - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
+      - 'docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md'
+      - 'tools/test_validate_p023_alpha3_systems_replayability_contract.py'
+      - 'tools/validate_p023_alpha3_systems_replayability_contract.py'
+  push:
+    branches: [main, docs/p0.23-alpha3-systems-replayability-contract]
+    paths:
+      - '.github/workflows/p021-production-architecture.yml'
+      - '.github/workflows/p022-alpha2-graybox-contract.yml'
+      - '.github/workflows/p023-alpha3-systems-replayability-contract.yml'
+      - '.github/workflows/post-prototype-reconciliation.yml'
+      - 'docs/preproduction/P0.21_Implementation_Issue_Set.md'
+      - 'docs/preproduction/P0.23_Alpha3_Implementation_Issue.md'
+      - 'docs/preproduction/README.md'
+      - 'docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json'
+      - 'docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json'
+      - 'docs/preproduction/post_prototype_status_v1.json'
+      - 'docs/releases/P0.23-alpha3-systems-replayability-contract.md'
+      - 'docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md'
+      - 'docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md'
+      - 'tools/test_validate_p023_alpha3_systems_replayability_contract.py'
+      - 'tools/validate_p023_alpha3_systems_replayability_contract.py'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Validate closed Alpha.3 planning authority
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+      - name: Enforce exact P0.23 path boundary
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          python - <<'PY2'
+          import os, subprocess
+          expected=[".github/workflows/p021-production-architecture.yml", ".github/workflows/p022-alpha2-graybox-contract.yml", ".github/workflows/p023-alpha3-systems-replayability-contract.yml", ".github/workflows/post-prototype-reconciliation.yml", "docs/preproduction/P0.21_Implementation_Issue_Set.md", "docs/preproduction/P0.23_Alpha3_Implementation_Issue.md", "docs/preproduction/README.md", "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json", "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json", "docs/preproduction/post_prototype_status_v1.json", "docs/releases/P0.23-alpha3-systems-replayability-contract.md", "docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md", "docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md", "tools/test_validate_p023_alpha3_systems_replayability_contract.py", "tools/validate_p023_alpha3_systems_replayability_contract.py"]
+          actual=[x for x in subprocess.check_output(['git','diff','--name-only',f"origin/{os.environ['BASE_REF']}...HEAD"],text=True).splitlines() if x]
+          if set(actual)!=set(expected):
+              raise SystemExit(f'P0.23 path mismatch missing={sorted(set(expected)-set(actual))} unexpected={sorted(set(actual)-set(expected))}')
+          print('Validated exact P0.23 path inventory')
+          PY2
+      - name: Validate P0.23 contract and mutations
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_NAME:-}" == "main" ]]; then
+            python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
+          else
+            python tools/validate_p023_alpha3_systems_replayability_contract.py
+          fi
+          python tools/test_validate_p023_alpha3_systems_replayability_contract.py
+      - name: Preserve Alpha.2 runtime and authoring contracts
+        run: |
+          python tools/validate_drowned_harbor_alpha2_graybox.py --skip-git-boundary
+          python tools/test_validate_drowned_harbor_alpha2_graybox.py
+          python tools/validate_tale_authoring_reference.py
+          python tools/test_validate_tale_authoring_reference.py
+          python tools/tale_package.py validate
+          python tools/test_tale_package.py
+          python tools/tale_catalog.py validate
+          python tools/test_tale_catalog.py
+      - name: Parse governed JSON and workflow YAML
+        run: |
+          python - <<'PY2'
+          import json
+          from pathlib import Path
+          for p in [Path('docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json'),Path('docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json'),Path('docs/preproduction/post_prototype_status_v1.json')]:
+              json.loads(p.read_text(encoding='utf-8'))
+          print('Governed JSON parsed')
+          PY2
+          ruby - <<'RUBY'
+          require 'yaml'
+          %w[.github/workflows/p021-production-architecture.yml .github/workflows/p022-alpha2-graybox-contract.yml .github/workflows/p023-alpha3-systems-replayability-contract.yml .github/workflows/post-prototype-reconciliation.yml].each { |p| YAML.load_file(p) }
+          puts 'Governed workflow YAML parsed'
+          RUBY
+      - name: Prove clean source tree
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
