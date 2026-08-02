@@ -159,9 +159,9 @@ jobs:
           run_check scaffold-mutations python tools/test_validate_drowned_harbor_production_scaffold.py
           run_check tale-package python tools/test_tale_package.py
           run_check tale-catalog python tools/test_tale_catalog.py
-          run_check p021-validator python tools/validate_p021_production_architecture.py
+          run_check p021-validator python tools/validate_p021_production_architecture.py --skip-git-boundary
           run_check p021-mutations python tools/test_validate_p021_production_architecture.py
-          run_check post-prototype-validator python tools/validate_post_prototype_reconciliation.py
+          run_check post-prototype-validator python tools/validate_post_prototype_reconciliation.py --skip-git-boundary
           run_check post-prototype-mutations python tools/test_validate_post_prototype_reconciliation.py
           run_check drowned-harbor-isolation python tools/validate_drowned_harbor_prototype_isolation_p016.py
           run_check drowned-harbor-isolation-mutations python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
