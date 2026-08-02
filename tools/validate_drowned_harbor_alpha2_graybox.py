@@ -245,6 +245,28 @@ def sha256_bytes_for_json_source(value: dict[str, Any]) -> str:
     return ""
 
 
+def active_gdscript(source: str) -> str:
+    return "\n".join(
+        line for line in source.splitlines() if not line.lstrip().startswith("#")
+    )
+
+
+def gdscript_function_body(source: str, function_name: str) -> str:
+    active = active_gdscript(source)
+    lines = active.splitlines()
+    start = next(
+        (index for index, line in enumerate(lines) if line.startswith(f"func {function_name}(")),
+        None,
+    )
+    require(start is not None, f"GDScript function missing: {function_name}")
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        if lines[index].startswith(("func ", "static func ")):
+            end = index
+            break
+    return "\n".join(lines[start:end])
+
+
 def validate_sources(source_texts: dict[str, str], gate: str, test: str) -> None:
     require(set(source_texts) == EXPECTED_ALPHA2_SOURCES, "alpha.2 native source inventory drifted")
     combined = "\n".join(source_texts[name] for name in sorted(source_texts))
@@ -263,6 +285,7 @@ def validate_sources(source_texts: dict[str, str], gate: str, test: str) -> None
             "council_commitment_id",
             "high_water_transformation_id",
             "accepted_action_count",
+            "func _public_stage_state(required_seat_count: int) -> Dictionary:",
         ),
         "drowned_harbor_alpha2_role_authority.gd": (
             "class_name DrownedHarborAlpha2RoleAuthority",
@@ -282,6 +305,7 @@ def validate_sources(source_texts: dict[str, str], gate: str, test: str) -> None
             "assign_surrogate_control",
             "reconnect_seat",
             "signal public_event_committed(event: Dictionary)",
+            '"rules": _rules.public_view(_stable_seat_order.size())',
         ),
         "drowned_harbor_alpha2_scoped_provider.gd": (
             "class_name DrownedHarborAlpha2ScopedProvider",
@@ -298,6 +322,34 @@ def validate_sources(source_texts: dict[str, str], gate: str, test: str) -> None
             require(phrase in source_texts[name], f"{name} missing governed seam: {phrase}")
     require(combined.count("_council_commitment_id = _identity(") == 1, "Council commit path duplicated")
     require(combined.count("_high_water_transformation_id = _identity(") == 1, "High Water commit path duplicated")
+    stage_projector = gdscript_function_body(
+        source_texts["drowned_harbor_alpha2_rules_authority.gd"], "_public_stage_state"
+    )
+    require("match stage_id():" in stage_projector, "public stage projection is not stage-specific")
+    require(stage_projector.count("result = {") == 8, "public stage projection must have eight closed shapes")
+    require(stage_projector.count("return result") == 1, "public stage projection must have one bounded return")
+    for stage in STAGES:
+        require(f'"{stage}":' in stage_projector, f"public stage projection missing: {stage}")
+    require("_stage_state.duplicate(true)" not in stage_projector, "authoritative stage state is public")
+    require("return _stage_state" not in stage_projector, "authoritative stage state is returned")
+    require('"commitments":' not in stage_projector, "private commitment dictionary is public")
+    require('"moved_seats":' not in stage_projector, "internal movement array is public")
+    for key in (
+        '"moved_seat_count"',
+        '"arrival_complete"',
+        '"ledger_inspected"',
+        '"choice_committed"',
+        '"committed_seat_count"',
+        '"required_seat_count"',
+        '"commitments_complete"',
+        '"transformation_committed"',
+        '"movement_complete"',
+        '"resolution_complete"',
+        '"attribution_resolved"',
+        '"cleanup_complete"',
+        '"next_destination"',
+    ):
+        require(key in stage_projector, f"closed public stage key missing: {key}")
     for prohibited in ("Time.get_", "DateTime", "Timer.new", "HTTPRequest", "WebSocket", "docs/", "drowned_harbor_dev_only"):
         require(prohibited not in combined, f"runtime contains prohibited dependency: {prohibited}")
     require("admit_alpha2" in gate and "restore_alpha2" in gate, "developer gate lacks alpha.2 admission")
@@ -306,8 +358,10 @@ def validate_sources(source_texts: dict[str, str], gate: str, test: str) -> None
         "package_version" in gate and "!= 2" in gate,
         "version-2 admission is not closed",
     )
+    active_test = active_gdscript(test)
     test_phrases = (
         "_test_deterministic_safe_routes_for_seats_one_through_eight",
+        "_test_semantic_commitment_projection_privacy",
         "for seat_count: int in range(1, 9):",
         "_test_no_op_rejections_and_deadlock_diagnostic",
         "_test_stage_boundary_restore_and_replay_equivalence",
@@ -318,9 +372,23 @@ def validate_sources(source_texts: dict[str, str], gate: str, test: str) -> None
         "signal_count == 8",
         "transition_count == 7",
         '"PRIVATE_" not in _canonical(first.final_projection)',
+        'not council_partial.has("commitments")',
+        "council_partial.committed_seat_count == 1",
+        "council_complete.committed_seat_count == 2",
+        "council_partial.required_seat_count == 2",
+        "council_complete.commitments_complete",
+        'not last_light_partial.has("commitments")',
+        "last_light_partial.moved_seat_count == 1",
+        "last_light_partial.committed_seat_count == 1",
+        "last_light_complete.moved_seat_count == 2",
+        "last_light_complete.committed_seat_count == 2",
+        "last_light_complete.commitments_complete",
+        '"hold_the_light" not in serialized',
+        '"guard_last_light" not in serialized',
+        "DROWNED_HARBOR_ALPHA2_SEMANTIC_PROJECTION_EVIDENCE:",
     )
     for phrase in test_phrases:
-        require(phrase in test, f"focused Godot matrix missing: {phrase}")
+        require(phrase in active_test, f"focused Godot matrix missing: {phrase}")
 
 
 def validate_uid_inventory(root: Path = ROOT) -> None:

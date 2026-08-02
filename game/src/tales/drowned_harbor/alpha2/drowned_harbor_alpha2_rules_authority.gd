@@ -431,12 +431,12 @@ func _complete_stage(event_key: String, revision: int) -> Dictionary:
 	return {"accepted": true, "reason": "", "public_event": event}
 
 
-func public_view() -> Dictionary:
+func public_view(required_seat_count: int) -> Dictionary:
 	return {
 		"stage_id": stage_id(),
 		"stage_index": _stage_index,
 		"legal_intents": Array(legal_intents()),
-		"stage_state": _public_stage_state(),
+		"stage_state": _public_stage_state(required_seat_count),
 		"council_commitment_id": _council_commitment_id,
 		"high_water_transformation_id": _high_water_transformation_id,
 		"ending_id": _ending_id,
@@ -507,8 +507,81 @@ func clear() -> void:
 	_accepted_action_count = 0
 
 
-func _public_stage_state() -> Dictionary:
-	var result: Dictionary = _stage_state.duplicate(true)
+func _public_stage_state(required_seat_count: int) -> Dictionary:
+	var bounded_required_seat_count: int = maxi(required_seat_count, 0)
+	var result: Dictionary = {}
+	match stage_id():
+		"low_tide_arrival_v1":
+			var moved_seat_count: int = (_stage_state.get("moved_seats", []) as Array).size()
+			result = {
+				"moved_seat_count": moved_seat_count,
+				"required_seat_count": bounded_required_seat_count,
+				"arrival_complete":
+				bounded_required_seat_count > 0 and moved_seat_count == bounded_required_seat_count,
+			}
+		"bellhouse_ledger_v1":
+			var choice_id: String = str(_stage_state.get("choice_id", ""))
+			result = {
+				"ledger_inspected": bool(_stage_state.get("inspected", false)),
+				"choice_id": choice_id,
+				"recovery_used": bool(_stage_state.get("recovery_used", false)),
+				"choice_committed": not choice_id.is_empty(),
+			}
+		"lighthouse_council_v1":
+			var council_commitments: Dictionary = _stage_state.get("commitments", {})
+			var council_committed_count: int = council_commitments.size()
+			result = {
+				"committed_seat_count": council_committed_count,
+				"required_seat_count": bounded_required_seat_count,
+				"commitments_complete":
+				(
+					bounded_required_seat_count > 0
+					and council_committed_count == bounded_required_seat_count
+				),
+			}
+		"high_water_v1":
+			result = {
+				"acknowledged": bool(_stage_state.get("acknowledged", false)),
+				"transformation_committed": not _high_water_transformation_id.is_empty(),
+			}
+		"last_light_v1":
+			var last_light_moved_count: int = (_stage_state.get("moved_seats", []) as Array).size()
+			var last_light_commitments: Dictionary = _stage_state.get("commitments", {})
+			var last_light_committed_count: int = last_light_commitments.size()
+			var public_result: String = str(_stage_state.get("result", ""))
+			result = {
+				"moved_seat_count": last_light_moved_count,
+				"committed_seat_count": last_light_committed_count,
+				"required_seat_count": bounded_required_seat_count,
+				"movement_complete":
+				(
+					bounded_required_seat_count > 0
+					and last_light_moved_count == bounded_required_seat_count
+				),
+				"commitments_complete":
+				(
+					bounded_required_seat_count > 0
+					and last_light_committed_count == bounded_required_seat_count
+				),
+				"resolution_complete": not public_result.is_empty(),
+				"public_result": public_result,
+			}
+		"ending_resolution_v1":
+			result = {
+				"resolution_complete": bool(_stage_state.get("resolved", false)),
+				"public_ending_id": _ending_id,
+			}
+		"epilogue_attribution_v1":
+			result = {
+				"attribution_resolved": bool(_stage_state.get("resolved", false)),
+				"public_epilogue": str(_stage_state.get("public_epilogue", "")),
+				"acknowledged": bool(_stage_state.get("acknowledged", false)),
+			}
+		"rematch_title_cleanup_v1":
+			result = {
+				"cleanup_complete": bool(_stage_state.get("cleanup_complete", false)),
+				"next_destination": str(_stage_state.get("next_destination", "")),
+			}
 	return result
 
 

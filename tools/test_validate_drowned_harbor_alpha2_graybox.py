@@ -220,6 +220,44 @@ def main() -> int:
         ("migration entry removed", lambda: gate_mutation("migrate_alpha1_snapshot_to_alpha2", "migration_removed")),
         ("seat-count eight omitted", lambda: test_mutation("for seat_count: int in range(1, 9):", "for seat_count: int in range(1, 8):")),
         ("private leak assertion removed", lambda: test_mutation('"PRIVATE_" not in _canonical(first.final_projection)', '"PUBLIC_" not in _canonical(first.final_projection)')),
+        (
+            "broad authoritative stage projection restored",
+            lambda: source_mutation(
+                "drowned_harbor_alpha2_rules_authority.gd",
+                "func _public_stage_state(required_seat_count: int) -> Dictionary:\n\tvar bounded_required_seat_count: int = maxi(required_seat_count, 0)\n\tvar result: Dictionary = {}\n\tmatch stage_id():",
+                "func _public_stage_state(required_seat_count: int) -> Dictionary:\n\treturn _stage_state.duplicate(true)",
+            ),
+        ),
+        (
+            "Council commitment dictionary exposed",
+            lambda: source_mutation(
+                "drowned_harbor_alpha2_rules_authority.gd",
+                '"committed_seat_count": council_committed_count,',
+                '"commitments": council_commitments.duplicate(true),',
+            ),
+        ),
+        (
+            "Last Light commitment dictionary exposed",
+            lambda: source_mutation(
+                "drowned_harbor_alpha2_rules_authority.gd",
+                '"moved_seat_count": last_light_moved_count,',
+                '"commitments": last_light_commitments.duplicate(true),',
+            ),
+        ),
+        (
+            "Council semantic term assertion removed",
+            lambda: test_mutation(
+                '"hold_the_light" not in serialized',
+                '"hold_the_light" in serialized',
+            ),
+        ),
+        (
+            "Last Light semantic term assertion removed",
+            lambda: test_mutation(
+                '"guard_last_light" not in serialized',
+                '"guard_last_light" in serialized',
+            ),
+        ),
         ("catalog production entry", lambda: production_mutation(lambda c, _r, _p, _l: c["entries"].append({"tale_id": "drowned_harbor"}))),
         ("central registry registration", lambda: production_mutation(lambda _c, r, _p, _l: None) if False else production_mutation_with_registry()),
         ("Lantern House identity drift", lambda: production_mutation(lambda _c, _r, _p, l: l.__setitem__("package_version", 99))),

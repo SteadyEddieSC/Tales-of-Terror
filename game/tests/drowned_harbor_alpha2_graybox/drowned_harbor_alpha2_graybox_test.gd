@@ -1,6 +1,7 @@
 extends SceneTree
 
 const SUMMARY_PREFIX: String = "DROWNED_HARBOR_ALPHA2_GRAYBOX_EVIDENCE:"
+const SEMANTIC_PROJECTION_PREFIX: String = "DROWNED_HARBOR_ALPHA2_SEMANTIC_PROJECTION_EVIDENCE:"
 const EXPECTED_PACKAGE_DIGEST: String = (
 	"ee9e2f21b23f2b8f7ac8c8be1520c6e" + "bcb679807a5f0dbd0d23825824b2f90b7"
 )
@@ -14,10 +15,12 @@ const EXPECTED_LOCALIZATION_DIGEST: String = (
 var _failures: int = 0
 var _checks: int = 0
 var _request_sequence: int = 0
+var _semantic_projection_evidence: Dictionary = {}
 
 
 func _initialize() -> void:
 	_test_candidate_identity_and_boundaries()
+	_test_semantic_commitment_projection_privacy()
 	_test_deterministic_safe_routes_for_seats_one_through_eight()
 	_test_no_op_rejections_and_deadlock_diagnostic()
 	_test_stage_boundary_restore_and_replay_equivalence()
@@ -38,6 +41,7 @@ func _initialize() -> void:
 		"human_evidence_claimed": false,
 		"production_ready_claimed": false,
 	}
+	print(SEMANTIC_PROJECTION_PREFIX + JSON.stringify(_semantic_projection_evidence, "", true))
 	print(SUMMARY_PREFIX + JSON.stringify(summary, "", true))
 	quit(_failures)
 
@@ -136,6 +140,137 @@ func _test_deterministic_safe_routes_for_seats_one_through_eight() -> void:
 			"PRIVATE_" not in _canonical(first.final_projection),
 			"%d-seat public output excludes private markers" % seat_count,
 		)
+
+
+func _test_semantic_commitment_projection_privacy() -> void:
+	_request_sequence = 0
+	var gate := DrownedHarborDeveloperAdmissionGate.new()
+	_expect(gate.admit_alpha2(_admission_request(7100, 2)).accepted, "semantic session admits")
+	var session: DrownedHarborAlpha2Session = gate.active_alpha2_session()
+	_expect(_advance_low_tide(session, 2), "semantic route reaches Bellhouse")
+	_expect(_advance_bellhouse(session), "semantic route reaches Council")
+	_expect(session.to_snapshot().stage_id == "lighthouse_council_v1", "Council stage is live")
+	_expect(
+		_accept(session, "seat_01", "submit_council_commitment", {"commitment": "hold_the_light"}),
+		"first Council commitment accepts",
+	)
+	var council_partial: Dictionary = session.public_projection().rules.stage_state
+	_expect(not council_partial.has("commitments"), "Council partial projection omits commitments")
+	_expect("seat_01" not in _canonical(council_partial), "Council partial has no seat mapping")
+	_expect(council_partial.committed_seat_count == 1, "Council partial committed count")
+	_expect(council_partial.required_seat_count == 2, "Council partial required count")
+	_expect(not council_partial.commitments_complete, "Council partial remains incomplete")
+	var shared_samples: Array[Variant] = _shared_projection_samples(session)
+	_assert_semantic_commitment_terms_absent(shared_samples, "Council partial")
+	_expect(
+		_accept(session, "seat_02", "submit_council_commitment", {"commitment": "hold_the_light"}),
+		"second Council commitment accepts",
+	)
+	var council_complete: Dictionary = session.public_projection().rules.stage_state
+	_expect(
+		not council_complete.has("commitments"), "Council complete projection omits commitments"
+	)
+	_expect("seat_02" not in _canonical(council_complete), "Council complete has no seat mapping")
+	_expect(council_complete.committed_seat_count == 2, "Council complete committed count")
+	_expect(council_complete.required_seat_count == 2, "Council complete required count")
+	_expect(council_complete.commitments_complete, "Council completion is deterministic")
+	shared_samples.append_array(_shared_projection_samples(session))
+	_assert_semantic_commitment_terms_absent(shared_samples, "Council complete")
+	_expect(
+		_accept(session, "seat_01", "resolve_council_commitment", {}),
+		"Council resolution accepts",
+	)
+	var council_reprojection: Dictionary = session.reproject_committed_result(
+		"council_commitment_id"
+	)
+	_expect(council_reprojection.accepted, "Council committed result reprojects")
+	_assert_semantic_commitment_terms_absent([council_reprojection], "Council reprojection")
+	shared_samples.append(council_reprojection)
+	_expect(_advance_high_water(session), "semantic route reaches Last Light")
+	var high_water_reprojection: Dictionary = session.reproject_committed_result(
+		"high_water_transformation_id"
+	)
+	_expect(high_water_reprojection.accepted, "High Water committed result reprojects")
+	_assert_semantic_commitment_terms_absent([high_water_reprojection], "High Water reprojection")
+	shared_samples.append(high_water_reprojection)
+	_expect(
+		_accept(
+			session, "seat_01", "move_to_last_light_route", {"destination": "last_light_beacon"}
+		),
+		"first Last Light movement accepts",
+	)
+	_expect(
+		_accept(session, "seat_01", "commit_last_light_action", {"commitment": "guard_last_light"}),
+		"first Last Light commitment accepts",
+	)
+	var last_light_partial: Dictionary = session.public_projection().rules.stage_state
+	_expect(not last_light_partial.has("commitments"), "Last Light partial omits commitments")
+	_expect(
+		"seat_01" not in _canonical(last_light_partial), "Last Light partial has no seat mapping"
+	)
+	_expect(last_light_partial.moved_seat_count == 1, "Last Light partial movement count")
+	_expect(last_light_partial.committed_seat_count == 1, "Last Light partial commitment count")
+	_expect(last_light_partial.required_seat_count == 2, "Last Light partial required count")
+	_expect(not last_light_partial.movement_complete, "Last Light movement remains incomplete")
+	_expect(not last_light_partial.commitments_complete, "Last Light commitments remain incomplete")
+	_expect(not last_light_partial.resolution_complete, "Last Light remains unresolved")
+	shared_samples.append_array(_shared_projection_samples(session))
+	_assert_semantic_commitment_terms_absent(shared_samples, "Last Light partial")
+	_expect(
+		_accept(
+			session, "seat_02", "move_to_last_light_route", {"destination": "last_light_beacon"}
+		),
+		"second Last Light movement accepts",
+	)
+	_expect(
+		_accept(session, "seat_02", "commit_last_light_action", {"commitment": "guard_last_light"}),
+		"second Last Light commitment accepts",
+	)
+	var last_light_complete: Dictionary = session.public_projection().rules.stage_state
+	_expect(not last_light_complete.has("commitments"), "Last Light complete omits commitments")
+	_expect(
+		"seat_02" not in _canonical(last_light_complete), "Last Light complete has no seat mapping"
+	)
+	_expect(last_light_complete.moved_seat_count == 2, "Last Light complete movement count")
+	_expect(last_light_complete.committed_seat_count == 2, "Last Light complete commitment count")
+	_expect(last_light_complete.required_seat_count == 2, "Last Light complete required count")
+	_expect(
+		last_light_complete.movement_complete, "Last Light movement completion is deterministic"
+	)
+	_expect(
+		last_light_complete.commitments_complete,
+		"Last Light commitment completion is deterministic",
+	)
+	_expect(not last_light_complete.resolution_complete, "Last Light awaits public resolution")
+	shared_samples.append_array(_shared_projection_samples(session))
+	_assert_semantic_commitment_terms_absent(shared_samples, "Last Light complete")
+	_expect(_accept(session, "seat_01", "resolve_last_light", {}), "Last Light resolution accepts")
+	shared_samples.append_array(_shared_projection_samples(session))
+	_assert_semantic_commitment_terms_absent(shared_samples, "Last Light resolved")
+	var semantic_private_term_hit_count: int = _semantic_commitment_term_hit_count(shared_samples)
+	_expect(
+		semantic_private_term_hit_count == 0, "all shared channels have zero semantic term hits"
+	)
+	_semantic_projection_evidence = {
+		"accepted": semantic_private_term_hit_count == 0,
+		"council_partial": council_partial.duplicate(true),
+		"council_complete": council_complete.duplicate(true),
+		"last_light_partial": last_light_partial.duplicate(true),
+		"last_light_complete": last_light_complete.duplicate(true),
+		"semantic_private_term_hit_count": semantic_private_term_hit_count,
+		"shared_channel_inventory":
+		[
+			"public_projection",
+			"director_safe_input",
+			"public_history",
+			"replay",
+			"transcript",
+			"mirror",
+			"interruption_recap",
+			"committed_result_reprojection",
+		],
+		"human_evidence_claimed": false,
+	}
 
 
 func _test_no_op_rejections_and_deadlock_diagnostic() -> void:
@@ -587,6 +722,36 @@ func _route_failure(session: DrownedHarborAlpha2Session) -> Dictionary:
 		"stage_id": session.to_snapshot().stage_id,
 		"revision": session.to_snapshot().authoritative_revision,
 	}
+
+
+func _shared_projection_samples(session: DrownedHarborAlpha2Session) -> Array[Variant]:
+	var projection: Dictionary = session.public_projection()
+	var interruption: Dictionary = session.interrupt_presentation()
+	return [
+		projection,
+		session.director_safe_input(),
+		projection.get("public_history", []),
+		projection.get("replay", []),
+		projection.get("transcript", []),
+		projection.get("mirror", []),
+		interruption.get("public_recap", {}),
+	]
+
+
+func _assert_semantic_commitment_terms_absent(samples: Array, label: String) -> void:
+	var serialized: String = _canonical(samples)
+	_expect("hold_the_light" not in serialized, "%s excludes Council commitment term" % label)
+	_expect("guard_last_light" not in serialized, "%s excludes Last Light commitment term" % label)
+
+
+func _semantic_commitment_term_hit_count(samples: Array) -> int:
+	var serialized: String = _canonical(samples)
+	var result: int = 0
+	if "hold_the_light" in serialized:
+		result += 1
+	if "guard_last_light" in serialized:
+		result += 1
+	return result
 
 
 func _canonical(value: Variant) -> String:

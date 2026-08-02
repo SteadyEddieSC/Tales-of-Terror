@@ -185,7 +185,7 @@ func public_projection() -> Dictionary:
 		"stage_id": _rules.stage_id(),
 		"authoritative_revision": _revision,
 		"board": _board.public_view(),
-		"rules": _rules.public_view(),
+		"rules": _rules.public_view(_stable_seat_order.size()),
 		"roles": _role.public_view(),
 		"public_history": _public_history.duplicate(true),
 		"replay": _replay.duplicate(true),
