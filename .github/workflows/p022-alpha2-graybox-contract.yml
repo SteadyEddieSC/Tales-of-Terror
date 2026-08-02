@@ -91,7 +91,6 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          import yaml
 
           for path in (
               Path('docs/preproduction/drowned_harbor_alpha2_graybox_route_contract_v1.json'),
@@ -100,15 +99,17 @@ jobs:
           ):
               with path.open(encoding='utf-8') as handle:
                   json.load(handle)
-          for path in (
-              Path('.github/workflows/p021-production-architecture.yml'),
-              Path('.github/workflows/p022-alpha2-graybox-contract.yml'),
-              Path('.github/workflows/post-prototype-reconciliation.yml'),
-          ):
-              with path.open(encoding='utf-8') as handle:
-                  yaml.safe_load(handle)
-          print('Governed JSON and workflow YAML parsed')
+          print('Governed JSON parsed')
           PY
+          ruby - <<'RUBY'
+          require 'yaml'
+          [
+            '.github/workflows/p021-production-architecture.yml',
+            '.github/workflows/p022-alpha2-graybox-contract.yml',
+            '.github/workflows/post-prototype-reconciliation.yml',
+          ].each { |path| YAML.load_file(path) }
+          puts 'Governed workflow YAML parsed'
+          RUBY
 
       - name: Prove clean source tree
         if: always()
