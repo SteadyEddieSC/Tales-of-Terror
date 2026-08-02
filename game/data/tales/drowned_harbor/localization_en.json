@@ -1,0 +1,13 @@
+{
+  "catalog_kind": "governed_placeholder_localization",
+  "schema_version": 1,
+  "catalog_id": "drowned_harbor_placeholder_en_v1",
+  "locale": "en",
+  "status": "temporary_internal_placeholder",
+  "entries": {
+    "tale.drowned_harbor.scaffold.briefing": "Internal structural scaffold. No Drowned Harbor gameplay or final narrative is present.",
+    "tale.drowned_harbor.scaffold.display_name": "Drowned Harbor — Internal Scaffold",
+    "tale.drowned_harbor.scaffold.exit": "Acknowledge the scaffold and return to the normal Lantern House default.",
+    "tale.drowned_harbor.scaffold.objective": "Verify deterministic native authority construction, then exit without gameplay mutation."
+  }
+}

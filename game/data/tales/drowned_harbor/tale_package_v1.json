@@ -1,0 +1,168 @@
+{
+  "package_kind": "tale",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "package_version": 1,
+  "provider": {
+    "provider_id": "drowned_harbor_authorities_v1",
+    "provider_version": 1,
+    "board_reference": "drowned_harbor_scaffold_board",
+    "rules_reference": "drowned_harbor_scaffold_rules",
+    "director_reference": "drowned_harbor_scaffold_director",
+    "social_reference": "drowned_harbor_scaffold_social"
+  },
+  "display": {
+    "display_key": "tale.drowned_harbor.scaffold.display_name",
+    "briefing_key": "tale.drowned_harbor.scaffold.briefing",
+    "objective_key": "tale.drowned_harbor.scaffold.objective",
+    "status": "temporary_internal_placeholder"
+  },
+  "compatibility": {
+    "engine": "godot_4_7_1",
+    "minimum_seats": 1,
+    "maximum_seats": 8,
+    "supported_modes": [
+      "scaffold_only"
+    ],
+    "admission_policy": "developer_only_explicit_launch",
+    "unknown_field_policy": "reject",
+    "deterministic": true
+  },
+  "content": {
+    "scenario_path": "res://data/scenarios/drowned_harbor_scaffold_v1.json",
+    "scenario_id": "drowned_harbor_scaffold_v1",
+    "scenario_sha256": "d7cb1934f119bd2d94c514a8a509758115b894a79dc57e02fa8bda322bdd2168",
+    "board_reference": "drowned_harbor_scaffold_board",
+    "rules_reference": "drowned_harbor_scaffold_rules",
+    "director_reference": "drowned_harbor_scaffold_director",
+    "social_reference": "drowned_harbor_scaffold_social"
+  },
+  "stage_graph": {
+    "entry_stage": "scaffold_entry",
+    "terminal_stage": "scaffold_terminal",
+    "stage_order": [
+      "scaffold_entry"
+    ],
+    "allowed_intents": [
+      "acknowledge_scaffold_exit"
+    ]
+  },
+  "fallbacks": {
+    "invalid_candidate": "reject_before_session_commit",
+    "unsupported_snapshot": "reject_without_fallback",
+    "missing_optional_media": "use_governed_placeholder_text",
+    "exit": "return_to_lantern_house_default"
+  },
+  "privacy": {
+    "classes": [
+      "public",
+      "controlled_reveal_private",
+      "seat_private",
+      "faction_private"
+    ],
+    "private_content_implemented": false,
+    "director_input_policy": "public_or_authorized_aggregate_only",
+    "shared_output_policy": "public_projection_only"
+  },
+  "localization": {
+    "catalog_path": "res://data/tales/drowned_harbor/localization_en.json",
+    "catalog_id": "drowned_harbor_placeholder_en_v1",
+    "catalog_sha256": "c19bdaed5ad7b4e5169fcfeeb632b8c8b39acf7a5edf39bf23374186de886fa3",
+    "governed_keys": [
+      "tale.drowned_harbor.scaffold.briefing",
+      "tale.drowned_harbor.scaffold.display_name",
+      "tale.drowned_harbor.scaffold.exit",
+      "tale.drowned_harbor.scaffold.objective"
+    ]
+  },
+  "inventory": {
+    "actions": [
+      "acknowledge_scaffold_exit"
+    ],
+    "cards": [],
+    "connectors": [],
+    "director_candidates": [
+      "scaffold_no_op"
+    ],
+    "director_profiles": [
+      "scaffold_off"
+    ],
+    "events": [],
+    "factions": [
+      "scaffold_participants"
+    ],
+    "items": [],
+    "modes": [
+      "scaffold_only"
+    ],
+    "objectives": [
+      "exit_scaffold_safely"
+    ],
+    "privacy_classes": [
+      "public",
+      "controlled_reveal_private",
+      "seat_private",
+      "faction_private"
+    ],
+    "roles": [
+      "scaffold_observer"
+    ],
+    "spaces": [
+      "scaffold_harbor"
+    ],
+    "stages": [
+      "scaffold_entry"
+    ],
+    "transitions": []
+  },
+  "persistence": {
+    "snapshot_version": 1,
+    "identity_selection": "validate_tale_and_package_before_state",
+    "migration_policy": "exact_version_or_fail_closed",
+    "exactly_once_policy": "persist_processed_request_and_event_ids",
+    "rng_policy": "named_authority_owned_stream",
+    "best_effort_restore": false
+  },
+  "source_ledger": [
+    {
+      "role": "board_authority",
+      "path": "game/src/tales/drowned_harbor/drowned_harbor_board_definition.gd",
+      "reference": "drowned_harbor_scaffold_board"
+    },
+    {
+      "role": "director_content",
+      "path": "game/src/tales/drowned_harbor/drowned_harbor_director_content.gd",
+      "reference": "drowned_harbor_scaffold_director"
+    },
+    {
+      "role": "localization_catalog",
+      "path": "game/data/tales/drowned_harbor/localization_en.json",
+      "reference": "drowned_harbor_placeholder_en_v1"
+    },
+    {
+      "role": "rules_content",
+      "path": "game/src/tales/drowned_harbor/drowned_harbor_rules_content.gd",
+      "reference": "drowned_harbor_scaffold_rules"
+    },
+    {
+      "role": "scenario_manifest",
+      "path": "game/data/scenarios/drowned_harbor_scaffold_v1.json",
+      "reference": "drowned_harbor_scaffold_v1"
+    },
+    {
+      "role": "scoped_provider",
+      "path": "game/src/tales/drowned_harbor/drowned_harbor_scoped_provider.gd",
+      "reference": "drowned_harbor_authorities_v1"
+    },
+    {
+      "role": "social_content",
+      "path": "game/src/tales/drowned_harbor/drowned_harbor_social_content.gd",
+      "reference": "drowned_harbor_scaffold_social"
+    }
+  ],
+  "identity_policy": {
+    "algorithm": "sha256",
+    "canonicalization": "utf8_json_sorted_object_keys_compact_arrays_preserved",
+    "non_authoritative_metadata_excluded": []
+  }
+}

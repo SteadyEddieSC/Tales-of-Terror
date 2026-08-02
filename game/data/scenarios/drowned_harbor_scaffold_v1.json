@@ -1,0 +1,48 @@
+{
+  "scenario_kind": "drowned_harbor_production_scaffold",
+  "schema_version": 1,
+  "scenario_id": "drowned_harbor_scaffold_v1",
+  "scenario_version": 1,
+  "tale_id": "drowned_harbor",
+  "authority_references": {
+    "board": "drowned_harbor_scaffold_board",
+    "director": "drowned_harbor_scaffold_director",
+    "rules": "drowned_harbor_scaffold_rules",
+    "social": "drowned_harbor_scaffold_social"
+  },
+  "stages": [
+    {
+      "id": "scaffold_entry",
+      "operations": [
+        "acknowledge_scaffold_exit"
+      ],
+      "terminal_on_completion": true
+    }
+  ],
+  "terminal_behavior": {
+    "stage_id": "scaffold_terminal",
+    "result": "return_to_normal_default",
+    "cleanup": "clear_all_drowned_harbor_scaffold_authorities"
+  },
+  "determinism": {
+    "seed_policy": "exact_developer_request_integer",
+    "rng_stream": "drowned_harbor_scaffold_authority",
+    "wall_clock_dependency": false,
+    "presentation_dependency": false
+  },
+  "privacy": {
+    "classes": [
+      "public",
+      "controlled_reveal_private",
+      "seat_private",
+      "faction_private"
+    ],
+    "private_content_implemented": false,
+    "director_inputs": "public_or_authorized_aggregate_only"
+  },
+  "identity_policy": {
+    "algorithm": "sha256",
+    "canonicalization": "utf8_json_sorted_object_keys_compact_arrays_preserved",
+    "unknown_field_policy": "reject"
+  }
+}

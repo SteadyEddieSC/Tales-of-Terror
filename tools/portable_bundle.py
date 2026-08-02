@@ -421,6 +421,13 @@ def validate_repository() -> None:
 
     validate_templates()
     presets = EXPORT_PRESETS.read_text(encoding="utf-8")
+    exact_exclude_filter = (
+        'exclude_filter=".gutconfig.json,tests/*,addons/*,'
+        'src/exploration/ExplorationShowcase.tscn,'
+        'src/exploration/exploration_showcase.gd,'
+        'data/scenarios/drowned_harbor_scaffold_v1.json,'
+        'data/tales/drowned_harbor/*,src/tales/drowned_harbor/*"'
+    )
     required_preset_fragments = (
         'name="Internal Windows x86_64"',
         'platform="Windows Desktop"',
@@ -428,12 +435,15 @@ def validate_repository() -> None:
         'platform="Linux/X11"',
         'binary_format/embed_pck=true',
         'export_filter="all_resources"',
-        'exclude_filter=".gutconfig.json,tests/*,addons/*,src/exploration/ExplorationShowcase.tscn,src/exploration/exploration_showcase.gd"',
         'include_filter="build_identity.generated.json"',
     )
     for fragment in required_preset_fragments:
         if fragment not in presets:
             raise BundleError(f"export preset requirement missing: {fragment}")
+    if presets.count("exclude_filter=") != 2 or presets.count(exact_exclude_filter) != 2:
+        raise BundleError(
+            "both ordinary export presets must use the exact reviewed alpha.1 exclusion inventory"
+        )
     for platform, target in spec["platforms"].items():
         launcher = (ROOT / target["launcher_source"]).read_text(encoding="utf-8").lower()
         for token in NETWORK_TOKENS:

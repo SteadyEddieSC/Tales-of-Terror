@@ -224,8 +224,40 @@ func _test_production_catalog_remains_lantern_house_only() -> void:
 
 func _test_normal_runtime_has_no_drowned_harbor_registration() -> void:
 	_expect(
-		not FileAccess.file_exists(DROWNED_HARBOR_PRODUCTION_PACKAGE),
-		"no Drowned Harbor production Tale package exists",
+		FileAccess.file_exists(DROWNED_HARBOR_PRODUCTION_PACKAGE),
+		"exact issue #100 Drowned Harbor scaffold package exists",
+	)
+	var scoped_provider := DrownedHarborScopedProvider.new()
+	var candidate: Dictionary = scoped_provider.build_candidate()
+	_expect(candidate.get("accepted", false), "exact issue #100 scoped candidate validates")
+	if candidate.get("accepted", false):
+		_expect(
+			candidate.package.tale_id == "drowned_harbor",
+			"scoped candidate has the exact Drowned Harbor Tale identity",
+		)
+		_expect(
+			candidate.provider_id == "drowned_harbor_authorities_v1",
+			"scoped candidate has the exact alpha.1 provider identity",
+		)
+		_expect(
+			candidate.scenario.scenario_id == "drowned_harbor_scaffold_v1",
+			"scoped candidate has the exact alpha.1 scenario identity",
+		)
+		_expect(
+			candidate.localization.catalog_id == "drowned_harbor_placeholder_en_v1",
+			"scoped candidate has the exact placeholder-localization identity",
+		)
+	var gate := DrownedHarborDeveloperAdmissionGate.new()
+	var ambiguous: Dictionary = gate.admit({})
+	_expect(
+		(
+			not ambiguous.get("accepted", false)
+			and ambiguous.get("reason", "") == "malformed_admission_request"
+		),
+		"scoped scaffold rejects non-explicit normal admission",
+	)
+	_expect(
+		not gate.has_active_scaffold(), "rejected normal admission commits no scaffold authority"
 	)
 	var provider_text: String = FileAccess.get_file_as_string(PRODUCTION_PROVIDER_PATH).to_lower()
 	_expect(
