@@ -1,0 +1,456 @@
+{
+  "authorization": {
+    "alpha3_activation_authorized": false,
+    "alpha3_issue_created": false,
+    "human_evidence_claimed": false,
+    "normal_library_visibility": false,
+    "ordinary_export_inclusion": false,
+    "planning_only": true,
+    "runtime_implementation": false
+  },
+  "content_system": {
+    "authority_owners": {
+      "cards": "rules_session",
+      "encounters": "rules_session",
+      "hazards": "rules_session",
+      "items": "rules_session",
+      "rescue": "rules_session",
+      "resources": "rules_session"
+    },
+    "cards": [
+      "a_name_remembered",
+      "borrowed_breath",
+      "cut_the_line",
+      "hold_fast",
+      "mark_the_door",
+      "one_more_passenger",
+      "salt_in_the_wound",
+      "share_the_weight",
+      "the_harbor_owes_me",
+      "the_light_looks_back",
+      "the_long_way_around",
+      "wrong_bell"
+    ],
+    "encounters_by_stage": {
+      "bellhouse_ledger": [
+        "bell_counts_wrong",
+        "first_harbor_bargain",
+        "missing_name_door",
+        "names_beneath_names"
+      ],
+      "high_water": [
+        "bell_rings_living_name",
+        "drowned_archive_opens",
+        "lifeboat_breaks_free_encounter",
+        "one_more_passenger_encounter",
+        "street_becomes_river",
+        "tidebound_offer"
+      ],
+      "last_light": [
+        "final_harbor_bargain",
+        "last_seat_on_boat",
+        "lighthouse_mechanism"
+      ],
+      "lighthouse_council": [
+        "council_beneath_turning_light",
+        "lens_shows_four_futures"
+      ],
+      "low_tide_arrival": [
+        "empty_lifeboat",
+        "harbor_office_manifest",
+        "market_of_shadows",
+        "mudflat_mile"
+      ]
+    },
+    "hazards": [
+      "archive_collapse",
+      "bell_shock",
+      "drowned_patrol",
+      "harbors_claim",
+      "lamps_turn_seaward",
+      "lifeboat_breaks_free",
+      "light_answers",
+      "missing_name",
+      "returning_current",
+      "salt_rot",
+      "street_gives_way",
+      "water_in_lungs"
+    ],
+    "invalid_or_duplicate_action_consumes_no_item_card_resource_or_rng": true,
+    "item_state_model": [
+      "intact",
+      "wet",
+      "damaged",
+      "salt_corroded",
+      "spent",
+      "lost",
+      "claimed",
+      "bound"
+    ],
+    "items": [
+      "chapel_salt_censer",
+      "cracked_lighthouse_lens",
+      "dead_mans_compass",
+      "glass_bell_clapper",
+      "harbor_masters_seal",
+      "ledger_knife",
+      "lifeboat_flare",
+      "missing_name_tablet",
+      "oilskin_satchel",
+      "salt_stiff_rope",
+      "tin_lantern",
+      "wreckers_hook"
+    ],
+    "ownership_classes": [
+      "seat_owned",
+      "shared_group",
+      "board_owned",
+      "public_quest_carried",
+      "faction_private"
+    ],
+    "resources": [
+      "bell_tokens",
+      "dry_matches",
+      "harbor_keys",
+      "lamp_oil",
+      "lifeboat_capacity",
+      "memory_fragments",
+      "rope",
+      "salt_marks"
+    ],
+    "transfer_preserves_condition_charges_and_hidden_information": true
+  },
+  "continuation_system": {
+    "authority_owner": "role_session",
+    "continuation_identity": "continuation_transition_id",
+    "continuation_preserves": [
+      "stable_seat_id",
+      "participation_history",
+      "processed_ids"
+    ],
+    "permanent_inactive_seat_without_attributed_terminal_result": false,
+    "replacement_forms": [
+      "lifeboat_survivor"
+    ],
+    "restless_forms": [
+      "bell_witness",
+      "drowned_guide",
+      "lighthouse_guardian"
+    ],
+    "selection_priority": [
+      "lifeboat_survivor_if_authored_route_and_capacity",
+      "lighthouse_guardian_during_last_light",
+      "drowned_guide_when_submerged_rescue_route_exists",
+      "bell_witness_otherwise"
+    ]
+  },
+  "contract_kind": "drowned_harbor_alpha3_systems_replayability_contract",
+  "deferred_modes": [
+    "hunted",
+    "rival_crews"
+  ],
+  "director_system": {
+    "anti_repeat_window": 3,
+    "authority_owner": "director_content",
+    "candidate_selection_identity": "director_selection_id",
+    "input_allowlist": [
+      "authoritative_revision",
+      "connected_seat_count",
+      "stage_id",
+      "tide_state",
+      "living_count",
+      "restless_count",
+      "tidebound_count",
+      "unresolved_rescue_count",
+      "public_resource_pressure",
+      "recent_public_candidate_ids",
+      "ending_eligibility_count"
+    ],
+    "private_inputs_forbidden": [
+      "role_id",
+      "private_objective_id",
+      "bellmarked_seat_ids",
+      "unrevealed_faction_id",
+      "private_item_marker",
+      "desirability_score"
+    ],
+    "rng_stream": "drowned_harbor_director_authority",
+    "selection_policy": "seeded_bounded_candidate_filter_then_stable_tiebreak",
+    "unbounded_generation_allowed": false
+  },
+  "ending_system": {
+    "authority_owner": "rules_session",
+    "ending_ids": [
+      "drowned_released",
+      "harbor_rises",
+      "harbor_sealed",
+      "last_lifeboat",
+      "light_comes_home",
+      "mixed_outcomes",
+      "names_erased"
+    ],
+    "ending_requires_named_role": false,
+    "ending_resolution_identity": "ending_resolution_id",
+    "every_reachable_ending_attributes_every_active_faction": true,
+    "every_reachable_ending_attributes_every_stable_seat": true,
+    "mixed_outcomes_supported": true,
+    "private_attribution_owner": "role_session"
+  },
+  "evidence": {
+    "accessibility_certified": false,
+    "automation_is_human_evidence": false,
+    "fun_pacing_fairness_or_balance_validated": false,
+    "physical_controller_validated": false,
+    "privacy_or_security_certified": false,
+    "production_ready": false,
+    "public_release_authorized": false,
+    "television_readability_validated": false
+  },
+  "faction_system": {
+    "authority_owner": "role_session",
+    "bellmarked_count_by_seat_count": {
+      "1": 0,
+      "2": 0,
+      "3": 1,
+      "4": 1,
+      "5": 1,
+      "6": 1,
+      "7": 1,
+      "8": 1
+    },
+    "bellmarked_reveal_policy": "legal_reveal_or_terminal_attribution_only",
+    "faction_assignment_identity": "faction_assignment_id",
+    "no_hidden_faction_required_for_valid_route": true,
+    "private_factions": [
+      "bellmarked"
+    ],
+    "public_factions": [
+      "living",
+      "restless",
+      "tidebound"
+    ]
+  },
+  "implementation_issue": {
+    "activation_authorized": false,
+    "branch": "feature/v0.2.0-alpha.3-systems-replayability",
+    "codex_expected": true,
+    "draft_pr_title": "v0.2.0-alpha.3 — Drowned Harbor Systems & Replayability",
+    "github_issue": null,
+    "issue_definition_path": "docs/preproduction/P0.23_Alpha3_Implementation_Issue.md",
+    "recommended_codex_effort": "very_high",
+    "release_id": "v0.2.0-alpha.3",
+    "state": "planned_blocked",
+    "title": "Drowned Harbor Systems & Replayability"
+  },
+  "inherited_alpha2": {
+    "developer_only": true,
+    "issue": 104,
+    "localization_digest": "137919b02a572fc1c844521c38633bf27ad49bcb9d1fe8a83147db2210d1a227",
+    "merged_main_sha": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
+    "ordinary_export_included": false,
+    "package_digest": "ee9e2f21b23f2b8f7ac8c8be1520c6ebcb679807a5f0dbd0d23825824b2f90b7",
+    "provider_id": "drowned_harbor_authorities_v1",
+    "provider_version": 2,
+    "pull_request": 105,
+    "release_id": "v0.2.0-alpha.2",
+    "scenario_digest": "5927dba92238512fdc74b10387ea7378f00d74a462445749d6493a512b7d7a0d",
+    "snapshot_version": 2
+  },
+  "mode_plans": [
+    {
+      "fallback_mode": null,
+      "maximum_seats": 8,
+      "minimum_seats": 1,
+      "mode_id": "cooperative",
+      "starting_hidden_faction_count": 0,
+      "starting_tidebound_count": 0,
+      "status": "supported"
+    },
+    {
+      "fallback_mode": "cooperative",
+      "maximum_seats": 8,
+      "minimum_seats": 3,
+      "mode_id": "hidden_betrayer",
+      "starting_hidden_faction_count": 1,
+      "starting_tidebound_count": 0,
+      "status": "supported"
+    },
+    {
+      "fallback_mode": "cooperative",
+      "maximum_seats": 8,
+      "minimum_seats": 2,
+      "mode_id": "outbreak",
+      "starting_hidden_faction_count": 0,
+      "starting_tidebound_count": 0,
+      "status": "supported"
+    }
+  ],
+  "objective_system": {
+    "assignment_identity": "private_objective_assignment_id",
+    "assignment_policy": "seeded_named_stream_without_replacement_until_pool_exhaustion",
+    "authority_owner": "role_session",
+    "bellmarked_objective_families": [
+      "preserve_signal",
+      "keep_names_in_ledger",
+      "carry_harbor_memory_out",
+      "preserve_bell",
+      "open_old_channel"
+    ],
+    "living_objective_families": [
+      "recover_the_truth",
+      "preserve_escape_capacity",
+      "protect_another_witness",
+      "contain_the_harbor",
+      "release_the_drowned",
+      "carry_memory_safely"
+    ],
+    "shared_projection_exposes_only_completion_status": true,
+    "tidebound_objective_families": [
+      "preserve_harbor_memory",
+      "seek_release",
+      "propagate_memory",
+      "complete_unfinished_obligation"
+    ]
+  },
+  "persistence": {
+    "exactly_once_identities": [
+      "council_commitment_id",
+      "high_water_transformation_id",
+      "role_assignment_id",
+      "private_objective_assignment_id",
+      "faction_assignment_id",
+      "tidebound_conversion_id",
+      "continuation_transition_id",
+      "director_selection_id",
+      "ending_resolution_id"
+    ],
+    "migration_policy": "explicit_alpha2_snapshot_v2_to_alpha3_snapshot_v3_or_fail_closed",
+    "processed_request_and_event_ids_persisted": true,
+    "replay_policy": "equal_authoritative_inputs_seed_snapshot_and_content_identity_produce_equivalent_outcome",
+    "rollback_policy": "reject_without_partial_authority_and_preserve_prior_snapshot",
+    "save_boundaries": [
+      "before_role_assignment",
+      "after_role_assignment",
+      "before_private_assignment",
+      "after_private_assignment",
+      "before_and_after_each_transformation",
+      "before_and_after_each_continuation",
+      "before_and_after_each_item_card_resource_commit",
+      "before_and_after_each_director_selection",
+      "before_and_after_ending_resolution"
+    ],
+    "snapshot_version": 3
+  },
+  "privacy": {
+    "classes": [
+      "public",
+      "controlled_reveal_private",
+      "seat_private",
+      "faction_private"
+    ],
+    "director_private_access": false,
+    "private_projection_owner": "role_session",
+    "reconnect_reprojection_policy": "same_stable_seat_receives_same_authorized_private_projection",
+    "shared_output_policy": "closed_public_status_and_counts_without_private_terms_mappings_or_desirability_hints",
+    "surrogate_private_access": false
+  },
+  "release": {
+    "baseline": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
+    "branch": "docs/p0.23-alpha3-systems-replayability-contract",
+    "issue": 106,
+    "release_id": "P0.23",
+    "state": "active_planning"
+  },
+  "replayability": {
+    "coverage_obligations": [
+      "all_roles_assigned",
+      "all_bellmarked_objectives_assigned",
+      "all_tidebound_objectives_assigned",
+      "all_continuation_forms_reached",
+      "all_items_observed",
+      "all_cards_observed",
+      "all_hazards_observed",
+      "all_encounters_observed",
+      "all_endings_reached"
+    ],
+    "deadlock_free_required": true,
+    "maximum_accepted_actions_per_run": 192,
+    "maximum_rejections_before_diagnostic": 8,
+    "minimum_total_runs": 126,
+    "mode_seat_matrix": {
+      "cooperative": [1,2,3,4,5,6,7,8],
+      "hidden_betrayer": [3,4,5,6,7,8],
+      "outbreak": [2,3,4,5,6,7,8]
+    },
+    "named_rng_streams": [
+      "drowned_harbor_route_authority",
+      "drowned_harbor_board_authority",
+      "drowned_harbor_social_authority",
+      "drowned_harbor_director_authority"
+    ],
+    "repeat_each_case": 2,
+    "seed_set": [3101,3102,3103]
+  },
+  "rescue_system": {
+    "authority_owner": "rules_session",
+    "capacity_resource": "lifeboat_capacity",
+    "failed_rescue_is_state_and_rng_noop": true,
+    "rescue_targets": ["stable_seat","authored_resident","quest_object"],
+    "stranded_state_persists_across_disconnect_restore_and_replay": true,
+    "unrescued_defeat_routes_to_continuation_or_attributed_terminal_result": true
+  },
+  "role_system": {
+    "assignment_identity": "role_assignment_id",
+    "assignment_policy": "stable_seat_order_cycles_role_archetypes_without_rng",
+    "authority_owner": "role_session",
+    "duplicate_archetype_instances_allowed_after_six_seats": true,
+    "generic_alternative_required_for_every_role_capability": true,
+    "role_archetype_order": [
+      "bellhouse_archivist",
+      "fog_listener",
+      "lantern_surveyor",
+      "lifeboat_keeper",
+      "tide_chapel_warden",
+      "wreckers_heir"
+    ],
+    "role_required_for_ending": false
+  },
+  "schema_version": 1,
+  "target_versions": {
+    "localization_version": 3,
+    "package_version": 3,
+    "provider_version": 3,
+    "scenario_version": 3,
+    "snapshot_version": 3
+  },
+  "traceability": {
+    "future_outputs": [
+      "game/data/tales/drowned_harbor/tale_package_v3.json",
+      "game/data/scenarios/drowned_harbor_systems_v3.json",
+      "game/data/tales/drowned_harbor/localization_systems_en_v3.json",
+      "game/src/tales/drowned_harbor/alpha3/",
+      "game/tests/drowned_harbor_alpha3_systems/"
+    ],
+    "runtime_may_load_authoring_references": false,
+    "runtime_may_load_prototype_fixtures": false,
+    "source_authorities": [
+      "docs/tales/drowned_harbor/Drowned_Harbor_Design_Bible.md",
+      "docs/tales/drowned_harbor/authoring/drowned_harbor_authoring_reference_v1.json",
+      "docs/tales/drowned_harbor/authoring/drowned_harbor_gameplay_content_v1.json",
+      "docs/tales/drowned_harbor/authoring/drowned_harbor_narrative_content_v1.json",
+      "docs/tales/drowned_harbor/authoring/drowned_harbor_social_content_v1.json"
+    ],
+    "source_ledger_policy": "every_runtime_content_id_maps_to_reviewed_repository_authority"
+  },
+  "transformation_system": {
+    "authority_owner": "role_session",
+    "conversion_identity": "tidebound_conversion_id",
+    "conversion_offer_privacy": "controlled_reveal_private",
+    "conversion_preserves": ["stable_seat_id","position","history","inventory","processed_ids"],
+    "duplicate_conversion_policy": "reproject_committed_result_without_recompute",
+    "eligibility_sources": ["authored_exposure","authored_bargain","defeat_transition"],
+    "mid_session_cure_supported": false,
+    "refusal_policy": "one_persisted_refusal_per_stable_seat_before_forced_resolution",
+    "tidebound_eligible_after_stage": "high_water_v1"
+  }
+}
