@@ -159,9 +159,9 @@ jobs:
             test "$status" -eq 0
           }
           effective_branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
-          alpha3_args=()
-          if [ "$effective_branch" != 'feature/v0.2.0-alpha.3-systems-replayability' ]; then
-            alpha3_args+=(--skip-git-boundary)
+          alpha3_args=(--skip-git-boundary)
+          if [ "$effective_branch" = 'feature/v0.2.0-alpha.3-systems-replayability' ]; then
+            echo 'Exact 34-path Alpha.3 boundary was enforced by the preceding dedicated gate.'
           fi
           run_check alpha3-validator python tools/validate_drowned_harbor_alpha3_systems.py "${alpha3_args[@]}"
           run_check alpha3-mutations python tools/test_validate_drowned_harbor_alpha3_systems.py
