@@ -1,0 +1,231 @@
+{
+  "scenario_kind": "drowned_harbor_systems_replayability",
+  "schema_version": 1,
+  "scenario_id": "drowned_harbor_systems_v3",
+  "scenario_version": 3,
+  "tale_id": "drowned_harbor",
+  "provider_version": 3,
+  "authority_references": {
+    "board": "drowned_harbor_graybox_board_v2",
+    "rules": "drowned_harbor_systems_rules_v3",
+    "director": "drowned_harbor_systems_director_v3",
+    "social": "drowned_harbor_systems_role_session_v3"
+  },
+  "inherited_route": {
+    "scenario_id": "drowned_harbor_graybox_v2",
+    "stage_order": [
+      "low_tide_arrival_v1",
+      "bellhouse_ledger_v1",
+      "lighthouse_council_v1",
+      "high_water_v1",
+      "last_light_v1",
+      "ending_resolution_v1",
+      "epilogue_attribution_v1",
+      "rematch_title_cleanup_v1"
+    ],
+    "transition_order": [
+      "transition_low_tide_to_bellhouse",
+      "transition_bellhouse_to_council",
+      "transition_council_to_high_water",
+      "transition_high_water_to_last_light",
+      "transition_last_light_to_ending",
+      "transition_ending_to_epilogue",
+      "transition_epilogue_to_cleanup"
+    ]
+  },
+  "mode_plans": [
+    {"mode_id": "cooperative", "minimum_seats": 1, "maximum_seats": 8, "fallback_mode": null, "starting_hidden_faction_count": 0, "starting_tidebound_count": 0},
+    {"mode_id": "hidden_betrayer", "minimum_seats": 3, "maximum_seats": 8, "fallback_mode": "cooperative", "starting_hidden_faction_count": 1, "starting_tidebound_count": 0},
+    {"mode_id": "outbreak", "minimum_seats": 2, "maximum_seats": 8, "fallback_mode": "cooperative", "starting_hidden_faction_count": 0, "starting_tidebound_count": 0}
+  ],
+  "deferred_modes": ["hunted", "rival_crews"],
+  "roles": {
+    "assignment_policy": "stable_seat_order_cycles_role_archetypes_without_rng",
+    "archetype_order": [
+      "bellhouse_archivist",
+      "fog_listener",
+      "lantern_surveyor",
+      "lifeboat_keeper",
+      "tide_chapel_warden",
+      "wreckers_heir"
+    ],
+    "generic_public_alternative_required": true
+  },
+  "objectives": {
+    "assignment_policy": "seeded_named_stream_without_replacement_until_pool_exhaustion",
+    "living": [
+      "recover_the_truth",
+      "preserve_escape_capacity",
+      "protect_another_witness",
+      "contain_the_harbor",
+      "release_the_drowned",
+      "carry_memory_safely"
+    ],
+    "bellmarked": [
+      "preserve_signal",
+      "keep_names_in_ledger",
+      "carry_harbor_memory_out",
+      "preserve_bell",
+      "open_old_channel"
+    ],
+    "tidebound": [
+      "preserve_harbor_memory",
+      "seek_release",
+      "propagate_memory",
+      "complete_unfinished_obligation"
+    ]
+  },
+  "factions": {
+    "public": ["living", "restless", "tidebound"],
+    "private": ["bellmarked"],
+    "reveal_policy": "legal_reveal_or_terminal_attribution_only"
+  },
+  "transformations": {
+    "eligible_after_stage": "high_water_v1",
+    "eligibility_sources": ["authored_exposure", "authored_bargain", "defeat_transition"],
+    "refusal_policy": "one_persisted_refusal_per_stable_seat_before_forced_resolution",
+    "mid_session_cure_supported": false
+  },
+  "continuations": {
+    "replacement_forms": ["lifeboat_survivor"],
+    "restless_forms": ["bell_witness", "drowned_guide", "lighthouse_guardian"],
+    "selection_priority": [
+      "lifeboat_survivor_if_authored_route_and_capacity",
+      "lighthouse_guardian_during_last_light",
+      "drowned_guide_when_submerged_rescue_route_exists",
+      "bell_witness_otherwise"
+    ]
+  },
+  "content": {
+    "items": [
+      "chapel_salt_censer",
+      "cracked_lighthouse_lens",
+      "dead_mans_compass",
+      "glass_bell_clapper",
+      "harbor_masters_seal",
+      "ledger_knife",
+      "lifeboat_flare",
+      "missing_name_tablet",
+      "oilskin_satchel",
+      "salt_stiff_rope",
+      "tin_lantern",
+      "wreckers_hook"
+    ],
+    "item_states": ["intact", "wet", "damaged", "salt_corroded", "spent", "lost", "claimed", "bound"],
+    "ownership_classes": ["seat_owned", "shared_group", "board_owned", "public_quest_carried", "faction_private"],
+    "cards": [
+      "a_name_remembered",
+      "borrowed_breath",
+      "cut_the_line",
+      "hold_fast",
+      "mark_the_door",
+      "one_more_passenger",
+      "salt_in_the_wound",
+      "share_the_weight",
+      "the_harbor_owes_me",
+      "the_light_looks_back",
+      "the_long_way_around",
+      "wrong_bell"
+    ],
+    "resources": ["bell_tokens", "dry_matches", "harbor_keys", "lamp_oil", "lifeboat_capacity", "memory_fragments", "rope", "salt_marks"],
+    "hazards": [
+      "archive_collapse",
+      "bell_shock",
+      "drowned_patrol",
+      "harbors_claim",
+      "lamps_turn_seaward",
+      "lifeboat_breaks_free",
+      "light_answers",
+      "missing_name",
+      "returning_current",
+      "salt_rot",
+      "street_gives_way",
+      "water_in_lungs"
+    ],
+    "encounters_by_stage": {
+      "low_tide_arrival": ["empty_lifeboat", "harbor_office_manifest", "market_of_shadows", "mudflat_mile"],
+      "bellhouse_ledger": ["bell_counts_wrong", "first_harbor_bargain", "missing_name_door", "names_beneath_names"],
+      "lighthouse_council": ["council_beneath_turning_light", "lens_shows_four_futures"],
+      "high_water": ["bell_rings_living_name", "drowned_archive_opens", "lifeboat_breaks_free_encounter", "one_more_passenger_encounter", "street_becomes_river", "tidebound_offer"],
+      "last_light": ["final_harbor_bargain", "last_seat_on_boat", "lighthouse_mechanism"]
+    },
+    "rescue_targets": ["stable_seat", "authored_resident", "quest_object"]
+  },
+  "director": {
+    "rng_stream": "drowned_harbor_director_authority",
+    "anti_repeat_window": 3,
+    "input_allowlist": [
+      "authoritative_revision",
+      "connected_seat_count",
+      "stage_id",
+      "tide_state",
+      "living_count",
+      "restless_count",
+      "tidebound_count",
+      "unresolved_rescue_count",
+      "public_resource_pressure",
+      "recent_public_candidate_ids",
+      "ending_eligibility_count"
+    ],
+    "private_inputs_forbidden": ["role_id", "private_objective_id", "bellmarked_seat_ids", "unrevealed_faction_id", "private_item_marker", "desirability_score"],
+    "selection_policy": "seeded_bounded_candidate_filter_then_stable_tiebreak"
+  },
+  "endings": ["drowned_released", "harbor_rises", "harbor_sealed", "last_lifeboat", "light_comes_home", "mixed_outcomes", "names_erased"],
+  "persistence": {
+    "snapshot_version": 3,
+    "migration_policy": "explicit_alpha2_snapshot_v2_to_alpha3_snapshot_v3_or_fail_closed",
+    "processed_request_and_event_ids_persisted": true,
+    "exactly_once_identities": [
+      "council_commitment_id",
+      "high_water_transformation_id",
+      "role_assignment_id",
+      "private_objective_assignment_id",
+      "faction_assignment_id",
+      "tidebound_conversion_id",
+      "continuation_transition_id",
+      "director_selection_id",
+      "ending_resolution_id"
+    ],
+    "save_boundaries": [
+      "before_role_assignment",
+      "after_role_assignment",
+      "before_private_assignment",
+      "after_private_assignment",
+      "before_and_after_each_transformation",
+      "before_and_after_each_continuation",
+      "before_and_after_each_item_card_resource_commit",
+      "before_and_after_each_director_selection",
+      "before_and_after_ending_resolution"
+    ]
+  },
+  "privacy": {
+    "classes": ["public", "controlled_reveal_private", "seat_private", "faction_private"],
+    "private_projection_owner": "role_session",
+    "shared_output_policy": "closed_public_status_and_counts_without_private_terms_mappings_or_desirability_hints",
+    "surrogate_private_access": false
+  },
+  "replayability": {
+    "seeds": [3101, 3102, 3103],
+    "repeat_each_case": 2,
+    "mode_seat_matrix": {
+      "cooperative": [1, 2, 3, 4, 5, 6, 7, 8],
+      "hidden_betrayer": [3, 4, 5, 6, 7, 8],
+      "outbreak": [2, 3, 4, 5, 6, 7, 8]
+    },
+    "minimum_total_runs": 126,
+    "maximum_accepted_actions_per_run": 192,
+    "maximum_rejections_before_diagnostic": 8,
+    "rng_streams": ["drowned_harbor_route_authority", "drowned_harbor_board_authority", "drowned_harbor_social_authority", "drowned_harbor_director_authority"]
+  },
+  "admission": {
+    "policy": "developer_only_explicit_launch",
+    "normal_catalog_registered": false,
+    "normal_provider_registered": false,
+    "ordinary_export_authorized": false
+  },
+  "traceability": {
+    "runtime_may_load_authoring_references": false,
+    "runtime_may_load_prototype_fixtures": false,
+    "content_authority": "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json"
+  }
+}
