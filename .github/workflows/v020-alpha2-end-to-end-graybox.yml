@@ -139,11 +139,18 @@ jobs:
             echo "$status" > "$log_root/${name}.status"
             test "$status" -eq 0
           }
-          run_check alpha2-validator python tools/validate_drowned_harbor_alpha2_graybox.py
+          effective_source_branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
+          alpha2_args=()
+          p021_args=(--skip-git-boundary)
+          if [[ "$effective_source_branch" != "feature/v0.2.0-alpha.2-end-to-end-graybox" ]]; then
+            alpha2_args+=(--skip-git-boundary)
+            p021_args+=(--later-succession)
+          fi
+          run_check alpha2-validator python tools/validate_drowned_harbor_alpha2_graybox.py "${alpha2_args[@]}"
           run_check alpha2-mutations python tools/test_validate_drowned_harbor_alpha2_graybox.py
           run_check alpha1-validator python tools/validate_drowned_harbor_production_scaffold.py --skip-git-boundary
           run_check alpha1-mutations python tools/test_validate_drowned_harbor_production_scaffold.py
-          run_check p021-validator python tools/validate_p021_production_architecture.py --skip-git-boundary
+          run_check p021-validator python tools/validate_p021_production_architecture.py "${p021_args[@]}"
           run_check p021-mutations python tools/test_validate_p021_production_architecture.py
           run_check isolation python tools/validate_drowned_harbor_prototype_isolation_p016.py
           run_check isolation-mutations python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
