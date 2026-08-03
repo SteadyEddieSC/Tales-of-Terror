@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.0-alpha.3 - Drowned Harbor Systems & Replayability (Internal Candidate)
+
+- Added the issue #108 developer-only Alpha.3 native systems layer composed around the accepted Alpha.2 route, with deterministic Cooperative, Hidden Betrayer, and Outbreak plans.
+- Added six Living roles, governed private objectives and Bellmarked/Tidebound behavior, four continuations, 12 items, 12 cards, eight resources, 12 hazards, 19 encounters, deterministic rescue/Director systems, and seven endings.
+- Added package, scenario, localization, provider, and snapshot v3 authorities; explicit fail-closed snapshot-v2 migration; and nine persisted exactly-once identities across save, restore, reconnect, replay, and duplicate delivery.
+- Added a 126-run deterministic replayability matrix, offline validator and fail-closed mutation suite, actual ordinary-export inventory/raw-marker proof, and a dedicated pinned Alpha.3 workflow.
+- Preserved Lantern House as the sole normal/default Tale and kept Drowned Harbor out of the catalog, central provider, normal navigation, ordinary exports, and public discovery. Automation is machine evidence only; issue #39 remains the human-evidence authority.
+
 ## v0.2.0-alpha.2 - Drowned Harbor End-to-End Graybox (Internal Candidate)
 
 - Added the issue #104 developer-only eight-stage, seven-transition Drowned Harbor graybox route with placeholder presentation and deterministic cooperative completion for one through eight stable seats.
