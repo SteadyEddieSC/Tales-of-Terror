@@ -2,7 +2,7 @@
 """Fail-closed mutations for the P0.22 alpha.2 graybox route contract."""
 
 from __future__ import annotations
-import json, shutil, tempfile
+import json, shutil, subprocess, tempfile
 from pathlib import Path
 from validate_p022_alpha2_graybox_contract import (
     CONTRACT_PATH, SCHEMA_PATH, TECHNICAL_PATH, ISSUE_PATH, RELEASE_PATH,
@@ -10,8 +10,33 @@ from validate_p022_alpha2_graybox_contract import (
     ValidationError, validate,
 )
 ROOT = Path(".")
+FROZEN_P022_COMMIT = "da86c0aa74bc0442862c97e3c371f6b714da4d0a"
+FROZEN_SUCCESSION_PATHS = {
+    STATUS_PATH,
+    ROADMAP_PATH,
+    PREPROD_README_PATH,
+    P021_ISSUE_SET_PATH,
+}
+
+
+def frozen_content(path: Path) -> bytes:
+    return subprocess.check_output(
+        ["git", "show", f"{FROZEN_P022_COMMIT}:{path.as_posix()}"],
+        cwd=ROOT,
+    )
 
 def copy_fixture(target: Path) -> None:
+    for path in (CONTRACT_PATH, SCHEMA_PATH, TECHNICAL_PATH, ISSUE_PATH, RELEASE_PATH,
+                 STATUS_PATH, ROADMAP_PATH, PREPROD_README_PATH, P021_ISSUE_SET_PATH):
+        dst = target / path
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        if path in FROZEN_SUCCESSION_PATHS:
+            dst.write_bytes(frozen_content(path))
+        else:
+            shutil.copy2(ROOT / path, dst)
+
+
+def copy_current_fixture(target: Path) -> None:
     for path in (CONTRACT_PATH, SCHEMA_PATH, TECHNICAL_PATH, ISSUE_PATH, RELEASE_PATH,
                  STATUS_PATH, ROADMAP_PATH, PREPROD_README_PATH, P021_ISSUE_SET_PATH):
         dst = target / path
@@ -37,13 +62,39 @@ def expect_failure(name: str, fn) -> None:
         copy_fixture(target)
         fn(target)
         try:
-            validate(target, check_git=False)
+            validate(target, check_git=False, later_succession=False)
         except ValidationError:
             print(f"PASS {name}")
             return
         raise AssertionError(f"mutation unexpectedly passed: {name}")
 
+def compatibility_preflight() -> None:
+    try:
+        validate(ROOT, check_git=False, later_succession=False)
+    except ValidationError:
+        print("PASS strict default rejects later succession")
+    else:
+        raise AssertionError("strict P0.22 validation accepted later succession")
+    validate(ROOT, check_git=False, later_succession=True)
+    print("PASS later succession accepts current mutable project status")
+    with tempfile.TemporaryDirectory(prefix="p022-later-succession-") as directory:
+        target = Path(directory)
+        copy_current_fixture(target)
+        edit_json(
+            target,
+            CONTRACT_PATH,
+            lambda data: data["privacy"].update(director_private_access=True),
+        )
+        try:
+            validate(target, check_git=False, later_succession=True)
+        except ValidationError:
+            print("PASS later succession rejects immutable P0.22 violation")
+        else:
+            raise AssertionError("later succession accepted immutable P0.22 violation")
+
+
 def main() -> int:
+    compatibility_preflight()
     mutations = [
         ("schema_root_opened", lambda r: edit_json(r, SCHEMA_PATH, lambda d: d.update(additionalProperties=True))),
         ("runtime_authorized", lambda r: edit_json(r, CONTRACT_PATH, lambda d: d["authorization"].update(runtime_implementation=True))),

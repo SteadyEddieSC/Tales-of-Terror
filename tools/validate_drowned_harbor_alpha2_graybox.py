@@ -424,7 +424,8 @@ def validate_export_policy(presets: str, portable: str) -> None:
         'src/exploration/exploration_showcase.gd,'
         'data/scenarios/drowned_harbor_scaffold_v1.json,'
         'data/tales/drowned_harbor/*,src/tales/drowned_harbor/*,'
-        'data/scenarios/drowned_harbor_graybox_v2.json"'
+        'data/scenarios/drowned_harbor_graybox_v2.json,'
+        'data/scenarios/drowned_harbor_systems_v3.json"'
     )
     require(presets.count(exact) == 2, "both ordinary exports must use extended exact exclusion")
     require("drowned_harbor_graybox_v2.json" in portable, "portable policy lacks alpha.2 scenario exclusion")
