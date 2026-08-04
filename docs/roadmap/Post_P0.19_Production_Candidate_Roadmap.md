@@ -1,7 +1,7 @@
 # Post-P0.19 Drowned Harbor Production-Candidate Roadmap
 
-**Version:** 1.4  
-**Status:** Alpha.3 developer-only runtime complete; protected-main reconciliation active  
+**Version:** 1.4
+**Status:** Alpha.3 developer-only runtime complete; protected-main reconciliation active
 **Reconciled protected-main baseline:** `cad70c5c8f0db1de7d557aff242cc8fe3610361b`
 
 ## Current decision
@@ -46,7 +46,7 @@ Automation does not establish fun, balance, physical-controller behavior, televi
 
 ## Immediate next action
 
-1. Complete issue #111 on one exact four-path candidate head.
+1. Complete issue #111 on one exact ten-path candidate head.
 2. Squash-merge it with an expected-head guard.
 3. Reverify protected `main` from the resulting merge SHA.
 4. Only then may Release Coordination activate issue #110 as a bounded documentation/schema/provenance planning release.
