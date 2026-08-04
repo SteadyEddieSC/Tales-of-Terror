@@ -1,0 +1,118 @@
+{
+  "record_kind": "dh_vbl_001_external_preproduction_provenance",
+  "record_version": 1,
+  "baseline_id": "DH-VBL-001",
+  "candidate_batch_id": "DH-CB-002",
+  "governing_issue": 110,
+  "repository_disposition": "metadata_only_external_candidate_binaries",
+  "binary_repository_paths": [],
+  "truthfulness_policy": "unknown facts remain null and unresolved; no placeholder prompts, guessed dates, fictional models, or false Boolean clearance values",
+  "candidate_provenance": [
+    {
+      "candidate_id": "DH-CAND-005-A",
+      "original_filename": "DH-ENV-001_Studio_v3.png",
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-006-A",
+      "original_filename": "DH-ENV-002_Studio_v2.png",
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-007-A",
+      "original_filename": "DH-CHAR-StableSeat-Transformation_Studio-v1.png",
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-008-A",
+      "original_filename": "TerrorTurn_Shared-UI-State-Grammar_Studio-v1.png",
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-009-A",
+      "original_filename": "TerrorTurn_Mechanism-and-Icon-Grammar_Gemini-v1.png",
+      "generator_or_tool_disclosure": "Google Gemini Plus; exact model variant not recorded",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-010-A",
+      "original_filename": "DH-ENV-001_Route-Planning-Board_Draft.png",
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-011-A",
+      "original_filename": "DH-ENV-001_Gemini_Layout-Synthesis_v3.png",
+      "generator_or_tool_disclosure": "Google Gemini Plus; exact model variant not recorded",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-012-A",
+      "original_filename": "TerrorTurn_Shared-UI-State-Grammar_Gemini-v1.png",
+      "generator_or_tool_disclosure": "Google Gemini Plus; exact model variant not recorded",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-013-A",
+      "original_filename": "DH-ENV-001_External-ChatGPT_v2.png",
+      "generator_or_tool_disclosure": "External ChatGPT image conversation; exact model variant not recorded",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-014-A",
+      "original_filename": "DH-ENV-001_Gemini_v2.png",
+      "generator_or_tool_disclosure": "Google Gemini Plus; exact model variant not recorded",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    },
+    {
+      "candidate_id": "DH-CAND-015-A",
+      "original_filename": "DH-ENV-001_Studio_v2.png",
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "binary_metadata": {"width_px": null, "height_px": null, "bytes": null, "sha256": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "unresolved_facts": {"exact_model_variant": null, "exact_prompt": null, "exact_negative_prompt": null, "generation_date": null, "seed": null, "third_party_or_reference_inputs": null, "human_edits": null, "content_credentials": null, "watermark_status": null, "public_repository_rights": null, "github_release_distribution_rights": null, "derivative_use_rights": null, "availability": "unresolved_not_disclosed_by_reviewed_source"},
+      "rights_state": "unresolved", "public_distribution_authorized": false, "derivative_use_authorized": false, "production_replacement_required": true, "repository_disposition": "external_candidate_pending_upload"
+    }
+  ],
+  "package_integrity": {
+    "external_planning_package": {"filename": "DH_VBL_001_External_Planning_Package_v1.zip", "bytes": 47061, "sha256": "152c67e0ce971ee341d30070d752d24803e3ba7cc5c2d03a4b917f2c74cddaaf", "integrity_verified": true},
+    "working_draft_package": {"filename": "DH-VCB-001_Working_Draft_v1.2.zip", "bytes": 18960, "sha256": "a02c156c7a62af3f301e505741d71e8f0ff4f5e7b3e2f1fa308442a9d63e68f1", "integrity_verified": true},
+    "baseline_registration_package": {"filename": "DH-VBL-001_External_Baseline_Registration_Package_v1.zip", "bytes": 11321, "sha256": "57694b81d9ee207ba0ae18d0b23495d54243c5ebc68c81a3b2a5e35e0db4052e", "integrity_verified": true},
+    "machine_contract_package": {"filename": "DH-VCB-001_Machine_Readable_Contract_Package_v1.zip", "bytes": 6978, "sha256": "b7962bb515f57b634dbda9de640378c17cd0dd382b628c4abcb993788d80c517", "integrity_verified": true},
+    "routing_packet": {"filename": "Issue_110_Future_Planning_Release_Routing_Packet_v1.zip", "bytes": 5993, "sha256": "5eaaba13d786841863dfb33385f285b3d8ed07b2b44942ee47382d6111812b70", "integrity_verified": true}
+  },
+  "hard_boundaries": {
+    "contains_image_binaries": false,
+    "contains_archives": false,
+    "runtime_provenance_registration": false,
+    "public_repository_rights_cleared": false,
+    "github_release_rights_cleared": false,
+    "derivative_rights_cleared": false,
+    "production_art_approved": false,
+    "implementation_authorized": false,
+    "codex_authorized": false
+  }
+}

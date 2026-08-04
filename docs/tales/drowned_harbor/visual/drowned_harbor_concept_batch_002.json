@@ -1,0 +1,548 @@
+{
+  "register_kind": "external_visual_candidate_register",
+  "register_version": 1,
+  "batch_id": "DH-CB-002",
+  "baseline_id": "DH-VBL-001",
+  "title": "Drowned Harbor External Preproduction Visual Candidate Batch 002",
+  "governing_issue": 110,
+  "registered_date": "2026-08-04",
+  "protected_main_base": "cbe917771ae98089f8cea11b08d68427be84ccd0",
+  "branch": "docs/dh-vbl-001-visual-baseline-registration",
+  "repository_storage": "metadata_only_external_binaries",
+  "existing_candidate_schema": {
+    "path": "docs/tales/drowned_harbor/visual/visual_candidate_batch_schema_v1.json",
+    "conformance": "blocked_by_unresolved_required_source_facts",
+    "must_not_be_claimed_conformant": true,
+    "missing_required_fact_classes": [
+      "exact prompt",
+      "model/tool variant",
+      "source kind details",
+      "input assets",
+      "third-party input disclosure"
+    ]
+  },
+  "candidate_ids": [
+    "DH-CAND-005-A",
+    "DH-CAND-006-A",
+    "DH-CAND-007-A",
+    "DH-CAND-008-A",
+    "DH-CAND-009-A",
+    "DH-CAND-010-A",
+    "DH-CAND-011-A",
+    "DH-CAND-012-A",
+    "DH-CAND-013-A",
+    "DH-CAND-014-A",
+    "DH-CAND-015-A"
+  ],
+  "primary_shortlist_ids": [
+    "DH-CAND-005-A",
+    "DH-CAND-006-A",
+    "DH-CAND-007-A",
+    "DH-CAND-008-A",
+    "DH-CAND-009-A"
+  ],
+  "reference_only_ids": [
+    "DH-CAND-010-A",
+    "DH-CAND-011-A",
+    "DH-CAND-012-A",
+    "DH-CAND-013-A",
+    "DH-CAND-014-A",
+    "DH-CAND-015-A"
+  ],
+  "candidates": [
+    {
+      "candidate_id": "DH-CAND-005-A",
+      "original_filename": "DH-ENV-001_Studio_v3.png",
+      "status": "generated_external",
+      "review_status": "preproduction_shortlist",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-ENV-001"
+      ],
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "approved_preproduction_use": "Low-Tide composition and art-direction reference",
+      "limitations": [
+        "AI-generated",
+        "not layered",
+        "not geometry-matched to High Water",
+        "not physically television-validated"
+      ],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-006-A",
+      "original_filename": "DH-ENV-002_Studio_v2.png",
+      "status": "generated_external",
+      "review_status": "preproduction_shortlist",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-ENV-002"
+      ],
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "approved_preproduction_use": "High-Water transformation reference",
+      "limitations": [
+        "AI-generated",
+        "not layered",
+        "geometry drift from Low Tide",
+        "not physically television-validated"
+      ],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-007-A",
+      "original_filename": "DH-CHAR-StableSeat-Transformation_Studio-v1.png",
+      "status": "generated_external",
+      "review_status": "preproduction_shortlist",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-FORM-001"
+      ],
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "approved_preproduction_use": "Stable-seat continuity across public form changes",
+      "limitations": [
+        "single character archetype",
+        "cinematic rendering",
+        "profiles not fully differentiated"
+      ],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-008-A",
+      "original_filename": "TerrorTurn_Shared-UI-State-Grammar_Studio-v1.png",
+      "status": "generated_external",
+      "review_status": "preproduction_shortlist",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-UI-001",
+        "storyboard family DH-UI-001 through DH-UI-022"
+      ],
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "approved_preproduction_use": "Shared UI state and interaction grammar reference",
+      "limitations": [
+        "illustrative generated text",
+        "provisional typography",
+        "not componentized",
+        "not runtime-tested"
+      ],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-009-A",
+      "original_filename": "TerrorTurn_Mechanism-and-Icon-Grammar_Gemini-v1.png",
+      "status": "generated_external",
+      "review_status": "preproduction_shortlist",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-ICON-002",
+        "visual asset brief DH-ICON-001",
+        "visual asset brief DH-UI-001"
+      ],
+      "generator_or_tool_disclosure": "Google Gemini Plus; exact model variant not recorded",
+      "approved_preproduction_use": "Mechanism and icon grammar reference",
+      "limitations": [
+        "generated text artifacts",
+        "not vector",
+        "not a sprite sheet",
+        "must be redrawn"
+      ],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-010-A",
+      "original_filename": "DH-ENV-001_Route-Planning-Board_Draft.png",
+      "status": "generated_external",
+      "review_status": "reference_only",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-ENV-001"
+      ],
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "approved_preproduction_use": "Route, elevation, High-Water, and UI-safe planning reference",
+      "limitations": [],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-011-A",
+      "original_filename": "DH-ENV-001_Gemini_Layout-Synthesis_v3.png",
+      "status": "generated_external",
+      "review_status": "reference_only",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-ENV-001",
+        "visual asset brief DH-ENV-002"
+      ],
+      "generator_or_tool_disclosure": "Google Gemini Plus; exact model variant not recorded",
+      "approved_preproduction_use": "Geographic layout and flood-transformation planning reference",
+      "limitations": [],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-012-A",
+      "original_filename": "TerrorTurn_Shared-UI-State-Grammar_Gemini-v1.png",
+      "status": "generated_external",
+      "review_status": "reference_only",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-UI-001",
+        "storyboard family DH-UI-001 through DH-UI-022"
+      ],
+      "generator_or_tool_disclosure": "Google Gemini Plus; exact model variant not recorded",
+      "approved_preproduction_use": "UI inventory and accessibility-planning reference",
+      "limitations": [],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-013-A",
+      "original_filename": "DH-ENV-001_External-ChatGPT_v2.png",
+      "status": "generated_external",
+      "review_status": "reference_only",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-ENV-001"
+      ],
+      "generator_or_tool_disclosure": "External ChatGPT image conversation; exact model variant not recorded",
+      "approved_preproduction_use": "Atmosphere and landmark-design reference",
+      "limitations": [],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-014-A",
+      "original_filename": "DH-ENV-001_Gemini_v2.png",
+      "status": "generated_external",
+      "review_status": "reference_only",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-ENV-001"
+      ],
+      "generator_or_tool_disclosure": "Google Gemini Plus; exact model variant not recorded",
+      "approved_preproduction_use": "Landmark separation and layout-clarity reference",
+      "limitations": [],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      }
+    },
+    {
+      "candidate_id": "DH-CAND-015-A",
+      "original_filename": "DH-ENV-001_Studio_v2.png",
+      "status": "deferred",
+      "review_status": "reference_only",
+      "repository_disposition": "external_candidate_pending_upload",
+      "qualified_authorities": [
+        "visual asset brief DH-ENV-001"
+      ],
+      "generator_or_tool_disclosure": "OpenAI image generation in Terror Turn art-direction ChatGPT conversation",
+      "approved_preproduction_use": "Historical composition exploration",
+      "limitations": [],
+      "production_master": false,
+      "runtime_asset": false,
+      "generated_text_authoritative": false,
+      "binary_metadata": {
+        "width_px": null,
+        "height_px": null,
+        "bytes": null,
+        "sha256": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "provenance_facts": {
+        "exact_model_variant": null,
+        "exact_prompt": null,
+        "exact_negative_prompt": null,
+        "generation_date": null,
+        "seed": null,
+        "third_party_or_reference_inputs": null,
+        "human_edits": null,
+        "content_credentials": null,
+        "watermark_status": null,
+        "public_repository_rights": null,
+        "github_release_distribution_rights": null,
+        "derivative_use_rights": null,
+        "availability": "unresolved_not_disclosed_by_reviewed_source"
+      },
+      "superseded_by": "DH-CAND-005-A"
+    }
+  ],
+  "boundaries": {
+    "production_candidate_allowed": false,
+    "approved_allowed": false,
+    "image_binaries_committed": false,
+    "implementation_authorized": false,
+    "codex_authorized": false,
+    "normal_tale_registered": false,
+    "ordinary_export_included": false,
+    "pr_32_incorporated": false,
+    "issue_7_gate_preserved": true,
+    "issue_39_gate_preserved": true,
+    "alpha3_developer_only": true,
+    "lantern_house_sole_normal_default_tale": true
+  },
+  "source_package_evidence": {
+    "external_planning_package": {
+      "filename": "DH_VBL_001_External_Planning_Package_v1.zip",
+      "bytes": 47061,
+      "sha256": "152c67e0ce971ee341d30070d752d24803e3ba7cc5c2d03a4b917f2c74cddaaf",
+      "integrity_verified": true
+    },
+    "working_draft_package": {
+      "filename": "DH-VCB-001_Working_Draft_v1.2.zip",
+      "bytes": 18960,
+      "sha256": "a02c156c7a62af3f301e505741d71e8f0ff4f5e7b3e2f1fa308442a9d63e68f1",
+      "integrity_verified": true
+    },
+    "baseline_registration_package": {
+      "filename": "DH-VBL-001_External_Baseline_Registration_Package_v1.zip",
+      "bytes": 11321,
+      "sha256": "57694b81d9ee207ba0ae18d0b23495d54243c5ebc68c81a3b2a5e35e0db4052e",
+      "integrity_verified": true
+    },
+    "machine_contract_package": {
+      "filename": "DH-VCB-001_Machine_Readable_Contract_Package_v1.zip",
+      "bytes": 6978,
+      "sha256": "b7962bb515f57b634dbda9de640378c17cd0dd382b628c4abcb993788d80c517",
+      "integrity_verified": true
+    },
+    "routing_packet": {
+      "filename": "Issue_110_Future_Planning_Release_Routing_Packet_v1.zip",
+      "bytes": 5993,
+      "sha256": "5eaaba13d786841863dfb33385f285b3d8ed07b2b44942ee47382d6111812b70",
+      "integrity_verified": true
+    }
+  }
+}

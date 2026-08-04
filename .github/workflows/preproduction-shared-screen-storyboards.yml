@@ -50,11 +50,11 @@ jobs:
         run: python tools/test_render_shared_screen_storyboards.py
       - name: Render temporary review file
         run: python tools/render_shared_screen_storyboards.py --output "$RUNNER_TEMP/drowned_harbor_storyboards.html"
-      - name: Verify offline and clean output
+      - name: Verify offline, normal-catalog isolation, and clean output
         run: |
           test -s "$RUNNER_TEMP/drowned_harbor_storyboards.html"
           test "$(grep -c 'class="storyboard"' "$RUNNER_TEMP/drowned_harbor_storyboards.html")" = "22"
           ! grep -Eiq 'https?://|<script|src=' "$RUNNER_TEMP/drowned_harbor_storyboards.html"
-          test ! -e game/data/tales/drowned_harbor
-          test "$(find game/data/tales -mindepth 1 -maxdepth 1 -type d | sort)" = "game/data/tales/lantern_house"
+          test -d game/data/tales/drowned_harbor
+          python tools/tale_catalog.py validate
           test -z "$(git status --porcelain)"
