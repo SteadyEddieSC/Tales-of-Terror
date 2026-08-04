@@ -56,7 +56,7 @@ Reusable production foundations include:
 
 Lantern House remains the sole production Tale. It is an integration route used to prove that the project’s major systems work together, not the final standard for story volume, art, atmosphere, encounter variety, balance, or replayability.
 
-## Future Tale in developer-only runtime: Drowned Harbor
+## Future Tale in design: Drowned Harbor
 
 **Drowned Harbor is not a production Tale and is not ordinarily playable.**
 
