@@ -1,18 +1,15 @@
-name: Temporary Companion remediation lock synthesis
+name: Temporary Companion remediation validator finalizer
 
 on:
   pull_request:
-  push:
-    branches:
-      - feature/v0.2.0-alpha.3-systems-replayability
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  synthesize-and-prove:
-    name: Generate lock, prove compatibility, and finalize boundaries
+  finalize-validators:
+    name: Prove Companion and commit bounded validator updates
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -27,11 +24,9 @@ jobs:
         with:
           node-version: 24.18.0
           cache: npm
-      - name: Generate candidate lockfile from authorized overrides
-        run: npm install --package-lock-only --ignore-scripts
-      - name: Install generated locked dependencies
+      - name: Install committed locked dependencies
         run: npm ci
-      - name: Prove patched dependency identities
+      - name: Prove audit and Companion compatibility
         shell: bash
         run: |
           set -euo pipefail
@@ -41,16 +36,11 @@ jobs:
           const undici = lock.packages['node_modules/undici']?.version;
           if (postcss !== '8.5.23') throw new Error(`unexpected postcss ${postcss}`);
           if (undici !== '7.29.0') throw new Error(`unexpected undici ${undici}`);
-          console.log(JSON.stringify({ postcss, undici }));
           NODE
-      - name: Dependency vulnerability audit
-        run: npm audit --audit-level=moderate
-      - name: Strict TypeScript validation
-        run: npm run typecheck
-      - name: Protocol service browser privacy and accessibility tests
-        run: npm test
-      - name: Worker and browser production builds
-        run: npm run build
+          npm audit --audit-level=moderate
+          npm run typecheck
+          npm test
+          npm run build
       - name: Local Worker and Durable Object emulation smoke
         shell: bash
         run: |
@@ -77,8 +67,7 @@ jobs:
           assert len(value['joinCode']) == 6
           assert value['joinCode'] != value['hostCapability']
           PY
-      - name: Apply bounded inherited-validator and path-boundary cleanup
-        if: github.event_name == 'pull_request'
+      - name: Apply bounded inherited-validator updates
         shell: bash
         run: |
           set -euo pipefail
@@ -114,8 +103,10 @@ jobs:
           )
 
           mutation_test = 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
-          baseline_marker = '    mutations: list[tuple[str, Mutation]] = [\n'
-          baseline_block = '''    validate_manifest_and_production_boundary(
+          replace_exact(
+              mutation_test,
+              '    mutations: list[tuple[str, Mutation]] = [\n',
+              '''    validate_manifest_and_production_boundary(
               read_json(ROOT / MANIFEST_PATH),
               read_json(ROOT / "game/data/tales/tale_catalog_v1.json"),
               (ROOT / PROVIDER_PATH).read_text(encoding="utf-8"),
@@ -125,13 +116,14 @@ jobs:
           )
 
           mutations: list[tuple[str, Mutation]] = [
-          '''
-          replace_exact(mutation_test, baseline_marker, baseline_block)
-
-          mutation_marker = '''        (
+          ''',
+          )
+          replace_exact(
+              mutation_test,
+              '''        (
                       "production registration",
-          '''
-          mutation_block = '''        (
+          ''',
+              '''        (
                       "missing approved overrides",
                       lambda: boundary_mutation(
                           lambda _m, _c, _p, _e, j, _l: j.pop("overrides", None)
@@ -187,66 +179,29 @@ jobs:
                   ),
                   (
                       "production registration",
-          '''
-          replace_exact(mutation_test, mutation_marker, mutation_block)
+          ''',
+          )
 
           alpha3_validator = 'tools/validate_drowned_harbor_alpha3_systems.py'
-          alpha3_marker = '    ".github/workflows/v020-alpha3-systems-replayability.yml",\n'
-          alpha3_addition = (
-              alpha3_marker
+          marker = '    ".github/workflows/v020-alpha3-systems-replayability.yml",\n'
+          replace_exact(
+              alpha3_validator,
+              marker,
+              marker
               + '    "package-lock.json",\n'
               + '    "package.json",\n'
               + '    "tools/test_validate_drowned_harbor_controlled_private_shield.py",\n'
-              + '    "tools/validate_drowned_harbor_controlled_private_shield.py",\n'
+              + '    "tools/validate_drowned_harbor_controlled_private_shield.py",\n',
           )
-          replace_exact(alpha3_validator, alpha3_marker, alpha3_addition)
-
-          workflow = '.github/workflows/v020-alpha3-systems-replayability.yml'
-          yaml_marker = "      - '.github/workflows/v020-alpha3-systems-replayability.yml'\n"
-          yaml_addition = (
-              yaml_marker
-              + "      - 'package-lock.json'\n"
-              + "      - 'package.json'\n"
-              + "      - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'\n"
-              + "      - 'tools/validate_drowned_harbor_controlled_private_shield.py'\n"
-          )
-          replace_exact(workflow, yaml_marker, yaml_addition, count=2)
-          expected_marker = "              '.github/workflows/v020-alpha3-systems-replayability.yml',\n"
-          expected_addition = (
-              expected_marker
-              + "              'package-lock.json',\n"
-              + "              'package.json',\n"
-              + "              'tools/test_validate_drowned_harbor_controlled_private_shield.py',\n"
-              + "              'tools/validate_drowned_harbor_controlled_private_shield.py',\n"
-          )
-          replace_exact(workflow, expected_marker, expected_addition)
-          replace_exact(
-              workflow,
-              "          print('Validated exact 34-path Alpha.3 protected-base inventory')\n",
-              "          print('Validated exact 38-path Alpha.3 protected-base inventory')\n",
-          )
-
-          Path('.github/workflows/temporary-companion-remediation-lock.yml').unlink()
           PY
-      - name: Commit proven lockfile and bounded cleanup
-        if: github.event_name == 'pull_request'
+      - name: Commit bounded Python validator updates
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No cleanup changes remain."
-            exit 0
-          fi
-          git commit -m "Finalize Companion remediation and Alpha.3 boundaries"
+          git add tools/validate_drowned_harbor_controlled_private_shield.py
+          git add tools/test_validate_drowned_harbor_controlled_private_shield.py
+          git add tools/validate_drowned_harbor_alpha3_systems.py
+          git commit -m "Validate bounded Companion dependency overrides"
           git push origin "HEAD:${GITHUB_HEAD_REF}"
-      - name: Upload generated candidate lockfile
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6.0.0
-        with:
-          name: companion-remediation-lock-${{ github.sha }}
-          path: package-lock.json
-          if-no-files-found: error
-          retention-days: 2
