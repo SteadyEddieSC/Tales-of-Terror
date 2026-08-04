@@ -204,6 +204,8 @@ EXPECTED_SOURCES = {
     "drowned_harbor_alpha3_session.gd",
 }
 AUTHORIZED_PATHS = {
+    ".github/workflows/v020-alpha1-production-tale-scaffold.yml",
+    ".github/workflows/v020-alpha2-end-to-end-graybox.yml",
     ".github/workflows/v020-alpha3-systems-replayability.yml",
     "CHANGELOG.md",
     "docs/playtests/v0.2.0-alpha.3-systems-replayability-evidence.md",
