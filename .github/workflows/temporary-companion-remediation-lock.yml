@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   synthesize-and-prove:
@@ -73,6 +73,20 @@ jobs:
           assert len(value['joinCode']) == 6
           assert value['joinCode'] != value['hostCapability']
           PY
+      - name: Commit generated lockfile to the authorized branch
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          if git diff --cached --quiet; then
+            echo "Generated lockfile already committed."
+            exit 0
+          fi
+          git commit -m "Regenerate Companion lockfile for patched overrides"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
       - name: Upload generated candidate lockfile
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6.0.0
