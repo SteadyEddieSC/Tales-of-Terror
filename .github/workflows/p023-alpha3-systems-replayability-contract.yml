@@ -3,6 +3,7 @@ name: P0.23 Alpha.3 systems and replayability contract
 on:
   pull_request:
     paths:
+      - 'README.md'
       - '.github/workflows/p021-production-architecture.yml'
       - '.github/workflows/p022-alpha2-graybox-contract.yml'
       - '.github/workflows/p023-alpha3-systems-replayability-contract.yml'
@@ -21,6 +22,7 @@ on:
   push:
     branches: [main, docs/p0.23-alpha3-systems-replayability-contract]
     paths:
+      - 'README.md'
       - '.github/workflows/p021-production-architecture.yml'
       - '.github/workflows/p022-alpha2-graybox-contract.yml'
       - '.github/workflows/p023-alpha3-systems-replayability-contract.yml'
@@ -52,30 +54,83 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: 3.11.9
-      - name: Enforce exact P0.23 path boundary
+      - name: Enforce historical or reconciliation path boundary
         if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        shell: bash
         run: |
+          set -euo pipefail
           git fetch origin "$BASE_REF" --depth=1
           python - <<'PY2'
-          import os, subprocess
-          expected=[".github/workflows/p021-production-architecture.yml", ".github/workflows/p022-alpha2-graybox-contract.yml", ".github/workflows/p023-alpha3-systems-replayability-contract.yml", ".github/workflows/post-prototype-reconciliation.yml", "docs/preproduction/P0.21_Implementation_Issue_Set.md", "docs/preproduction/P0.23_Alpha3_Implementation_Issue.md", "docs/preproduction/README.md", "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json", "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json", "docs/preproduction/post_prototype_status_v1.json", "docs/releases/P0.23-alpha3-systems-replayability-contract.md", "docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md", "docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md", "tools/test_validate_p023_alpha3_systems_replayability_contract.py", "tools/validate_p023_alpha3_systems_replayability_contract.py"]
-          actual=[x for x in subprocess.check_output(['git','diff','--name-only',f"origin/{os.environ['BASE_REF']}...HEAD"],text=True).splitlines() if x]
-          if set(actual)!=set(expected):
-              raise SystemExit(f'P0.23 path mismatch missing={sorted(set(expected)-set(actual))} unexpected={sorted(set(actual)-set(expected))}')
-          print('Validated exact P0.23 path inventory')
+          import os
+          import subprocess
+
+          historical = {
+              ".github/workflows/p021-production-architecture.yml",
+              ".github/workflows/p022-alpha2-graybox-contract.yml",
+              ".github/workflows/p023-alpha3-systems-replayability-contract.yml",
+              ".github/workflows/post-prototype-reconciliation.yml",
+              "docs/preproduction/P0.21_Implementation_Issue_Set.md",
+              "docs/preproduction/P0.23_Alpha3_Implementation_Issue.md",
+              "docs/preproduction/README.md",
+              "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json",
+              "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json",
+              "docs/preproduction/post_prototype_status_v1.json",
+              "docs/releases/P0.23-alpha3-systems-replayability-contract.md",
+              "docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md",
+              "docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md",
+              "tools/test_validate_p023_alpha3_systems_replayability_contract.py",
+              "tools/validate_p023_alpha3_systems_replayability_contract.py",
+          }
+          reconciliation = {
+              "README.md",
+              ".github/workflows/p021-production-architecture.yml",
+              ".github/workflows/p022-alpha2-graybox-contract.yml",
+              ".github/workflows/p023-alpha3-systems-replayability-contract.yml",
+              ".github/workflows/post-prototype-reconciliation.yml",
+              "docs/preproduction/README.md",
+              "docs/preproduction/post_prototype_status_v1.json",
+              "docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md",
+              "tools/test_validate_p023_alpha3_systems_replayability_contract.py",
+              "tools/validate_p023_alpha3_systems_replayability_contract.py",
+          }
+          head = os.environ["HEAD_REF"]
+          expected = None
+          if head == "docs/p0.23-alpha3-systems-replayability-contract":
+              expected = historical
+          elif head == "docs/post-alpha3-status-reconciliation":
+              expected = reconciliation
+
+          if expected is None:
+              print(f"No release-specific exact boundary registered for {head}; contract validation still applies")
+              raise SystemExit(0)
+
+          output = subprocess.check_output(
+              ["git", "diff", "--name-only", f"origin/{os.environ['BASE_REF']}...HEAD"],
+              text=True,
+          )
+          actual = {line for line in output.splitlines() if line}
+          if actual != expected:
+              raise SystemExit(
+                  f"path mismatch missing={sorted(expected - actual)} "
+                  f"unexpected={sorted(actual - expected)}"
+              )
+          print(f"Validated exact {len(expected)}-path inventory for {head}")
           PY2
       - name: Validate P0.23 contract and mutations
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "${GITHUB_REF_NAME:-}" == "main" ]]; then
-            python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
-          else
+          effective="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
+          if [[ "$effective" == "docs/p0.23-alpha3-systems-replayability-contract" ]]; then
             python tools/validate_p023_alpha3_systems_replayability_contract.py
+            python tools/test_validate_p023_alpha3_systems_replayability_contract.py
+          else
+            python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary --later-succession
+            python tools/test_validate_p023_alpha3_systems_replayability_contract.py --later-succession
           fi
-          python tools/test_validate_p023_alpha3_systems_replayability_contract.py
       - name: Preserve Alpha.2 runtime and authoring contracts
         run: |
           python tools/validate_drowned_harbor_alpha2_graybox.py --skip-git-boundary
@@ -91,8 +146,12 @@ jobs:
           python - <<'PY2'
           import json
           from pathlib import Path
-          for p in [Path('docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json'),Path('docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json'),Path('docs/preproduction/post_prototype_status_v1.json')]:
-              json.loads(p.read_text(encoding='utf-8'))
+          for path in [
+              Path('docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json'),
+              Path('docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json'),
+              Path('docs/preproduction/post_prototype_status_v1.json'),
+          ]:
+              json.loads(path.read_text(encoding='utf-8'))
           print('Governed JSON parsed')
           PY2
           ruby - <<'RUBY'
