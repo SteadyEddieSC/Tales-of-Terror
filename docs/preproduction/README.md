@@ -1,7 +1,7 @@
 # Preproduction and Production-Planning Index
 
-**Status:** Internal design, developer-only runtime, and planning material  
-**Current package:** Post-Alpha.3 protected-main status reconciliation — issue #111  
+**Status:** Internal design, developer-only runtime, and planning material
+**Current package:** Post-Alpha.3 protected-main status reconciliation — issue #111
 **Protected-main baseline reconciled:** `cad70c5c8f0db1de7d557aff242cc8fe3610361b`
 
 ## Current authorities
