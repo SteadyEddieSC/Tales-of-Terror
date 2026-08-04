@@ -10,6 +10,8 @@ on:
       - 'package.json'
       - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
       - 'tools/validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/test_validate_drowned_harbor_high_water_transformation.py'
+      - 'tools/validate_drowned_harbor_high_water_transformation.py'
       - 'CHANGELOG.md'
       - 'docs/releases/v0.2.0-alpha.3-systems-replayability.md'
       - 'docs/playtests/v0.2.0-alpha.3-systems-replayability-evidence.md'
@@ -39,6 +41,8 @@ on:
       - 'package.json'
       - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
       - 'tools/validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/test_validate_drowned_harbor_high_water_transformation.py'
+      - 'tools/validate_drowned_harbor_high_water_transformation.py'
       - 'CHANGELOG.md'
       - 'docs/releases/v0.2.0-alpha.3-systems-replayability.md'
       - 'docs/playtests/v0.2.0-alpha.3-systems-replayability-evidence.md'
@@ -98,6 +102,8 @@ jobs:
               'package.json',
               'tools/test_validate_drowned_harbor_controlled_private_shield.py',
               'tools/validate_drowned_harbor_controlled_private_shield.py',
+              'tools/test_validate_drowned_harbor_high_water_transformation.py',
+              'tools/validate_drowned_harbor_high_water_transformation.py',
               'CHANGELOG.md',
               'docs/playtests/v0.2.0-alpha.3-systems-replayability-evidence.md',
               'docs/releases/v0.2.0-alpha.3-systems-replayability.md',
@@ -141,7 +147,7 @@ jobs:
                   f'missing={sorted(expected - actual)}; '
                   f'unexpected={sorted(actual - expected)}'
               )
-          print('Validated exact 38-path Alpha.3 protected-base inventory')
+          print('Validated exact 40-path Alpha.3 protected-base inventory')
           PY
 
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
@@ -173,7 +179,7 @@ jobs:
           effective_branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
           alpha3_args=(--skip-git-boundary)
           if [ "$effective_branch" = 'feature/v0.2.0-alpha.3-systems-replayability' ]; then
-            echo 'Exact 38-path Alpha.3 boundary was enforced by the preceding dedicated gate.'
+            echo 'Exact 40-path Alpha.3 boundary was enforced by the preceding dedicated gate.'
           fi
           run_check alpha3-validator python tools/validate_drowned_harbor_alpha3_systems.py "${alpha3_args[@]}"
           run_check alpha3-mutations python tools/test_validate_drowned_harbor_alpha3_systems.py
