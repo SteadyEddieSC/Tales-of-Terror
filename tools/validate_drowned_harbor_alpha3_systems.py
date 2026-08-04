@@ -211,6 +211,8 @@ AUTHORIZED_PATHS = {
     "package.json",
     "tools/test_validate_drowned_harbor_controlled_private_shield.py",
     "tools/validate_drowned_harbor_controlled_private_shield.py",
+    "tools/test_validate_drowned_harbor_high_water_transformation.py",
+    "tools/validate_drowned_harbor_high_water_transformation.py",
     "CHANGELOG.md",
     "docs/playtests/v0.2.0-alpha.3-systems-replayability-evidence.md",
     "docs/releases/v0.2.0-alpha.3-systems-replayability.md",
