@@ -1,6 +1,7 @@
 name: Temporary Companion remediation lock synthesis
 
 on:
+  pull_request:
   push:
     branches:
       - feature/v0.2.0-alpha.3-systems-replayability
