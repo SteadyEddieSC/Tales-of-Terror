@@ -1,0 +1,77 @@
+{
+  "package_kind": "tale",
+  "schema_version": 1,
+  "tale_id": "drowned_harbor",
+  "package_version": 3,
+  "provider": {
+    "provider_id": "drowned_harbor_authorities_v1",
+    "provider_version": 3,
+    "board_reference": "drowned_harbor_graybox_board_v2",
+    "rules_reference": "drowned_harbor_systems_rules_v3",
+    "director_reference": "drowned_harbor_systems_director_v3",
+    "social_reference": "drowned_harbor_systems_role_session_v3"
+  },
+  "display": {
+    "display_key": "tale.drowned_harbor.alpha3.display_name",
+    "briefing_key": "tale.drowned_harbor.alpha3.briefing",
+    "status": "temporary_internal_placeholder"
+  },
+  "compatibility": {
+    "engine": "godot_4_7_1",
+    "minimum_seats": 1,
+    "maximum_seats": 8,
+    "supported_modes": ["cooperative", "hidden_betrayer", "outbreak"],
+    "deferred_modes": ["hunted", "rival_crews"],
+    "admission_policy": "developer_only_explicit_launch",
+    "unknown_field_policy": "reject",
+    "deterministic": true
+  },
+  "content": {
+    "scenario_path": "res://data/scenarios/drowned_harbor_systems_v3.json",
+    "scenario_id": "drowned_harbor_systems_v3",
+    "scenario_sha256": "0bdb6800525631406f8a0aa43b2cff7115916928f81e5e35fba353b3a55710d2",
+    "inherited_route_scenario_id": "drowned_harbor_graybox_v2",
+    "rules_reference": "drowned_harbor_systems_rules_v3",
+    "director_reference": "drowned_harbor_systems_director_v3",
+    "social_reference": "drowned_harbor_systems_role_session_v3"
+  },
+  "localization": {
+    "catalog_path": "res://data/tales/drowned_harbor/localization_systems_en_v3.json",
+    "catalog_id": "drowned_harbor_systems_en_v3",
+    "catalog_sha256": "f094c2364fe75f78f6bb0991fbe027c6fad3023159261651763b3c323948fc73"
+  },
+  "persistence": {
+    "snapshot_version": 3,
+    "migration_policy": "explicit_alpha2_snapshot_v2_to_alpha3_snapshot_v3_or_fail_closed",
+    "exactly_once_policy": "persist_all_nine_governed_identities_and_processed_request_event_ids",
+    "best_effort_restore": false
+  },
+  "privacy": {
+    "classes": ["public", "controlled_reveal_private", "seat_private", "faction_private"],
+    "private_projection_owner": "role_session",
+    "director_input_policy": "closed_public_aggregate_allowlist",
+    "shared_output_policy": "closed_public_status_only"
+  },
+  "inventory": {
+    "roles": ["bellhouse_archivist", "fog_listener", "lantern_surveyor", "lifeboat_keeper", "tide_chapel_warden", "wreckers_heir"],
+    "items": ["chapel_salt_censer", "cracked_lighthouse_lens", "dead_mans_compass", "glass_bell_clapper", "harbor_masters_seal", "ledger_knife", "lifeboat_flare", "missing_name_tablet", "oilskin_satchel", "salt_stiff_rope", "tin_lantern", "wreckers_hook"],
+    "cards": ["a_name_remembered", "borrowed_breath", "cut_the_line", "hold_fast", "mark_the_door", "one_more_passenger", "salt_in_the_wound", "share_the_weight", "the_harbor_owes_me", "the_light_looks_back", "the_long_way_around", "wrong_bell"],
+    "resources": ["bell_tokens", "dry_matches", "harbor_keys", "lamp_oil", "lifeboat_capacity", "memory_fragments", "rope", "salt_marks"],
+    "hazards": ["archive_collapse", "bell_shock", "drowned_patrol", "harbors_claim", "lamps_turn_seaward", "lifeboat_breaks_free", "light_answers", "missing_name", "returning_current", "salt_rot", "street_gives_way", "water_in_lungs"],
+    "ending_families": ["drowned_released", "harbor_rises", "harbor_sealed", "last_lifeboat", "light_comes_home", "mixed_outcomes", "names_erased"]
+  },
+  "source_ledger": [
+    {"role": "systems_contract", "path": "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json", "reference": "drowned_harbor_alpha3_systems_replayability_contract"},
+    {"role": "scenario_manifest", "path": "game/data/scenarios/drowned_harbor_systems_v3.json", "reference": "drowned_harbor_systems_v3"},
+    {"role": "localization_catalog", "path": "game/data/tales/drowned_harbor/localization_systems_en_v3.json", "reference": "drowned_harbor_systems_en_v3"},
+    {"role": "scoped_provider", "path": "game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_scoped_provider.gd", "reference": "drowned_harbor_authorities_v1"},
+    {"role": "rules_authority", "path": "game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_rules_authority.gd", "reference": "rules_session"},
+    {"role": "private_projection_authority", "path": "game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_role_authority.gd", "reference": "role_session"},
+    {"role": "director_authority", "path": "game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_director_authority.gd", "reference": "director_content"}
+  ],
+  "identity_policy": {
+    "algorithm": "sha256",
+    "canonicalization": "utf8_json_sorted_object_keys_compact_arrays_preserved",
+    "non_authoritative_metadata_excluded": []
+  }
+}

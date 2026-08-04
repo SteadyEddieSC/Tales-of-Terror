@@ -1,0 +1,350 @@
+name: v0.2.0-alpha.3 Drowned Harbor systems and replayability
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
+      - '.github/workflows/v020-alpha2-end-to-end-graybox.yml'
+      - '.github/workflows/v020-alpha3-systems-replayability.yml'
+      - 'package-lock.json'
+      - 'package.json'
+      - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/test_validate_drowned_harbor_high_water_transformation.py'
+      - 'tools/validate_drowned_harbor_high_water_transformation.py'
+      - 'CHANGELOG.md'
+      - 'docs/releases/v0.2.0-alpha.3-systems-replayability.md'
+      - 'docs/playtests/v0.2.0-alpha.3-systems-replayability-evidence.md'
+      - 'game/data/scenarios/drowned_harbor_systems_v3.json'
+      - 'game/data/tales/drowned_harbor/tale_package_v3.json'
+      - 'game/data/tales/drowned_harbor/localization_systems_en_v3.json'
+      - 'game/src/tales/drowned_harbor/alpha3/**'
+      - 'game/tests/drowned_harbor_alpha3_systems/**'
+      - 'game/export_presets.cfg'
+      - 'tools/portable_bundle.py'
+      - 'tools/validate_drowned_harbor_alpha2_graybox.py'
+      - 'tools/validate_p022_alpha2_graybox_contract.py'
+      - 'tools/test_validate_p022_alpha2_graybox_contract.py'
+      - 'tools/validate_p021_production_architecture.py'
+      - 'tools/test_validate_p021_production_architecture.py'
+      - 'tools/validate_post_prototype_reconciliation.py'
+      - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_drowned_harbor_alpha3_systems.py'
+      - 'tools/test_validate_drowned_harbor_alpha3_systems.py'
+  push:
+    branches: [main, feature/v0.2.0-alpha.3-systems-replayability]
+    paths:
+      - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
+      - '.github/workflows/v020-alpha2-end-to-end-graybox.yml'
+      - '.github/workflows/v020-alpha3-systems-replayability.yml'
+      - 'package-lock.json'
+      - 'package.json'
+      - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/validate_drowned_harbor_controlled_private_shield.py'
+      - 'tools/test_validate_drowned_harbor_high_water_transformation.py'
+      - 'tools/validate_drowned_harbor_high_water_transformation.py'
+      - 'CHANGELOG.md'
+      - 'docs/releases/v0.2.0-alpha.3-systems-replayability.md'
+      - 'docs/playtests/v0.2.0-alpha.3-systems-replayability-evidence.md'
+      - 'game/data/scenarios/drowned_harbor_systems_v3.json'
+      - 'game/data/tales/drowned_harbor/tale_package_v3.json'
+      - 'game/data/tales/drowned_harbor/localization_systems_en_v3.json'
+      - 'game/src/tales/drowned_harbor/alpha3/**'
+      - 'game/tests/drowned_harbor_alpha3_systems/**'
+      - 'game/export_presets.cfg'
+      - 'tools/portable_bundle.py'
+      - 'tools/validate_drowned_harbor_alpha2_graybox.py'
+      - 'tools/validate_p022_alpha2_graybox_contract.py'
+      - 'tools/test_validate_p022_alpha2_graybox_contract.py'
+      - 'tools/validate_p021_production_architecture.py'
+      - 'tools/test_validate_p021_production_architecture.py'
+      - 'tools/validate_post_prototype_reconciliation.py'
+      - 'tools/test_validate_post_prototype_reconciliation.py'
+      - 'tools/validate_drowned_harbor_alpha3_systems.py'
+      - 'tools/test_validate_drowned_harbor_alpha3_systems.py'
+
+permissions:
+  contents: read
+
+jobs:
+  systems:
+    name: Native systems, replay matrix, and ordinary-export isolation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      GODOT_TEMPLATE_SHA256: 86409db6200b6f8fd3230989c2d2002851f3dd18acf11d7bdbafddf5a0dd0f72
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+
+      - name: Enforce exact Alpha.3 protected-base path boundary
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.head_ref == 'feature/v0.2.0-alpha.3-systems-replayability'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$BASE_REF" --depth=1
+          python - <<'PY'
+          import os
+          import subprocess
+
+          expected = {
+              '.github/workflows/v020-alpha1-production-tale-scaffold.yml',
+              '.github/workflows/v020-alpha2-end-to-end-graybox.yml',
+              '.github/workflows/v020-alpha3-systems-replayability.yml',
+              'package-lock.json',
+              'package.json',
+              'tools/test_validate_drowned_harbor_controlled_private_shield.py',
+              'tools/validate_drowned_harbor_controlled_private_shield.py',
+              'tools/test_validate_drowned_harbor_high_water_transformation.py',
+              'tools/validate_drowned_harbor_high_water_transformation.py',
+              'CHANGELOG.md',
+              'docs/playtests/v0.2.0-alpha.3-systems-replayability-evidence.md',
+              'docs/releases/v0.2.0-alpha.3-systems-replayability.md',
+              'game/data/scenarios/drowned_harbor_systems_v3.json',
+              'game/data/tales/drowned_harbor/localization_systems_en_v3.json',
+              'game/data/tales/drowned_harbor/tale_package_v3.json',
+              'game/export_presets.cfg',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_developer_admission.gd',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_developer_admission.gd.uid',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_director_authority.gd',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_director_authority.gd.uid',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_role_authority.gd',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_role_authority.gd.uid',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_rules_authority.gd',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_rules_authority.gd.uid',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_scoped_provider.gd',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_scoped_provider.gd.uid',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_session.gd',
+              'game/src/tales/drowned_harbor/alpha3/drowned_harbor_alpha3_session.gd.uid',
+              'game/tests/drowned_harbor_alpha3_systems/drowned_harbor_alpha3_systems_test.gd',
+              'game/tests/drowned_harbor_alpha3_systems/drowned_harbor_alpha3_systems_test.gd.uid',
+              'tools/portable_bundle.py',
+              'tools/test_validate_drowned_harbor_alpha3_systems.py',
+              'tools/test_validate_p022_alpha2_graybox_contract.py',
+              'tools/test_validate_p021_production_architecture.py',
+              'tools/test_validate_post_prototype_reconciliation.py',
+              'tools/validate_drowned_harbor_alpha2_graybox.py',
+              'tools/validate_drowned_harbor_alpha3_systems.py',
+              'tools/validate_p022_alpha2_graybox_contract.py',
+              'tools/validate_p021_production_architecture.py',
+              'tools/validate_post_prototype_reconciliation.py',
+          }
+          output = subprocess.check_output(
+              ['git', 'diff', '--name-only', f"origin/{os.environ['BASE_REF']}...HEAD"],
+              text=True,
+          )
+          actual = {line for line in output.splitlines() if line}
+          if actual != expected:
+              raise SystemExit(
+                  'Alpha.3 path boundary mismatch; '
+                  f'missing={sorted(expected - actual)}; '
+                  f'unexpected={sorted(actual - expected)}'
+              )
+          print('Validated exact 40-path Alpha.3 protected-base inventory')
+          PY
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Install pinned validation dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+
+      - name: Run Alpha.3 and inherited offline validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          log_root="$RUNNER_TEMP/alpha3-python"
+          mkdir -p "$log_root" artifacts/alpha3/python
+          run_check() {
+            name="$1"
+            shift
+            set +e
+            "$@" 2>&1 | tee "$log_root/${name}.txt"
+            status=${PIPESTATUS[0]}
+            set -e
+            echo "$status" > "$log_root/${name}.status"
+            cp "$log_root/${name}.txt" "$log_root/${name}.status" artifacts/alpha3/python/
+            test "$status" -eq 0
+          }
+          effective_branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
+          alpha3_args=(--skip-git-boundary)
+          if [ "$effective_branch" = 'feature/v0.2.0-alpha.3-systems-replayability' ]; then
+            echo 'Exact 40-path Alpha.3 boundary was enforced by the preceding dedicated gate.'
+          fi
+          run_check alpha3-validator python tools/validate_drowned_harbor_alpha3_systems.py "${alpha3_args[@]}"
+          run_check alpha3-mutations python tools/test_validate_drowned_harbor_alpha3_systems.py
+          run_check alpha2-validator python tools/validate_drowned_harbor_alpha2_graybox.py --skip-git-boundary
+          run_check alpha2-mutations python tools/test_validate_drowned_harbor_alpha2_graybox.py
+          run_check alpha1-validator python tools/validate_drowned_harbor_production_scaffold.py --skip-git-boundary
+          run_check alpha1-mutations python tools/test_validate_drowned_harbor_production_scaffold.py
+          run_check p021-validator python tools/validate_p021_production_architecture.py --skip-git-boundary --later-succession
+          run_check p021-mutations python tools/test_validate_p021_production_architecture.py
+          run_check p022-validator python tools/validate_p022_alpha2_graybox_contract.py --skip-git-boundary --later-succession
+          run_check p022-mutations python tools/test_validate_p022_alpha2_graybox_contract.py
+          run_check p023-validator python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
+          run_check p023-mutations python tools/test_validate_p023_alpha3_systems_replayability_contract.py
+          run_check succession python tools/validate_post_prototype_reconciliation.py --skip-git-boundary --later-succession
+          run_check succession-mutations python tools/test_validate_post_prototype_reconciliation.py
+          run_check authoring python tools/validate_tale_authoring_reference.py
+          run_check authoring-mutations python tools/test_validate_tale_authoring_reference.py
+          run_check isolation python tools/validate_drowned_harbor_prototype_isolation_p016.py
+          run_check isolation-mutations python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
+          run_check prototype-automation python tools/validate_drowned_harbor_prototype_automation.py
+          run_check prototype-automation-mutations python tools/test_validate_drowned_harbor_prototype_automation.py
+          run_check projection python tools/validate_drowned_harbor_projection_fixtures_p016.py
+          run_check projection-mutations python tools/test_validate_drowned_harbor_projection_fixtures_p016.py
+          run_check low-tide python tools/validate_drowned_harbor_low_tide_shell_p016.py
+          run_check low-tide-mutations python tools/test_validate_drowned_harbor_low_tide_shell_p016.py
+          run_check bellhouse python tools/validate_drowned_harbor_bellhouse_recovery.py
+          run_check bellhouse-mutations python tools/test_validate_drowned_harbor_bellhouse_recovery.py
+          run_check controlled-private python tools/validate_drowned_harbor_controlled_private_shield.py
+          run_check controlled-private-mutations python tools/test_validate_drowned_harbor_controlled_private_shield.py
+          run_check high-water python tools/validate_drowned_harbor_high_water_transformation.py
+          run_check high-water-mutations python tools/test_validate_drowned_harbor_high_water_transformation.py
+          run_check tale-package python tools/tale_package.py validate
+          run_check tale-package-mutations python tools/test_tale_package.py
+          run_check tale-catalog python tools/tale_catalog.py validate
+          run_check tale-catalog-mutations python tools/test_tale_catalog.py
+          run_check portable-policy python tools/portable_bundle.py validate-repository
+          run_check portable-mutations python tools/test_portable_bundle.py
+
+      - name: Parse governed JSON and workflow YAML
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import yaml
+
+          for path in Path('.').rglob('*.json'):
+              if '.godot' not in path.parts and 'node_modules' not in path.parts:
+                  json.loads(path.read_text(encoding='utf-8'))
+          for path in Path('.github/workflows').glob('*.yml'):
+              yaml.safe_load(path.read_text(encoding='utf-8'))
+          print('Parsed governed JSON and workflow YAML')
+          PY
+
+      - name: Check first-party GDScript formatting and lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/alpha3/gdscript
+          mapfile -t scripts < <(find game -type f -name '*.gd' -not -path 'game/addons/*' | sort)
+          gdformat --check "${scripts[@]}" 2>&1 | tee artifacts/alpha3/gdscript/gdformat.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha3/gdscript/gdformat.status
+          gdlint "${scripts[@]}" 2>&1 | tee artifacts/alpha3/gdscript/gdlint.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha3/gdscript/gdlint.status
+
+      - name: Download checksum-pinned Godot 4.7.1 stable and templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
+          tool_root="$RUNNER_TEMP/godot-4.7.1-alpha3"
+          mkdir -p "$tool_root"
+          curl -fsSL -o "$tool_root/godot.zip" "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | (cd "$tool_root" && sha512sum --check -)
+          curl -fsSL -o "$tool_root/export-templates.tpz" "$base/Godot_v4.7.1-stable_export_templates.tpz"
+          echo "$GODOT_TEMPLATE_SHA256  export-templates.tpz" | (cd "$tool_root" && sha256sum --check -)
+          unzip -q "$tool_root/godot.zip" -d "$tool_root/godot-bin"
+          chmod +x "$tool_root/godot-bin/Godot_v4.7.1-stable_linux.x86_64"
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.7.1.stable"
+          unzip -q "$tool_root/export-templates.tpz" -d "$tool_root/export-template-staging"
+          cp -a "$tool_root/export-template-staging/templates/." "$HOME/.local/share/godot/export_templates/4.7.1.stable/"
+          echo "$tool_root/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Run typed import, Alpha.3 matrix, and native regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/alpha3/godot
+          godot=Godot_v4.7.1-stable_linux.x86_64
+          run_godot() {
+            name="$1"
+            shift
+            set +e
+            "$godot" "$@" 2>&1 | tee "artifacts/alpha3/godot/${name}.txt"
+            status=${PIPESTATUS[0]}
+            set -e
+            echo "$status" > "artifacts/alpha3/godot/${name}.status"
+            test "$status" -eq 0
+          }
+          run_godot typed-import --headless --editor --path game --quit
+          run_godot alpha3 --headless --path game --script res://tests/drowned_harbor_alpha3_systems/drowned_harbor_alpha3_systems_test.gd
+          run_godot alpha2 --headless --path game --script res://tests/drowned_harbor_alpha2_graybox/drowned_harbor_alpha2_graybox_test.gd
+          run_godot alpha1 --headless --path game --script res://tests/drowned_harbor_production_scaffold/drowned_harbor_production_scaffold_test.gd
+          run_godot replay --headless --path game --script res://tests/tale_replay_equivalence_test.gd
+          run_godot deadlock --headless --path game --script res://tests/automated_playthrough_lab_test.gd
+          run_godot prototype-automation --headless --path game --script res://tests/drowned_harbor_prototype_automation_test.gd
+          run_godot prototype-isolation --headless --path game --script res://tests/drowned_harbor_prototype_isolation_test.gd
+          run_godot low-tide --headless --path game --script res://tests/drowned_harbor_low_tide_shell_test.gd
+          run_godot bellhouse --headless --path game --script res://tests/drowned_harbor_bellhouse_recovery_test.gd
+          run_godot controlled-private --headless --path game --script res://tests/drowned_harbor_controlled_private_shield_test.gd
+          run_godot high-water --headless --path game --script res://tests/drowned_harbor_high_water_transformation_test.gd
+          run_godot main-smoke --headless --path game --quit-after 3
+
+      - name: Run GUT regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/alpha3/gut game/test-results
+          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
+            --script res://addons/gut/gut_cmdln.gd \
+            -gexit -gjunit_xml_file=res://test-results/gut-junit.xml \
+            2>&1 | tee artifacts/alpha3/gut/gut.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha3/gut/gut.status
+          cp game/test-results/gut-junit.xml artifacts/alpha3/gut/gut-junit.xml
+
+      - name: Generate and inspect actual Windows and Linux PCK inventories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p builds/alpha3/windows builds/alpha3/linux artifacts/alpha3/export
+          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
+            --export-pack "Internal Windows x86_64" "$PWD/builds/alpha3/windows/lantern_house_internal.pck" \
+            2>&1 | tee artifacts/alpha3/export/windows-export.log
+          Godot_v4.7.1-stable_linux.x86_64 --headless --path game \
+            --export-pack "Internal Linux x86_64" "$PWD/builds/alpha3/linux/lantern_house_internal.pck" \
+            2>&1 | tee artifacts/alpha3/export/linux-export.log
+          python tools/validate_drowned_harbor_alpha3_systems.py export-inventory --platform windows \
+            --pck builds/alpha3/windows/lantern_house_internal.pck \
+            --export-log artifacts/alpha3/export/windows-export.log --source-sha "$SOURCE_SHA" \
+            --output artifacts/alpha3/export/windows.json \
+            | tee artifacts/alpha3/export/windows.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha3/export/windows.status
+          python tools/validate_drowned_harbor_alpha3_systems.py export-inventory --platform linux \
+            --pck builds/alpha3/linux/lantern_house_internal.pck \
+            --export-log artifacts/alpha3/export/linux-export.log --source-sha "$SOURCE_SHA" \
+            --output artifacts/alpha3/export/linux.json \
+            | tee artifacts/alpha3/export/linux.txt
+          echo "${PIPESTATUS[0]}" > artifacts/alpha3/export/linux.status
+
+      - name: Upload bounded Alpha.3 machine evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p020-alpha3-drowned-harbor-systems-evidence
+          path: artifacts/alpha3
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove generated evidence and exports
+        if: always()
+        run: rm -rf artifacts/alpha3 builds/alpha3 game/.godot game/test-results
+
+      - name: Prove source tree remains clean
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"

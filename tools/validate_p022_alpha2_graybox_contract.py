@@ -215,7 +215,7 @@ def validate_status(status: dict[str, Any]) -> None:
     require(status.get("runtime_implementation_authorized") is False, "runtime authorized")
     require(status.get("human_evidence_claimed") is False, "human evidence claimed")
 
-def validate_docs(root: Path) -> None:
+def validate_docs(root: Path, later_succession: bool = False) -> None:
     docs = {
         "technical": read_text(root, TECHNICAL_PATH),
         "issue": read_text(root, ISSUE_PATH),
@@ -228,10 +228,13 @@ def validate_docs(root: Path) -> None:
         "technical":["The route is linear","council_commitment_id","high_water_transformation_id","Automation is not human evidence","Very High"],
         "issue":["State:** `planned_blocked`","GitHub issue:** none","Recommended Codex effort:** Very High","Codex must stop"],
         "release":["Codex used: no","alpha.2 runtime issue remains","Automation is machine evidence only"],
-        "roadmap":["P0.22 alpha.2 planning active","No alpha.2 GitHub issue, branch, or Codex prompt is created","Lantern House remains the sole normal/default Tale"],
-        "preproduction":["Current package:** P0.22","Alpha.2 remains `planned_blocked`","Codex is not required for this planning release"],
-        "issue_set":["P0.21 and v0.2.0-alpha.1 are completed","P0.22 is the sole active planning release","v0.2.0-alpha.2 remains blocked"],
     }
+    if not later_succession:
+        required.update({
+            "roadmap":["P0.22 alpha.2 planning active","No alpha.2 GitHub issue, branch, or Codex prompt is created","Lantern House remains the sole normal/default Tale"],
+            "preproduction":["Current package:** P0.22","Alpha.2 remains `planned_blocked`","Codex is not required for this planning release"],
+            "issue_set":["P0.21 and v0.2.0-alpha.1 are completed","P0.22 is the sole active planning release","v0.2.0-alpha.2 remains blocked"],
+        })
     for label, phrases in required.items():
         for phrase in phrases:
             require(phrase in docs[label], f"{label} missing required phrase: {phrase}")
@@ -249,11 +252,18 @@ def validate_git_boundary(root: Path) -> None:
     require(not any(path.startswith(("game/","services/","web/","packaging/","art/","audio/")) for path in actual), "runtime/service/media path changed")
     require("README.md" not in actual and "CHANGELOG.md" not in actual, "unplanned project-facing path changed")
 
-def validate(root: Path = ROOT, check_git: bool = True) -> None:
+def validate(
+    root: Path = ROOT,
+    check_git: bool = True,
+    later_succession: bool = False,
+) -> None:
     validate_schema(read_json(root, SCHEMA_PATH))
     validate_contract(read_json(root, CONTRACT_PATH))
-    validate_status(read_json(root, STATUS_PATH))
-    validate_docs(root)
+    if not later_succession:
+        validate_status(read_json(root, STATUS_PATH))
+    else:
+        read_json(root, STATUS_PATH)
+    validate_docs(root, later_succession=later_succession)
     if check_git:
         validate_git_boundary(root)
 
@@ -261,9 +271,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--skip-git-boundary", action="store_true")
+    parser.add_argument("--later-succession", action="store_true")
     args = parser.parse_args()
     try:
-        validate(args.root, check_git=not args.skip_git_boundary)
+        validate(
+            args.root,
+            check_git=not args.skip_git_boundary,
+            later_succession=args.later_succession,
+        )
     except ValidationError as exc:
         print(f"P0.22 alpha.2 graybox contract validation failed: {exc}")
         return 1

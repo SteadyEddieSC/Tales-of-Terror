@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -13,6 +14,9 @@ from typing import Any
 ROOT = Path(".")
 BASELINE = "85b77d5216472afdb4abb7598917d5052eed180a"
 P021_MERGE = "4efdd76efdf2aa34823dae5d3624a3dca3f0a349"
+P022_MERGE = "da86c0aa74bc0442862c97e3c371f6b714da4d0a"
+ALPHA2_MERGE = "4e28ce1d7b471c9be1113986647ccbc3147c0d9d"
+FROZEN_INDEX_SHA256 = "162c9d936552ef59f1b6cb8ac03f9b91b266d7f0c464a5de5b04c4dae2c1ec84"
 STATUS_PATH = Path("docs/preproduction/post_prototype_status_v1.json")
 PREPROD_README_PATH = Path("docs/preproduction/README.md")
 HISTORICAL_ROADMAP_PATH = Path("docs/roadmap/Post_v0.1.9_Preproduction_Roadmap.md")
@@ -168,7 +172,65 @@ def validate_status(data: dict[str, Any]) -> None:
     require(data.get("human_evidence_claimed") is False, "human evidence claimed")
 
 
-def validate_docs(root: Path) -> None:
+def validate_later_status(data: dict[str, Any]) -> None:
+    """Validate continuing invariants in the schema-v2/current succession record."""
+
+    require(data.get("status_kind") == "post_prototype_project_status", "status kind drift")
+    require(data.get("schema_version") == 2, "later-succession status schema drift")
+    require(re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(data.get("as_of_date", ""))) is not None, "status date drift")
+    require(re.fullmatch(r"[0-9a-f]{40}", str(data.get("protected_main", ""))) is not None, "protected-main format drift")
+    require(data.get("playable_release") == "v0.1.9", "playable release drift")
+
+    production = data.get("production", {})
+    require(isinstance(production, dict), "production status missing")
+    require(production.get("default_tale_id") == "lantern_house_vertical_slice", "Lantern House default drift")
+    require(production.get("tale_count") == 1, "normal Tale count drift")
+    for key in (
+        "drowned_harbor_catalog_registered",
+        "drowned_harbor_provider_registered",
+        "drowned_harbor_normal_library_visible",
+        "drowned_harbor_ordinary_export_included",
+    ):
+        require(production.get(key) is False, f"production boundary changed: {key}")
+
+    drowned = data.get("drowned_harbor", {})
+    require(isinstance(drowned, dict), "Drowned Harbor status missing")
+    require(str(drowned.get("status", "")).startswith("developer_only_"), "Drowned Harbor developer-only status drift")
+    require(drowned.get("ordinary_playable") is False, "Drowned Harbor became ordinarily playable")
+    alpha2 = drowned.get("alpha2", {})
+    require(isinstance(alpha2, dict), "alpha.2 history missing")
+    require(alpha2.get("release_id") == "v0.2.0-alpha.2", "alpha.2 release identity drift")
+    require(alpha2.get("issue") == 104 and alpha2.get("pull_request") == 105, "alpha.2 issue/PR history drift")
+    require(alpha2.get("merged_main_sha") == ALPHA2_MERGE, "alpha.2 merge identity drift")
+    require(alpha2.get("developer_only") is True, "alpha.2 developer-only boundary drift")
+    require(alpha2.get("ordinary_export_included") is False, "alpha.2 ordinary-export boundary drift")
+
+    preserved = data.get("preserved_authorities", {})
+    require(isinstance(preserved, dict), "preserved authority history missing")
+    require(preserved.get("p021_merge") == P021_MERGE, "P0.21 accepted identity drift")
+    require(preserved.get("p022_merge") == P022_MERGE, "P0.22 accepted identity drift")
+    require(preserved.get("alpha2_merge") == ALPHA2_MERGE, "alpha.2 preserved identity drift")
+    require(preserved.get("p01_p07_package_index") == FROZEN_INDEX_PATH.as_posix(), "frozen package-index authority drift")
+
+    gates = data.get("gates")
+    require(isinstance(gates, list), "governance gates missing")
+    gate_map = {row.get("issue"): row for row in gates if isinstance(row, dict)}
+    require(gate_map.get(7, {}).get("state") == "open", "issue #7 naming gate drift")
+    require(gate_map.get(39, {}).get("state") == "deferred_open", "issue #39 human-evidence gate drift")
+    require(32 in data.get("unrelated_open_pull_requests", []), "PR #32 unrelated record missing")
+
+    current_release = data.get("current_release", {})
+    require(isinstance(current_release, dict), "current release record missing")
+    require(current_release.get("runtime_authority_created") is False, "planning record claims runtime authority")
+    recommended = data.get("recommended_next_release", {})
+    require(isinstance(recommended, dict), "recommended successor record missing")
+    require(recommended.get("activation_authorized") is False, "mutable succession record authorizes activation")
+    require(data.get("runtime_implementation_authorized") is False, "mutable status authorizes runtime implementation")
+    require(data.get("human_evidence_claimed") is False, "human evidence claimed")
+
+
+def validate_docs(root: Path, later_succession: bool = False) -> None:
+    status_text = read_text(root, STATUS_PATH)
     preprod = read_text(root, PREPROD_README_PATH)
     historical = read_text(root, HISTORICAL_ROADMAP_PATH)
     roadmap = read_text(root, CURRENT_ROADMAP_PATH)
@@ -176,28 +238,49 @@ def validate_docs(root: Path) -> None:
     p021 = read_text(root, P021_SUMMARY_PATH)
     p022 = read_text(root, P022_RELEASE_PATH)
 
-    for phrase in (
-        "Current package:** P0.22",
-        "P0.21: production architecture",
-        "v0.2.0-alpha.1: developer-only production scaffold",
-        "Alpha.2 remains `planned_blocked`",
-        "Automation is not human evidence",
-    ):
-        require(phrase in preprod, f"preproduction index missing: {phrase}")
+    if later_succession:
+        for phrase in (
+            "Lantern House remains the sole normal/default Tale",
+            "Drowned Harbor remains developer-only",
+            "excluded from ordinary exports",
+            "Automation is not human evidence",
+            "Issue #39 remains the human-evidence authority",
+            "issue #7 remains the naming gate",
+            "PR #32 remains unrelated",
+        ):
+            require(phrase in preprod, f"current preproduction boundary missing: {phrase}")
+    else:
+        for phrase in (
+            "Current package:** P0.22",
+            "P0.21: production architecture",
+            "v0.2.0-alpha.1: developer-only production scaffold",
+            "Alpha.2 remains `planned_blocked`",
+            "Automation is not human evidence",
+        ):
+            require(phrase in preprod, f"preproduction index missing: {phrase}")
 
     require("Superseded Historical Record" in historical, "historical roadmap lost superseded status")
     require("Post_P0.19_Production_Candidate_Roadmap.md" in historical, "historical successor link missing")
 
-    for phrase in (
-        "P0.22 alpha.2 planning active; alpha.2 runtime blocked",
-        "P0.21 — Production Architecture & Tale-Compilation Contract",
-        "v0.2.0-alpha.1 — Production Tale Scaffold",
-        "**State:** completed internal runtime scaffold",
-        "v0.2.0-alpha.2 — End-to-End Graybox",
-        "**State:** `planned_blocked`",
-        "No alpha.2 GitHub issue, branch, or Codex prompt is created",
-    ):
-        require(phrase in roadmap, f"current roadmap missing: {phrase}")
+    if later_succession:
+        for phrase in (
+            "Lantern House remains the sole normal/default Tale",
+            "Drowned Harbor Alpha.2 exists only behind explicit developer admission",
+            "Drowned Harbor remains absent from the normal Tale Library and ordinary Windows/Linux exports",
+            "issue #39, issue #7, and PR #32 remain unchanged",
+        ):
+            require(phrase in roadmap, f"current roadmap boundary missing: {phrase}")
+    else:
+        for phrase in (
+            "P0.22 alpha.2 planning active; alpha.2 runtime blocked",
+            "P0.21 — Production Architecture & Tale-Compilation Contract",
+            "v0.2.0-alpha.1 — Production Tale Scaffold",
+            "**State:** completed internal runtime scaffold",
+            "v0.2.0-alpha.2 — End-to-End Graybox",
+            "**State:** `planned_blocked`",
+            "No alpha.2 GitHub issue, branch, or Codex prompt is created",
+        ):
+            require(phrase in roadmap, f"current roadmap missing: {phrase}")
 
     for phrase in (
         "P0.1–P0.19 are recorded as merged",
@@ -223,6 +306,24 @@ def validate_docs(root: Path) -> None:
     ):
         require(phrase in p022, f"P0.22 release record missing: {phrase}")
 
+    combined = "\n".join((status_text, preprod, historical, roadmap, p020, p021, p022)).lower()
+    prohibited_patterns = {
+        "automation promoted to human evidence": r"(?:automation|machine evidence)\s+(?:is|constitutes|proves)\s+human evidence",
+        "physical-controller evidence claimed": r"physical[- ]controller (?:validation|evidence) (?:passed|complete|validated|verified)",
+        "television evidence claimed": r"television (?:readability|viewing|evidence) (?:passed|complete|validated|verified)",
+        "accessibility certification claimed": r"accessibility (?:is )?certified|accessibility certification (?:passed|complete)",
+        "privacy certification claimed": r"privacy (?:is )?certified|privacy certification (?:passed|complete)",
+        "security certification claimed": r"security (?:is )?certified|security certification (?:passed|complete)",
+        "subjective validation claimed": r"(?:fun|pacing|fairness|balance) (?:is )?(?:validated|verified|approved)",
+        "production readiness claimed": r"(?:is|declared|confirmed) production[- ]ready|production readiness (?:is )?(?:confirmed|approved)",
+        "beta readiness claimed": r"beta readiness (?:is )?(?:confirmed|approved)|(?:is|declared) beta[- ]ready",
+        "release-candidate readiness claimed": r"release[- ]candidate readiness (?:is )?(?:confirmed|approved)|(?:is|declared) rc[- ]ready",
+        "public release authorized": r"public release (?:is )?authorized|shipping (?:is )?authorized",
+        "ordinary play authorized": r"ordinary play (?:is )?authorized|ordinarily playable[\"']?\s*:\s*true",
+    }
+    for message, pattern in prohibited_patterns.items():
+        require(re.search(pattern, combined) is None, message)
+
 
 def validate_git_boundary(root: Path) -> None:
     try:
@@ -240,10 +341,16 @@ def validate_git_boundary(root: Path) -> None:
     require("docs/preproduction/preproduction_package_index_v1.json" not in actual, "frozen historical package index changed")
 
 
-def validate(root: Path = ROOT, check_git: bool = True) -> None:
-    validate_status(read_json(root, STATUS_PATH))
-    validate_docs(root)
-    require((root / FROZEN_INDEX_PATH).is_file(), "frozen historical package index missing")
+def validate(root: Path = ROOT, check_git: bool = True, later_succession: bool = False) -> None:
+    status = read_json(root, STATUS_PATH)
+    if later_succession:
+        validate_later_status(status)
+    else:
+        validate_status(status)
+    validate_docs(root, later_succession=later_succession)
+    frozen_index = root / FROZEN_INDEX_PATH
+    require(frozen_index.is_file(), "frozen historical package index missing")
+    require(hashlib.sha256(frozen_index.read_bytes()).hexdigest() == FROZEN_INDEX_SHA256, "frozen historical package index drift")
     if check_git:
         validate_git_boundary(root)
 
@@ -252,13 +359,21 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--skip-git-boundary", action="store_true")
+    parser.add_argument("--later-succession", action="store_true")
     args = parser.parse_args()
     try:
-        validate(args.root, check_git=not args.skip_git_boundary)
+        validate(
+            args.root,
+            check_git=not args.skip_git_boundary,
+            later_succession=args.later_succession,
+        )
     except ValidationError as exc:
         print(f"Post-prototype succession validation failed: {exc}")
         return 1
-    print("Post-prototype history through P0.21, alpha.1, and active P0.22 validated")
+    if args.later_succession:
+        print("Post-prototype immutable history and current later-succession boundaries validated")
+    else:
+        print("Post-prototype history through P0.21, alpha.1, and active P0.22 validated")
     return 0
 
 

@@ -173,23 +173,33 @@ def validate_current_status(root: Path) -> None:
     require(any(row.get("release_id") == "P0.21" and row.get("pull_request") == 99 and row.get("merged_main_sha") == P021_MERGE for row in releases), "P0.21 history record missing")
 
 
-def validate(root: Path = ROOT, check_git: bool = False) -> None:
+def validate(
+    root: Path = ROOT,
+    check_git: bool = False,
+    later_succession: bool = False,
+) -> None:
     del check_git
     for path in IMMUTABLE_INPUTS:
         require((root / path).is_file(), f"immutable authority missing: {path}")
     validate_schema(read_json(root, SCHEMA_PATH))
     validate_contract(read_json(root, CONTRACT_PATH))
     validate_docs(root)
-    validate_current_status(root)
+    if not later_succession:
+        validate_current_status(root)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--skip-git-boundary", action="store_true")
+    parser.add_argument("--later-succession", action="store_true")
     args = parser.parse_args()
     try:
-        validate(args.root, check_git=False)
+        validate(
+            args.root,
+            check_git=not args.skip_git_boundary,
+            later_succession=args.later_succession,
+        )
     except ValidationError as exc:
         print(f"P0.21 frozen architecture validation failed: {exc}")
         return 1

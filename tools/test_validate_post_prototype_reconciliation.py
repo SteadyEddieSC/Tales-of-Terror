@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import subprocess
 import tempfile
 from pathlib import Path
 
@@ -22,19 +23,38 @@ from validate_post_prototype_reconciliation import (
 )
 
 ROOT = Path(".")
+FROZEN_SUCCESSION_COMMIT = "da86c0aa74bc0442862c97e3c371f6b714da4d0a"
+FIXTURE_PATHS = (
+    STATUS_PATH,
+    PREPROD_README_PATH,
+    HISTORICAL_ROADMAP_PATH,
+    CURRENT_ROADMAP_PATH,
+    P020_SUMMARY_PATH,
+    P021_SUMMARY_PATH,
+    P022_RELEASE_PATH,
+    FROZEN_INDEX_PATH,
+)
+
+
+def frozen_content(path: Path) -> bytes:
+    try:
+        return subprocess.check_output(
+            ["git", "show", f"{FROZEN_SUCCESSION_COMMIT}:{path.as_posix()}"],
+            cwd=ROOT,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError) as exc:
+        raise RuntimeError(f"unable to load frozen strict fixture path: {path}") from exc
 
 
 def copy_fixture(target: Path) -> None:
-    for path in (
-        STATUS_PATH,
-        PREPROD_README_PATH,
-        HISTORICAL_ROADMAP_PATH,
-        CURRENT_ROADMAP_PATH,
-        P020_SUMMARY_PATH,
-        P021_SUMMARY_PATH,
-        P022_RELEASE_PATH,
-        FROZEN_INDEX_PATH,
-    ):
+    for path in FIXTURE_PATHS:
+        destination = target / path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(frozen_content(path))
+
+
+def copy_current_fixture(target: Path) -> None:
+    for path in FIXTURE_PATHS:
         destination = target / path
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / path, destination)
@@ -61,14 +81,48 @@ def expect_failure(name: str, mutate) -> None:
         copy_fixture(target)
         mutate(target)
         try:
-            validate(target, check_git=False)
+            validate(target, check_git=False, later_succession=False)
         except ValidationError:
             print(f"PASS {name}")
             return
         raise AssertionError(f"mutation unexpectedly passed: {name}")
 
 
+def compatibility_preflights() -> None:
+    try:
+        validate(ROOT, check_git=False, later_succession=False)
+    except ValidationError as exc:
+        if "status schema drift" not in str(exc):
+            raise AssertionError(f"strict current succession failed for an unrelated reason: {exc}") from exc
+        print("PASS strict current-succession expected failure preflight")
+    else:
+        raise AssertionError("strict current succession unexpectedly passed")
+
+    validate(ROOT, check_git=False, later_succession=True)
+    print("PASS later-succession current-state preflight")
+
+    with tempfile.TemporaryDirectory(prefix="post-p022-frozen-preflight-") as directory:
+        target = Path(directory)
+        copy_fixture(target)
+        validate(target, check_git=False, later_succession=False)
+    print("PASS frozen strict fixture preflight")
+
+    with tempfile.TemporaryDirectory(prefix="post-later-invariant-preflight-") as directory:
+        target = Path(directory)
+        copy_current_fixture(target)
+        edit_json(target, lambda data: data["production"].update(default_tale_id="drowned_harbor"))
+        try:
+            validate(target, check_git=False, later_succession=True)
+        except ValidationError as exc:
+            if "Lantern House default drift" not in str(exc):
+                raise AssertionError(f"later-succession invariant failed for an unrelated reason: {exc}") from exc
+        else:
+            raise AssertionError("later-succession mode accepted an immutable production-boundary violation")
+    print("PASS immutable later-mode violation rejected preflight")
+
+
 def main() -> int:
+    compatibility_preflights()
     mutations = [
         ("wrong_baseline", lambda root: edit_json(root, lambda data: data.update(protected_main="0" * 40))),
         ("issue_44_reopened", lambda root: edit_json(root, lambda data: data["companion_security"].update(state="open"))),
