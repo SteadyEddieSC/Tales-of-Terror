@@ -108,15 +108,15 @@ def main() -> int:
     )
 
     validate_manifest_and_production_boundary(
-    read_json(ROOT / MANIFEST_PATH),
-    read_json(ROOT / "game/data/tales/tale_catalog_v1.json"),
-    (ROOT / PROVIDER_PATH).read_text(encoding="utf-8"),
-    (ROOT / EXPORT_PRESETS_PATH).read_text(encoding="utf-8"),
-    read_json(ROOT / PACKAGE_JSON_PATH),
-    read_json(ROOT / PACKAGE_LOCK_PATH),
-)
+        read_json(ROOT / MANIFEST_PATH),
+        read_json(ROOT / "game/data/tales/tale_catalog_v1.json"),
+        (ROOT / PROVIDER_PATH).read_text(encoding="utf-8"),
+        (ROOT / EXPORT_PRESETS_PATH).read_text(encoding="utf-8"),
+        read_json(ROOT / PACKAGE_JSON_PATH),
+        read_json(ROOT / PACKAGE_LOCK_PATH),
+    )
 
-mutations: list[tuple[str, Mutation]] = [
+    mutations: list[tuple[str, Mutation]] = [
         ("missing DH-FIX-007", lambda: fixture_mutation(lambda p: p["fixtures"].pop())),
         (
             "duplicate fixture ID",
