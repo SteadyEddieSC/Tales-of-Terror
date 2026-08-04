@@ -824,7 +824,20 @@ def validate_manifest_and_production_boundary(
     require(lock_packages.get("node_modules/sharp", {}).get("version") == "0.35.2", "lock Sharp changed")
     require("sharp" not in package_json.get("dependencies", {}), "direct Sharp dependency prohibited")
     require("sharp" not in dependencies, "direct Sharp dev dependency prohibited")
-    require("overrides" not in package_json and "resolutions" not in package_json, "override prohibited")
+    require(
+        lock_packages.get("node_modules/postcss", {}).get("version") == "8.5.23",
+        "lock PostCSS remediation changed",
+    )
+    require(
+        lock_packages.get("node_modules/undici", {}).get("version") == "7.29.0",
+        "lock Undici remediation changed",
+    )
+    require(
+        package_json.get("overrides")
+        == {"postcss": "8.5.23", "undici": "7.29.0"},
+        "approved override set drifted",
+    )
+    require("resolutions" not in package_json, "resolutions prohibited")
 
 
 def validate_documentation_text(technical: str, summary: str, readme: str) -> None:

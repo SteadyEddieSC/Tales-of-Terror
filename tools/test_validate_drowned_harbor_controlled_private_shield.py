@@ -107,7 +107,16 @@ def main() -> int:
         (ROOT / TEST_PATH).read_text(encoding="utf-8"),
     )
 
-    mutations: list[tuple[str, Mutation]] = [
+    validate_manifest_and_production_boundary(
+    read_json(ROOT / MANIFEST_PATH),
+    read_json(ROOT / "game/data/tales/tale_catalog_v1.json"),
+    (ROOT / PROVIDER_PATH).read_text(encoding="utf-8"),
+    (ROOT / EXPORT_PRESETS_PATH).read_text(encoding="utf-8"),
+    read_json(ROOT / PACKAGE_JSON_PATH),
+    read_json(ROOT / PACKAGE_LOCK_PATH),
+)
+
+mutations: list[tuple[str, Mutation]] = [
         ("missing DH-FIX-007", lambda: fixture_mutation(lambda p: p["fixtures"].pop())),
         (
             "duplicate fixture ID",
@@ -459,6 +468,60 @@ def main() -> int:
         (
             "objective reset",
             lambda: source_mutation(SHELL_PATH, "func restore_public(", "func reset_objective() -> void:\n\tpass\n\n\nfunc restore_public("),
+        ),
+        (
+            "missing approved overrides",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, j, _l: j.pop("overrides", None)
+            ),
+        ),
+        (
+            "approved PostCSS override drift",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, j, _l: j["overrides"].__setitem__(
+                    "postcss", "8.5.22"
+                )
+            ),
+        ),
+        (
+            "extra override key",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, j, _l: j["overrides"].__setitem__(
+                    "sharp", "0.35.2"
+                )
+            ),
+        ),
+        (
+            "resolutions field introduced",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, j, _l: j.__setitem__(
+                    "resolutions", {"undici": "7.29.0"}
+                )
+            ),
+        ),
+        (
+            "locked PostCSS remediation drift",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, _j, lock: lock["packages"][
+                    "node_modules/postcss"
+                ].__setitem__("version", "8.5.22")
+            ),
+        ),
+        (
+            "locked Undici remediation drift",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, _j, lock: lock["packages"][
+                    "node_modules/undici"
+                ].__setitem__("version", "7.28.0")
+            ),
+        ),
+        (
+            "direct Sharp dev dependency",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, j, _l: j["devDependencies"].__setitem__(
+                    "sharp", "0.35.2"
+                )
+            ),
         ),
         (
             "production registration",
