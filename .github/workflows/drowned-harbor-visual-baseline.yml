@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/drowned-harbor-visual-baseline.yml'
+      - '.github/workflows/preproduction-shared-screen-storyboards.yml'
       - 'docs/releases/DH-VBL-001-visual-baseline-registration.md'
       - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Baseline_v1.md'
       - 'docs/tales/drowned_harbor/visual/drowned_harbor_concept_batch_002.json'
@@ -14,6 +15,7 @@ on:
       - 'art/licenses/drowned_harbor/visual/dh_vbl_001_provenance_v1.json'
       - 'tools/validate_drowned_harbor_visual_baseline.py'
       - 'tools/test_validate_drowned_harbor_visual_baseline.py'
+      - 'tools/validate_preproduction_visual_candidates_reviewed_external.py'
 
 permissions:
   contents: read

@@ -1,9 +1,10 @@
 # DH-VBL-001 — Drowned Harbor Visual Baseline Registration
 
-**Issue:** #110  
-**Baseline:** `cbe917771ae98089f8cea11b08d68427be84ccd0`  
-**Branch:** `docs/dh-vbl-001-visual-baseline-registration`  
+**Issue:** #110
+**Baseline:** `cbe917771ae98089f8cea11b08d68427be84ccd0`
+**Branch:** `docs/dh-vbl-001-visual-baseline-registration`
 **Codex used:** no
+**Amended authorized paths:** 12 (issue #110 compatibility amendment)
 
 ## Release intent
 

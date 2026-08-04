@@ -1,10 +1,10 @@
 # DH-VCB-001 — Drowned Harbor Board Environment Breakdown
 
-**Repository status:** planning authority only  
-**Source disposition:** `accepted_external_working_specification`  
-**Baseline:** `DH-VBL-001`  
-**Candidate batch:** `DH-CB-002`  
-**Governing issue:** #110  
+**Repository status:** planning authority only
+**Source disposition:** `accepted_external_working_specification`
+**Baseline:** `DH-VBL-001`
+**Candidate batch:** `DH-CB-002`
+**Governing issue:** #110
 **Implementation authority:** none
 
 ## Purpose and governing authorities

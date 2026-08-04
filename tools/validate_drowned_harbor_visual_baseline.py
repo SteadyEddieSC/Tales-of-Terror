@@ -9,6 +9,7 @@ BASE='cbe917771ae98089f8cea11b08d68427be84ccd0'
 BRANCH='docs/dh-vbl-001-visual-baseline-registration'
 ALLOWED={
 '.github/workflows/drowned-harbor-visual-baseline.yml',
+'.github/workflows/preproduction-shared-screen-storyboards.yml',
 'docs/releases/DH-VBL-001-visual-baseline-registration.md',
 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Baseline_v1.md',
 'docs/tales/drowned_harbor/visual/drowned_harbor_concept_batch_002.json',
@@ -17,7 +18,8 @@ ALLOWED={
 'docs/tales/drowned_harbor/visual/drowned_harbor_board_production_conversion_brief_01_schema_v1.json',
 'art/licenses/drowned_harbor/visual/dh_vbl_001_provenance_v1.json',
 'tools/validate_drowned_harbor_visual_baseline.py',
-'tools/test_validate_drowned_harbor_visual_baseline.py'}
+'tools/test_validate_drowned_harbor_visual_baseline.py',
+'tools/validate_preproduction_visual_candidates_reviewed_external.py'}
 BATCH=Path('docs/tales/drowned_harbor/visual/drowned_harbor_concept_batch_002.json')
 CONTRACT=Path('docs/tales/drowned_harbor/visual/drowned_harbor_board_production_conversion_brief_01_v1.json')
 SCHEMA=Path('docs/tales/drowned_harbor/visual/drowned_harbor_board_production_conversion_brief_01_schema_v1.json')

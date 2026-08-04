@@ -1,10 +1,10 @@
 # DH-VBL-001 — Drowned Harbor Recognized Preproduction Visual Baseline v1
 
-**Governing issue:** #110  
-**Protected-main base:** `cbe917771ae98089f8cea11b08d68427be84ccd0`  
-**Authorized branch:** `docs/dh-vbl-001-visual-baseline-registration`  
-**Candidate batch:** `DH-CB-002`  
-**Repository disposition:** metadata only; external candidate binaries  
+**Governing issue:** #110
+**Protected-main base:** `cbe917771ae98089f8cea11b08d68427be84ccd0`
+**Authorized branch:** `docs/dh-vbl-001-visual-baseline-registration`
+**Candidate batch:** `DH-CB-002`
+**Repository disposition:** metadata only; external candidate binaries
 **Authority created:** preproduction planning and traceability only
 
 ## Recognition
