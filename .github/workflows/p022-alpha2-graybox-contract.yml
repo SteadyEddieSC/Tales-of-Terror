@@ -3,6 +3,7 @@ name: P0.22 alpha.2 graybox route contract
 on:
   pull_request:
     paths:
+      - 'README.md'
       - '.github/workflows/p021-production-architecture.yml'
       - '.github/workflows/p022-alpha2-graybox-contract.yml'
       - '.github/workflows/p023-alpha3-systems-replayability-contract.yml'
@@ -21,6 +22,7 @@ on:
   push:
     branches: [main, docs/p0.22-alpha2-graybox-contract, docs/p0.23-alpha3-systems-replayability-contract]
     paths:
+      - 'README.md'
       - '.github/workflows/p021-production-architecture.yml'
       - '.github/workflows/p022-alpha2-graybox-contract.yml'
       - '.github/workflows/p023-alpha3-systems-replayability-contract.yml'
@@ -64,9 +66,12 @@ jobs:
             python tools/test_validate_post_prototype_reconciliation.py
             python tools/validate_p021_production_architecture.py
             python tools/test_validate_p021_production_architecture.py
-          else
+          elif [[ "$effective" == "docs/p0.23-alpha3-systems-replayability-contract" ]]; then
             python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
             python tools/test_validate_p023_alpha3_systems_replayability_contract.py
+          else
+            python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary --later-succession
+            python tools/test_validate_p023_alpha3_systems_replayability_contract.py --later-succession
           fi
       - name: Prove clean source tree
         if: always()

@@ -1,36 +1,41 @@
 {
-  "alpha3_planning": {
-    "activation_authorized": false,
-    "contract_path": "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_v1.json",
-    "implementation_issue_path": "docs/preproduction/P0.23_Alpha3_Implementation_Issue.md",
-    "runtime_input": false,
-    "runtime_issue_created": false,
-    "schema_path": "docs/preproduction/drowned_harbor_alpha3_systems_replayability_contract_schema_v1.json",
-    "state": "active_planning",
-    "technical_path": "docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md"
+  "alpha3": {
+    "candidate_head_sha": "08fdbe8b52a66fc44a98bdd27878554c5478aef1",
+    "developer_only": true,
+    "issue": 108,
+    "merged_main_sha": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
+    "ordinary_export_included": false,
+    "package_version": 3,
+    "provider_version": 3,
+    "pull_request": 109,
+    "release_id": "v0.2.0-alpha.3",
+    "scenario_version": 3,
+    "snapshot_version": 3,
+    "state": "completed_developer_only"
   },
-  "as_of_date": "2026-08-02",
+  "as_of_date": "2026-08-04",
+  "companion_dependency_security": {
+    "audit_threshold": "moderate",
+    "miniflare": "4.20260722.0",
+    "override_policy": {
+      "postcss": "8.5.23",
+      "undici": "7.29.0"
+    },
+    "sharp": "0.35.2",
+    "state": "remediated_and_exact_head_validated",
+    "workers_types": "5.20260722.1",
+    "wrangler": "4.114.0"
+  },
   "current_release": {
-    "branch": "docs/p0.23-alpha3-systems-replayability-contract",
-    "issue": 106,
-    "release_id": "P0.23",
+    "branch": "docs/post-alpha3-status-reconciliation",
+    "issue": 111,
+    "release_id": "post_alpha3_status_reconciliation",
     "runtime_authority_created": false,
-    "type": "documentation_schema_validation"
+    "type": "documentation_status_reconciliation"
   },
   "drowned_harbor": {
-    "alpha2": {
-      "developer_only": true,
-      "issue": 104,
-      "merged_main_sha": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
-      "ordinary_export_included": false,
-      "package_version": 2,
-      "pull_request": 105,
-      "release_id": "v0.2.0-alpha.2",
-      "scenario_version": 2,
-      "snapshot_version": 2
-    },
     "ordinary_playable": false,
-    "status": "developer_only_alpha2_end_to_end_graybox_export_excluded"
+    "status": "developer_only_alpha3_systems_replayability_export_excluded"
   },
   "gates": [
     {
@@ -42,6 +47,11 @@
       "issue": 39,
       "purpose": "human household and remote evidence",
       "state": "deferred_open"
+    },
+    {
+      "issue": 110,
+      "purpose": "Drowned Harbor visual baseline registration and board production conversion planning",
+      "state": "planned_blocked"
     }
   ],
   "human_evidence_claimed": false,
@@ -49,6 +59,8 @@
   "preserved_authorities": {
     "alpha1_merge": "85b77d5216472afdb4abb7598917d5052eed180a",
     "alpha2_merge": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
+    "alpha3_candidate_head": "08fdbe8b52a66fc44a98bdd27878554c5478aef1",
+    "alpha3_merge": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
     "p01_p07_package_index": "docs/preproduction/preproduction_package_index_v1.json",
     "p021_merge": "4efdd76efdf2aa34823dae5d3624a3dca3f0a349",
     "p022_merge": "da86c0aa74bc0442862c97e3c371f6b714da4d0a"
@@ -61,18 +73,17 @@
     "drowned_harbor_provider_registered": false,
     "tale_count": 1
   },
-  "protected_main": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
+  "protected_main": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
   "recommended_next_release": {
     "activation_authorized": false,
-    "codex_required": true,
-    "github_issue": null,
-    "recommended_codex_effort": "very_high",
-    "release_id": "v0.2.0-alpha.3",
+    "codex_required": false,
+    "github_issue": 110,
+    "release_id": "DH-VBL-001",
     "state": "planned_blocked",
-    "title": "Drowned Harbor Systems & Replayability"
+    "title": "Drowned Harbor Visual Baseline Registration & Board Production Conversion Brief 01"
   },
   "runtime_implementation_authorized": false,
-  "schema_version": 2,
+  "schema_version": 3,
   "status_kind": "post_prototype_project_status",
   "unrelated_open_pull_requests": [
     32

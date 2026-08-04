@@ -6,21 +6,19 @@ A controller-first, 1–8 player digital horror board-game adventure about survi
 
 ## Current project status
 
-This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, and an active production-architecture planning contract. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
+This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, and a developer-only Drowned Harbor Alpha.3 runtime. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
 
-- **Current playable version:** `v0.1.9`
+- **Normal playable version:** `v0.1.9`
 - **Sole production/default Tale:** `lantern_house_vertical_slice` — Lantern House
-
-Lantern House remains the sole production/default Tale.
-
-- **Protected-main baseline for P0.21:** `58f6f4e4ece9bbdd5932216c87aacc064e48e05a`
-- **Latest completed planning package:** P0.20 — Post-Prototype Reconciliation & Production Decision Pack
-- **Current active package:** P0.21 — Production Architecture & Tale-Compilation Contract
-- **Next runtime stage:** v0.2.0-alpha.1 — planned, blocked, and not active
-- **Companion dependency security issue #44:** completed
+- **Protected-main baseline:** `cad70c5c8f0db1de7d557aff242cc8fe3610361b`
+- **Latest completed runtime release:** `v0.2.0-alpha.3` — issue #108 / PR #109
+- **Current active release:** post-Alpha.3 status reconciliation — issue #111
+- **Next planned release:** DH-VBL-001 / issue #110 — blocked until issue #111 merges and protected `main` is reverified
 - **Human-evidence issue #39:** deferred and still authoritative
 - **Naming issue #7:** open
 - **Unrelated Dependabot PR #32:** not part of feature releases
+
+Lantern House remains the sole normal/default Tale. Drowned Harbor remains developer-only and is not ordinarily playable.
 
 ## Elevator pitch
 
@@ -41,7 +39,7 @@ The current production runtime proves a complete controller-first route through 
 7. deterministic mixed outcomes;
 8. rematch or return to title.
 
-The reusable production foundations include:
+Reusable production foundations include:
 
 - local shared-screen controller and keyboard play;
 - stable seats that retain roles, inventory, state, and ownership through disconnect and reconnect;
@@ -62,32 +60,39 @@ Lantern House remains the sole production Tale. It is an integration route used 
 
 **Drowned Harbor is not a production Tale and is not ordinarily playable.**
 
-The P0.1–P0.19 program produced a deep governed design package and then proved selected high-risk interaction families under `game/tests/`:
+The P0.1–P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; and Alpha.3 implemented the developer-only systems runtime.
 
-- seven synthetic deterministic state/projection fixtures;
-- Low Tide shared-screen presentation;
-- Bellhouse decision and invalid-action recovery;
-- controlled-private Harbor bargain and inherited-state handoff;
-- High Water deterministic transformation and transformed-board presentation;
-- aggregate cross-family deterministic automation;
-- permanent Windows/Linux ordinary-export exclusion evidence.
+Alpha.3 merged through issue #108 / PR #109 at protected-main SHA `cad70c5c8f0db1de7d557aff242cc8fe3610361b`. Its candidate source head was `08fdbe8b52a66fc44a98bdd27878554c5478aef1`.
 
-The isolated prototype remains:
+Alpha.3 includes:
 
-- development-only;
-- explicit-test-script-only;
-- unregistered in the production Tale catalog and provider;
-- absent from the normal Tale Library;
-- without production saves, reports, reducer authority, networking, or final assets;
-- excluded from ordinary Windows and Linux exports.
+- Cooperative play for seats 1–8;
+- Hidden Betrayer for seats 3–8 with deterministic Cooperative fallback below three seats;
+- Outbreak for seats 2–8 with Tidebound conversion only after High Water;
+- six Living roles;
+- six Living, five Bellmarked, and four Tidebound objective families;
+- Bell-Witness, Lifeboat Survivor, Lighthouse Guardian, and Drowned Guide continuation forms;
+- 12 items, 12 cards, eight resources, 12 hazards, 19 encounters, and seven endings;
+- version-3 package, scenario, provider, and snapshot authority;
+- explicit snapshot-v2 to snapshot-v3 migration or fail-closed restore;
+- stable-seat reconnect and surrogate continuity;
+- public/aggregate-only Director inputs and deterministic anti-repeat selection;
+- a minimum 126-run repeated-session matrix;
+- permanent ordinary-export exclusion.
 
-P0.19 completed every authorized prototype child issue, #80 through #86. P0.20 reconciled that state and authorized only the next planning stage.
+Drowned Harbor remains:
+
+- developer-only and explicitly admitted;
+- unregistered in the normal Tale catalog and central provider registry;
+- absent from the normal Tale Library and startup/fallback paths;
+- excluded from ordinary Windows and Linux exports;
+- without final visual assets, production presentation, human playtest approval, or shipping authorization.
 
 ### Drowned Harbor premise
 
 At an impossible low tide, a drowned coastal town rises from black tidal mud. Travelers cross a broken causeway toward a Bellhouse, Salt Market, lifeboat shed, flooded archive, and distant lighthouse. The town’s leaders once wrecked ships and used a ledger-and-bell ritual to erase the harbor from memory, but one missing name left the ritual incomplete. As the sea returns, the group must recover the truth, decide whom to trust, survive the **High Water Terror Turn**, and choose whether the harbor is sealed, released, raised, abandoned, or remembered.
 
-Its planned stages remain:
+Its authored stages are:
 
 1. **Low Tide Arrival**
 2. **Bellhouse Ledger**
@@ -99,55 +104,36 @@ Its planned stages remain:
 
 A **Tale** is a self-contained authored horror adventure with its own location, board, stages, encounters, roles, social structure, transformation rules, ending logic, dialogue, visual language, sound direction, and accessibility presentation. A Tale may support standalone, Chronicle, Quick Fright, cooperative, betrayal, hunted, outbreak, mystery, rival-team, or survival structures. Unsupported seat counts or social layouts must use an authored safe fallback rather than producing a broken session.
 
-## Active P0.21 architecture contract
+## Development sequence
 
-P0.21 defines the seam between Drowned Harbor’s design-only authoring reference and future production authorities. It does not compile, register, expose, or ship Drowned Harbor.
+1. **P0.20 — Post-Prototype Reconciliation:** completed.
+2. **P0.21 — Production Architecture & Tale Compilation:** completed, PR #99.
+3. **v0.2.0-alpha.1 — Production Tale Scaffold:** completed, PR #101.
+4. **P0.22 — Alpha.2 Route Contract:** completed, PR #103.
+5. **v0.2.0-alpha.2 — End-to-End Graybox:** completed, PR #105.
+6. **P0.23 — Alpha.3 Systems & Replayability Contract:** completed, issue #106 / PR #107.
+7. **v0.2.0-alpha.3 — Systems & Replayability:** completed developer-only runtime, issue #108 / PR #109.
+8. **Post-Alpha.3 status reconciliation:** active, issue #111.
+9. **DH-VBL-001 / issue #110 — Visual Baseline Registration & Board Production Conversion Brief 01:** planned and blocked pending completion of issue #111.
+10. **v0.2.0-beta — Presentation & Content Integration:** planned and blocked.
+11. **v0.2.0-rc — Hardening & Distribution Readiness:** planned and blocked.
 
-The contract establishes:
-
-- authoring references as compilation inputs, never runtime inputs;
-- separate reviewed outputs for scenario, board, rules/reducer, Director, social/private, localization, package, provider, catalog, migration, and validation;
-- `RulesSession` ownership of stage progression and authoritative mutations;
-- `BoardState` ownership of board authority;
-- `RoleSession` ownership of social and private authority;
-- named native-authority RNG streams;
-- public and authorized aggregate Director inputs only;
-- read-only presentation projections;
-- state-and-RNG no-op rejection for invalid, stale, duplicate, wrong-seat, unavailable, or malformed actions;
-- explicit versioned migration or fail-closed restore;
-- developer-only explicit admission that cannot affect the normal Tale Library or ordinary exports;
-- asset, localization, provenance, fallback, rollback, and removal rules.
-
-The planning-only future identities are Tale ID `drowned_harbor`, provider ID `drowned_harbor_authorities_v1`, and package kind/schema `tale` / `1`. None is registered by P0.21.
-
-See [P0.21 Production Architecture Contract](docs/technical/Drowned_Harbor_Production_Architecture_and_Compilation_Contract_v1.md), [machine-readable contract](docs/preproduction/drowned_harbor_production_compilation_contract_v1.json), and [blocked implementation issue set](docs/preproduction/P0.21_Implementation_Issue_Set.md).
-
-## Next development direction
-
-1. **P0.20** — completed reconciliation and production decision.
-2. **P0.21** — active production architecture and Tale-compilation contract.
-3. **v0.2.0-alpha.1** — planned blocked production Tale scaffold.
-4. **v0.2.0-alpha.2** — planned blocked complete end-to-end graybox route.
-5. **v0.2.0-alpha.3** — planned blocked systems and replayability.
-6. **v0.2.0-beta** — planned blocked production presentation and content integration.
-7. **v0.2.0-rc** — planned blocked hardening and distribution readiness.
-
-Only P0.21 is active. Every runtime stage requires separate owner authorization and a fresh governed issue. See [Post-P0.19 Production-Candidate Roadmap](docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md).
+Issue #110 is documentation/schema/provenance planning only when activated. It does not by itself authorize source art, runtime art, Godot asset integration, candidate promotion, or substantial Codex implementation.
 
 ## Development routing
 
-The Release Management chat owns live GitHub reconciliation, issue and release activation, architecture, exact-head review, CI diagnosis, bounded GitHub-native corrections, guarded merges, and post-merge verification.
+Release Coordination owns live GitHub reconciliation, issue and release activation, architecture, exact-head review, CI diagnosis, bounded GitHub-native corrections, guarded merges, and post-merge verification.
 
-Codex is not required for P0.21. It should be used after a separately authorized runtime issue genuinely requires substantial local multi-file implementation, Godot editor work, repeated local build/debug cycles, Windows-specific execution, filesystem exploration, or binary/asset handling. v0.2.0-alpha.1 is expected to be the first such stage.
+Codex should be used only after a separately authorized release genuinely requires substantial local multi-file implementation, Godot editor work, repeated local build/debug cycles, Windows-specific execution, filesystem exploration, or binary/asset handling.
 
-No runtime release begins without:
+No implementation release begins without:
 
 - an explicit active issue;
 - an exact protected-main baseline;
 - one bounded branch and draft PR;
 - declared paths and exclusions;
 - exact validation expectations;
-- independent Release Management review.
+- independent Release Coordination review.
 
 ## What the finished game is aiming for
 
@@ -190,17 +176,18 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 - Windows and Linux first.
 - Native Godot authority owns gameplay in the current architecture.
 - The production Tale catalog contains exactly one entry: Lantern House.
-- Test-only synthetic and prototype content remains under export-excluded paths.
-- The supported Companion development dependency graph is Wrangler 4.114.0 → Miniflare 4.20260722.0 → Sharp 0.35.2, with Workers Types 5.20260722.1.
+- Test-only synthetic, prototype, and developer-only Drowned Harbor content remains export-excluded.
+- The Companion development graph retains Wrangler `4.114.0`, Workers Types `5.20260722.1`, Miniflare `4.20260722.0`, and Sharp `0.35.2`.
+- Reviewed exact npm overrides pin PostCSS `8.5.23` and Undici `7.29.0`; inherited validators fail closed on any override or lock drift.
 - Production Cloudflare deployment, accounts, matchmaking, campaign persistence, full remote play, and security certification remain deferred.
 - Issue #39 remains the authority for future human household and remote playtest evidence.
 
-**Automation is not human evidence.** It establishes bounded deterministic behavior, privacy separation, package identity, export integrity, and deadlock resistance. It does not establish fun, tension, fairness, comprehension, physical-controller behavior, television readability, accessibility compliance, household networking, remote-device behavior, privacy certification, security certification, or production readiness.
+**Automation is not human evidence.** It establishes bounded deterministic behavior, privacy separation, package identity, export integrity, dependency audit state, and deadlock resistance. It does not establish fun, tension, fairness, comprehension, physical-controller behavior, television readability, accessibility compliance, household networking, remote-device behavior, privacy certification, security certification, production readiness, or shipping authorization.
 
 ## Repository map
 
 - `game/` — Godot project and production runtime
-- `game/tests/` — export-excluded tests, fixtures, and isolated prototype proofs
+- `game/tests/` — export-excluded tests, fixtures, prototypes, and developer-only proofs
 - `docs/gdd/` — canonical living Game Design Document
 - `docs/tales/` — governed Tale design and authoring packages
 - `docs/technical/` — architecture, contracts, tooling, and isolation rules
@@ -215,7 +202,7 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 
 ## Validation
 
-GitHub Actions checks repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor prototype isolation and export exclusion, preproduction contracts, P0.21 architecture/status succession, and Companion service/browser behavior.
+GitHub Actions check repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1–3 contracts, inherited mutation suites, Companion audit/typecheck/tests/build/smoke, real local relay integration, and clean generated-output boundaries.
 
 ## Documentation and licensing
 
