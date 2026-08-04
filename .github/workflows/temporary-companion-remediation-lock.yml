@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   synthesize-and-prove:
-    name: Generate lock and prove Companion override compatibility
+    name: Generate lock, prove compatibility, and finalize boundaries
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -73,19 +73,170 @@ jobs:
           assert len(value['joinCode']) == 6
           assert value['joinCode'] != value['hostCapability']
           PY
-      - name: Commit generated lockfile to the authorized branch
+      - name: Apply bounded inherited-validator and path-boundary cleanup
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_exact(path: str, old: str, new: str, count: int = 1) -> None:
+              target = Path(path)
+              text = target.read_text(encoding='utf-8')
+              actual = text.count(old)
+              if actual != count:
+                  raise SystemExit(f'{path}: expected {count} occurrences, found {actual}: {old!r}')
+              target.write_text(text.replace(old, new, count), encoding='utf-8')
+
+          validator = 'tools/validate_drowned_harbor_controlled_private_shield.py'
+          replace_exact(
+              validator,
+              '    require("overrides" not in package_json and "resolutions" not in package_json, "override prohibited")\n',
+              '    require(\n'
+              '        lock_packages.get("node_modules/postcss", {}).get("version") == "8.5.23",\n'
+              '        "lock PostCSS remediation changed",\n'
+              '    )\n'
+              '    require(\n'
+              '        lock_packages.get("node_modules/undici", {}).get("version") == "7.29.0",\n'
+              '        "lock Undici remediation changed",\n'
+              '    )\n'
+              '    require(\n'
+              '        package_json.get("overrides")\n'
+              '        == {"postcss": "8.5.23", "undici": "7.29.0"},\n'
+              '        "approved override set drifted",\n'
+              '    )\n'
+              '    require("resolutions" not in package_json, "resolutions prohibited")\n',
+          )
+
+          mutation_test = 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
+          baseline_marker = '    mutations: list[tuple[str, Mutation]] = [\n'
+          baseline_block = '''    validate_manifest_and_production_boundary(
+              read_json(ROOT / MANIFEST_PATH),
+              read_json(ROOT / "game/data/tales/tale_catalog_v1.json"),
+              (ROOT / PROVIDER_PATH).read_text(encoding="utf-8"),
+              (ROOT / EXPORT_PRESETS_PATH).read_text(encoding="utf-8"),
+              read_json(ROOT / PACKAGE_JSON_PATH),
+              read_json(ROOT / PACKAGE_LOCK_PATH),
+          )
+
+          mutations: list[tuple[str, Mutation]] = [
+          '''
+          replace_exact(mutation_test, baseline_marker, baseline_block)
+
+          mutation_marker = '''        (
+                      "production registration",
+          '''
+          mutation_block = '''        (
+                      "missing approved overrides",
+                      lambda: boundary_mutation(
+                          lambda _m, _c, _p, _e, j, _l: j.pop("overrides", None)
+                      ),
+                  ),
+                  (
+                      "approved PostCSS override drift",
+                      lambda: boundary_mutation(
+                          lambda _m, _c, _p, _e, j, _l: j["overrides"].__setitem__(
+                              "postcss", "8.5.22"
+                          )
+                      ),
+                  ),
+                  (
+                      "extra override key",
+                      lambda: boundary_mutation(
+                          lambda _m, _c, _p, _e, j, _l: j["overrides"].__setitem__(
+                              "sharp", "0.35.2"
+                          )
+                      ),
+                  ),
+                  (
+                      "resolutions field introduced",
+                      lambda: boundary_mutation(
+                          lambda _m, _c, _p, _e, j, _l: j.__setitem__(
+                              "resolutions", {"undici": "7.29.0"}
+                          )
+                      ),
+                  ),
+                  (
+                      "locked PostCSS remediation drift",
+                      lambda: boundary_mutation(
+                          lambda _m, _c, _p, _e, _j, lock: lock["packages"][
+                              "node_modules/postcss"
+                          ].__setitem__("version", "8.5.22")
+                      ),
+                  ),
+                  (
+                      "locked Undici remediation drift",
+                      lambda: boundary_mutation(
+                          lambda _m, _c, _p, _e, _j, lock: lock["packages"][
+                              "node_modules/undici"
+                          ].__setitem__("version", "7.28.0")
+                      ),
+                  ),
+                  (
+                      "direct Sharp dev dependency",
+                      lambda: boundary_mutation(
+                          lambda _m, _c, _p, _e, j, _l: j["devDependencies"].__setitem__(
+                              "sharp", "0.35.2"
+                          )
+                      ),
+                  ),
+                  (
+                      "production registration",
+          '''
+          replace_exact(mutation_test, mutation_marker, mutation_block)
+
+          alpha3_validator = 'tools/validate_drowned_harbor_alpha3_systems.py'
+          alpha3_marker = '    ".github/workflows/v020-alpha3-systems-replayability.yml",\n'
+          alpha3_addition = (
+              alpha3_marker
+              + '    "package-lock.json",\n'
+              + '    "package.json",\n'
+              + '    "tools/test_validate_drowned_harbor_controlled_private_shield.py",\n'
+              + '    "tools/validate_drowned_harbor_controlled_private_shield.py",\n'
+          )
+          replace_exact(alpha3_validator, alpha3_marker, alpha3_addition)
+
+          workflow = '.github/workflows/v020-alpha3-systems-replayability.yml'
+          yaml_marker = "      - '.github/workflows/v020-alpha3-systems-replayability.yml'\n"
+          yaml_addition = (
+              yaml_marker
+              + "      - 'package-lock.json'\n"
+              + "      - 'package.json'\n"
+              + "      - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'\n"
+              + "      - 'tools/validate_drowned_harbor_controlled_private_shield.py'\n"
+          )
+          replace_exact(workflow, yaml_marker, yaml_addition, count=2)
+          expected_marker = "              '.github/workflows/v020-alpha3-systems-replayability.yml',\n"
+          expected_addition = (
+              expected_marker
+              + "              'package-lock.json',\n"
+              + "              'package.json',\n"
+              + "              'tools/test_validate_drowned_harbor_controlled_private_shield.py',\n"
+              + "              'tools/validate_drowned_harbor_controlled_private_shield.py',\n"
+          )
+          replace_exact(workflow, expected_marker, expected_addition)
+          replace_exact(
+              workflow,
+              "          print('Validated exact 34-path Alpha.3 protected-base inventory')\n",
+              "          print('Validated exact 38-path Alpha.3 protected-base inventory')\n",
+          )
+
+          Path('.github/workflows/temporary-companion-remediation-lock.yml').unlink()
+          PY
+      - name: Commit proven lockfile and bounded cleanup
         if: github.event_name == 'push'
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package-lock.json
+          git add -A
           if git diff --cached --quiet; then
-            echo "Generated lockfile already committed."
+            echo "No cleanup changes remain."
             exit 0
           fi
-          git commit -m "Regenerate Companion lockfile for patched overrides"
+          git commit -m "Finalize Companion remediation and Alpha.3 boundaries"
           git push origin "HEAD:${GITHUB_REF_NAME}"
       - name: Upload generated candidate lockfile
         if: always()
