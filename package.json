@@ -15,6 +15,10 @@
     "dev:service": "wrangler dev --config services/room-service/wrangler.jsonc --local",
     "dev:browser": "vite --config web/companion/vite.config.ts"
   },
+  "overrides": {
+    "postcss": "8.5.23",
+    "undici": "7.29.0"
+  },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20260722.1",
     "@types/node": "26.1.1",
