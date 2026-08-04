@@ -1,0 +1,50 @@
+name: Drowned Harbor visual baseline registration
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-visual-baseline.yml'
+      - 'docs/releases/DH-VBL-001-visual-baseline-registration.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Baseline_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_concept_batch_002.json'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Board_Production_Conversion_Brief_01.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_board_production_conversion_brief_01_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_board_production_conversion_brief_01_schema_v1.json'
+      - 'art/licenses/drowned_harbor/visual/dh_vbl_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_visual_baseline.py'
+      - 'tools/test_validate_drowned_harbor_visual_baseline.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate exact DH-VBL-001 planning package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.11.9'
+      - name: Validate contract and exact Git boundary
+        run: python tools/validate_drowned_harbor_visual_baseline.py
+      - name: Run fail-closed mutation suite
+        run: python tools/test_validate_drowned_harbor_visual_baseline.py
+      - name: Prove governed JSON parses
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for path in [
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_concept_batch_002.json'),
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_board_production_conversion_brief_01_v1.json'),
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_board_production_conversion_brief_01_schema_v1.json'),
+              Path('art/licenses/drowned_harbor/visual/dh_vbl_001_provenance_v1.json'),
+          ]:
+              json.loads(path.read_text(encoding='utf-8'))
+          print('Governed JSON parsed')
+          PY
