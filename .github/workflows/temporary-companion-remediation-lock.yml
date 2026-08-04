@@ -1,207 +1,76 @@
-name: Temporary Companion remediation validator finalizer
+name: Temporary Alpha.3 workflow finalizer artifact
 
 on:
   pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  finalize-validators:
-    name: Prove Companion and commit bounded validator updates
+  render-final-workflow:
+    name: Render final 38-path Alpha.3 workflow
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 5
     env:
-      WRANGLER_SEND_METRICS: "false"
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version: 24.18.0
-          cache: npm
-      - name: Install committed locked dependencies
-        run: npm ci
-      - name: Prove audit and Companion compatibility
-        shell: bash
-        run: |
-          set -euo pipefail
-          node - <<'NODE'
-          const lock = require('./package-lock.json');
-          const postcss = lock.packages['node_modules/postcss']?.version;
-          const undici = lock.packages['node_modules/undici']?.version;
-          if (postcss !== '8.5.23') throw new Error(`unexpected postcss ${postcss}`);
-          if (undici !== '7.29.0') throw new Error(`unexpected undici ${undici}`);
-          NODE
-          npm audit --audit-level=moderate
-          npm run typecheck
-          npm test
-          npm run build
-      - name: Local Worker and Durable Object emulation smoke
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run dev:service -- --port 8787 > /tmp/terror-turn-room.log 2>&1 &
-          pid=$!
-          trap 'kill "$pid" 2>/dev/null || true' EXIT
-          for attempt in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:8787/v1/health > /tmp/health.json; then
-              break
-            fi
-            sleep 1
-          done
-          python - <<'PY'
-          import json
-          value=json.load(open('/tmp/health.json', encoding='utf-8'))
-          assert value == {'status': 'ok', 'serviceVersion': '0.0.9'}, value
-          PY
-          curl -fsS -X POST http://127.0.0.1:8787/v1/rooms > /tmp/room.json
-          python - <<'PY'
-          import json
-          value=json.load(open('/tmp/room.json', encoding='utf-8'))
-          assert value['accepted'] is True
-          assert len(value['joinCode']) == 6
-          assert value['joinCode'] != value['hostCapability']
-          PY
-      - name: Apply bounded inherited-validator updates
+      - name: Render final workflow
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
 
-          def replace_exact(path: str, old: str, new: str, count: int = 1) -> None:
-              target = Path(path)
-              text = target.read_text(encoding='utf-8')
-              actual = text.count(old)
-              if actual != count:
-                  raise SystemExit(f'{path}: expected {count} occurrences, found {actual}: {old!r}')
-              target.write_text(text.replace(old, new, count), encoding='utf-8')
+          path = Path('.github/workflows/v020-alpha3-systems-replayability.yml')
+          text = path.read_text(encoding='utf-8')
 
-          validator = 'tools/validate_drowned_harbor_controlled_private_shield.py'
-          replace_exact(
-              validator,
-              '    require("overrides" not in package_json and "resolutions" not in package_json, "override prohibited")\n',
-              '    require(\n'
-              '        lock_packages.get("node_modules/postcss", {}).get("version") == "8.5.23",\n'
-              '        "lock PostCSS remediation changed",\n'
-              '    )\n'
-              '    require(\n'
-              '        lock_packages.get("node_modules/undici", {}).get("version") == "7.29.0",\n'
-              '        "lock Undici remediation changed",\n'
-              '    )\n'
-              '    require(\n'
-              '        package_json.get("overrides")\n'
-              '        == {"postcss": "8.5.23", "undici": "7.29.0"},\n'
-              '        "approved override set drifted",\n'
-              '    )\n'
-              '    require("resolutions" not in package_json, "resolutions prohibited")\n',
+          yaml_marker = "      - '.github/workflows/v020-alpha3-systems-replayability.yml'\n"
+          yaml_addition = (
+              yaml_marker
+              + "      - 'package-lock.json'\n"
+              + "      - 'package.json'\n"
+              + "      - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'\n"
+              + "      - 'tools/validate_drowned_harbor_controlled_private_shield.py'\n"
           )
+          if text.count(yaml_marker) != 2:
+              raise SystemExit('unexpected Alpha.3 YAML path-filter marker count')
+          text = text.replace(yaml_marker, yaml_addition)
 
-          mutation_test = 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
-          replace_exact(
-              mutation_test,
-              '    mutations: list[tuple[str, Mutation]] = [\n',
-              '''    validate_manifest_and_production_boundary(
-              read_json(ROOT / MANIFEST_PATH),
-              read_json(ROOT / "game/data/tales/tale_catalog_v1.json"),
-              (ROOT / PROVIDER_PATH).read_text(encoding="utf-8"),
-              (ROOT / EXPORT_PRESETS_PATH).read_text(encoding="utf-8"),
-              read_json(ROOT / PACKAGE_JSON_PATH),
-              read_json(ROOT / PACKAGE_LOCK_PATH),
+          expected_marker = "              '.github/workflows/v020-alpha3-systems-replayability.yml',\n"
+          expected_addition = (
+              expected_marker
+              + "              'package-lock.json',\n"
+              + "              'package.json',\n"
+              + "              'tools/test_validate_drowned_harbor_controlled_private_shield.py',\n"
+              + "              'tools/validate_drowned_harbor_controlled_private_shield.py',\n"
           )
+          if text.count(expected_marker) != 1:
+              raise SystemExit('unexpected Alpha.3 exact-boundary marker count')
+          text = text.replace(expected_marker, expected_addition)
 
-          mutations: list[tuple[str, Mutation]] = [
-          ''',
+          old_messages = (
+              "          print('Validated exact 34-path Alpha.3 protected-base inventory')\n",
+              "            echo 'Exact 34-path Alpha.3 boundary was enforced by the preceding dedicated gate.'\n",
           )
-          replace_exact(
-              mutation_test,
-              '''        (
-                      "production registration",
-          ''',
-              '''        (
-                      "missing approved overrides",
-                      lambda: boundary_mutation(
-                          lambda _m, _c, _p, _e, j, _l: j.pop("overrides", None)
-                      ),
-                  ),
-                  (
-                      "approved PostCSS override drift",
-                      lambda: boundary_mutation(
-                          lambda _m, _c, _p, _e, j, _l: j["overrides"].__setitem__(
-                              "postcss", "8.5.22"
-                          )
-                      ),
-                  ),
-                  (
-                      "extra override key",
-                      lambda: boundary_mutation(
-                          lambda _m, _c, _p, _e, j, _l: j["overrides"].__setitem__(
-                              "sharp", "0.35.2"
-                          )
-                      ),
-                  ),
-                  (
-                      "resolutions field introduced",
-                      lambda: boundary_mutation(
-                          lambda _m, _c, _p, _e, j, _l: j.__setitem__(
-                              "resolutions", {"undici": "7.29.0"}
-                          )
-                      ),
-                  ),
-                  (
-                      "locked PostCSS remediation drift",
-                      lambda: boundary_mutation(
-                          lambda _m, _c, _p, _e, _j, lock: lock["packages"][
-                              "node_modules/postcss"
-                          ].__setitem__("version", "8.5.22")
-                      ),
-                  ),
-                  (
-                      "locked Undici remediation drift",
-                      lambda: boundary_mutation(
-                          lambda _m, _c, _p, _e, _j, lock: lock["packages"][
-                              "node_modules/undici"
-                          ].__setitem__("version", "7.28.0")
-                      ),
-                  ),
-                  (
-                      "direct Sharp dev dependency",
-                      lambda: boundary_mutation(
-                          lambda _m, _c, _p, _e, j, _l: j["devDependencies"].__setitem__(
-                              "sharp", "0.35.2"
-                          )
-                      ),
-                  ),
-                  (
-                      "production registration",
-          ''',
+          new_messages = (
+              "          print('Validated exact 38-path Alpha.3 protected-base inventory')\n",
+              "            echo 'Exact 38-path Alpha.3 boundary was enforced by the preceding dedicated gate.'\n",
           )
+          for old, new in zip(old_messages, new_messages):
+              if text.count(old) != 1:
+                  raise SystemExit(f'unexpected Alpha.3 status marker count: {old!r}')
+              text = text.replace(old, new)
 
-          alpha3_validator = 'tools/validate_drowned_harbor_alpha3_systems.py'
-          marker = '    ".github/workflows/v020-alpha3-systems-replayability.yml",\n'
-          replace_exact(
-              alpha3_validator,
-              marker,
-              marker
-              + '    "package-lock.json",\n'
-              + '    "package.json",\n'
-              + '    "tools/test_validate_drowned_harbor_controlled_private_shield.py",\n'
-              + '    "tools/validate_drowned_harbor_controlled_private_shield.py",\n',
-          )
+          path.write_text(text, encoding='utf-8')
           PY
-      - name: Commit bounded Python validator updates
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/validate_drowned_harbor_controlled_private_shield.py
-          git add tools/test_validate_drowned_harbor_controlled_private_shield.py
-          git add tools/validate_drowned_harbor_alpha3_systems.py
-          git commit -m "Validate bounded Companion dependency overrides"
-          git push origin "HEAD:${GITHUB_HEAD_REF}"
+      - name: Upload final workflow
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v6.0.0
+        with:
+          name: final-alpha3-workflow-${{ env.SOURCE_SHA }}
+          path: .github/workflows/v020-alpha3-systems-replayability.yml
+          if-no-files-found: error
+          retention-days: 2
