@@ -1,0 +1,47 @@
+name: Drowned Harbor presentation study registration
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-presentation-study.yml'
+      - 'docs/releases/DH-PRESENT-001-presentation-study-registration.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_High_Water_Presentation_Hook_Storyboard_Study_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_high_water_presentation_hook_storyboard_study_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_high_water_presentation_hook_storyboard_study_schema_v1.json'
+      - 'art/licenses/drowned_harbor/visual/dh_present_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_presentation_study.py'
+      - 'tools/test_validate_drowned_harbor_presentation_study.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate exact DH-PRESENT-REG-001 package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.11.9'
+      - name: Validate contract and exact Git boundary
+        run: python tools/validate_drowned_harbor_presentation_study.py
+      - name: Run fail-closed mutation suite
+        run: python tools/test_validate_drowned_harbor_presentation_study.py
+      - name: Prove governed JSON parses
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for path in [
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_high_water_presentation_hook_storyboard_study_v1.json'),
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_high_water_presentation_hook_storyboard_study_schema_v1.json'),
+              Path('art/licenses/drowned_harbor/visual/dh_present_001_provenance_v1.json'),
+          ]:
+              json.loads(path.read_text(encoding='utf-8'))
+          print('Governed JSON parsed')
+          PY
