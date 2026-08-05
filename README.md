@@ -6,24 +6,25 @@ A controller-first, 1–8 player digital horror board-game adventure about survi
 
 ## Current project status
 
-This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, a developer-only Drowned Harbor Alpha.3 runtime, and completed metadata-only Drowned Harbor visual, presentation, UX-planning, and partial rights/provenance authorities. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
+This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, a developer-only Drowned Harbor Alpha.3 runtime, and completed metadata-only Drowned Harbor visual, presentation, UX-planning, rights/provenance, and Project Owner attestation authorities. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
 
 - **Normal playable version:** `v0.1.9`
 - **Sole production/default Tale:** `lantern_house_vertical_slice` — Lantern House
-- **Status-reconciliation baseline:** `afa65009237b7b5494bf088c640ff542f93e16b4`
+- **Status-reconciliation baseline:** `7af430b5d9528c648d00291e4c32fa368279b41b`
 - **Latest completed runtime release:** `v0.2.0-alpha.3` — issue #108 / PR #109
 - **Completed visual baseline release:** `DH-VBL-001` — issue #110 / PR #113
 - **Completed High Water presentation registration:** `DH-PRESENT-REG-001` / `DH-PRESENT-001` — issue #114 / PR #115
 - **Completed presentation-family registration:** `DH-PRESENT-REG-002` / `DH-PRESENT-FAMILY-001` — issue #118 / PR #119
 - **Completed UX advisory registration:** `DH-UX-REG-001` / `DH-UX-001` — issue #120 / PR #124
 - **Completed rights/provenance registration:** `DH-RIGHTS-REG-001` / `DH-RIGHTS-001` — issue #127 / PR #128
-- **Current status reconciliation:** issue #129; documentation and governance only
-- **Next release:** unselected and not authorized; blocked on Project Owner attestation, generation-session reconstruction, and an explicit activation decision
+- **Completed Project Owner attestation registration:** `DH-OWNER-ATTEST-REG-001` / `DH-OWNER-ATTEST-001` — issue #131 / PR #132
+- **Current status reconciliation:** issue #133; documentation and governance only
+- **Next release:** unselected and not authorized; metadata-only clean-room source planning is eligible for consideration but requires a separate explicit activation decision
 - **Human-evidence issue #39:** deferred and still authoritative
 - **Naming issue #7:** open
 - **Unrelated Dependabot PR #32:** not part of feature releases
 
-Lantern House remains the sole normal/default Tale. Drowned Harbor remains developer-only and is not ordinarily playable. The completed rights registration admits metadata only. All 25 external images remain R1 private internal references; no visual image, archive, editable source, direct-pixel use, production art, runtime art, UX implementation, legal clearance, or completed rights resolution was admitted.
+Lantern House remains the sole normal/default Tale. Drowned Harbor remains developer-only and is not ordinarily playable. The completed rights and owner-attestation registrations admit metadata only. All 25 external images remain R1 private internal references; no clean-room planning, visual image, archive, editable source, direct-pixel use, production art, source art, runtime art, UX implementation, legal clearance, or implementation authority was admitted.
 
 ## Elevator pitch
 
@@ -65,7 +66,7 @@ Lantern House remains the sole production Tale. It is an integration route used 
 
 **Drowned Harbor is not a production Tale and is not ordinarily playable.**
 
-The P0.1–P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; Alpha.3 implemented the developer-only systems runtime; and the completed visual, presentation-family, UX advisory, and rights/provenance releases registered metadata-only planning authority.
+The P0.1–P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; Alpha.3 implemented the developer-only systems runtime; and the completed visual, presentation-family, UX advisory, rights/provenance, and owner-attestation releases registered metadata-only planning authority.
 
 Alpha.3 merged through issue #108 / PR #109 at protected-main SHA `cad70c5c8f0db1de7d557aff242cc8fe3610361b`. Its candidate source head was `08fdbe8b52a66fc44a98bdd27878554c5478aef1`.
 
@@ -95,13 +96,16 @@ The completed planning authorities add:
 - `DH-PRESENT-FAMILY-001` — presentation-family consistency assessment with conversion readiness `not_ready`;
 - `DH-UX-001` — accepted external shared-screen UX advisory with required corrections;
 - `DH-RIGHTS-001` — accepted-with-corrections external visual rights/provenance inventory, limited to private R1 reference use;
+- `DH-OWNER-ATTEST-001` — completed firsthand Project Owner attestation establishing clean-room planning eligibility but not planning authorization;
 - exact Tide, connector, ownership, privacy, layout-hypothesis, provenance, and evidence boundaries;
 - no visual or UX candidate creation or promotion;
 - no image or archive in Git history and no public GitHub Release asset authorization.
 
 `DH-UX-001` establishes planning direction for six layout modes, 1–8 stable-seat continuity, focus/preview/confirmation/authority-owned commit semantics, public-only transcript and replay, neutral private shielding, stage-by-stage UX flows, and issue #39 evidence plans. Its coordinates, tile sizes, drawer dimensions, type sizes, prompts, and microcopy remain advisory hypotheses rather than implementation or evidence.
 
-`DH-RIGHTS-001` has disposition `partial_resolution_for_private_internal_reference_only` and records 25 unique external image binaries as 21 true PNGs and four JPEG binaries carrying `.png` filenames. Sixteen contain locally detected but unauthenticated OpenAI C2PA/JUMBF references; five OpenAI-family and four Gemini-family assets still depend on source attribution and Project Owner confirmation. All remain `R1_private_internal_reference` / `reference_only_nonproduction`. Project Owner attestation and generation-session reconstruction remain required before source-art or source/runtime-composition planning.
+`DH-RIGHTS-001` has disposition `partial_resolution_for_private_internal_reference_only` and records 25 unique external image binaries as 21 true PNGs and four JPEG binaries carrying `.png` filenames. Sixteen contain locally detected but unauthenticated OpenAI C2PA/JUMBF references; five OpenAI-family and four Gemini-family assets remain source-attribution-only. All remain `R1_private_internal_reference` / `reference_only_nonproduction`.
+
+`DH-OWNER-ATTEST-001` records the completed firsthand response: authorized OpenAI and Gemini accounts, no external uploaded references, no intentional third-party or restricted inputs, no known edit/export-chain changes, approximate generation timing, preserved unknown facts, and agreement to no direct pixel reuse. This completes the owner-attestation prerequisite to the best of firsthand knowledge and establishes eligibility to consider a separately activated metadata-only clean-room source-planning release. Clean-room source planning itself remains unauthorized.
 
 Drowned Harbor remains:
 
@@ -144,12 +148,14 @@ A **Tale** is a self-contained authored horror adventure with its own location, 
 13. **DH-UX-REG-001 — Shared-Screen UX Advisory Registration:** completed metadata-only planning release, issue #120 / PR #124.
 14. **Post-DH-UX-001 status reconciliation:** completed, issue #125 / PR #126.
 15. **DH-RIGHTS-REG-001 — External Visual Rights & Provenance Metadata Registration:** completed with required corrections, issue #127 / PR #128.
-16. **Post-DH-RIGHTS-001 status reconciliation:** issue #129; documentation and governance only.
-17. **Next bounded release:** unselected; Project Owner attestation, generation-session reconstruction, and explicit activation are required.
-18. **v0.2.0-beta — Presentation & Content Integration:** future and blocked.
-19. **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
+16. **Post-DH-RIGHTS-001 status reconciliation:** completed, issue #129 / PR #130.
+17. **DH-OWNER-ATTEST-REG-001 — Project Owner Attestation Registration and Clean-Room Planning Eligibility:** completed, issue #131 / PR #132.
+18. **Post-DH-OWNER-ATTEST-001 status reconciliation:** issue #133; documentation and governance only.
+19. **Next bounded release:** unselected; metadata-only clean-room source planning is eligible for consideration but requires explicit activation.
+20. **v0.2.0-beta — Presentation & Content Integration:** future and blocked.
+21. **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
 
-The completed planning releases do not authorize direct generated-pixel use, advancement beyond R1, source art, runtime art, Godot asset integration, UX implementation, candidate promotion, public distribution, completed rights/legal clearance, or substantial Codex implementation. The accepted UX advisory remains planning-only.
+The completed planning releases do not authorize clean-room source planning, direct generated-pixel use, advancement beyond R1, source art, runtime art, Godot asset integration, UX implementation, candidate promotion, public distribution, completed legal clearance, or substantial Codex implementation. The accepted UX advisory remains planning-only.
 
 ## Development routing
 
@@ -233,7 +239,7 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 
 ## Validation
 
-GitHub Actions check repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1–3 contracts, inherited mutation suites, visual/presentation/UX/rights-planning metadata boundaries, Companion audit/typecheck/tests/build/smoke, real local relay integration, and clean generated-output boundaries.
+GitHub Actions check repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1–3 contracts, inherited mutation suites, visual/presentation/UX/rights/owner-attestation metadata boundaries, Companion audit/typecheck/tests/build/smoke, real local relay integration, and clean generated-output boundaries.
 
 ## Documentation and licensing
 
