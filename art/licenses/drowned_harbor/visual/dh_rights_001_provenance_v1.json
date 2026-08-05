@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "record_kind": "external_visual_rights_and_provenance_package_registration",
+  "release_id": "DH-RIGHTS-REG-001",
+  "record_id": "DH-RIGHTS-001",
+  "protected_main_starting_sha": "3aa7d3b8dd32ef50738098780c15a27890961e50",
+  "archive": {
+    "uploaded_archive_name": "DH-RIGHTS-001_External_Visual_Rights_and_Provenance_Resolution_Package_v1(1).zip",
+    "internal_package_name": "DH-RIGHTS-001_External_Visual_Rights_and_Provenance_Resolution_Package_v1",
+    "bytes": 61194347,
+    "sha256": "ce79e9413fd93405f01691eeefbe7e17dfdc103d40be076a73a3b218f7b26dcb",
+    "zip_crc": "clean",
+    "manifest_bytes": 9038,
+    "manifest_sha256": "386e325e46a5f8b0ba3ba15893af5fe33c70f95f397f05c939b2058f2573968d",
+    "manifested_payload_count_excluding_manifest": 37,
+    "missing_payloads": [],
+    "extra_payloads": [],
+    "payload_hash_or_byte_mismatches": []
+  },
+  "review_result": "accepted_with_required_corrections",
+  "binary_admission": {
+    "archive_committed": false,
+    "images_committed": false,
+    "public_release_assets_authorized": false
+  },
+  "rights_state": {
+    "private_internal_reference": "accepted_with_boundaries",
+    "direct_pixel_use": "not_cleared",
+    "source_art": "not_authorized",
+    "runtime_art": "not_authorized",
+    "public_distribution": "not_cleared",
+    "candidate_promotion": "not_authorized"
+  },
+  "prerequisite_state": "partial_resolution_owner_attestation_required",
+  "owner_attestation_required": true,
+  "legal_review_required_for_this_registration": false,
+  "legal_review_recommended_before": [
+    "direct_generated_pixel_use",
+    "public_or_commercial_distribution",
+    "marketing",
+    "merchandise",
+    "material_infringement_sensitive_decision"
+  ],
+  "corrections": [
+    "25 unique image binaries consist of 21 PNG and 4 JPEG binaries carrying .png filenames",
+    "16 local C2PA structures are detected but not cryptographically authenticated",
+    "5 OpenAI attributions and 4 Gemini attributions remain dependent on source records and owner attestation",
+    "supplied schema was permissive and was replaced by a closed repository schema"
+  ]
+}

@@ -1,0 +1,55 @@
+name: Drowned Harbor external visual rights and provenance registration
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/drowned-harbor-rights-provenance.yml'
+      - 'docs/releases/DH-RIGHTS-001-rights-provenance-registration.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_External_Visual_Rights_and_Provenance_Disposition_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_external_visual_rights_and_provenance_register_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_external_visual_rights_and_provenance_register_schema_v1.json'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_External_Visual_Provenance_Gap_Matrix_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_External_Visual_Rights_Disposition_Matrix_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Project_Owner_Rights_Attestation_Template_v1.md'
+      - 'art/licenses/drowned_harbor/visual/dh_rights_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_rights_provenance.py'
+      - 'tools/test_validate_drowned_harbor_rights_provenance.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-rights-provenance.yml'
+      - 'docs/releases/DH-RIGHTS-001-rights-provenance-registration.md'
+      - 'docs/tales/drowned_harbor/visual/**'
+      - 'art/licenses/drowned_harbor/visual/dh_rights_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_rights_provenance.py'
+      - 'tools/test_validate_drowned_harbor_rights_provenance.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+      - name: Validate closed rights/provenance registration
+        run: |
+          python tools/validate_drowned_harbor_rights_provenance.py
+          python tools/test_validate_drowned_harbor_rights_provenance.py
+      - name: Parse governed JSON and compile Python
+        run: |
+          python -m json.tool docs/tales/drowned_harbor/visual/drowned_harbor_external_visual_rights_and_provenance_register_v1.json >/dev/null
+          python -m json.tool docs/tales/drowned_harbor/visual/drowned_harbor_external_visual_rights_and_provenance_register_schema_v1.json >/dev/null
+          python -m json.tool art/licenses/drowned_harbor/visual/dh_rights_001_provenance_v1.json >/dev/null
+          python -m py_compile tools/validate_drowned_harbor_rights_provenance.py tools/test_validate_drowned_harbor_rights_provenance.py
+      - name: Prove no external visual binaries entered Git
+        run: |
+          test -z "$(git diff --name-only 3aa7d3b8dd32ef50738098780c15a27890961e50...HEAD | grep -Ei '\.(png|jpe?g|webp|zip|psd|kra|blend|aseprite)$' || true)"
+          git diff --check
+          test -z "$(git status --porcelain)"
