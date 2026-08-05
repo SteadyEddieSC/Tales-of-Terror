@@ -1,0 +1,5 @@
+{
+  "fixture_classification": "synthetic_test_only",
+  "snapshot_version": 99,
+  "purpose": "future-version rejection fixture; never accepted or migrated silently"
+}
