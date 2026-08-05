@@ -1,0 +1,59 @@
+name: Drowned Harbor final UX advisory addendum registration
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/drowned-harbor-ux-final-addendum.yml'
+      - 'docs/releases/DH-UX-FINAL-001-final-ux-advisory-addendum-registration.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Final_UX_Advisory_Addendum_v2.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Clean_Room_Source_Planning_Inputs_Gated_v2.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_UX_Authority_Dependencies_v2.md'
+      - 'docs/tales/drowned_harbor/ux/drowned_harbor_final_ux_advisory_addendum_v2.json'
+      - 'docs/tales/drowned_harbor/ux/drowned_harbor_final_ux_advisory_addendum_schema_v2.json'
+      - 'art/licenses/drowned_harbor/ux/dh_ux_final_001_provenance_v2.json'
+      - 'tools/validate_drowned_harbor_ux_final_addendum.py'
+      - 'tools/test_validate_drowned_harbor_ux_final_addendum.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-ux-final-addendum.yml'
+      - 'docs/releases/DH-UX-FINAL-001-final-ux-advisory-addendum-registration.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Final_UX_Advisory_Addendum_v2.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Clean_Room_Source_Planning_Inputs_Gated_v2.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_UX_Authority_Dependencies_v2.md'
+      - 'docs/tales/drowned_harbor/ux/drowned_harbor_final_ux_advisory_addendum_v2.json'
+      - 'docs/tales/drowned_harbor/ux/drowned_harbor_final_ux_advisory_addendum_schema_v2.json'
+      - 'art/licenses/drowned_harbor/ux/dh_ux_final_001_provenance_v2.json'
+      - 'tools/validate_drowned_harbor_ux_final_addendum.py'
+      - 'tools/test_validate_drowned_harbor_ux_final_addendum.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+      - name: Validate closed UX addendum registration
+        run: |
+          python tools/validate_drowned_harbor_ux_final_addendum.py
+          python tools/test_validate_drowned_harbor_ux_final_addendum.py
+      - name: Parse governed JSON, workflow YAML, and compile Python
+        run: |
+          python -m json.tool docs/tales/drowned_harbor/ux/drowned_harbor_final_ux_advisory_addendum_v2.json >/dev/null
+          python -m json.tool docs/tales/drowned_harbor/ux/drowned_harbor_final_ux_advisory_addendum_schema_v2.json >/dev/null
+          python -m json.tool art/licenses/drowned_harbor/ux/dh_ux_final_001_provenance_v2.json >/dev/null
+          python -m py_compile tools/validate_drowned_harbor_ux_final_addendum.py tools/test_validate_drowned_harbor_ux_final_addendum.py
+          ruby -e "require 'yaml'; YAML.load_file('.github/workflows/drowned-harbor-ux-final-addendum.yml'); puts 'Workflow YAML parsed'"
+      - name: Prove text-only registration and clean tree
+        run: |
+          test -z "$(git diff --name-only 7449e9e93bf2519b285abab7812c3600c876b04d...HEAD | grep -Ei '\.(png|jpe?g|webp|zip|psd|kra|blend|aseprite|tscn|tres)$' || true)"
+          git diff --check
+          test -z "$(git status --porcelain)"
