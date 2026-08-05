@@ -1,0 +1,345 @@
+{
+  "record_kind": "drowned_harbor_high_water_presentation_hook_storyboard_study_registration",
+  "record_version": 1,
+  "identity": {
+    "release_id": "DH-PRESENT-REG-001",
+    "study_id": "DH-PRESENT-001",
+    "visual_baseline_id": "DH-VBL-001",
+    "conversion_brief_id": "DH-VCB-001",
+    "governing_issue": 114,
+    "review_disposition": "accepted_external_storyboard_reference"
+  },
+  "release": {
+    "protected_main_base": "0cea1ac62733fda56d09cb0de8a789efc509308a",
+    "branch": "docs/dh-present-001-metadata-registration",
+    "planning_only": true,
+    "metadata_only": true
+  },
+  "authorization": {
+    "implementation_authorized": false,
+    "codex_authorized": false,
+    "production_art_authorized": false,
+    "candidate_creation_authorized": false,
+    "candidate_promotion_authorized": false,
+    "runtime_paths_authorized": false,
+    "source_art_paths_authorized": false,
+    "image_binaries_authorized": false,
+    "public_distribution_authorized": false,
+    "normal_tale_registration_authorized": false,
+    "ordinary_export_inclusion_authorized": false,
+    "pr_32_incorporated": false
+  },
+  "external_package": {
+    "filename": "DH-PRESENT-001_External_Art_Director_Handoff_Package_v1.zip",
+    "bytes": 2408052,
+    "sha256": "6f3bbacb50dcca8ccf12ee2e7a228abaa4393299dd06864a65b72fa7c4b1a506",
+    "repository_disposition": "external_private_only",
+    "integrity_verified": true,
+    "manifest": {
+      "path": "02_MACHINE_READABLE/PACKAGE_MANIFEST.json",
+      "bytes": 1850,
+      "sha256": "aca64d4592ab1a8ff50f11f2de160889dbf5d73340b983fff309c0f2e218e697",
+      "file_count_excluding_manifest": 8,
+      "all_payloads_matched": true
+    },
+    "payloads": [
+      {
+        "path": "00_START_HERE/README_FIRST.md",
+        "bytes": 674,
+        "sha256": "faaa18d447546f09f187ec6245f4292ac820c2a3bb31f613f9ccb94e83601a8a"
+      },
+      {
+        "path": "01_STUDY/DH-PRESENT-001_Drowned_Harbor_High_Water_Environmental_Presentation-Hook_Storyboard_Study_v1.png",
+        "bytes": 2497096,
+        "sha256": "51e2a1774529500385260d1800aacd1f3265024db6cc0b93c0e76ee8a363cc07"
+      },
+      {
+        "path": "01_STUDY/DH-PRESENT-001_Narrative_Study_v1.md",
+        "bytes": 2487,
+        "sha256": "402c79014885fe404354e9b0f6e326b84e0e693ec685ce45b54a74af6d68ba1b"
+      },
+      {
+        "path": "01_STUDY/DH-PRESENT-001_Review_Considerations_v1.md",
+        "bytes": 779,
+        "sha256": "4a008502fb88badaf122f798d84f8a89dc8e57a371c130e9c06a2851e126599f"
+      },
+      {
+        "path": "02_MACHINE_READABLE/DH-PRESENT-001_Frame_and_Hook_Register_v1.json",
+        "bytes": 3932,
+        "sha256": "6ffa68451a74e3663330ae3b7f1be9c8df3852c61869d022523b676447277a48"
+      },
+      {
+        "path": "03_PROVENANCE_AND_RIGHTS/DH-PRESENT-001_External_Generation_and_Rights_Record_v1.json",
+        "bytes": 1236,
+        "sha256": "a5f0e0d9ed9de607ea6d339f2816c0ddfe081af2368ee769c5ab6ea9632f1c92"
+      },
+      {
+        "path": "03_PROVENANCE_AND_RIGHTS/DH-PRESENT-001_Unresolved_Facts_and_Rights_Statement_v1.md",
+        "bytes": 726,
+        "sha256": "9fe60569c2ba5455568c7119a195f2f30a86e01b21cf50d3141b391aaf85867b"
+      },
+      {
+        "path": "04_RELEASE_COORDINATOR/SEND_TO_RELEASE_COORDINATOR_ISSUE_114.md",
+        "bytes": 1051,
+        "sha256": "cdb02726bc2a2e949fce79620122184323fd984ddb2c7fcac16473feac90b716"
+      }
+    ]
+  },
+  "image": {
+    "filename": "DH-PRESENT-001_Drowned_Harbor_High_Water_Environmental_Presentation-Hook_Storyboard_Study_v1.png",
+    "media_type": "image/png",
+    "width_px": 1536,
+    "height_px": 1024,
+    "mode": "RGB",
+    "bytes": 2497096,
+    "sha256": "51e2a1774529500385260d1800aacd1f3265024db6cc0b93c0e76ee8a363cc07",
+    "decode_verified": true,
+    "embedded_metadata_detected": false,
+    "repository_path": null,
+    "repository_disposition": "external_private_only",
+    "runtime_composition": false,
+    "logical_960x540_validation": false
+  },
+  "authority": {
+    "chain": [
+      "authoritative runtime Tide/stage state",
+      "visual_tide_state",
+      "authorized flood/water presentation mapping",
+      "mask set and presentation derivative"
+    ],
+    "land_connector_phrase": "visual representation of authoritative land-connector state",
+    "water_only_connector_phrase": "visual representation of authoritative water-only connector state",
+    "presentation_may_own": [
+      "animation",
+      "interpolation",
+      "reveal",
+      "emphasis",
+      "transition",
+      "skip-equivalent final state"
+    ],
+    "presentation_never_owns": [
+      "route legality",
+      "movement authority",
+      "runtime Tide state",
+      "runtime stage state",
+      "authoritative connector state",
+      "gameplay-event authority"
+    ],
+    "one_authoritative_shared_board_master_required": true,
+    "shared_invariants": [
+      "coordinate system",
+      "geometry",
+      "camera and projection",
+      "landmark anchors",
+      "route authority",
+      "elevation authority",
+      "shoreline and flood boundaries"
+    ]
+  },
+  "presentation_hooks": [
+    "dh_present_waterline_advance",
+    "dh_present_route_submerge",
+    "dh_present_route_reveal_water_only",
+    "dh_present_lighthouse_beam_rotate",
+    "dh_present_bellhouse_pressure",
+    "dh_present_lifeboat_release",
+    "dh_present_archive_access_reveal",
+    "dh_present_debris_current",
+    "dh_present_fog_pressure",
+    "dh_present_landmark_light_state"
+  ],
+  "frames": [
+    {
+      "frame_id": "DH-PRESENT-001-FR-01",
+      "title": "Low-Tide Base State",
+      "hook_ids": [],
+      "transition_intent": "Authoritative baseline; presentation has not begun."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-02",
+      "title": "First Warning",
+      "hook_ids": [
+        "dh_present_bellhouse_pressure"
+      ],
+      "transition_intent": "Bounded public warning without gameplay mutation."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-03",
+      "title": "Sky and Wind Shift",
+      "hook_ids": [
+        "dh_present_fog_pressure",
+        "dh_present_debris_current"
+      ],
+      "transition_intent": "Environmental anticipation while critical information remains readable."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-04",
+      "title": "Waterline Advance",
+      "hook_ids": [
+        "dh_present_waterline_advance"
+      ],
+      "transition_intent": "Authorized water presentation follows shared-master shoreline and flood boundaries."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-05",
+      "title": "Route Submergence",
+      "hook_ids": [
+        "dh_present_route_submerge"
+      ],
+      "transition_intent": "Visual representation of authoritative land-connector state."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-06",
+      "title": "Water-Only Routes Revealed",
+      "hook_ids": [
+        "dh_present_route_reveal_water_only"
+      ],
+      "transition_intent": "Visual representation of authoritative water-only connector state."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-07",
+      "title": "Landmark Reaction",
+      "hook_ids": [
+        "dh_present_lighthouse_beam_rotate",
+        "dh_present_bellhouse_pressure",
+        "dh_present_lifeboat_release",
+        "dh_present_archive_access_reveal",
+        "dh_present_landmark_light_state"
+      ],
+      "transition_intent": "Localized reactions without new access, mechanism, route, or gameplay authority."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-08",
+      "title": "Crest and Chaos Beat",
+      "hook_ids": [
+        "dh_present_debris_current",
+        "dh_present_fog_pressure"
+      ],
+      "transition_intent": "Bounded presentation peak that must not hide essential state."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-09",
+      "title": "Settled High Water",
+      "hook_ids": [
+        "dh_present_landmark_light_state"
+      ],
+      "transition_intent": "Final authorized High-Water visual state after effects settle."
+    },
+    {
+      "frame_id": "DH-PRESENT-001-FR-10",
+      "title": "Ready for Action / Skip-Equivalent State",
+      "hook_ids": [],
+      "transition_intent": "Control returns; played and skipped sequences converge on identical authoritative state."
+    }
+  ],
+  "skip_equivalence": {
+    "required": true,
+    "played_skipped_interrupted_restored_replayed_converge": true,
+    "implementation_proof_claimed": false,
+    "authoritative_state_mutation_authorized": false,
+    "rng_mutation_authorized": false,
+    "stable_seat_identity_mutation_authorized": false,
+    "public_private_projection_mutation_authorized": false
+  },
+  "review_requirements": {
+    "engine": "Godot 4.7.1",
+    "renderer": "Compatibility",
+    "logical_review_space": {
+      "width": 960,
+      "height": 540,
+      "origin": "top-left",
+      "safe_margin_reviews_px": [
+        0,
+        24,
+        48
+      ]
+    },
+    "four_seat_density_validated": false,
+    "eight_seat_density_validated": false,
+    "safe_frame_validated": false,
+    "grayscale_value_validated": false,
+    "reduced_motion_validated": false,
+    "interruption_validated": false,
+    "replay_validated": false,
+    "television_readability_validated": false,
+    "human_comprehension_validated": false,
+    "essential_meaning_may_depend_on_color_only": false,
+    "essential_meaning_may_depend_on_transparency_only": false
+  },
+  "generation": {
+    "generator_context": "OpenAI ChatGPT image generation in the Terror Turn Art Director specialist chat",
+    "available_generation_id": "65b33e0d-1cec-4439-bdb6-9b4da1b83669",
+    "exact_model_variant": null,
+    "exact_prompt": null,
+    "exact_negative_prompt": null,
+    "seed": null,
+    "exact_generation_timestamp": null,
+    "chat_date_context": "2026-08-04/2026-08-05 boundary; exact timestamp not exposed",
+    "generator_side_reference_handling": null,
+    "known_reference_context": "Prior Drowned Harbor concept studies and continuity package were available to the Art Director chat.",
+    "human_edits_after_generation": "none_known_not_proof_none_occurred",
+    "content_credentials_status": null,
+    "watermark_status": null
+  },
+  "rights": {
+    "public_repository_rights": null,
+    "github_release_distribution_rights": null,
+    "derivative_production_rights": null,
+    "public_distribution_authorized": false,
+    "production_replacement_required": true
+  },
+  "generated_content": {
+    "text_labels_signage_prose": "reference_only_non_authoritative",
+    "visible_date": {
+      "text": "May 18, 2025",
+      "authoritative": false,
+      "creation_metadata": false
+    },
+    "production_replacement_required": true
+  },
+  "lifecycle": {
+    "status": "generated_external",
+    "review_status": "accepted_external_storyboard_reference",
+    "candidate_id": null,
+    "production_candidate": false,
+    "approved": false
+  },
+  "governance": {
+    "issue_7_naming_branding_gate": true,
+    "issue_39_human_physical_evidence_gate": true,
+    "alpha3_developer_only": true,
+    "lantern_house_sole_normal_default_tale": true,
+    "pr_32_excluded": true
+  },
+  "prohibited_path_prefixes": [
+    "art/source/",
+    "game/assets/",
+    "game/src/"
+  ],
+  "prohibited_binary_extensions": [
+    ".png",
+    ".webp",
+    ".svg",
+    ".glb",
+    ".zip",
+    ".kra",
+    ".psd",
+    ".blend",
+    ".aseprite",
+    ".xcf",
+    ".tscn",
+    ".tres"
+  ],
+  "evidence_claims": {
+    "implementation_proven": false,
+    "human_comprehension": false,
+    "television_readability": false,
+    "physical_controller_behavior": false,
+    "accessibility_certification": false,
+    "comfort_validation": false,
+    "privacy_certification": false,
+    "security_certification": false,
+    "production_readiness": false,
+    "shipping_authorization": false
+  }
+}
