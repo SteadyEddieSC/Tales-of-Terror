@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/drowned_harbor_high_water_presentation_hook_storyboard_study_schema_v1.json",
+  "title": "Drowned Harbor High Water Presentation-Hook Storyboard Study Registration v1",
+  "description": "Closed top-level structural schema. The dedicated validator enforces exact semantic values, frame mappings, provenance, and authorization boundaries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_kind",
+    "record_version",
+    "identity",
+    "release",
+    "authorization",
+    "external_package",
+    "image",
+    "authority",
+    "presentation_hooks",
+    "frames",
+    "skip_equivalence",
+    "review_requirements",
+    "generation",
+    "rights",
+    "generated_content",
+    "lifecycle",
+    "governance",
+    "prohibited_path_prefixes",
+    "prohibited_binary_extensions",
+    "evidence_claims"
+  ],
+  "properties": {
+    "record_kind": {
+      "const": "drowned_harbor_high_water_presentation_hook_storyboard_study_registration"
+    },
+    "record_version": {
+      "const": 1
+    },
+    "identity": {
+      "const": {
+        "release_id": "DH-PRESENT-REG-001",
+        "study_id": "DH-PRESENT-001",
+        "visual_baseline_id": "DH-VBL-001",
+        "conversion_brief_id": "DH-VCB-001",
+        "governing_issue": 114,
+        "review_disposition": "accepted_external_storyboard_reference"
+      }
+    },
+    "release": {
+      "const": {
+        "protected_main_base": "0cea1ac62733fda56d09cb0de8a789efc509308a",
+        "branch": "docs/dh-present-001-metadata-registration",
+        "planning_only": true,
+        "metadata_only": true
+      }
+    },
+    "authorization": {
+      "type": "object"
+    },
+    "external_package": {
+      "type": "object"
+    },
+    "image": {
+      "type": "object"
+    },
+    "authority": {
+      "type": "object"
+    },
+    "presentation_hooks": {
+      "type": "array"
+    },
+    "frames": {
+      "type": "array"
+    },
+    "skip_equivalence": {
+      "type": "object"
+    },
+    "review_requirements": {
+      "type": "object"
+    },
+    "generation": {
+      "type": "object"
+    },
+    "rights": {
+      "type": "object"
+    },
+    "generated_content": {
+      "type": "object"
+    },
+    "lifecycle": {
+      "const": {
+        "status": "generated_external",
+        "review_status": "accepted_external_storyboard_reference",
+        "candidate_id": null,
+        "production_candidate": false,
+        "approved": false
+      }
+    },
+    "governance": {
+      "type": "object"
+    },
+    "prohibited_path_prefixes": {
+      "type": "array"
+    },
+    "prohibited_binary_extensions": {
+      "type": "array"
+    },
+    "evidence_claims": {
+      "type": "object"
+    }
+  }
+}
