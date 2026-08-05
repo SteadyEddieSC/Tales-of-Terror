@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Drowned Harbor presentation family registration v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_kind",
+    "record_version",
+    "identity",
+    "release",
+    "authorization",
+    "external_package",
+    "studies",
+    "presentation_family",
+    "authority",
+    "privacy",
+    "presentation_replay",
+    "qualifications",
+    "review_requirements",
+    "generated_content",
+    "rights",
+    "governance",
+    "prohibited_path_prefixes",
+    "prohibited_binary_extensions",
+    "evidence_claims"
+  ],
+  "properties": {
+    "record_kind": {
+      "const": "drowned_harbor_presentation_family_registration"
+    },
+    "record_version": {
+      "const": 1
+    },
+    "identity": {
+      "const": {
+        "release_id": "DH-PRESENT-REG-002",
+        "family_id": "DH-PRESENT-FAMILY-001",
+        "governing_issue": 118,
+        "visual_baseline_id": "DH-VBL-001",
+        "conversion_brief_id": "DH-VCB-001",
+        "registered_predecessor": {
+          "release_id": "DH-PRESENT-REG-001",
+          "study_id": "DH-PRESENT-001",
+          "issue": 114,
+          "pr": 115,
+          "merge_sha": "671b8f2512be80c0c5f2cec701c29445159620e2"
+        },
+        "study_ids": [
+          "DH-PRESENT-002",
+          "DH-PRESENT-003"
+        ],
+        "review_disposition": "accepted_external_storyboard_references_with_qualifications"
+      }
+    },
+    "release": {
+      "const": {
+        "protected_main_base": "42e2fed1737fa17bad5d2bafb6dee6aedad87319",
+        "branch": "docs/dh-present-002-003-family-registration",
+        "planning_only": true,
+        "metadata_only": true,
+        "combined_registration": true,
+        "separate_releases_required": false
+      }
+    },
+    "authorization": {
+      "type": "object"
+    },
+    "external_package": {
+      "type": "object"
+    },
+    "studies": {
+      "type": "array"
+    },
+    "presentation_family": {
+      "type": "object"
+    },
+    "authority": {
+      "type": "object"
+    },
+    "privacy": {
+      "type": "object"
+    },
+    "presentation_replay": {
+      "type": "object"
+    },
+    "qualifications": {
+      "type": "array"
+    },
+    "review_requirements": {
+      "type": "object"
+    },
+    "generated_content": {
+      "type": "object"
+    },
+    "rights": {
+      "type": "object"
+    },
+    "governance": {
+      "type": "object"
+    },
+    "prohibited_path_prefixes": {
+      "type": "array"
+    },
+    "prohibited_binary_extensions": {
+      "type": "array"
+    },
+    "evidence_claims": {
+      "type": "object"
+    }
+  }
+}
