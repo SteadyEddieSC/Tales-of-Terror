@@ -13,7 +13,7 @@
     "snapshot_version": 3,
     "state": "completed_developer_only"
   },
-  "as_of_date": "2026-08-04",
+  "as_of_date": "2026-08-05",
   "companion_dependency_security": {
     "audit_threshold": "moderate",
     "miniflare": "4.20260722.0",
@@ -27,40 +27,46 @@
     "wrangler": "4.114.0"
   },
   "current_release": {
-    "branch": "docs/post-alpha3-status-reconciliation",
-    "issue": 111,
-    "release_id": "post_alpha3_status_reconciliation",
+    "activation_authorized": false,
+    "issue": null,
+    "release_id": null,
     "runtime_authority_created": false,
-    "type": "documentation_status_reconciliation"
+    "state": "none_active_after_reconciliation",
+    "type": null
   },
   "drowned_harbor": {
     "ordinary_playable": false,
-    "status": "developer_only_alpha3_systems_replayability_export_excluded"
+    "status": "developer_only_alpha3_with_completed_metadata_only_visual_planning_export_excluded"
   },
   "gates": [
     {
       "issue": 7,
-      "purpose": "professional naming clearance",
+      "purpose": "professional naming and branding clearance",
       "state": "open"
     },
     {
       "issue": 39,
-      "purpose": "human household and remote evidence",
+      "purpose": "human household, physical-controller, television, and remote evidence",
       "state": "deferred_open"
-    },
-    {
-      "issue": 110,
-      "purpose": "Drowned Harbor visual baseline registration and board production conversion planning",
-      "state": "planned_blocked"
     }
   ],
   "human_evidence_claimed": false,
+  "pending_inputs": [
+    {
+      "authority": "advisory_until_release_coordination_review",
+      "input_id": "ux_helper_handoff",
+      "implementation_authorized": false,
+      "state": "pending"
+    }
+  ],
   "playable_release": "v0.1.9",
   "preserved_authorities": {
     "alpha1_merge": "85b77d5216472afdb4abb7598917d5052eed180a",
     "alpha2_merge": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
     "alpha3_candidate_head": "08fdbe8b52a66fc44a98bdd27878554c5478aef1",
     "alpha3_merge": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
+    "dh_present_registration_merge": "671b8f2512be80c0c5f2cec701c29445159620e2",
+    "dh_visual_baseline_merge": "0cea1ac62733fda56d09cb0de8a789efc509308a",
     "p01_p07_package_index": "docs/preproduction/preproduction_package_index_v1.json",
     "p021_merge": "4efdd76efdf2aa34823dae5d3624a3dca3f0a349",
     "p022_merge": "da86c0aa74bc0442862c97e3c371f6b714da4d0a"
@@ -73,19 +79,45 @@
     "drowned_harbor_provider_registered": false,
     "tale_count": 1
   },
-  "protected_main": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
+  "protected_main": "671b8f2512be80c0c5f2cec701c29445159620e2",
+  "protected_main_semantics": "exact_reconciliation_starting_baseline",
   "recommended_next_release": {
     "activation_authorized": false,
     "codex_required": false,
-    "github_issue": 110,
-    "release_id": "DH-VBL-001",
-    "state": "planned_blocked",
-    "title": "Drowned Harbor Visual Baseline Registration & Board Production Conversion Brief 01"
+    "github_issue": null,
+    "release_id": null,
+    "state": "waiting_on_ux_handoff_and_explicit_activation",
+    "title": null
   },
   "runtime_implementation_authorized": false,
-  "schema_version": 3,
+  "schema_version": 4,
   "status_kind": "post_prototype_project_status",
   "unrelated_open_pull_requests": [
     32
-  ]
+  ],
+  "visual_implementation_authorized": false,
+  "visual_planning": {
+    "external_binaries_in_git": false,
+    "presentation_study": {
+      "issue": 114,
+      "merged_main_sha": "671b8f2512be80c0c5f2cec701c29445159620e2",
+      "pull_request": 115,
+      "release_id": "DH-PRESENT-REG-001",
+      "state": "completed_metadata_only",
+      "study_id": "DH-PRESENT-001",
+      "visual_candidate_created": false
+    },
+    "production_art_authorized": false,
+    "public_github_release_assets_authorized": false,
+    "runtime_art_authorized": false,
+    "visual_baseline": {
+      "baseline_id": "DH-VBL-001",
+      "candidate_batch_id": "DH-CB-002",
+      "conversion_brief_id": "DH-VCB-001",
+      "issue": 110,
+      "merged_main_sha": "0cea1ac62733fda56d09cb0de8a789efc509308a",
+      "pull_request": 113,
+      "state": "completed_metadata_only"
+    }
+  }
 }
