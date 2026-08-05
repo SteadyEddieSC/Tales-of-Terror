@@ -1,16 +1,16 @@
 # Post-P0.19 Drowned Harbor Production-Candidate Roadmap
 
-**Version:** 1.5
-**Status:** Alpha.3 developer-only runtime and metadata-only visual planning complete; successor unselected
-**Status-reconciliation baseline:** `671b8f2512be80c0c5f2cec701c29445159620e2`
+**Version:** 1.6
+**Status:** Alpha.3 developer-only runtime plus metadata-only visual, presentation-family, and UX planning complete; successor unselected
+**Status-reconciliation baseline:** `22b43893b7726e5c5bea1078aced1cf11e08049f`
 
 ## Current decision
 
 P0.21, Alpha.1, P0.22, Alpha.2, P0.23, and `v0.2.0-alpha.3` are complete. Alpha.3 supplies developer-only systems and replayability authority; it does not make Drowned Harbor a normal production Tale.
 
-The visual baseline, board-production conversion brief, and High Water presentation-hook storyboard study are now registered as metadata and planning authorities. They do not authorize production art, visual binaries in Git, source-art construction, Godot integration, runtime presentation, candidate promotion, public distribution, or human-evidence claims.
+The visual baseline, board-production conversion brief, High Water/Last Light/ending presentation studies, presentation-family assessment, and corrected shared-screen UX advisory are registered as metadata and planning authorities. They do not authorize production art, visual binaries in Git, source-art construction, Godot integration, runtime presentation, UX implementation, candidate promotion, public distribution, rights resolution, or human-evidence claims.
 
-There is no active successor release after this reconciliation. The UX helper handoff remains pending and advisory. Release Coordination must review that handoff and any rights, source, construction, renderer, runtime, and evidence prerequisites before selecting or activating a later release.
+There is no active successor release after this reconciliation. The UX helper handoff has been reviewed and accepted with required corrections through `DH-UX-REG-001`; it is no longer pending. Rights and provenance resolution for the external visual inputs is the next blocking prerequisite, followed by separately authorized source-art and source/runtime-composition work. No later release identity is selected or activated.
 
 ## Production boundary
 
@@ -22,6 +22,8 @@ There is no active successor release after this reconciliation. The UX helper ha
 - Alpha.3 candidate source head was `08fdbe8b52a66fc44a98bdd27878554c5478aef1`.
 - `DH-VBL-001` / `DH-CB-002` / `DH-VCB-001` completed through issue #110 / PR #113 at `0cea1ac62733fda56d09cb0de8a789efc509308a`.
 - `DH-PRESENT-001` completed metadata registration through issue #114 / PR #115 at `671b8f2512be80c0c5f2cec701c29445159620e2`.
+- `DH-PRESENT-REG-002` and `DH-PRESENT-FAMILY-001` completed through issue #118 / PR #119 at `1cad8495c913d926c4422557ea59e8c6fa1f6c1a`.
+- `DH-UX-REG-001` / `DH-UX-001` completed through issue #120 / PR #124 at `22b43893b7726e5c5bea1078aced1cf11e08049f`.
 - External visual images, archives, and editable sources remain outside normal Git history and public GitHub Releases.
 
 ## Governed sequence
@@ -35,8 +37,11 @@ There is no active successor release after this reconciliation. The UX helper ha
 - **Post-Alpha.3 status reconciliation:** completed, issue #111 / PR #112.
 - **DH-VBL-001 — Visual Baseline Registration & Board Production Conversion Brief 01:** completed metadata-only planning release, issue #110 / PR #113.
 - **DH-PRESENT-REG-001 — High Water Presentation Study Metadata Registration:** completed metadata-only planning release, issue #114 / PR #115.
-- **Post-DH-PRESENT-001 status reconciliation:** issue #116; documentation/governance only.
-- **Next release:** unselected; `waiting_on_ux_handoff_and_explicit_activation`.
+- **Post-DH-PRESENT-001 status reconciliation:** completed, issue #116 / PR #117.
+- **DH-PRESENT-REG-002 — Last Light, Ending & Presentation-Family Metadata Registration:** completed, issue #118 / PR #119.
+- **DH-UX-REG-001 — Shared-Screen UX Advisory Registration:** completed, issue #120 / PR #124.
+- **Post-DH-UX-001 status reconciliation:** issue #125; documentation/governance only.
+- **Next release:** unselected; blocked on rights/provenance evidence and explicit activation.
 - **v0.2.0-beta — Presentation & Content Integration:** future and blocked; no issue, branch, or implementation authority.
 - **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
 
@@ -46,11 +51,15 @@ Alpha.3 governs Cooperative seats 1–8, Hidden Betrayer seats 3–8, and Outbre
 
 The Companion audit remediation uses reviewed exact npm overrides for PostCSS `8.5.23` and Undici `7.29.0`, while preserving Wrangler `4.114.0`, Workers Types `5.20260722.1`, Miniflare `4.20260722.0`, and Sharp `0.35.2`. The final Alpha.3 candidate passed every permanent exact-head workflow.
 
-## Visual-planning result
+## Visual, presentation, and UX planning result
 
 `DH-VBL-001` recognizes the preproduction visual baseline, `DH-CB-002` preserves a truthful external candidate register, and `DH-VCB-001` records the board-production conversion authority. The default construction presumption remains `layered_painted_2_5d`; alternatives require later evidence. Low Tide and High Water must continue to derive from one authoritative shared board master.
 
-`DH-PRESENT-001` registers a stable ten-frame High Water presentation-hook sequence subordinate to the existing Tide and connector authority chain. Its external PNG remains a storyboard reference rather than a runtime composition or production master. The study does not validate 960×540 safe-frame readability, grayscale performance, reduced motion, interruption, replay, human comprehension, television readability, physical-controller behavior, accessibility, production readiness, or shipping readiness.
+`DH-PRESENT-001` through `003` register stable High Water, Last Light, and ending/epilogue storyboard references subordinate to existing rules, role, Tide, connector, replay, privacy, and cleanup authority. `DH-PRESENT-FAMILY-001` records family consistency but remains not conversion-ready.
+
+`DH-UX-001` registers corrected planning direction for board-first, decision-focus, transformation, outcome-attribution, private-shield, and system-overlay modes; stable-seat identity for 1–8 seats; non-mutating preview and confirmed commitment; public-only transcript/replay; and future validation. Its 960×540 coordinates, 104-pixel compact seat tiles, 308-pixel drawer, type sizes, focus order, prompts, and microcopy remain unvalidated feasibility hypotheses rather than runtime specifications or evidence.
+
+The external PNGs remain references rather than runtime compositions or production masters. The planning releases do not validate safe-frame readability, grayscale performance, reduced motion, interruption, replay comprehension, television readability, physical-controller behavior, accessibility, privacy, production readiness, or shipping readiness.
 
 ## Persistent invariants
 
@@ -60,10 +69,10 @@ Automation is machine evidence only. It does not establish fun, balance, physica
 
 ## Immediate next action
 
-1. Complete issue #116 as a six-path documentation and validator reconciliation.
+1. Complete issue #125 as an exact ten-path status and validator reconciliation.
 2. Reverify protected `main` after its expected-head squash merge.
-3. Receive and review the UX helper handoff as advisory input.
-4. Decide whether the next bounded action is another planning/acceptance release or whether prerequisites support a separately authorized implementation release.
-5. Create no successor issue, branch, PR, Codex task, source-art path, runtime-art path, or candidate promotion until that decision is explicit.
+3. Obtain evidence sufficient to resolve rights and provenance for the external visual inputs.
+4. Only after that evidence is accepted, decide whether to authorize source-art/source-composition planning or another bounded prerequisite release.
+5. Create no implementation issue, branch, PR, Codex task, source-art path, runtime-art path, private-surface implementation, or candidate promotion until that decision is explicit.
 
-No source art, runtime art, Godot asset integration, visual-candidate promotion, or UX implementation is authorized by this roadmap.
+No source art, runtime art, Godot asset integration, visual-candidate promotion, UX implementation, or rights resolution is authorized by this roadmap.
