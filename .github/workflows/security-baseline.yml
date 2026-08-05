@@ -62,16 +62,26 @@ jobs:
           python quality/validate_repository.py workflows --report-dir artifacts/security/workflow-policy \
             2>&1 | tee artifacts/security/workflow-policy-console.txt
 
+      - name: Install checksum-pinned Zizmor 1.26.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          wheel="$RUNNER_TEMP/zizmor-1.26.1-py3-none-manylinux_2_28_x86_64.whl"
+          curl -fsSL -o "$wheel" \
+            https://files.pythonhosted.org/packages/a8/2b/61ab13d45d6ce57ef5a08bb3246981f62e30bb4938098b17bb7b88110b79/zizmor-1.26.1-py3-none-manylinux_2_28_x86_64.whl
+          echo '6a958d8a0941d7e1d0de8436670b5cb7fc64c8028b4d16e3f519ccc77f953cef  zizmor-1.26.1-py3-none-manylinux_2_28_x86_64.whl' \
+            | (cd "$RUNNER_TEMP" && sha256sum --check -)
+          python -m pip install --disable-pip-version-check --no-deps "$wheel"
+          zizmor --version | tee artifacts/security/zizmor-version.txt
+
       - name: Run Zizmor full workflow audit
         id: zizmor
         continue-on-error: true
-        uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
-        with:
-          advanced-security: false
-          annotations: false
-          online-audits: false
-          version: v1.26.1
-          inputs: .github/workflows
+        shell: bash
+        run: |
+          set -o pipefail
+          zizmor --offline --format json .github/workflows \
+            2>&1 | tee artifacts/security/zizmor.json
 
       - name: Record Zizmor disposition
         if: always()
