@@ -1,0 +1,553 @@
+{
+  "record_kind": "drowned_harbor_shared_screen_ux_advisory_registration",
+  "record_version": 1,
+  "title": "Drowned Harbor Shared-Screen UX Advisory Registration v1",
+  "identity": {
+    "release_id": "DH-UX-REG-001",
+    "external_advisory_id": "DH-UX-001",
+    "governing_issue": 120,
+    "review_disposition": "accepted_external_ux_advisory_with_required_corrections",
+    "presentation_family_id": "DH-PRESENT-FAMILY-001"
+  },
+  "release": {
+    "protected_main_base": "1cad8495c913d926c4422557ea59e8c6fa1f6c1a",
+    "branch": "docs/dh-ux-001-advisory-registration",
+    "planning_only": true,
+    "metadata_only": true
+  },
+  "authorization": {
+    "implementation_authorized": false,
+    "codex_authorized": false,
+    "runtime_paths_authorized": false,
+    "godot_work_authorized": false,
+    "source_art_authorized": false,
+    "runtime_art_authorized": false,
+    "image_binaries_authorized": false,
+    "candidate_creation_authorized": false,
+    "candidate_promotion_authorized": false,
+    "public_distribution_authorized": false,
+    "normal_tale_registration_authorized": false,
+    "ordinary_export_inclusion_authorized": false,
+    "human_evidence_authorized": false,
+    "accessibility_claim_authorized": false,
+    "successor_implementation_issue_authorized": false,
+    "pr_32_incorporated": false
+  },
+  "external_package": {
+    "received_filename": "DH-UX-001_External_UX_Helper_Advisory_Handoff_Package_v1(1).zip",
+    "canonical_package_name": "DH-UX-001_External_UX_Helper_Advisory_Handoff_Package_v1",
+    "bytes": 21304764,
+    "sha256": "e3857353dc0257b72866e0e5259b8e3bab2e856126903675f8e73e1f23a02ae3",
+    "repository_disposition": "external_private_only",
+    "integrity_verified": true,
+    "zip_crc_verified": true,
+    "manifest": {
+      "path": "04_MACHINE_READABLE/PACKAGE_MANIFEST.json",
+      "bytes": 5622,
+      "sha256": "7742a59b402957d63593917a291d807f3fba7fd4bea82937a22730b65d6d469d",
+      "file_count_excluding_manifest": 25,
+      "all_payloads_matched": true
+    }
+  },
+  "external_schema_review": {
+    "contract_path": "04_MACHINE_READABLE/dh_ux_001_shared_screen_ux_advisory_v1.json",
+    "schema_path": "04_MACHINE_READABLE/dh_ux_001_shared_screen_ux_advisory_schema_v1.json",
+    "json_parse_verified": true,
+    "external_contract_validates_against_external_schema": false,
+    "validation_error_count": 1,
+    "defect": "top_level_title_is_present_but_not_defined_while_additional_properties_are_false",
+    "repository_registration_uses_corrected_closed_schema": true
+  },
+  "source_authorities": [
+    {
+      "path": "docs/technical/Shared_Screen_Storyboard_Contract_v1.md",
+      "blob_sha": "c2ca29e7a19b04217066fa5be5244882666c9a47"
+    },
+    {
+      "path": "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+      "blob_sha": "ea3c9fbf5573a0fcb9a80df8e10c3649e4a6237d"
+    },
+    {
+      "path": "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json",
+      "blob_sha": "58ec738491ae8b74cf7f1ddfdb74151111d29c5f"
+    },
+    {
+      "path": "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md",
+      "blob_sha": "f50074be013c56454b9b300ec8981c6ae984b3c0"
+    },
+    {
+      "path": "game/data/scenarios/drowned_harbor_systems_v3.json",
+      "blob_sha": "a90f9938d8a608c5e3bbf7453819e9f6dfa9d83c"
+    },
+    {
+      "path": "game/data/tales/drowned_harbor/localization_systems_en_v3.json",
+      "blob_sha": "603a6060335f45d7e317989dfe0d8258f65bd02f"
+    },
+    {
+      "path": "docs/tales/drowned_harbor/visual/Drowned_Harbor_Presentation_Family_Consistency_and_Conversion_Readiness_v1.md",
+      "blob_sha": "ea48c75483669ba6e7e9be15d571f8458e4b8e3b"
+    },
+    {
+      "path": "docs/technical/Drowned_Harbor_Alpha2_Graybox_Route_Contract_v1.md",
+      "blob_sha": "be9af4eb33c8b78c73c81fcb9bfd8991ec902f76"
+    }
+  ],
+  "reference_inputs": [
+    {
+      "reference_id": "DH-CHAR-StableSeat-Transformation-Studio-v1",
+      "filename": "DH-CHAR-StableSeat-Transformation_Studio-v1.png",
+      "bytes": 2275183,
+      "sha256": "12cf4422ba189c038844d139d828f1f92fe8fd8209649d1d8197ecdbae052a60",
+      "width_px": 1672,
+      "height_px": 941,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-ENV-001",
+      "filename": "DH-ENV-001_Studio_v3.png",
+      "bytes": 2961556,
+      "sha256": "9f343570adb0e51f6d7215bd73434f25fb2af1e502641f15c0ef4de50ccfc587",
+      "width_px": 1672,
+      "height_px": 941,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-ENV-002",
+      "filename": "DH-ENV-002_Studio_v2.png",
+      "bytes": 2864008,
+      "sha256": "30aeb03f169506a3889635219b4e3afbe03720d8c3e1405d1d1424c1e5425a88",
+      "width_px": 1672,
+      "height_px": 941,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-PRESENT-001",
+      "filename": "DH-PRESENT-001_Drowned_Harbor_High_Water_Environmental_Presentation-Hook_Storyboard_Study_v1.png",
+      "bytes": 2497096,
+      "sha256": "51e2a1774529500385260d1800aacd1f3265024db6cc0b93c0e76ee8a363cc07",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "repository_status": "registered_external_storyboard_reference",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-PRESENT-002",
+      "filename": "DH-PRESENT-002_Drowned_Harbor_Last_Light_Environmental_Presentation-Hook_Storyboard_Study_v1.png",
+      "bytes": 2809928,
+      "sha256": "904aa44dfa2b6980d88d0776213d28d3e1fa3b2b8acba7798fdbed84e526e00e",
+      "width_px": 1672,
+      "height_px": 941,
+      "mode": "RGB",
+      "repository_status": "registered_external_storyboard_reference_with_qualifications",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-PRESENT-003",
+      "filename": "DH-PRESENT-003_Drowned_Harbor_Ending_Resolution_and_Epilogue_Attribution_Presentation-Hook_Storyboard_Study_v1.png",
+      "bytes": 2580384,
+      "sha256": "dc8cd6ee426c486043a688bcf3a89025597e2c96b2b66e4064392b9bd9f901b2",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "repository_status": "registered_external_storyboard_reference_with_qualifications",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-PROFILE-001",
+      "filename": "DH-PROFILE-001_Drowned_Harbor_Spooky_versus_Grim_Presentation_Profile_Invariant_Study_v1.png",
+      "bytes": 2811491,
+      "sha256": "c54e0cdb412daab719819c803c1ea4d6817cbcf9f506b35aea82fd9646d9687a",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "TerrorTurn-Shared-UI-State-Grammar-Studio-v1",
+      "filename": "TerrorTurn_Shared-UI-State-Grammar_Studio-v1.png",
+      "bytes": 2795625,
+      "sha256": "67176e1c4e093e21e4febab1a8cb8871936605662fbd7428e506243e58d33bdb",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    }
+  ],
+  "authority": {
+    "board_state": [
+      "board_geometry",
+      "spaces",
+      "connectors",
+      "pawn_positions",
+      "tide_mutations",
+      "route_reachability"
+    ],
+    "rules_session": [
+      "legal_intents",
+      "stage_progression",
+      "bellhouse_choice_and_recovery",
+      "council_commitment",
+      "high_water_transformation",
+      "last_light_resolution",
+      "public_ending_resolution"
+    ],
+    "role_session": [
+      "private_roles",
+      "private_objectives",
+      "hidden_factions",
+      "private_transformations",
+      "private_attribution",
+      "controlled_reveal"
+    ],
+    "session_coordinator": [
+      "safe_handoff",
+      "control_transfer",
+      "rematch",
+      "title_cleanup"
+    ],
+    "presentation": [
+      "focus",
+      "non_mutating_preview",
+      "animation",
+      "emphasis",
+      "captions",
+      "presentation_only_replay"
+    ],
+    "presentation_never_owns": [
+      "board_or_route_legality",
+      "authoritative_state_mutation",
+      "rng",
+      "stage_progression",
+      "commitment_acceptance",
+      "ending_resolution",
+      "private_attribution",
+      "cleanup"
+    ],
+    "new_runtime_fields_authorized": false,
+    "new_legal_actions_authorized": false
+  },
+  "logical_review_envelope": {
+    "classification": "advisory_review_coordinate_hypothesis_not_runtime_spec",
+    "logical_canvas": {
+      "x": 0,
+      "y": 0,
+      "width": 960,
+      "height": 540
+    },
+    "critical_safe_area": {
+      "x": 48,
+      "y": 27,
+      "width": 864,
+      "height": 486
+    },
+    "decorative_safe_area": {
+      "x": 24,
+      "y": 14,
+      "width": 912,
+      "height": 512
+    },
+    "regions": {
+      "upper_status": {
+        "x": 48,
+        "y": 27,
+        "width": 864,
+        "height": 56
+      },
+      "board_action": {
+        "x": 48,
+        "y": 83,
+        "width": 864,
+        "height": 348
+      },
+      "caption_reserve_overlay": {
+        "x": 48,
+        "y": 377,
+        "width": 864,
+        "height": 54
+      },
+      "stable_seat_rail": {
+        "x": 48,
+        "y": 431,
+        "width": 864,
+        "height": 58
+      },
+      "controller_prompts": {
+        "x": 48,
+        "y": 489,
+        "width": 864,
+        "height": 24
+      },
+      "decision_board_context": {
+        "x": 48,
+        "y": 83,
+        "width": 544,
+        "height": 348
+      },
+      "decision_drawer": {
+        "x": 604,
+        "y": 83,
+        "width": 308,
+        "height": 348
+      }
+    },
+    "caption_reserve_intentionally_overlays_board_action": true,
+    "exact_values_may_change_after_prototype_and_human_evidence": true,
+    "implemented": false,
+    "safe_frame_validated": false,
+    "television_readability_validated": false
+  },
+  "stable_seat_hypotheses": {
+    "supported_seats": {
+      "minimum": 1,
+      "maximum": 8
+    },
+    "horizontal_scrolling_allowed": false,
+    "identity_channels": [
+      "stable_seat_number",
+      "base_silhouette",
+      "edge_pattern",
+      "public_crest",
+      "optional_color_accent"
+    ],
+    "expanded": {
+      "seat_counts": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tile_width_range_px": [
+        156,
+        200
+      ],
+      "tile_height_px": 54,
+      "minimum_gap_px": 8
+    },
+    "compact": {
+      "seat_counts": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "eight_seat_tile_width_px": 104,
+      "tile_height_range_px": [
+        50,
+        54
+      ],
+      "gap_px": 4,
+      "eight_seat_total_width_px": 860,
+      "available_rail_width_px": 864
+    },
+    "classification": "feasibility_hypothesis_not_final_component_spec",
+    "pseudo_localization_expansion_target": 1.35,
+    "exact_typeface_and_glyphs_unresolved": true,
+    "four_seat_density_validated": false,
+    "eight_seat_density_validated": false,
+    "human_validation_claimed": false
+  },
+  "interaction_model": {
+    "states": [
+      "available",
+      "focused",
+      "selected_preview",
+      "confirmation_pending",
+      "committed",
+      "resolving",
+      "settled",
+      "unavailable",
+      "warning",
+      "recovery",
+      "private_shield",
+      "reconnecting",
+      "game_controlled",
+      "takeover_pending"
+    ],
+    "commit_sequence": [
+      "available",
+      "focused",
+      "selected_preview",
+      "confirmation_pending",
+      "committed",
+      "resolving",
+      "settled"
+    ],
+    "first_focus_may_commit_irreversible_action": false,
+    "preview_mutates_authority": false,
+    "committed_state_occurs_only_after_authority_acceptance": true
+  },
+  "stage_flows": [
+    {
+      "stage_id": "low_tide_arrival_v1",
+      "layout_mode": "board_first",
+      "confirmation": "reversible_selection"
+    },
+    {
+      "stage_id": "bellhouse_ledger_v1",
+      "layout_mode": "decision_focus",
+      "confirmation": "confirmed_commitment"
+    },
+    {
+      "stage_id": "lighthouse_council_v1",
+      "layout_mode": "decision_focus",
+      "confirmation": "confirmed_commitment"
+    },
+    {
+      "stage_id": "high_water_v1",
+      "layout_mode": "transformation_then_board_first",
+      "confirmation": "acknowledgement_only_after_authority_commit"
+    },
+    {
+      "stage_id": "last_light_v1",
+      "layout_mode": "decision_focus",
+      "confirmation": "confirmed_commitment"
+    },
+    {
+      "stage_id": "ending_resolution_v1",
+      "layout_mode": "outcome_attribution",
+      "confirmation": "acknowledgement_only"
+    },
+    {
+      "stage_id": "epilogue_attribution_v1",
+      "layout_mode": "outcome_attribution_plus_authorized_private_surface",
+      "confirmation": "private_acknowledgement_then_public_return"
+    },
+    {
+      "stage_id": "rematch_title_cleanup_v1",
+      "layout_mode": "system_overlay",
+      "confirmation": "coordinator_owned"
+    }
+  ],
+  "privacy": {
+    "classes": [
+      "public",
+      "controlled_reveal_private",
+      "seat_private",
+      "faction_private"
+    ],
+    "shared_shield_text": "Private handoff in progress. Shared play will resume after acknowledgement.",
+    "shared_screen_may_show_private_content": false,
+    "public_transcript_excludes_private_content": true,
+    "presentation_replay_excludes_private_content": true,
+    "interruption_clears_private_projection_first": true,
+    "private_surface_technology_selected": false,
+    "private_review_request_is_new_legal_action": false,
+    "takeover_request_requires_existing_authorized_intent": true
+  },
+  "microcopy": {
+    "status": "advisory_placeholder_not_final_localization",
+    "sentence_case": true,
+    "critical_icons_paired_with_text": true,
+    "prompts_conditioned_on_current_legal_actions": true,
+    "generated_reference_text_authoritative": false
+  },
+  "validation_plan": {
+    "static_checks_proposed": true,
+    "godot_automation_authorized": false,
+    "issue_39_human_evidence_required": true,
+    "human_validation_claimed": false,
+    "television_readability_claimed": false,
+    "physical_controller_validation_claimed": false,
+    "accessibility_compliance_claimed": false,
+    "reduced_motion_validation_claimed": false,
+    "privacy_certification_claimed": false
+  },
+  "required_corrections": [
+    "external_schema_rejected_as_self_inconsistent_top_level_title_not_defined",
+    "board_spaces_connectors_positions_tide_mutations_and_route_reachability_restored_to_board_state",
+    "reference_images_are_not_repository_approved_candidates_or_production_assets",
+    "coordinates_tiles_type_sizes_and_drawer_dimensions_are_advisory_hypotheses_only",
+    "private_review_takeover_and_profile_change_controls_exist_only_when_current_authority_exposes_a_legal_intent",
+    "microcopy_is_placeholder_and_all_prompts_are_conditioned_on_current_legality",
+    "accessibility_reduced_motion_safe_frame_density_and_readability_items_are_requirements_or_test_targets_not_evidence",
+    "private_surface_technology_remains_unselected"
+  ],
+  "blocking_prerequisites": [
+    "rights_and_provenance_resolution_for_external_visual_inputs",
+    "approved_source_and_runtime_composition_authority",
+    "approved_source_art_package",
+    "960x540_compatibility_renderer_implementation_proof",
+    "safe_frame_density_grayscale_value_and_text_expansion_evidence",
+    "reduced_motion_interruption_restore_and_presentation_replay_evidence",
+    "authorized_private_surface_implementation_and_privacy_review",
+    "issue_39_human_household_physical_controller_and_television_evidence"
+  ],
+  "next_blocking_prerequisite": "rights_and_provenance_resolution_for_external_visual_inputs",
+  "next_release": {
+    "selected": false,
+    "release_id": null,
+    "issue": null,
+    "implementation_release": false
+  },
+  "lifecycle": {
+    "status": "external_advisory_registered_with_corrections",
+    "conversion_readiness": "not_ready",
+    "implementation_authorized": false,
+    "candidate_id": null,
+    "production_candidate": false,
+    "approved": false
+  },
+  "governance": {
+    "issue_7_naming_branding_gate": true,
+    "issue_39_human_physical_evidence_gate": true,
+    "alpha3_developer_only": true,
+    "lantern_house_sole_normal_default_tale": true,
+    "external_binaries_remain_outside_git": true,
+    "pr_32_excluded": true,
+    "no_successor_implementation_issue_created": true
+  },
+  "prohibited_path_prefixes": [
+    "art/source/",
+    "game/assets/",
+    "game/src/"
+  ],
+  "prohibited_binary_extensions": [
+    ".png",
+    ".webp",
+    ".svg",
+    ".glb",
+    ".zip",
+    ".kra",
+    ".psd",
+    ".blend",
+    ".aseprite",
+    ".xcf",
+    ".tscn",
+    ".tres"
+  ],
+  "evidence_claims": {
+    "implementation_proven": false,
+    "safe_frame_validated": false,
+    "four_seat_density_validated": false,
+    "eight_seat_density_validated": false,
+    "grayscale_value_validated": false,
+    "text_expansion_validated": false,
+    "reduced_motion_validated": false,
+    "interruption_restore_replay_validated": false,
+    "human_comprehension": false,
+    "television_readability": false,
+    "physical_controller_behavior": false,
+    "accessibility_compliance": false,
+    "privacy_certification": false,
+    "security_certification": false,
+    "production_readiness": false,
+    "shipping_authorization": false
+  }
+}
