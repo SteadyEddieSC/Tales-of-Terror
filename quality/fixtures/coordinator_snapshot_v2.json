@@ -1,0 +1,5 @@
+{
+  "fixture_classification": "synthetic_test_only",
+  "snapshot_version": 2,
+  "purpose": "current-version coordinator snapshot envelope used by automated compatibility tests"
+}
