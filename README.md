@@ -6,23 +6,24 @@ A controller-first, 1–8 player digital horror board-game adventure about survi
 
 ## Current project status
 
-This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, a developer-only Drowned Harbor Alpha.3 runtime, and completed metadata-only Drowned Harbor visual, presentation, and UX-planning authorities. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
+This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, a developer-only Drowned Harbor Alpha.3 runtime, and completed metadata-only Drowned Harbor visual, presentation, UX-planning, and partial rights/provenance authorities. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
 
 - **Normal playable version:** `v0.1.9`
 - **Sole production/default Tale:** `lantern_house_vertical_slice` — Lantern House
-- **Status-reconciliation baseline:** `22b43893b7726e5c5bea1078aced1cf11e08049f`
+- **Status-reconciliation baseline:** `afa65009237b7b5494bf088c640ff542f93e16b4`
 - **Latest completed runtime release:** `v0.2.0-alpha.3` — issue #108 / PR #109
 - **Completed visual baseline release:** `DH-VBL-001` — issue #110 / PR #113
 - **Completed High Water presentation registration:** `DH-PRESENT-REG-001` / `DH-PRESENT-001` — issue #114 / PR #115
 - **Completed presentation-family registration:** `DH-PRESENT-REG-002` / `DH-PRESENT-FAMILY-001` — issue #118 / PR #119
 - **Completed UX advisory registration:** `DH-UX-REG-001` / `DH-UX-001` — issue #120 / PR #124
-- **Current status reconciliation:** issue #125; documentation and governance only
-- **Next release:** unselected and not authorized; blocked on rights/provenance evidence and an explicit activation decision
+- **Completed rights/provenance registration:** `DH-RIGHTS-REG-001` / `DH-RIGHTS-001` — issue #127 / PR #128
+- **Current status reconciliation:** issue #129; documentation and governance only
+- **Next release:** unselected and not authorized; blocked on Project Owner attestation, generation-session reconstruction, and an explicit activation decision
 - **Human-evidence issue #39:** deferred and still authoritative
 - **Naming issue #7:** open
 - **Unrelated Dependabot PR #32:** not part of feature releases
 
-Lantern House remains the sole normal/default Tale. Drowned Harbor remains developer-only and is not ordinarily playable. No visual image, archive, editable source, production art, runtime art, UX implementation, or rights resolution was admitted by the completed planning releases.
+Lantern House remains the sole normal/default Tale. Drowned Harbor remains developer-only and is not ordinarily playable. The completed rights registration admits metadata only. All 25 external images remain R1 private internal references; no visual image, archive, editable source, direct-pixel use, production art, runtime art, UX implementation, legal clearance, or completed rights resolution was admitted.
 
 ## Elevator pitch
 
@@ -64,7 +65,7 @@ Lantern House remains the sole production Tale. It is an integration route used 
 
 **Drowned Harbor is not a production Tale and is not ordinarily playable.**
 
-The P0.1–P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; Alpha.3 implemented the developer-only systems runtime; and the completed visual, presentation-family, and UX advisory releases registered metadata-only planning authority.
+The P0.1–P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; Alpha.3 implemented the developer-only systems runtime; and the completed visual, presentation-family, UX advisory, and rights/provenance releases registered metadata-only planning authority.
 
 Alpha.3 merged through issue #108 / PR #109 at protected-main SHA `cad70c5c8f0db1de7d557aff242cc8fe3610361b`. Its candidate source head was `08fdbe8b52a66fc44a98bdd27878554c5478aef1`.
 
@@ -93,11 +94,14 @@ The completed planning authorities add:
 - `DH-PRESENT-002` and `DH-PRESENT-003` — qualified Last Light and ending/epilogue storyboard references;
 - `DH-PRESENT-FAMILY-001` — presentation-family consistency assessment with conversion readiness `not_ready`;
 - `DH-UX-001` — accepted external shared-screen UX advisory with required corrections;
+- `DH-RIGHTS-001` — accepted-with-corrections external visual rights/provenance inventory, limited to private R1 reference use;
 - exact Tide, connector, ownership, privacy, layout-hypothesis, provenance, and evidence boundaries;
 - no visual or UX candidate creation or promotion;
 - no image or archive in Git history and no public GitHub Release asset authorization.
 
 `DH-UX-001` establishes planning direction for six layout modes, 1–8 stable-seat continuity, focus/preview/confirmation/authority-owned commit semantics, public-only transcript and replay, neutral private shielding, stage-by-stage UX flows, and issue #39 evidence plans. Its coordinates, tile sizes, drawer dimensions, type sizes, prompts, and microcopy remain advisory hypotheses rather than implementation or evidence.
+
+`DH-RIGHTS-001` has disposition `partial_resolution_for_private_internal_reference_only` and records 25 unique external image binaries as 21 true PNGs and four JPEG binaries carrying `.png` filenames. Sixteen contain locally detected but unauthenticated OpenAI C2PA/JUMBF references; five OpenAI-family and four Gemini-family assets still depend on source attribution and Project Owner confirmation. All remain `R1_private_internal_reference` / `reference_only_nonproduction`. Project Owner attestation and generation-session reconstruction remain required before source-art or source/runtime-composition planning.
 
 Drowned Harbor remains:
 
@@ -138,12 +142,14 @@ A **Tale** is a self-contained authored horror adventure with its own location, 
 11. **Post-DH-PRESENT-001 status reconciliation:** completed, issue #116 / PR #117.
 12. **DH-PRESENT-REG-002 — Last Light, Ending & Presentation-Family Registration:** completed metadata-only planning release, issue #118 / PR #119.
 13. **DH-UX-REG-001 — Shared-Screen UX Advisory Registration:** completed metadata-only planning release, issue #120 / PR #124.
-14. **Post-DH-UX-001 status reconciliation:** issue #125; documentation and governance only.
-15. **Next bounded release:** unselected; rights/provenance evidence and explicit activation are required.
-16. **v0.2.0-beta — Presentation & Content Integration:** future and blocked.
-17. **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
+14. **Post-DH-UX-001 status reconciliation:** completed, issue #125 / PR #126.
+15. **DH-RIGHTS-REG-001 — External Visual Rights & Provenance Metadata Registration:** completed with required corrections, issue #127 / PR #128.
+16. **Post-DH-RIGHTS-001 status reconciliation:** issue #129; documentation and governance only.
+17. **Next bounded release:** unselected; Project Owner attestation, generation-session reconstruction, and explicit activation are required.
+18. **v0.2.0-beta — Presentation & Content Integration:** future and blocked.
+19. **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
 
-The completed planning releases do not authorize source art, runtime art, Godot asset integration, UX implementation, candidate promotion, public distribution, rights resolution, or substantial Codex implementation. The accepted UX advisory remains planning-only.
+The completed planning releases do not authorize direct generated-pixel use, advancement beyond R1, source art, runtime art, Godot asset integration, UX implementation, candidate promotion, public distribution, completed rights/legal clearance, or substantial Codex implementation. The accepted UX advisory remains planning-only.
 
 ## Development routing
 
@@ -227,7 +233,7 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 
 ## Validation
 
-GitHub Actions check repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1–3 contracts, inherited mutation suites, visual/presentation/UX-planning metadata boundaries, Companion audit/typecheck/tests/build/smoke, real local relay integration, and clean generated-output boundaries.
+GitHub Actions check repository integrity, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux portable builds, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1–3 contracts, inherited mutation suites, visual/presentation/UX/rights-planning metadata boundaries, Companion audit/typecheck/tests/build/smoke, real local relay integration, and clean generated-output boundaries.
 
 ## Documentation and licensing
 
