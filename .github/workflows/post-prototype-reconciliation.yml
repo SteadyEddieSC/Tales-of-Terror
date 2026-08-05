@@ -23,6 +23,8 @@ on:
       - 'tools/validate_post_dh_present_status.py'
       - 'tools/test_validate_post_dh_ux_status.py'
       - 'tools/validate_post_dh_ux_status.py'
+      - 'tools/test_validate_post_dh_rights_status.py'
+      - 'tools/validate_post_dh_rights_status.py'
   push:
     branches: [main, docs/p0.22-alpha2-graybox-contract, docs/p0.23-alpha3-systems-replayability-contract]
     paths:
@@ -46,6 +48,8 @@ on:
       - 'tools/validate_post_dh_present_status.py'
       - 'tools/test_validate_post_dh_ux_status.py'
       - 'tools/validate_post_dh_ux_status.py'
+      - 'tools/test_validate_post_dh_rights_status.py'
+      - 'tools/validate_post_dh_rights_status.py'
 
 permissions:
   contents: read
@@ -83,9 +87,12 @@ jobs:
           elif [[ "$effective" == "docs/post-dh-present-status-reconciliation" ]]; then
             python tools/validate_post_dh_present_status.py
             python tools/test_validate_post_dh_present_status.py
-          else
+          elif [[ "$effective" == "docs/post-dh-ux-status-reconciliation" ]]; then
             python tools/validate_post_dh_ux_status.py
             python tools/test_validate_post_dh_ux_status.py
+          else
+            python tools/validate_post_dh_rights_status.py
+            python tools/test_validate_post_dh_rights_status.py
           fi
       - name: Prove clean source tree
         if: always()
