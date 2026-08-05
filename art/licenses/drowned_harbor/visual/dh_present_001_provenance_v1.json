@@ -1,0 +1,122 @@
+{
+  "record_kind": "dh_present_001_provenance",
+  "record_version": 1,
+  "release_id": "DH-PRESENT-REG-001",
+  "study_id": "DH-PRESENT-001",
+  "governing_issue": 114,
+  "external_package": {
+    "filename": "DH-PRESENT-001_External_Art_Director_Handoff_Package_v1.zip",
+    "bytes": 2408052,
+    "sha256": "6f3bbacb50dcca8ccf12ee2e7a228abaa4393299dd06864a65b72fa7c4b1a506",
+    "manifest": {
+      "path": "02_MACHINE_READABLE/PACKAGE_MANIFEST.json",
+      "bytes": 1850,
+      "sha256": "aca64d4592ab1a8ff50f11f2de160889dbf5d73340b983fff309c0f2e218e697",
+      "file_count_excluding_manifest": 8,
+      "all_payloads_matched": true
+    },
+    "payloads": [
+      {
+        "path": "00_START_HERE/README_FIRST.md",
+        "bytes": 674,
+        "sha256": "faaa18d447546f09f187ec6245f4292ac820c2a3bb31f613f9ccb94e83601a8a"
+      },
+      {
+        "path": "01_STUDY/DH-PRESENT-001_Drowned_Harbor_High_Water_Environmental_Presentation-Hook_Storyboard_Study_v1.png",
+        "bytes": 2497096,
+        "sha256": "51e2a1774529500385260d1800aacd1f3265024db6cc0b93c0e76ee8a363cc07"
+      },
+      {
+        "path": "01_STUDY/DH-PRESENT-001_Narrative_Study_v1.md",
+        "bytes": 2487,
+        "sha256": "402c79014885fe404354e9b0f6e326b84e0e693ec685ce45b54a74af6d68ba1b"
+      },
+      {
+        "path": "01_STUDY/DH-PRESENT-001_Review_Considerations_v1.md",
+        "bytes": 779,
+        "sha256": "4a008502fb88badaf122f798d84f8a89dc8e57a371c130e9c06a2851e126599f"
+      },
+      {
+        "path": "02_MACHINE_READABLE/DH-PRESENT-001_Frame_and_Hook_Register_v1.json",
+        "bytes": 3932,
+        "sha256": "6ffa68451a74e3663330ae3b7f1be9c8df3852c61869d022523b676447277a48"
+      },
+      {
+        "path": "03_PROVENANCE_AND_RIGHTS/DH-PRESENT-001_External_Generation_and_Rights_Record_v1.json",
+        "bytes": 1236,
+        "sha256": "a5f0e0d9ed9de607ea6d339f2816c0ddfe081af2368ee769c5ab6ea9632f1c92"
+      },
+      {
+        "path": "03_PROVENANCE_AND_RIGHTS/DH-PRESENT-001_Unresolved_Facts_and_Rights_Statement_v1.md",
+        "bytes": 726,
+        "sha256": "9fe60569c2ba5455568c7119a195f2f30a86e01b21cf50d3141b391aaf85867b"
+      },
+      {
+        "path": "04_RELEASE_COORDINATOR/SEND_TO_RELEASE_COORDINATOR_ISSUE_114.md",
+        "bytes": 1051,
+        "sha256": "cdb02726bc2a2e949fce79620122184323fd984ddb2c7fcac16473feac90b716"
+      }
+    ]
+  },
+  "external_image": {
+    "filename": "DH-PRESENT-001_Drowned_Harbor_High_Water_Environmental_Presentation-Hook_Storyboard_Study_v1.png",
+    "media_type": "image/png",
+    "width_px": 1536,
+    "height_px": 1024,
+    "mode": "RGB",
+    "bytes": 2497096,
+    "sha256": "51e2a1774529500385260d1800aacd1f3265024db6cc0b93c0e76ee8a363cc07",
+    "decode_verified": true,
+    "binary_repository_paths": []
+  },
+  "generation": {
+    "generator_context": "OpenAI ChatGPT image generation in the Terror Turn Art Director specialist chat",
+    "available_generation_id": "65b33e0d-1cec-4439-bdb6-9b4da1b83669",
+    "exact_model_variant": null,
+    "exact_prompt": null,
+    "exact_negative_prompt": null,
+    "seed": null,
+    "exact_generation_timestamp": null,
+    "chat_date_context": "2026-08-04/2026-08-05 boundary; exact timestamp not exposed",
+    "generator_side_reference_handling": null,
+    "known_reference_context": "Prior Drowned Harbor concept studies and continuity package were available to the Art Director chat.",
+    "human_edits_after_generation": "none_known_not_proof_none_occurred",
+    "content_credentials_status": null,
+    "watermark_status": null
+  },
+  "rights": {
+    "state": "unresolved",
+    "public_repository_rights": null,
+    "github_release_distribution_rights": null,
+    "derivative_production_rights": null,
+    "public_distribution_authorized": false,
+    "candidate_creation_authorized": false,
+    "candidate_promotion_authorized": false,
+    "production_use_authorized": false,
+    "runtime_use_authorized": false,
+    "production_replacement_required": true
+  },
+  "generated_content": {
+    "text_labels_signage_prose": "reference_only_non_authoritative",
+    "visible_date": {
+      "text": "May 18, 2025",
+      "authoritative": false,
+      "creation_metadata": false
+    },
+    "production_replacement_required": true
+  },
+  "hard_boundaries": {
+    "image_or_archive_in_git": false,
+    "source_art_authorized": false,
+    "runtime_art_authorized": false,
+    "godot_authorized": false,
+    "implementation_authorized": false,
+    "codex_authorized": false,
+    "public_release_authorized": false,
+    "candidate_created": false,
+    "candidate_promoted": false,
+    "human_evidence_claimed": false,
+    "accessibility_claimed": false,
+    "pr_32_incorporated": false
+  }
+}
