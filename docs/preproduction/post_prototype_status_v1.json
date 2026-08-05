@@ -36,7 +36,7 @@
   },
   "drowned_harbor": {
     "ordinary_playable": false,
-    "status": "developer_only_alpha3_with_completed_metadata_only_visual_ux_and_partial_rights_planning_export_excluded"
+    "status": "developer_only_alpha3_with_completed_metadata_only_visual_ux_rights_and_owner_attestation_planning_export_excluded"
   },
   "gates": [
     {
@@ -51,23 +51,16 @@
     }
   ],
   "human_evidence_claimed": false,
-  "pending_inputs": [
-    {
-      "authority": "required_before_source_art_or_source_runtime_composition_planning",
-      "implementation_authorized": false,
-      "input_id": "project_owner_rights_attestation_and_generation_session_reconstruction",
-      "rights_resolution_complete": false,
-      "state": "blocking_required"
-    }
-  ],
+  "pending_inputs": [],
   "playable_release": "v0.1.9",
   "preserved_authorities": {
     "alpha1_merge": "85b77d5216472afdb4abb7598917d5052eed180a",
     "alpha2_merge": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
     "alpha3_candidate_head": "08fdbe8b52a66fc44a98bdd27878554c5478aef1",
     "alpha3_merge": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
-    "dh_present_registration_merge": "671b8f2512be80c0c5f2cec701c29445159620e2",
+    "dh_owner_attestation_registration_merge": "7af430b5d9528c648d00291e4c32fa368279b41b",
     "dh_present_family_registration_merge": "1cad8495c913d926c4422557ea59e8c6fa1f6c1a",
+    "dh_present_registration_merge": "671b8f2512be80c0c5f2cec701c29445159620e2",
     "dh_rights_registration_merge": "afa65009237b7b5494bf088c640ff542f93e16b4",
     "dh_ux_registration_merge": "22b43893b7726e5c5bea1078aced1cf11e08049f",
     "dh_visual_baseline_merge": "0cea1ac62733fda56d09cb0de8a789efc509308a",
@@ -83,18 +76,18 @@
     "drowned_harbor_provider_registered": false,
     "tale_count": 1
   },
-  "protected_main": "afa65009237b7b5494bf088c640ff542f93e16b4",
+  "protected_main": "7af430b5d9528c648d00291e4c32fa368279b41b",
   "protected_main_semantics": "exact_reconciliation_starting_baseline",
   "recommended_next_release": {
     "activation_authorized": false,
     "codex_required": false,
     "github_issue": null,
     "release_id": null,
-    "state": "unselected_blocked_on_owner_attestation_and_explicit_activation",
+    "state": "unselected_metadata_only_clean_room_planning_eligible_explicit_activation_required",
     "title": null
   },
   "runtime_implementation_authorized": false,
-  "schema_version": 6,
+  "schema_version": 7,
   "status_kind": "post_prototype_project_status",
   "unrelated_open_pull_requests": [
     32
@@ -103,6 +96,21 @@
   "visual_implementation_authorized": false,
   "visual_planning": {
     "external_binaries_in_git": false,
+    "owner_attestation": {
+      "attestation_complete": true,
+      "clean_room_source_creation_authorized": false,
+      "clean_room_source_planning_authorized": false,
+      "implementation_authorized": false,
+      "issue": 131,
+      "merged_main_sha": "7af430b5d9528c648d00291e4c32fa368279b41b",
+      "metadata_only_clean_room_planning_eligibility_established": true,
+      "pull_request": 132,
+      "record_id": "DH-OWNER-ATTEST-001",
+      "release_id": "DH-OWNER-ATTEST-REG-001",
+      "review_result": "accepted_completed_owner_attestation_sufficient_for_metadata_only_clean_room_planning_eligibility",
+      "state": "completed_metadata_only",
+      "unknown_facts_preserved": true
+    },
     "presentation_family": {
       "conversion_readiness": "not_ready",
       "family_id": "DH-PRESENT-FAMILY-001",
@@ -147,9 +155,9 @@
       "merged_main_sha": "afa65009237b7b5494bf088c640ff542f93e16b4",
       "openai_family_count": 21,
       "openai_source_attribution_only_count": 5,
-      "owner_attestation_required": true,
+      "owner_attestation_required": false,
       "png_count": 21,
-      "prerequisite_state": "partial_resolution_owner_attestation_required",
+      "prerequisite_state": "owner_attestation_complete_clean_room_planning_eligible_not_authorized",
       "public_distribution_cleared": false,
       "pull_request": 128,
       "record_id": "DH-RIGHTS-001",
