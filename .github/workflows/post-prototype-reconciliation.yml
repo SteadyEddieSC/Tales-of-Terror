@@ -19,6 +19,8 @@ on:
       - 'docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md'
       - 'tools/test_validate_p023_alpha3_systems_replayability_contract.py'
       - 'tools/validate_p023_alpha3_systems_replayability_contract.py'
+      - 'tools/test_validate_post_dh_present_status.py'
+      - 'tools/validate_post_dh_present_status.py'
   push:
     branches: [main, docs/p0.22-alpha2-graybox-contract, docs/p0.23-alpha3-systems-replayability-contract]
     paths:
@@ -38,6 +40,8 @@ on:
       - 'docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md'
       - 'tools/test_validate_p023_alpha3_systems_replayability_contract.py'
       - 'tools/validate_p023_alpha3_systems_replayability_contract.py'
+      - 'tools/test_validate_post_dh_present_status.py'
+      - 'tools/validate_post_dh_present_status.py'
 
 permissions:
   contents: read
@@ -69,9 +73,12 @@ jobs:
           elif [[ "$effective" == "docs/p0.23-alpha3-systems-replayability-contract" ]]; then
             python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
             python tools/test_validate_p023_alpha3_systems_replayability_contract.py
-          else
+          elif [[ "$effective" == "docs/post-alpha3-status-reconciliation" ]]; then
             python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary --later-succession
             python tools/test_validate_p023_alpha3_systems_replayability_contract.py --later-succession
+          else
+            python tools/validate_post_dh_present_status.py
+            python tools/test_validate_post_dh_present_status.py
           fi
       - name: Prove clean source tree
         if: always()

@@ -19,6 +19,8 @@ on:
       - 'docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md'
       - 'tools/test_validate_p023_alpha3_systems_replayability_contract.py'
       - 'tools/validate_p023_alpha3_systems_replayability_contract.py'
+      - 'tools/test_validate_post_dh_present_status.py'
+      - 'tools/validate_post_dh_present_status.py'
   push:
     branches: [main, docs/p0.23-alpha3-systems-replayability-contract]
     paths:
@@ -38,13 +40,15 @@ on:
       - 'docs/technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md'
       - 'tools/test_validate_p023_alpha3_systems_replayability_contract.py'
       - 'tools/validate_p023_alpha3_systems_replayability_contract.py'
+      - 'tools/test_validate_post_dh_present_status.py'
+      - 'tools/validate_post_dh_present_status.py'
 
 permissions:
   contents: read
 
 jobs:
   contract:
-    name: Validate closed Alpha.3 planning authority
+    name: Validate closed Alpha.3 authority and current succession
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -96,15 +100,29 @@ jobs:
               "tools/test_validate_p023_alpha3_systems_replayability_contract.py",
               "tools/validate_p023_alpha3_systems_replayability_contract.py",
           }
+          post_dh_present = {
+              "README.md",
+              ".github/workflows/p021-production-architecture.yml",
+              ".github/workflows/p022-alpha2-graybox-contract.yml",
+              ".github/workflows/p023-alpha3-systems-replayability-contract.yml",
+              ".github/workflows/post-prototype-reconciliation.yml",
+              "docs/preproduction/README.md",
+              "docs/preproduction/post_prototype_status_v1.json",
+              "docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md",
+              "tools/test_validate_post_dh_present_status.py",
+              "tools/validate_post_dh_present_status.py",
+          }
           head = os.environ["HEAD_REF"]
           expected = None
           if head == "docs/p0.23-alpha3-systems-replayability-contract":
               expected = historical
           elif head == "docs/post-alpha3-status-reconciliation":
               expected = reconciliation
+          elif head == "docs/post-dh-present-status-reconciliation":
+              expected = post_dh_present
 
           if expected is None:
-              print(f"No release-specific exact boundary registered for {head}; contract validation still applies")
+              print(f"No release-specific exact boundary registered for {head}; current status validation still applies")
               raise SystemExit(0)
 
           output = subprocess.check_output(
@@ -119,7 +137,7 @@ jobs:
               )
           print(f"Validated exact {len(expected)}-path inventory for {head}")
           PY2
-      - name: Validate P0.23 contract and mutations
+      - name: Validate historical contract or current status
         shell: bash
         run: |
           set -euo pipefail
@@ -127,9 +145,12 @@ jobs:
           if [[ "$effective" == "docs/p0.23-alpha3-systems-replayability-contract" ]]; then
             python tools/validate_p023_alpha3_systems_replayability_contract.py
             python tools/test_validate_p023_alpha3_systems_replayability_contract.py
-          else
+          elif [[ "$effective" == "docs/post-alpha3-status-reconciliation" ]]; then
             python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary --later-succession
             python tools/test_validate_p023_alpha3_systems_replayability_contract.py --later-succession
+          else
+            python tools/validate_post_dh_present_status.py
+            python tools/test_validate_post_dh_present_status.py
           fi
       - name: Preserve Alpha.2 runtime and authoring contracts
         run: |
@@ -141,8 +162,9 @@ jobs:
           python tools/test_tale_package.py
           python tools/tale_catalog.py validate
           python tools/test_tale_catalog.py
-      - name: Parse governed JSON and workflow YAML
+      - name: Parse governed JSON, Python, and workflow YAML
         run: |
+          python -m py_compile tools/validate_post_dh_present_status.py tools/test_validate_post_dh_present_status.py
           python - <<'PY2'
           import json
           from pathlib import Path
