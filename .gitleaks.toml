@@ -1,0 +1,7 @@
+title = "Terror Turn secret detection"
+
+[extend]
+useDefault = true
+
+# No broad allowlist is defined. Any future exception must identify an exact
+# non-secret path or fingerprint and include a written justification in the PR.
