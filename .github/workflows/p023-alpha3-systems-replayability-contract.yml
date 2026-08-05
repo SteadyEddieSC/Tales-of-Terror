@@ -21,6 +21,8 @@ on:
       - 'tools/validate_p023_alpha3_systems_replayability_contract.py'
       - 'tools/test_validate_post_dh_present_status.py'
       - 'tools/validate_post_dh_present_status.py'
+      - 'tools/test_validate_post_dh_ux_status.py'
+      - 'tools/validate_post_dh_ux_status.py'
   push:
     branches: [main, docs/p0.23-alpha3-systems-replayability-contract]
     paths:
@@ -42,6 +44,8 @@ on:
       - 'tools/validate_p023_alpha3_systems_replayability_contract.py'
       - 'tools/test_validate_post_dh_present_status.py'
       - 'tools/validate_post_dh_present_status.py'
+      - 'tools/test_validate_post_dh_ux_status.py'
+      - 'tools/validate_post_dh_ux_status.py'
 
 permissions:
   contents: read
@@ -88,7 +92,7 @@ jobs:
               "tools/test_validate_p023_alpha3_systems_replayability_contract.py",
               "tools/validate_p023_alpha3_systems_replayability_contract.py",
           }
-          reconciliation = {
+          post_alpha3 = {
               "README.md",
               ".github/workflows/p021-production-architecture.yml",
               ".github/workflows/p022-alpha2-graybox-contract.yml",
@@ -112,14 +116,29 @@ jobs:
               "tools/test_validate_post_dh_present_status.py",
               "tools/validate_post_dh_present_status.py",
           }
+          post_dh_ux = {
+              "README.md",
+              ".github/workflows/p021-production-architecture.yml",
+              ".github/workflows/p022-alpha2-graybox-contract.yml",
+              ".github/workflows/p023-alpha3-systems-replayability-contract.yml",
+              ".github/workflows/post-prototype-reconciliation.yml",
+              "docs/preproduction/README.md",
+              "docs/preproduction/post_prototype_status_v1.json",
+              "docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md",
+              "tools/test_validate_post_dh_ux_status.py",
+              "tools/validate_post_dh_ux_status.py",
+          }
+
           head = os.environ["HEAD_REF"]
           expected = None
           if head == "docs/p0.23-alpha3-systems-replayability-contract":
               expected = historical
           elif head == "docs/post-alpha3-status-reconciliation":
-              expected = reconciliation
+              expected = post_alpha3
           elif head == "docs/post-dh-present-status-reconciliation":
               expected = post_dh_present
+          elif head == "docs/post-dh-ux-status-reconciliation":
+              expected = post_dh_ux
 
           if expected is None:
               print(f"No release-specific exact boundary registered for {head}; current status validation still applies")
@@ -142,15 +161,25 @@ jobs:
         run: |
           set -euo pipefail
           effective="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
-          if [[ "$effective" == "docs/p0.23-alpha3-systems-replayability-contract" ]]; then
+          if [[ "$effective" == "docs/p0.22-alpha2-graybox-contract" ]]; then
+            python tools/validate_p022_alpha2_graybox_contract.py
+            python tools/test_validate_p022_alpha2_graybox_contract.py
+            python tools/validate_post_prototype_reconciliation.py
+            python tools/test_validate_post_prototype_reconciliation.py
+            python tools/validate_p021_production_architecture.py
+            python tools/test_validate_p021_production_architecture.py
+          elif [[ "$effective" == "docs/p0.23-alpha3-systems-replayability-contract" ]]; then
             python tools/validate_p023_alpha3_systems_replayability_contract.py
             python tools/test_validate_p023_alpha3_systems_replayability_contract.py
           elif [[ "$effective" == "docs/post-alpha3-status-reconciliation" ]]; then
             python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary --later-succession
             python tools/test_validate_p023_alpha3_systems_replayability_contract.py --later-succession
-          else
+          elif [[ "$effective" == "docs/post-dh-present-status-reconciliation" ]]; then
             python tools/validate_post_dh_present_status.py
             python tools/test_validate_post_dh_present_status.py
+          else
+            python tools/validate_post_dh_ux_status.py
+            python tools/test_validate_post_dh_ux_status.py
           fi
       - name: Preserve Alpha.2 runtime and authoring contracts
         run: |
@@ -164,7 +193,7 @@ jobs:
           python tools/test_tale_catalog.py
       - name: Parse governed JSON, Python, and workflow YAML
         run: |
-          python -m py_compile tools/validate_post_dh_present_status.py tools/test_validate_post_dh_present_status.py
+          python -m py_compile tools/validate_post_dh_ux_status.py tools/test_validate_post_dh_ux_status.py
           python - <<'PY2'
           import json
           from pathlib import Path

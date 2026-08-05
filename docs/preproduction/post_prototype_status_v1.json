@@ -36,7 +36,7 @@
   },
   "drowned_harbor": {
     "ordinary_playable": false,
-    "status": "developer_only_alpha3_with_completed_metadata_only_visual_planning_export_excluded"
+    "status": "developer_only_alpha3_with_completed_metadata_only_visual_and_ux_planning_export_excluded"
   },
   "gates": [
     {
@@ -53,10 +53,10 @@
   "human_evidence_claimed": false,
   "pending_inputs": [
     {
-      "authority": "advisory_until_release_coordination_review",
-      "input_id": "ux_helper_handoff",
+      "authority": "required_before_source_art_or_runtime_composition",
       "implementation_authorized": false,
-      "state": "pending"
+      "input_id": "rights_and_provenance_resolution_for_external_visual_inputs",
+      "state": "blocking_unresolved"
     }
   ],
   "playable_release": "v0.1.9",
@@ -66,6 +66,8 @@
     "alpha3_candidate_head": "08fdbe8b52a66fc44a98bdd27878554c5478aef1",
     "alpha3_merge": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
     "dh_present_registration_merge": "671b8f2512be80c0c5f2cec701c29445159620e2",
+    "dh_present_family_registration_merge": "1cad8495c913d926c4422557ea59e8c6fa1f6c1a",
+    "dh_ux_registration_merge": "22b43893b7726e5c5bea1078aced1cf11e08049f",
     "dh_visual_baseline_merge": "0cea1ac62733fda56d09cb0de8a789efc509308a",
     "p01_p07_package_index": "docs/preproduction/preproduction_package_index_v1.json",
     "p021_merge": "4efdd76efdf2aa34823dae5d3624a3dca3f0a349",
@@ -79,25 +81,42 @@
     "drowned_harbor_provider_registered": false,
     "tale_count": 1
   },
-  "protected_main": "671b8f2512be80c0c5f2cec701c29445159620e2",
+  "protected_main": "22b43893b7726e5c5bea1078aced1cf11e08049f",
   "protected_main_semantics": "exact_reconciliation_starting_baseline",
   "recommended_next_release": {
     "activation_authorized": false,
     "codex_required": false,
     "github_issue": null,
     "release_id": null,
-    "state": "waiting_on_ux_handoff_and_explicit_activation",
+    "state": "unselected_blocked_on_rights_provenance_and_explicit_activation",
     "title": null
   },
   "runtime_implementation_authorized": false,
-  "schema_version": 4,
+  "schema_version": 5,
   "status_kind": "post_prototype_project_status",
   "unrelated_open_pull_requests": [
     32
   ],
+  "ux_implementation_authorized": false,
   "visual_implementation_authorized": false,
   "visual_planning": {
     "external_binaries_in_git": false,
+    "presentation_family": {
+      "conversion_readiness": "not_ready",
+      "family_id": "DH-PRESENT-FAMILY-001",
+      "implementation_authorized": false,
+      "issue": 118,
+      "merged_main_sha": "1cad8495c913d926c4422557ea59e8c6fa1f6c1a",
+      "pull_request": 119,
+      "release_id": "DH-PRESENT-REG-002",
+      "state": "completed_metadata_only",
+      "study_ids": [
+        "DH-PRESENT-001",
+        "DH-PRESENT-002",
+        "DH-PRESENT-003"
+      ],
+      "visual_candidate_created": false
+    },
     "presentation_study": {
       "issue": 114,
       "merged_main_sha": "671b8f2512be80c0c5f2cec701c29445159620e2",
@@ -110,6 +129,18 @@
     "production_art_authorized": false,
     "public_github_release_assets_authorized": false,
     "runtime_art_authorized": false,
+    "ux_advisory": {
+      "advisory_id": "DH-UX-001",
+      "candidate_id": null,
+      "conversion_readiness": "not_ready",
+      "disposition": "accepted_external_ux_advisory_with_required_corrections",
+      "implementation_authorized": false,
+      "issue": 120,
+      "merged_main_sha": "22b43893b7726e5c5bea1078aced1cf11e08049f",
+      "pull_request": 124,
+      "release_id": "DH-UX-REG-001",
+      "state": "completed_metadata_only"
+    },
     "visual_baseline": {
       "baseline_id": "DH-VBL-001",
       "candidate_batch_id": "DH-CB-002",
