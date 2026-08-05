@@ -1,0 +1,205 @@
+{
+  "record_kind": "dh_ux_001_provenance",
+  "record_version": 1,
+  "release_id": "DH-UX-REG-001",
+  "external_advisory_id": "DH-UX-001",
+  "governing_issue": 120,
+  "external_package": {
+    "received_filename": "DH-UX-001_External_UX_Helper_Advisory_Handoff_Package_v1(1).zip",
+    "canonical_package_name": "DH-UX-001_External_UX_Helper_Advisory_Handoff_Package_v1",
+    "bytes": 21304764,
+    "sha256": "e3857353dc0257b72866e0e5259b8e3bab2e856126903675f8e73e1f23a02ae3",
+    "repository_disposition": "external_private_only",
+    "integrity_verified": true,
+    "zip_crc_verified": true,
+    "manifest": {
+      "path": "04_MACHINE_READABLE/PACKAGE_MANIFEST.json",
+      "bytes": 5622,
+      "sha256": "7742a59b402957d63593917a291d807f3fba7fd4bea82937a22730b65d6d469d",
+      "file_count_excluding_manifest": 25,
+      "all_payloads_matched": true
+    }
+  },
+  "external_schema_review": {
+    "contract_path": "04_MACHINE_READABLE/dh_ux_001_shared_screen_ux_advisory_v1.json",
+    "schema_path": "04_MACHINE_READABLE/dh_ux_001_shared_screen_ux_advisory_schema_v1.json",
+    "json_parse_verified": true,
+    "external_contract_validates_against_external_schema": false,
+    "validation_error_count": 1,
+    "defect": "top_level_title_is_present_but_not_defined_while_additional_properties_are_false",
+    "repository_registration_uses_corrected_closed_schema": true
+  },
+  "source_authorities": [
+    {
+      "path": "docs/technical/Shared_Screen_Storyboard_Contract_v1.md",
+      "blob_sha": "c2ca29e7a19b04217066fa5be5244882666c9a47"
+    },
+    {
+      "path": "docs/tales/drowned_harbor/ui/drowned_harbor_core_storyboards_v1.json",
+      "blob_sha": "ea3c9fbf5573a0fcb9a80df8e10c3649e4a6237d"
+    },
+    {
+      "path": "docs/tales/drowned_harbor/ui/drowned_harbor_continuity_accessibility_storyboards_v1.json",
+      "blob_sha": "58ec738491ae8b74cf7f1ddfdb74151111d29c5f"
+    },
+    {
+      "path": "docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Language_v1.md",
+      "blob_sha": "f50074be013c56454b9b300ec8981c6ae984b3c0"
+    },
+    {
+      "path": "game/data/scenarios/drowned_harbor_systems_v3.json",
+      "blob_sha": "a90f9938d8a608c5e3bbf7453819e9f6dfa9d83c"
+    },
+    {
+      "path": "game/data/tales/drowned_harbor/localization_systems_en_v3.json",
+      "blob_sha": "603a6060335f45d7e317989dfe0d8258f65bd02f"
+    },
+    {
+      "path": "docs/tales/drowned_harbor/visual/Drowned_Harbor_Presentation_Family_Consistency_and_Conversion_Readiness_v1.md",
+      "blob_sha": "ea48c75483669ba6e7e9be15d571f8458e4b8e3b"
+    },
+    {
+      "path": "docs/technical/Drowned_Harbor_Alpha2_Graybox_Route_Contract_v1.md",
+      "blob_sha": "be9af4eb33c8b78c73c81fcb9bfd8991ec902f76"
+    }
+  ],
+  "reference_inputs": [
+    {
+      "reference_id": "DH-CHAR-StableSeat-Transformation-Studio-v1",
+      "filename": "DH-CHAR-StableSeat-Transformation_Studio-v1.png",
+      "bytes": 2275183,
+      "sha256": "12cf4422ba189c038844d139d828f1f92fe8fd8209649d1d8197ecdbae052a60",
+      "width_px": 1672,
+      "height_px": 941,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-ENV-001",
+      "filename": "DH-ENV-001_Studio_v3.png",
+      "bytes": 2961556,
+      "sha256": "9f343570adb0e51f6d7215bd73434f25fb2af1e502641f15c0ef4de50ccfc587",
+      "width_px": 1672,
+      "height_px": 941,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-ENV-002",
+      "filename": "DH-ENV-002_Studio_v2.png",
+      "bytes": 2864008,
+      "sha256": "30aeb03f169506a3889635219b4e3afbe03720d8c3e1405d1d1424c1e5425a88",
+      "width_px": 1672,
+      "height_px": 941,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-PRESENT-001",
+      "filename": "DH-PRESENT-001_Drowned_Harbor_High_Water_Environmental_Presentation-Hook_Storyboard_Study_v1.png",
+      "bytes": 2497096,
+      "sha256": "51e2a1774529500385260d1800aacd1f3265024db6cc0b93c0e76ee8a363cc07",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "repository_status": "registered_external_storyboard_reference",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-PRESENT-002",
+      "filename": "DH-PRESENT-002_Drowned_Harbor_Last_Light_Environmental_Presentation-Hook_Storyboard_Study_v1.png",
+      "bytes": 2809928,
+      "sha256": "904aa44dfa2b6980d88d0776213d28d3e1fa3b2b8acba7798fdbed84e526e00e",
+      "width_px": 1672,
+      "height_px": 941,
+      "mode": "RGB",
+      "repository_status": "registered_external_storyboard_reference_with_qualifications",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-PRESENT-003",
+      "filename": "DH-PRESENT-003_Drowned_Harbor_Ending_Resolution_and_Epilogue_Attribution_Presentation-Hook_Storyboard_Study_v1.png",
+      "bytes": 2580384,
+      "sha256": "dc8cd6ee426c486043a688bcf3a89025597e2c96b2b66e4064392b9bd9f901b2",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "repository_status": "registered_external_storyboard_reference_with_qualifications",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "DH-PROFILE-001",
+      "filename": "DH-PROFILE-001_Drowned_Harbor_Spooky_versus_Grim_Presentation_Profile_Invariant_Study_v1.png",
+      "bytes": 2811491,
+      "sha256": "c54e0cdb412daab719819c803c1ea4d6817cbcf9f506b35aea82fd9646d9687a",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    },
+    {
+      "reference_id": "TerrorTurn-Shared-UI-State-Grammar-Studio-v1",
+      "filename": "TerrorTurn_Shared-UI-State-Grammar_Studio-v1.png",
+      "bytes": 2795625,
+      "sha256": "67176e1c4e093e21e4febab1a8cb8871936605662fbd7428e506243e58d33bdb",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "repository_status": "external_reference_only_unregistered",
+      "candidate_id": null,
+      "approved": false
+    }
+  ],
+  "generation_and_authorship": {
+    "external_helper_context": "UX helper specialist handoff",
+    "exact_model_variant": null,
+    "exact_prompt": null,
+    "exact_generation_timestamp": null,
+    "human_edits_after_generation": null,
+    "content_credentials_status": null,
+    "watermark_status": null
+  },
+  "rights": {
+    "external_package_public_distribution_rights": null,
+    "reference_image_public_repository_rights": null,
+    "reference_image_derivative_production_rights": null,
+    "public_distribution_authorized": false,
+    "binary_repository_paths": [],
+    "production_replacement_required": true
+  },
+  "repository_derivative": {
+    "text_only_metadata_registration": true,
+    "external_schema_copied_as_governing_schema": false,
+    "reference_images_copied": false,
+    "archive_copied": false
+  },
+  "hard_boundaries": {
+    "implementation_authorized": false,
+    "codex_authorized": false,
+    "runtime_paths_authorized": false,
+    "godot_work_authorized": false,
+    "source_art_authorized": false,
+    "runtime_art_authorized": false,
+    "image_binaries_authorized": false,
+    "candidate_creation_authorized": false,
+    "candidate_promotion_authorized": false,
+    "public_distribution_authorized": false,
+    "normal_tale_registration_authorized": false,
+    "ordinary_export_inclusion_authorized": false,
+    "human_evidence_authorized": false,
+    "accessibility_claim_authorized": false,
+    "successor_implementation_issue_authorized": false,
+    "pr_32_incorporated": false
+  }
+}
