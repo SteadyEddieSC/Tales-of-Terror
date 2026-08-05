@@ -1,8 +1,9 @@
 # Preproduction and Production-Planning Index
 
-**Status:** Internal design, developer-only runtime, and planning material
-**Current package:** Post-Alpha.3 protected-main status reconciliation — issue #111
-**Protected-main baseline reconciled:** `cad70c5c8f0db1de7d557aff242cc8fe3610361b`
+**Status:** Internal design, developer-only runtime, and metadata-only visual planning
+**Latest completed planning release:** `DH-PRESENT-REG-001` — issue #114 / PR #115
+**Status-reconciliation baseline:** `671b8f2512be80c0c5f2cec701c29445159620e2`
+**Active successor release:** none selected or authorized
 
 ## Current authorities
 
@@ -12,20 +13,27 @@
 - [P0.23 technical contract](../technical/Drowned_Harbor_Alpha3_Systems_and_Replayability_Contract_v1.md)
 - [Alpha.3 release record](../releases/v0.2.0-alpha.3-systems-replayability.md)
 - [Alpha.3 machine-evidence record](../playtests/v0.2.0-alpha.3-systems-replayability-evidence.md)
+- [Recognized Drowned Harbor visual baseline](../tales/drowned_harbor/visual/Drowned_Harbor_Visual_Baseline_v1.md)
+- [Board Production Conversion Brief 01](../tales/drowned_harbor/visual/Drowned_Harbor_Board_Production_Conversion_Brief_01.md)
+- [High Water presentation-hook storyboard study](../tales/drowned_harbor/visual/Drowned_Harbor_High_Water_Presentation_Hook_Storyboard_Study_v1.md)
 - [Current production-candidate roadmap](../roadmap/Post_P0.19_Production_Candidate_Roadmap.md)
 
 ## Accepted sequence
 
 P0.21 production architecture, Alpha.1 production scaffold, P0.22 Alpha.2 route contract, Alpha.2 end-to-end graybox, P0.23 Alpha.3 systems/replayability contract, and the Alpha.3 developer-only runtime are complete. Alpha.3 merged through issue #108 / PR #109 at `cad70c5c8f0db1de7d557aff242cc8fe3610361b`.
 
+The post-Alpha.3 status reconciliation completed through issue #111 / PR #112. The metadata-only visual baseline and board conversion authority completed through issue #110 / PR #113 at `0cea1ac62733fda56d09cb0de8a789efc509308a`. The metadata-only High Water presentation-study registration completed through issue #114 / PR #115 at `671b8f2512be80c0c5f2cec701c29445159620e2`.
+
 `preproduction_package_index_v1.json` remains the frozen P0.1–P0.7 historical contract.
 
 ## Current boundary
 
-Lantern House remains the sole normal/default Tale and `v0.1.9` remains the normal playable release. Drowned Harbor Alpha.3 exists only behind explicit developer admission, remains absent from normal discovery, and remains excluded from ordinary Windows/Linux exports.
+Lantern House remains the sole normal/default Tale and `v0.1.9` remains the normal playable release. Drowned Harbor remains developer-only and excluded from ordinary exports, including ordinary Windows/Linux builds. It remains absent from normal discovery, the production Tale catalog, the central provider registry, and ordinary startup or fallback paths.
+
+`DH-VBL-001`, `DH-CB-002`, and `DH-VCB-001` are planning and metadata authorities only. `DH-PRESENT-001` is an accepted external storyboard reference registered through `DH-PRESENT-REG-001`. No image or archive was committed, no visual candidate was created or promoted by the presentation-study release, and no production art, source art, runtime art, Godot integration, public distribution, or implementation authority was created.
 
 The Companion development graph retains Wrangler `4.114.0`, Workers Types `5.20260722.1`, Miniflare `4.20260722.0`, and Sharp `0.35.2`, with the reviewed exact npm overrides PostCSS `8.5.23` and Undici `7.29.0`.
 
-Issue #110 is the next planning release but remains blocked during issue #111. No visual baseline registration, source-art integration, runtime-art integration, Godot asset implementation, candidate promotion, or Codex task is activated by this reconciliation.
+No successor release is selected or activated. The UX helper handoff remains pending and advisory until Release Coordination reviews it. A later issue, branch, or implementation release requires an explicit activation from the then-current protected-main state and must preserve all rights, source, runtime, catalog, export, and evidence gates.
 
-Automation is machine evidence, not human evidence. Issue #39 remains the human-evidence authority, issue #7 remains the naming gate, and PR #32 remains unrelated.
+Automation is not human evidence. Issue #39 remains the human-evidence authority, issue #7 remains the naming gate, and PR #32 remains unrelated.
