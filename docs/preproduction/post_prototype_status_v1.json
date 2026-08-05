@@ -36,7 +36,7 @@
   },
   "drowned_harbor": {
     "ordinary_playable": false,
-    "status": "developer_only_alpha3_with_completed_metadata_only_visual_and_ux_planning_export_excluded"
+    "status": "developer_only_alpha3_with_completed_metadata_only_visual_ux_and_partial_rights_planning_export_excluded"
   },
   "gates": [
     {
@@ -53,10 +53,11 @@
   "human_evidence_claimed": false,
   "pending_inputs": [
     {
-      "authority": "required_before_source_art_or_runtime_composition",
+      "authority": "required_before_source_art_or_source_runtime_composition_planning",
       "implementation_authorized": false,
-      "input_id": "rights_and_provenance_resolution_for_external_visual_inputs",
-      "state": "blocking_unresolved"
+      "input_id": "project_owner_rights_attestation_and_generation_session_reconstruction",
+      "rights_resolution_complete": false,
+      "state": "blocking_required"
     }
   ],
   "playable_release": "v0.1.9",
@@ -67,6 +68,7 @@
     "alpha3_merge": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
     "dh_present_registration_merge": "671b8f2512be80c0c5f2cec701c29445159620e2",
     "dh_present_family_registration_merge": "1cad8495c913d926c4422557ea59e8c6fa1f6c1a",
+    "dh_rights_registration_merge": "afa65009237b7b5494bf088c640ff542f93e16b4",
     "dh_ux_registration_merge": "22b43893b7726e5c5bea1078aced1cf11e08049f",
     "dh_visual_baseline_merge": "0cea1ac62733fda56d09cb0de8a789efc509308a",
     "p01_p07_package_index": "docs/preproduction/preproduction_package_index_v1.json",
@@ -81,18 +83,18 @@
     "drowned_harbor_provider_registered": false,
     "tale_count": 1
   },
-  "protected_main": "22b43893b7726e5c5bea1078aced1cf11e08049f",
+  "protected_main": "afa65009237b7b5494bf088c640ff542f93e16b4",
   "protected_main_semantics": "exact_reconciliation_starting_baseline",
   "recommended_next_release": {
     "activation_authorized": false,
     "codex_required": false,
     "github_issue": null,
     "release_id": null,
-    "state": "unselected_blocked_on_rights_provenance_and_explicit_activation",
+    "state": "unselected_blocked_on_owner_attestation_and_explicit_activation",
     "title": null
   },
   "runtime_implementation_authorized": false,
-  "schema_version": 5,
+  "schema_version": 6,
   "status_kind": "post_prototype_project_status",
   "unrelated_open_pull_requests": [
     32
@@ -128,6 +130,35 @@
     },
     "production_art_authorized": false,
     "public_github_release_assets_authorized": false,
+    "rights_provenance": {
+      "asset_count": 25,
+      "candidate_created": false,
+      "conversion_readiness": "not_ready",
+      "direct_pixel_use_cleared": false,
+      "disposition": "partial_resolution_for_private_internal_reference_only",
+      "gemini_family_count": 4,
+      "gemini_source_attribution_only_count": 4,
+      "implementation_authorized": false,
+      "issue": 127,
+      "jpeg_with_png_extension_count": 4,
+      "legal_clearance_created": false,
+      "local_c2pa_detected_not_authenticated_count": 16,
+      "max_rights_tier": "R1_private_internal_reference",
+      "merged_main_sha": "afa65009237b7b5494bf088c640ff542f93e16b4",
+      "openai_family_count": 21,
+      "openai_source_attribution_only_count": 5,
+      "owner_attestation_required": true,
+      "png_count": 21,
+      "prerequisite_state": "partial_resolution_owner_attestation_required",
+      "public_distribution_cleared": false,
+      "pull_request": 128,
+      "record_id": "DH-RIGHTS-001",
+      "reference_only_nonproduction": true,
+      "release_id": "DH-RIGHTS-REG-001",
+      "runtime_art_authorized": false,
+      "source_art_authorized": false,
+      "state": "completed_metadata_only"
+    },
     "runtime_art_authorized": false,
     "ux_advisory": {
       "advisory_id": "DH-UX-001",
