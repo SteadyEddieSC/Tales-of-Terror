@@ -1,16 +1,16 @@
 # Post-P0.19 Drowned Harbor Production-Candidate Roadmap
 
-**Version:** 1.7
-**Status:** Alpha.3 developer-only runtime plus metadata-only visual, presentation-family, UX, and partial rights/provenance planning complete; successor unselected
-**Status-reconciliation baseline:** `afa65009237b7b5494bf088c640ff542f93e16b4`
+**Version:** 1.8
+**Status:** Alpha.3 developer-only runtime plus metadata-only visual, presentation-family, UX, rights/provenance, and Project Owner attestation planning complete; successor unselected
+**Status-reconciliation baseline:** `7af430b5d9528c648d00291e4c32fa368279b41b`
 
 ## Current decision
 
 P0.21, Alpha.1, P0.22, Alpha.2, P0.23, and `v0.2.0-alpha.3` are complete. Alpha.3 supplies developer-only systems and replayability authority; it does not make Drowned Harbor a normal production Tale.
 
-The visual baseline, board-production conversion brief, High Water/Last Light/ending presentation studies, presentation-family assessment, corrected shared-screen UX advisory, and accepted-with-corrections rights/provenance inventory are registered as metadata and planning authorities. They do not authorize direct generated-pixel use, production art, visual binaries in Git, source-art construction, Godot integration, runtime presentation, UX implementation, candidate promotion, public distribution, completed rights/legal clearance, or human-evidence claims.
+The visual baseline, board-production conversion brief, High Water/Last Light/ending presentation studies, presentation-family assessment, corrected shared-screen UX advisory, accepted-with-corrections rights/provenance inventory, and completed Project Owner attestation are registered as metadata and planning authorities. They do not authorize clean-room source planning itself, direct generated-pixel use, production art, visual binaries in Git, source-art construction, Godot integration, runtime presentation, UX implementation, candidate promotion, public distribution, completed legal clearance, or human-evidence claims.
 
-There is no active successor release after this reconciliation. `DH-RIGHTS-REG-001` partially resolves rights/provenance for private R1 metadata governance only. Project Owner attestation and generation-session reconstruction remain the next blocking prerequisites before separately authorized source-art or source/runtime-composition planning. No later release identity is selected or activated.
+There is no active successor release after this reconciliation. `DH-OWNER-ATTEST-REG-001` completes the Project Owner attestation and generation-session reconstruction response to the best of firsthand knowledge and establishes eligibility to consider a later metadata-only clean-room source-planning release. That later planning release is not selected or activated. Source creation, source/runtime composition, direct-pixel use, and implementation remain separately gated and unauthorized.
 
 ## Production boundary
 
@@ -25,6 +25,7 @@ There is no active successor release after this reconciliation. `DH-RIGHTS-REG-0
 - `DH-PRESENT-REG-002` and `DH-PRESENT-FAMILY-001` completed through issue #118 / PR #119 at `1cad8495c913d926c4422557ea59e8c6fa1f6c1a`.
 - `DH-UX-REG-001` / `DH-UX-001` completed through issue #120 / PR #124 at `22b43893b7726e5c5bea1078aced1cf11e08049f`.
 - `DH-RIGHTS-REG-001` / `DH-RIGHTS-001` completed with required corrections through issue #127 / PR #128 at `afa65009237b7b5494bf088c640ff542f93e16b4`.
+- `DH-OWNER-ATTEST-REG-001` / `DH-OWNER-ATTEST-001` completed through issue #131 / PR #132 at `7af430b5d9528c648d00291e4c32fa368279b41b`.
 - External visual images, archives, and editable sources remain outside normal Git history and public GitHub Releases.
 
 ## Governed sequence
@@ -43,8 +44,10 @@ There is no active successor release after this reconciliation. `DH-RIGHTS-REG-0
 - **DH-UX-REG-001 — Shared-Screen UX Advisory Registration:** completed, issue #120 / PR #124.
 - **Post-DH-UX-001 status reconciliation:** completed, issue #125 / PR #126.
 - **DH-RIGHTS-REG-001 — External Visual Rights & Provenance Metadata Registration:** completed with required corrections, issue #127 / PR #128.
-- **Post-DH-RIGHTS-001 status reconciliation:** issue #129; documentation/governance only.
-- **Next release:** unselected; blocked on Project Owner attestation, generation-session reconstruction, and explicit activation.
+- **Post-DH-RIGHTS-001 status reconciliation:** completed, issue #129 / PR #130.
+- **DH-OWNER-ATTEST-REG-001 — Project Owner Attestation Registration and Clean-Room Planning Eligibility:** completed, issue #131 / PR #132.
+- **Post-DH-OWNER-ATTEST-001 status reconciliation:** issue #133; documentation/governance only.
+- **Next release:** unselected; metadata-only clean-room source-planning is eligible for consideration but requires explicit activation.
 - **v0.2.0-beta — Presentation & Content Integration:** future and blocked; no issue, branch, or implementation authority.
 - **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
 
@@ -54,7 +57,7 @@ Alpha.3 governs Cooperative seats 1–8, Hidden Betrayer seats 3–8, and Outbre
 
 The Companion audit remediation uses reviewed exact npm overrides for PostCSS `8.5.23` and Undici `7.29.0`, while preserving Wrangler `4.114.0`, Workers Types `5.20260722.1`, Miniflare `4.20260722.0`, and Sharp `0.35.2`. The final Alpha.3 candidate passed every permanent exact-head workflow.
 
-## Visual, presentation, and UX planning result
+## Visual, presentation, UX, and rights-planning result
 
 `DH-VBL-001` recognizes the preproduction visual baseline, `DH-CB-002` preserves a truthful external candidate register, and `DH-VCB-001` records the board-production conversion authority. The default construction presumption remains `layered_painted_2_5d`; alternatives require later evidence. Low Tide and High Water must continue to derive from one authoritative shared board master.
 
@@ -64,21 +67,22 @@ The Companion audit remediation uses reviewed exact npm overrides for PostCSS `8
 
 `DH-RIGHTS-001` records all 25 external images as `R1_private_internal_reference` / `reference_only_nonproduction`: 21 true PNGs, four JPEG binaries carrying `.png` filenames, 16 locally detected but unauthenticated OpenAI C2PA/JUMBF references, five OpenAI source-attribution-only assets, and four Gemini source-attribution-only assets. No direct-pixel use or R2–R5 advancement is authorized.
 
+`DH-OWNER-ATTEST-001` records the completed firsthand Project Owner response: authorized OpenAI and Gemini accounts, no external uploaded references, no intentional third-party or restricted inputs, no known edit/export-chain changes, approximate generation timing, preserved unknown facts, and agreement to no direct pixel reuse. It establishes planning eligibility only; clean-room source planning remains unauthorized until a separate Release Coordination activation.
+
 The external images remain references rather than runtime compositions or production masters. The planning releases do not validate safe-frame readability, grayscale performance, reduced motion, interruption, replay comprehension, television readability, physical-controller behavior, accessibility, privacy, production readiness, or shipping readiness.
 
 ## Persistent invariants
 
-Stable-seat identity, no-op rejection, four privacy classes, public-only Director inputs, explicit migration, bounded deterministic variation, authoring/runtime separation, developer-only admission, ordinary-export exclusion, partially resolved R1-only visual rights with owner attestation pending, external binary isolation, human-evidence limits, issue #39, issue #7, and PR #32 remain unchanged.
+Stable-seat identity, no-op rejection, four privacy classes, public-only Director inputs, explicit migration, bounded deterministic variation, authoring/runtime separation, developer-only admission, ordinary-export exclusion, R1-only visual rights, completed owner attestation with planning eligibility but no planning authorization, external binary isolation, human-evidence limits, issue #39, issue #7, and PR #32 remain unchanged.
 
 Automation is machine evidence only. It does not establish fun, balance, physical-controller behavior, television readability, accessibility compliance, privacy/security certification, production readiness, or shipping authorization.
 
 ## Immediate next action
 
-1. Complete issue #129 as an exact ten-path post-rights status and validator reconciliation.
+1. Complete issue #133 as an exact ten-path post-attestation status and validator reconciliation.
 2. Reverify protected `main` after its expected-head squash merge.
-3. Complete Project Owner attestation and generation-session reconstruction for the 25 registered external images.
-4. Review any returned UX-helper response as advisory only; do not treat it as implementation authority.
-5. Only after the remaining evidence is accepted, decide whether to authorize a bounded source-art/source-composition planning release.
-6. Create no implementation issue, branch, PR, Codex task, source-art path, runtime-art path, private-surface implementation, or candidate promotion until that decision is explicit.
+3. Receive and review the UX helper's final advisory handoff against the then-current protected main.
+4. Only through a separate Release Coordination decision, determine whether to activate a metadata-only clean-room source-planning release.
+5. Create no source-planning, implementation, Codex, source-art, runtime-art, private-surface, or candidate issue until that decision is explicit.
 
-No direct generated-pixel use, source art, runtime art, Godot asset integration, visual-candidate promotion, UX implementation, completed rights/legal clearance, or public distribution is authorized by this roadmap.
+No clean-room source planning, direct generated-pixel use, source art, runtime art, Godot asset integration, visual-candidate promotion, UX implementation, completed legal clearance, or public distribution is authorized by this roadmap.
