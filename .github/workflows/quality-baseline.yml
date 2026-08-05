@@ -1,0 +1,288 @@
+name: Automated quality baseline
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'agent/**'
+      - 'release/**'
+      - 'rc/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: 4.7.1
+  GODOT_BIN: Godot_v4.7.1-stable_linux.x86_64
+  GODOT_LINUX_SHA512: 4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9
+  GODOT_TEMPLATE_SHA256: 86409db6200b6f8fd3230989c2d2002851f3dd18acf11d7bdbafddf5a0dd0f72
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  validate-test-export:
+    name: Godot validation, tests, assets, and export
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prepare evidence directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/{quality,godot,security,performance,export,supply-chain,crash,screenshots}
+          mkdir -p game/test-results builds/quality/windows builds/quality/linux
+
+      - name: Install checksum-pinned Godot editor and templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          tool_root="$RUNNER_TEMP/godot-${GODOT_VERSION}"
+          mkdir -p "$tool_root"
+          curl -fsSL -o "$tool_root/godot.zip" "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          echo "$GODOT_LINUX_SHA512  godot.zip" | (cd "$tool_root" && sha512sum --check -)
+          curl -fsSL -o "$tool_root/export-templates.tpz" "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          echo "$GODOT_TEMPLATE_SHA256  export-templates.tpz" | (cd "$tool_root" && sha256sum --check -)
+          unzip -q "$tool_root/godot.zip" -d "$tool_root/bin"
+          chmod +x "$tool_root/bin/$GODOT_BIN"
+          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          unzip -q "$tool_root/export-templates.tpz" -d "$tool_root/templates"
+          cp -a "$tool_root/templates/templates/." "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"
+          echo "$tool_root/bin" >> "$GITHUB_PATH"
+          "$tool_root/bin/$GODOT_BIN" --version | tee artifacts/godot/godot-version.txt
+
+      - name: Set up pinned Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install reviewed GDScript tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+          python -m pip freeze --all | tee artifacts/supply-chain/python-environment.txt
+
+      - name: Run repository validator unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=quality python -m unittest discover -s quality -p 'test_*.py' -v 2>&1 | tee artifacts/quality/validator-tests.txt
+
+      - name: Validate configuration, scenes, resources, data, assets, saves, and workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality/validate_repository.py all --report-dir artifacts/quality 2>&1 | tee artifacts/quality/validator-console.txt
+
+      - name: Run inherited repository policy validators
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/validate_assets.py
+          python tools/validate_companion.py
+          python tools/validate_playtest_readiness.py
+          python tools/validate_toolchain.py
+          python tools/tale_package.py validate
+          python tools/test_tale_package.py
+          python tools/tale_catalog.py validate
+          python tools/test_tale_catalog.py
+          python tools/portable_bundle.py validate-repository
+          python tools/test_portable_bundle.py
+          python tools/pilot_evidence.py validate-templates
+          python tools/test_pilot_evidence.py
+
+      - name: Enforce first-party GDScript lint and formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          find game -type f -name '*.gd' \
+            -not -path 'game/addons/gut/*' \
+            -not -path 'game/.godot/*' \
+            -print | sort > artifacts/quality/first-party-gdscript.txt
+          mapfile -t gd_files < artifacts/quality/first-party-gdscript.txt
+          gdlint "${gd_files[@]}" 2>&1 | tee artifacts/quality/gdlint.txt
+          gdformat --check "${gd_files[@]}" 2>&1 | tee artifacts/quality/gdformat.txt
+
+      - name: Run complete headless Godot test surface
+        shell: bash
+        env:
+          GODOT_BIN: ${{ env.GODOT_BIN }}
+        run: |
+          set -euo pipefail
+          python quality/run_quality.py godot --godot "$GODOT_BIN" 2>&1 | tee artifacts/godot/complete-headless-suite.log
+          cp -a game/test-results/. artifacts/godot/ 2>/dev/null || true
+
+      - name: Set up locked Node runtime
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24.18.0
+          cache: npm
+
+      - name: Validate companion dependencies and supporting code
+        shell: bash
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+          GODOT_BIN: ${{ env.GODOT_BIN }}
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run typecheck 2>&1 | tee artifacts/quality/npm-typecheck.txt
+          npm test 2>&1 | tee artifacts/quality/npm-tests.txt
+          npm run build 2>&1 | tee artifacts/quality/npm-build.txt
+          npm run test:e2e:local 2>&1 | tee artifacts/quality/native-authority-e2e.txt
+          npm audit --audit-level=high --omit=optional --json > artifacts/security/npm-audit.json
+
+      - name: Perform clean exact-head exports
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/portable_bundle.py write-build-identity --platform windows --source-commit "$SOURCE_SHA"
+          "$GODOT_BIN" --headless --path game \
+            --log-file "$PWD/artifacts/export/windows-export-godot.log" \
+            --export-release 'Internal Windows x86_64' \
+            "$PWD/builds/quality/windows/lantern_house_internal.exe" \
+            2>&1 | tee artifacts/export/windows-export-console.log
+          python tools/portable_bundle.py write-build-identity --platform linux --source-commit "$SOURCE_SHA"
+          "$GODOT_BIN" --headless --path game \
+            --log-file "$PWD/artifacts/export/linux-export-godot.log" \
+            --export-release 'Internal Linux x86_64' \
+            "$PWD/builds/quality/linux/lantern_house_internal.x86_64" \
+            2>&1 | tee artifacts/export/linux-export-console.log
+          test -s builds/quality/windows/lantern_house_internal.exe
+          test -s builds/quality/linux/lantern_house_internal.x86_64
+          if grep -E 'Storing File: res://(\.gutconfig\.json|tests/|addons/|src/exploration/ExplorationShowcase\.tscn|src/exploration/exploration_showcase\.gd)' artifacts/export/*-export-console.log; then
+            echo 'Export contained a denylisted test or development resource'
+            exit 1
+          fi
+
+      - name: Smoke exported Linux artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x builds/quality/linux/lantern_house_internal.x86_64
+          builds/quality/linux/lantern_house_internal.x86_64 \
+            --headless --audio-driver Dummy -- --portable-build-smoke \
+            2>&1 | tee artifacts/export/linux-export-smoke.log
+          grep -F 'PORTABLE_BUILD_SMOKE:' artifacts/export/linux-export-smoke.log
+          grep -F '"accepted":true' artifacts/export/linux-export-smoke.log
+          grep -F "\"source_commit\":\"$SOURCE_SHA\"" artifacts/export/linux-export-smoke.log
+
+      - name: Generate checksums, build metadata, inventories, and SBOM
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum \
+            builds/quality/windows/lantern_house_internal.exe \
+            builds/quality/linux/lantern_house_internal.x86_64 \
+            > artifacts/export/SHA256SUMS
+          npm sbom --sbom-format cyclonedx > artifacts/supply-chain/npm-sbom.cdx.json
+          find game/addons -mindepth 1 -maxdepth 2 -type f \( -name plugin.cfg -o -name LICENSE.md \) -print -exec sha256sum {} \; \
+            > artifacts/supply-chain/godot-addon-inventory.txt
+          python - <<'PY'
+          import hashlib, json, os, pathlib, platform, subprocess
+          root = pathlib.Path('.')
+          outputs = []
+          for target, path in {
+              'windows-x86_64': root / 'builds/quality/windows/lantern_house_internal.exe',
+              'linux-x86_64': root / 'builds/quality/linux/lantern_house_internal.x86_64',
+          }.items():
+              outputs.append({
+                  'target': target,
+                  'path': path.as_posix(),
+                  'bytes': path.stat().st_size,
+                  'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+              })
+          metadata = {
+              'schema_version': 1,
+              'project': 'Terror Turn',
+              'project_version': 'v0.1.9',
+              'godot_version': os.environ['GODOT_VERSION'],
+              'export_template_version': os.environ['GODOT_VERSION'] + '.stable',
+              'source_commit': os.environ['SOURCE_SHA'],
+              'build_timestamp_utc': subprocess.check_output(['date', '-u', '+%Y-%m-%dT%H:%M:%SZ'], text=True).strip(),
+              'runner': platform.platform(),
+              'outputs': outputs,
+              'publication': 'none',
+              'signing': 'not_performed',
+          }
+          pathlib.Path('artifacts/export/build-metadata.json').write_text(json.dumps(metadata, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          requirements = []
+          for line in pathlib.Path('requirements-dev.txt').read_text(encoding='utf-8').splitlines():
+              line = line.strip()
+              if line and not line.startswith(('#', '--', ' ')) and '==' in line:
+                  requirements.append(line.split(' \\', 1)[0])
+          pathlib.Path('artifacts/supply-chain/python-dependency-inventory.json').write_text(
+              json.dumps({'schema_version': 1, 'dependencies': sorted(set(requirements))}, indent=2) + '\n', encoding='utf-8'
+          )
+          PY
+          cp builds/quality/windows/lantern_house_internal.exe artifacts/export/
+          cp builds/quality/linux/lantern_house_internal.x86_64 artifacts/export/
+
+      - name: Classify Godot errors and accepted warnings
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib, re
+          root = pathlib.Path('artifacts')
+          accepted = json.loads(pathlib.Path('quality/quality_config.json').read_text(encoding='utf-8'))['accepted_warning_patterns']
+          blocking = []
+          warnings = []
+          for path in sorted(root.rglob('*.log')) + sorted(root.rglob('*.txt')):
+              try:
+                  text = path.read_text(encoding='utf-8', errors='replace')
+              except OSError:
+                  continue
+              for number, line in enumerate(text.splitlines(), 1):
+                  if re.search(r'(?i)(parser error|parse error|script error|invalid get index|invalid access|failed to load|resource.*not found|core dump|segmentation fault)', line):
+                      blocking.append({'path': path.as_posix(), 'line': number, 'text': line[:500]})
+                  elif 'WARNING:' in line:
+                      warnings.append({'path': path.as_posix(), 'line': number, 'text': line[:500], 'accepted': any(pattern in line for pattern in accepted)})
+          report = {'schema_version': 1, 'blocking': blocking, 'warnings': warnings, 'accepted_warning_patterns': accepted}
+          pathlib.Path('artifacts/godot/error-classification.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+          if blocking:
+              print(json.dumps(blocking, indent=2))
+              raise SystemExit(1)
+          PY
+
+      - name: Prove generated outputs remain untracked
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f game/build_identity.generated.json
+          git diff --check
+          if git ls-files | grep -E '\.(exe|pck|tpz|x86_64|zip)$'; then
+            echo 'Generated binary or archive is tracked'
+            exit 1
+          fi
+          unexpected=$(git status --porcelain=v1 --untracked-files=all | grep -Ev '^\?\? (artifacts/|builds/quality/|game/test-results/|game/\.godot/)' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected working-tree changes:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+      - name: Upload quality evidence and exported builds
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: terror-turn-quality-baseline-${{ env.SOURCE_SHA }}
+          path: |
+            artifacts
+            game/test-results
+          if-no-files-found: error
+          retention-days: 14
