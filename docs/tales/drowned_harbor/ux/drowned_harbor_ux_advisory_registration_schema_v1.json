@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "drowned_harbor_ux_advisory_registration_schema_v1",
+  "title": "Drowned Harbor Shared-Screen UX Advisory Registration",
+  "type": "object",
+  "required": [
+    "record_kind",
+    "record_version",
+    "title",
+    "identity",
+    "release",
+    "authorization",
+    "external_package",
+    "external_schema_review",
+    "source_authorities",
+    "reference_inputs",
+    "authority",
+    "logical_review_envelope",
+    "stable_seat_hypotheses",
+    "interaction_model",
+    "stage_flows",
+    "privacy",
+    "microcopy",
+    "validation_plan",
+    "required_corrections",
+    "blocking_prerequisites",
+    "next_blocking_prerequisite",
+    "next_release",
+    "lifecycle",
+    "governance",
+    "prohibited_path_prefixes",
+    "prohibited_binary_extensions",
+    "evidence_claims"
+  ],
+  "properties": {
+    "record_kind": {
+      "const": "drowned_harbor_shared_screen_ux_advisory_registration"
+    },
+    "record_version": {
+      "const": 1
+    },
+    "title": {
+      "const": "Drowned Harbor Shared-Screen UX Advisory Registration v1"
+    },
+    "identity": {
+      "const": {
+        "release_id": "DH-UX-REG-001",
+        "external_advisory_id": "DH-UX-001",
+        "governing_issue": 120,
+        "review_disposition": "accepted_external_ux_advisory_with_required_corrections",
+        "presentation_family_id": "DH-PRESENT-FAMILY-001"
+      }
+    },
+    "release": {
+      "const": {
+        "protected_main_base": "1cad8495c913d926c4422557ea59e8c6fa1f6c1a",
+        "branch": "docs/dh-ux-001-advisory-registration",
+        "planning_only": true,
+        "metadata_only": true
+      }
+    },
+    "authorization": {
+      "type": "object"
+    },
+    "external_package": {
+      "type": "object"
+    },
+    "external_schema_review": {
+      "type": "object"
+    },
+    "source_authorities": {
+      "type": "array"
+    },
+    "reference_inputs": {
+      "type": "array"
+    },
+    "authority": {
+      "type": "object"
+    },
+    "logical_review_envelope": {
+      "type": "object"
+    },
+    "stable_seat_hypotheses": {
+      "type": "object"
+    },
+    "interaction_model": {
+      "type": "object"
+    },
+    "stage_flows": {
+      "type": "array"
+    },
+    "privacy": {
+      "type": "object"
+    },
+    "microcopy": {
+      "type": "object"
+    },
+    "validation_plan": {
+      "type": "object"
+    },
+    "required_corrections": {
+      "type": "array"
+    },
+    "blocking_prerequisites": {
+      "type": "array"
+    },
+    "next_blocking_prerequisite": {
+      "type": "string"
+    },
+    "next_release": {
+      "type": "object"
+    },
+    "lifecycle": {
+      "const": {
+        "status": "external_advisory_registered_with_corrections",
+        "conversion_readiness": "not_ready",
+        "implementation_authorized": false,
+        "candidate_id": null,
+        "production_candidate": false,
+        "approved": false
+      }
+    },
+    "governance": {
+      "type": "object"
+    },
+    "prohibited_path_prefixes": {
+      "type": "array"
+    },
+    "prohibited_binary_extensions": {
+      "type": "array"
+    },
+    "evidence_claims": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}
