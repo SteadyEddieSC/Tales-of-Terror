@@ -27,6 +27,8 @@ on:
       - 'tools/validate_post_dh_rights_status.py'
       - 'tools/test_validate_post_dh_owner_attest_status.py'
       - 'tools/validate_post_dh_owner_attest_status.py'
+      - 'tools/test_validate_post_dh_ux_final_status.py'
+      - 'tools/validate_post_dh_ux_final_status.py'
   push:
     branches: [main, docs/p0.23-alpha3-systems-replayability-contract]
     paths:
@@ -54,6 +56,8 @@ on:
       - 'tools/validate_post_dh_rights_status.py'
       - 'tools/test_validate_post_dh_owner_attest_status.py'
       - 'tools/validate_post_dh_owner_attest_status.py'
+      - 'tools/test_validate_post_dh_ux_final_status.py'
+      - 'tools/validate_post_dh_ux_final_status.py'
 
 permissions:
   contents: read
@@ -160,6 +164,18 @@ jobs:
               "tools/test_validate_post_dh_owner_attest_status.py",
               "tools/validate_post_dh_owner_attest_status.py",
           }
+          post_dh_ux_final = {
+              "README.md",
+              ".github/workflows/p021-production-architecture.yml",
+              ".github/workflows/p022-alpha2-graybox-contract.yml",
+              ".github/workflows/p023-alpha3-systems-replayability-contract.yml",
+              ".github/workflows/post-prototype-reconciliation.yml",
+              "docs/preproduction/README.md",
+              "docs/preproduction/post_prototype_status_v1.json",
+              "docs/roadmap/Post_P0.19_Production_Candidate_Roadmap.md",
+              "tools/test_validate_post_dh_ux_final_status.py",
+              "tools/validate_post_dh_ux_final_status.py",
+          }
 
           head = os.environ["HEAD_REF"]
           expected = None
@@ -169,6 +185,7 @@ jobs:
           elif head == "docs/post-dh-ux-status-reconciliation": expected = post_dh_ux
           elif head == "docs/post-dh-rights-status-reconciliation": expected = post_dh_rights
           elif head == "docs/post-dh-owner-attest-status-reconciliation": expected = post_dh_owner_attest
+          elif head == "docs/post-dh-ux-final-status-reconciliation": expected = post_dh_ux_final
 
           if expected is None:
               print(f"No release-specific exact boundary registered for {head}; current status validation still applies")
@@ -207,9 +224,12 @@ jobs:
           elif [[ "$effective" == "docs/post-dh-rights-status-reconciliation" ]]; then
             python tools/validate_post_dh_rights_status.py
             python tools/test_validate_post_dh_rights_status.py
-          else
+          elif [[ "$effective" == "docs/post-dh-owner-attest-status-reconciliation" ]]; then
             python tools/validate_post_dh_owner_attest_status.py
             python tools/test_validate_post_dh_owner_attest_status.py
+          else
+            python tools/validate_post_dh_ux_final_status.py
+            python tools/test_validate_post_dh_ux_final_status.py
           fi
       - name: Preserve Alpha.2 runtime and authoring contracts
         run: |
@@ -223,7 +243,7 @@ jobs:
           python tools/test_tale_catalog.py
       - name: Parse governed JSON, Python, and workflow YAML
         run: |
-          python -m py_compile tools/validate_post_dh_owner_attest_status.py tools/test_validate_post_dh_owner_attest_status.py
+          python -m py_compile tools/validate_post_dh_ux_final_status.py tools/test_validate_post_dh_ux_final_status.py
           python - <<'PY2'
           import json
           from pathlib import Path
