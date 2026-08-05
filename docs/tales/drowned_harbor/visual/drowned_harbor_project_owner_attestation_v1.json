@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "record_kind": "drowned_harbor_project_owner_attestation_registration",
+  "release_id": "DH-OWNER-ATTEST-REG-001",
+  "record_id": "DH-OWNER-ATTEST-001",
+  "protected_main_starting_sha": "1f75ec56779d1e99b10105f142f99f1a6f3fbd27",
+  "source_rights_authority": {
+    "release_id": "DH-RIGHTS-REG-001",
+    "record_id": "DH-RIGHTS-001",
+    "issue": 127,
+    "pull_request": 128,
+    "merged_main_sha": "afa65009237b7b5494bf088c640ff542f93e16b4",
+    "post_rights_reconciliation_issue": 129,
+    "post_rights_reconciliation_pull_request": 130,
+    "post_rights_reconciliation_merge": "1f75ec56779d1e99b10105f142f99f1a6f3fbd27"
+  },
+  "package": {
+    "archive_name": "DH-OWNER-ATTEST-001_Project_Owner_Attestation_Finalized_Package_v1.zip",
+    "internal_package_name": "DH-OWNER-ATTEST-001_Project_Owner_Attestation_Finalized_Package_v1",
+    "bytes": 12445,
+    "sha256": "a1a629296b12d7bb55107c1a6d2c35817d5317394aeefaaec631a37a56ca6985",
+    "zip_crc": "clean",
+    "manifest_bytes": 2126,
+    "manifest_sha256": "12c233ab29b6212beea5dea27ec2c623072865e6a6d0b017146ddc4bb654ff97",
+    "manifested_payload_count_excluding_manifest": 9,
+    "missing_payloads": [],
+    "extra_payloads": [],
+    "payload_hash_or_byte_mismatches": [],
+    "payloads": [
+      {"path": "00_START_HERE/README_FIRST.md", "bytes": 1501, "sha256": "a53374d639833a8af586d6fb205758a3453261bd67a84b7041527191f60a34d3"},
+      {"path": "01_COMPLETED_ATTESTATION/Completed_Project_Owner_Attestation.md", "bytes": 3470, "sha256": "dc41401ef9e2f82f97247d021721d4e12e6af2200b16b32adb7b108c3f55c840"},
+      {"path": "01_COMPLETED_ATTESTATION/Project_Owner_Attestation_Completion_Summary.md", "bytes": 1651, "sha256": "706283bc737c7e29dc16e507c3d0572e6872c6351f20605624adf4c34d732fbd"},
+      {"path": "02_COMPLETED_FAMILY_RECORDS/GEMINI_SOURCE_ATTRIBUTION_FAMILY.md", "bytes": 1822, "sha256": "1636a33a1c4915cfe13103cbeb9ef664478dbb065b8e39b8910dbe2bae33fc26"},
+      {"path": "02_COMPLETED_FAMILY_RECORDS/OPENAI_C2PA_DETECTED_FAMILY.md", "bytes": 2043, "sha256": "239d5890823bee13566d1cc517d58ad8bf7fa78bbc493c439ea34798f3bee63b"},
+      {"path": "02_COMPLETED_FAMILY_RECORDS/OPENAI_SOURCE_ATTRIBUTION_FAMILY.md", "bytes": 1835, "sha256": "186623f50cce0f2e3ddd77a64c45dd34411cbb00c489de7e47a95ec68e263fa7"},
+      {"path": "03_CANONICAL_INVENTORY/DH-RIGHTS-REG-001_Canonical_25_Asset_Inventory_Snapshot.json", "bytes": 847, "sha256": "14414aba390526226f8a31dbeb800ef3562f701028dc0f8b3e38fc9b4468785f"},
+      {"path": "04_MACHINE_READABLE/Completed_Project_Owner_Attestation_Response.json", "bytes": 2047, "sha256": "c9a3fad6b8ff04d9d45cb3b82c46227d3bfd571f38ba1247963db12ba84c3590"},
+      {"path": "05_RELEASE_COORDINATOR/SEND_TO_RELEASE_COORDINATOR.md", "bytes": 1295, "sha256": "ff30779fa87abc8c6e2a1f16416e24239c297d9dc8ffbadcf73a40a6af71fe04"}
+    ]
+  },
+  "disposition": {
+    "review_result": "accepted_completed_owner_attestation_sufficient_for_metadata_only_clean_room_planning_eligibility",
+    "owner_attestation_complete": true,
+    "generation_session_reconstruction_response_complete_to_best_firsthand_knowledge": true,
+    "metadata_only_clean_room_planning_eligibility_established": true,
+    "clean_room_source_planning_authorized": false,
+    "clean_room_source_creation_authorized": false,
+    "direct_generated_pixel_use_authorized": false,
+    "tracing_vectorization_or_paint_over_authorized": false,
+    "source_art_authorized": false,
+    "runtime_art_authorized": false,
+    "godot_authorized": false,
+    "codex_authorized": false,
+    "candidate_creation_or_promotion_authorized": false,
+    "public_distribution_authorized": false,
+    "marketing_storefront_or_merchandise_authorized": false,
+    "legal_clearance_created": false,
+    "accessibility_or_human_evidence_claimed": false,
+    "production_or_shipping_authorized": false,
+    "conversion_readiness": "not_ready",
+    "implementation_authorized": false,
+    "next_release_selected": false,
+    "next_release_activation_authorized": false,
+    "next_step": "separate_release_coordination_decision_for_metadata_only_clean_room_source_planning"
+  },
+  "attestation": {
+    "project_owner": "Edwin \"Eddie\" Gugino",
+    "attestation_date": "2026-08-05",
+    "typed_confirmation": "I confirm that these answers are complete to the best of my firsthand knowledge and that unknown facts are explicitly marked unknown.",
+    "account_confirmation": {
+      "openai_authorized_account": true,
+      "openai_account_or_plan_type": "ChatGPT Plus",
+      "gemini_authorized_account": true,
+      "gemini_account_or_plan_type": "Plus plan type",
+      "other_generators_or_people": "none"
+    },
+    "input_confirmation": {
+      "uploaded_references": [],
+      "third_party_inputs": "none reported",
+      "employer_client_confidential_inputs": "none reported"
+    },
+    "edit_export_chain": {
+      "screenshots": "none reported",
+      "recompression": "none reported",
+      "renaming": "none reported",
+      "resizing_or_cropping": "none reported",
+      "color_or_text_edits": "none reported",
+      "paint_over_or_compositing": "none reported",
+      "metadata_or_watermark_removal": "none reported",
+      "jpeg_with_png_filename_explanation": "arrived that way"
+    },
+    "generation_records": {
+      "additional_exact_records": "No additional exact records beyond what is already in ChatGPT/OpenAI continuity/chat records.",
+      "approximate_generation_periods": {
+        "ext_vis_001_002_003_005": "approximately 3-4 days before 2026-08-05",
+        "other_openai_studies": "approximately 3-4 days before 2026-08-05",
+        "gemini_studies": "approximately 3-4 days before 2026-08-05"
+      }
+    },
+    "intended_use_confirmation": {
+      "private_internal_reference": true,
+      "abstract_planning_without_pixel_reuse": true,
+      "future_clean_room_reconstruction_requested": true,
+      "direct_generated_pixel_production_use": false,
+      "public_marketing_merchandise_use": false
+    },
+    "unknown_facts_preserved": true,
+    "no_direct_pixel_reuse_agreed": true
+  },
+  "inventory_summary": {
+    "unique_image_binary_count": 25,
+    "true_png_count": 21,
+    "jpeg_binary_with_png_filename_count": 4,
+    "openai_count": 21,
+    "gemini_count": 4,
+    "c2pa_detected_not_authenticated_count": 16,
+    "openai_source_attribution_only_count": 5,
+    "gemini_source_attribution_only_count": 4,
+    "all_assets": "R1_private_internal_reference",
+    "reference_only_nonproduction": true,
+    "conversion_readiness": "not_ready",
+    "implementation_authorized": false
+  },
+  "external_binary_policy": {
+    "archive_in_git": false,
+    "images_in_git": false,
+    "editable_sources_in_git": false,
+    "public_github_release_assets_authorized": false,
+    "storage": "external_private_only"
+  },
+  "governance": {
+    "naming_gate_issue": 7,
+    "human_evidence_gate_issue": 39,
+    "unrelated_pull_request_excluded": 32,
+    "lantern_house_remains_sole_normal_default_tale": true,
+    "drowned_harbor_remains_developer_only_and_ordinary_export_excluded": true
+  }
+}

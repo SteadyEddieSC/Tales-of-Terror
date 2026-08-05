@@ -1,0 +1,56 @@
+name: Drowned Harbor Project Owner attestation registration
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/drowned-harbor-owner-attestation.yml'
+      - 'docs/releases/DH-OWNER-ATTEST-001-project-owner-attestation-registration.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Completed_Project_Owner_Attestation_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Project_Owner_Attestation_Disposition_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_project_owner_attestation_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_project_owner_attestation_schema_v1.json'
+      - 'art/licenses/drowned_harbor/visual/dh_owner_attest_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_owner_attestation.py'
+      - 'tools/test_validate_drowned_harbor_owner_attestation.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-owner-attestation.yml'
+      - 'docs/releases/DH-OWNER-ATTEST-001-project-owner-attestation-registration.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Completed_Project_Owner_Attestation_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Project_Owner_Attestation_Disposition_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_project_owner_attestation_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_project_owner_attestation_schema_v1.json'
+      - 'art/licenses/drowned_harbor/visual/dh_owner_attest_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_owner_attestation.py'
+      - 'tools/test_validate_drowned_harbor_owner_attestation.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+      - name: Validate closed owner-attestation registration
+        run: |
+          python tools/validate_drowned_harbor_owner_attestation.py
+          python tools/test_validate_drowned_harbor_owner_attestation.py
+      - name: Parse governed JSON and compile Python
+        run: |
+          python -m json.tool docs/tales/drowned_harbor/visual/drowned_harbor_project_owner_attestation_v1.json >/dev/null
+          python -m json.tool docs/tales/drowned_harbor/visual/drowned_harbor_project_owner_attestation_schema_v1.json >/dev/null
+          python -m json.tool art/licenses/drowned_harbor/visual/dh_owner_attest_001_provenance_v1.json >/dev/null
+          python -m py_compile tools/validate_drowned_harbor_owner_attestation.py tools/test_validate_drowned_harbor_owner_attestation.py
+      - name: Prove text-only registration and clean tree
+        run: |
+          test -z "$(git diff --name-only 1f75ec56779d1e99b10105f142f99f1a6f3fbd27...HEAD | grep -Ei '\.(png|jpe?g|webp|zip|psd|kra|blend|aseprite|tscn|tres)$' || true)"
+          git diff --check
+          test -z "$(git status --porcelain)"
