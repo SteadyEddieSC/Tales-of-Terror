@@ -1,0 +1,51 @@
+name: Drowned Harbor UX advisory registration
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-ux-advisory.yml'
+      - 'docs/releases/DH-UX-001-shared-screen-ux-advisory-registration.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Shared_Screen_UX_Architecture_and_Stage_Flows_v1.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_960x540_Layout_and_Stable_Seat_Advisory_v1.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_UX_Validation_and_Human_Evidence_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/ux/drowned_harbor_ux_advisory_registration_v1.json'
+      - 'docs/tales/drowned_harbor/ux/drowned_harbor_ux_advisory_registration_schema_v1.json'
+      - 'art/licenses/drowned_harbor/ux/dh_ux_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_ux_advisory.py'
+      - 'tools/test_validate_drowned_harbor_ux_advisory.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate exact DH-UX-REG-001 metadata package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.11.9'
+      - name: Validate contract and exact Git boundary
+        run: python tools/validate_drowned_harbor_ux_advisory.py
+      - name: Run fail-closed mutation suite
+        run: python tools/test_validate_drowned_harbor_ux_advisory.py
+      - name: Compile validators
+        run: python -m py_compile tools/validate_drowned_harbor_ux_advisory.py tools/test_validate_drowned_harbor_ux_advisory.py
+      - name: Prove governed JSON parses
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for path in [
+              Path('docs/tales/drowned_harbor/ux/drowned_harbor_ux_advisory_registration_v1.json'),
+              Path('docs/tales/drowned_harbor/ux/drowned_harbor_ux_advisory_registration_schema_v1.json'),
+              Path('art/licenses/drowned_harbor/ux/dh_ux_001_provenance_v1.json'),
+          ]:
+              json.loads(path.read_text(encoding='utf-8'))
+          print('Governed JSON parsed')
+          PY
