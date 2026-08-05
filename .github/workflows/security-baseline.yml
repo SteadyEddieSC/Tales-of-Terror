@@ -1,0 +1,117 @@
+name: Security baseline
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'agent/**'
+      - 'release/**'
+      - 'rc/**'
+  schedule:
+    - cron: '23 7 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets-dependencies-workflows:
+    name: Secrets, dependencies, and workflow security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout complete history without persisted credentials
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prepare security reports
+        run: mkdir -p artifacts/security
+
+      - name: Install checksum-pinned Gitleaks 8.30.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks.tar.gz' \
+            | (cd "$RUNNER_TEMP" && sha256sum --check -)
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
+          chmod +x "$RUNNER_TEMP/gitleaks"
+          "$RUNNER_TEMP/gitleaks" version | tee artifacts/security/gitleaks-version.txt
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      - name: Scan repository content and history with Gitleaks
+        shell: bash
+        run: |
+          set -euo pipefail
+          gitleaks git --source . --redact --no-banner \
+            --report-format sarif --report-path artifacts/security/gitleaks.sarif
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Enforce deterministic workflow policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python quality/validate_repository.py workflows --report-dir artifacts/security/workflow-policy \
+            2>&1 | tee artifacts/security/workflow-policy-console.txt
+
+      - name: Run Zizmor full workflow audit
+        id: zizmor
+        continue-on-error: true
+        uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
+        with:
+          advanced-security: false
+          annotations: false
+          online-audits: false
+          version: v1.26.0
+          inputs: .github/workflows
+
+      - name: Record Zizmor disposition
+        if: always()
+        shell: bash
+        env:
+          ZIZMOR_OUTCOME: ${{ steps.zizmor.outcome }}
+        run: |
+          printf '{"schema_version":1,"tool":"zizmor","version":"1.26.0","outcome":"%s","blocking_policy":"high-risk structural rules are enforced by validate_repository.py; full Zizmor findings are advisory until individually triaged"}\n' \
+            "$ZIZMOR_OUTCOME" > artifacts/security/zizmor-disposition.json
+
+      - name: Set up Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24.18.0
+          cache: npm
+
+      - name: Audit locked npm dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          set +e
+          npm audit --audit-level=high --omit=optional --json | tee artifacts/security/npm-audit.json
+          status=${PIPESTATUS[0]}
+          set -e
+          exit "$status"
+
+      - name: Audit locked Python tooling dependencies
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check pip-audit==2.9.0
+          pip-audit --requirement requirements-dev.txt --format json --output artifacts/security/pip-audit.json
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: terror-turn-security-${{ github.sha }}
+          path: artifacts/security
+          if-no-files-found: error
+          retention-days: 30
