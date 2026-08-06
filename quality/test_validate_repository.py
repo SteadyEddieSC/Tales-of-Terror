@@ -27,28 +27,68 @@ class ValidatorTests(unittest.TestCase):
 
     def test_missing_scene_reference_blocks(self) -> None:
         scene = self.root / "game" / "broken.tscn"
-        scene.write_text('[gd_scene format=3]\n[ext_resource path="res://missing.gd" type="Script" id="1"]\n', encoding="utf-8")
+        scene.write_text(
+            '[gd_scene format=3]\n[ext_resource path="res://missing.gd" type="Script" id="1"]\n',
+            encoding="utf-8",
+        )
         report = self.validator().run(["references"])
-        self.assertTrue(any(f["code"] == "RESOURCE_MISSING" and f["severity"] == "blocking" for f in report["findings"]))
+        self.assertTrue(
+            any(
+                finding["code"] == "RESOURCE_MISSING" and finding["severity"] == "blocking"
+                for finding in report["findings"]
+            )
+        )
 
     def test_script_missing_reference_is_advisory(self) -> None:
         script = self.root / "game" / "probe.gd"
         script.write_text('const PATH = "res://future.generated"\n', encoding="utf-8")
         (self.root / "game" / "main.tscn").write_text('[gd_scene format=3]\n', encoding="utf-8")
         report = self.validator().run(["references"])
-        self.assertTrue(any(f["code"] == "RESOURCE_MISSING" and f["severity"] == "advisory" for f in report["findings"]))
+        self.assertTrue(
+            any(
+                finding["code"] == "RESOURCE_MISSING" and finding["severity"] == "advisory"
+                for finding in report["findings"]
+            )
+        )
 
     def test_unpinned_action_blocks(self) -> None:
         workflow = self.root / ".github" / "workflows" / "bad.yml"
-        workflow.write_text('permissions: {}\njobs:\n  x:\n    steps:\n      - uses: actions/checkout@v4\n', encoding="utf-8")
+        workflow.write_text(
+            'permissions: {}\njobs:\n  x:\n    steps:\n      - uses: actions/checkout@v4\n',
+            encoding="utf-8",
+        )
         report = self.validator().run(["workflows"])
-        self.assertTrue(any(f["code"] == "WORKFLOW_ACTION_UNPINNED" for f in report["findings"]))
+        self.assertTrue(any(finding["code"] == "WORKFLOW_ACTION_UNPINNED" for finding in report["findings"]))
 
     def test_duplicate_uid_blocks(self) -> None:
         for name in ("a.gd.uid", "b.gd.uid"):
             (self.root / "game" / name).write_text("uid://abc123\n", encoding="utf-8")
         report = self.validator().run(["references"])
-        self.assertTrue(any(f["code"] == "UID_DUPLICATE" for f in report["findings"]))
+        self.assertTrue(any(finding["code"] == "UID_DUPLICATE" for finding in report["findings"]))
+
+    def test_localization_envelope_uses_entries_object(self) -> None:
+        path = self.root / "game" / "localization_en.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "locale": "en",
+                    "entries": {"ui.confirm": "Confirm"},
+                }
+            ),
+            encoding="utf-8",
+        )
+        report = self.validator().run(["data"])
+        self.assertEqual(0, report["blocking_count"])
+
+    def test_localization_duplicate_key_blocks(self) -> None:
+        path = self.root / "game" / "localization_en.json"
+        path.write_text(
+            '{"entries":{"ui.confirm":"Confirm","ui.confirm":"Continue"}}',
+            encoding="utf-8",
+        )
+        report = self.validator().run(["data"])
+        self.assertTrue(any(finding["code"] == "DATA_JSON_DUPLICATE_KEY" for finding in report["findings"]))
 
     def test_future_save_fixture_is_valid_synthetic_input(self) -> None:
         fixtures = self.root / "quality" / "fixtures"
@@ -57,8 +97,19 @@ class ValidatorTests(unittest.TestCase):
             "coordinator_snapshot_future_v99.json": 99,
             "coordinator_snapshot_unknown_field.json": 2,
         }.items():
-            (fixtures / name).write_text(json.dumps({"fixture_classification": "synthetic_test_only", "snapshot_version": version}), encoding="utf-8")
-        (fixtures / "coordinator_snapshot_truncated.fixture").write_text('{"snapshot_version": 2,', encoding="utf-8")
+            (fixtures / name).write_text(
+                json.dumps(
+                    {
+                        "fixture_classification": "synthetic_test_only",
+                        "snapshot_version": version,
+                    }
+                ),
+                encoding="utf-8",
+            )
+        (fixtures / "coordinator_snapshot_truncated.fixture").write_text(
+            '{"snapshot_version": 2,',
+            encoding="utf-8",
+        )
         report = self.validator().run(["save-fixtures"])
         self.assertEqual(0, report["blocking_count"])
 
