@@ -200,8 +200,14 @@ jobs:
             run_check current-status python tools/validate_post_dh_ux_final_status.py
             run_check current-status-mutations python tools/test_validate_post_dh_ux_final_status.py
           fi
-          run_check succession python tools/validate_post_prototype_reconciliation.py --skip-git-boundary --later-succession
-          run_check succession-mutations python tools/test_validate_post_prototype_reconciliation.py
+          if [ "$effective_branch" = 'feature/v0.2.0-alpha.3-systems-replayability' ] || [ "$effective_branch" = 'docs/p0.23-alpha3-systems-replayability-contract' ]; then
+            run_check succession python tools/validate_post_prototype_reconciliation.py --skip-git-boundary --later-succession
+            run_check succession-mutations python tools/test_validate_post_prototype_reconciliation.py
+          else
+            printf 'Historical post-prototype succession schema is not applicable on current branch %s\n' "$effective_branch" | tee "$log_root/succession.txt"
+            echo 0 > "$log_root/succession.status"
+            cp "$log_root/succession.txt" "$log_root/succession.status" artifacts/alpha3/python/
+          fi
           run_check authoring python tools/validate_tale_authoring_reference.py
           run_check authoring-mutations python tools/test_validate_tale_authoring_reference.py
           run_check isolation python tools/validate_drowned_harbor_prototype_isolation_p016.py
