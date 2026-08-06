@@ -9,8 +9,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator
-
 ROOT = Path('.')
 BASE = '209bba6498686cd392ddce4bbc32f549d381913f'
 BRANCH = 'docs/dh-ai-source-001-board-master-advisory'
@@ -54,6 +52,36 @@ def exact_keys(value: dict[str, Any], expected: set[str], label: str) -> None:
     actual = set(value)
     need(actual == expected, f'{label} fields drift: missing={sorted(expected-actual)} unexpected={sorted(actual-expected)}')
 
+def type_matches(value: Any, expected: str) -> bool:
+    if expected == 'object':
+        return isinstance(value, dict)
+    if expected == 'array':
+        return isinstance(value, list)
+    if expected == 'string':
+        return isinstance(value, str)
+    if expected == 'integer':
+        return isinstance(value, int) and not isinstance(value, bool)
+    if expected == 'boolean':
+        return isinstance(value, bool)
+    return False
+
+def validate_schema_instance(value: Any, schema: dict[str, Any], path: str = '$') -> None:
+    if 'const' in schema:
+        need(value == schema['const'], f'{path}: const mismatch')
+    if 'type' in schema:
+        need(type_matches(value, schema['type']), f"{path}: expected {schema['type']}")
+    if isinstance(value, dict):
+        properties = schema.get('properties', {})
+        required = schema.get('required', [])
+        for key in required:
+            need(key in value, f'{path}: missing {key}')
+        if schema.get('additionalProperties') is False:
+            extra = set(value) - set(properties)
+            need(not extra, f'{path}: unexpected fields {sorted(extra)}')
+        for key, child in value.items():
+            if key in properties:
+                validate_schema_instance(child, properties[key], f'{path}.{key}')
+
 def audit_closed_schema(value: Any, path: str = '$') -> int:
     count = 0
     if isinstance(value, dict):
@@ -75,22 +103,15 @@ def audit_closed_schema(value: Any, path: str = '$') -> int:
 def validate_machine(machine: dict[str, Any], schema: dict[str, Any]) -> None:
     need(schema.get('$schema') == 'https://json-schema.org/draft/2020-12/schema', 'schema draft drift')
     need(audit_closed_schema(schema) >= 10, 'closed schema coverage too small')
-    Draft202012Validator.check_schema(schema)
-    errors = sorted(Draft202012Validator(schema).iter_errors(machine), key=lambda item: list(item.path))
-    need(not errors, 'schema validation failed: ' + '; '.join(error.message for error in errors[:5]))
+    validate_schema_instance(machine, schema)
 
     release = machine['release']
     need(release['release_id'] == 'DH-AI-SOURCE-001' and release['governing_issue'] == 149, 'release identity drift')
     need(release['registration_protected_main'] == BASE, 'registration baseline drift')
     need(release['state'] == 'advisory_registered_no_generation', 'advisory state drift')
-
-    policy = machine['policy_dependency']
-    need(policy == {
-        'release_id': 'AI-ART-POLICY-001',
-        'issue': 151,
-        'pull_request': 152,
-        'merged_main_sha': BASE,
-        'ledger_state': 'policy_only_no_assets',
+    need(machine['policy_dependency'] == {
+        'release_id': 'AI-ART-POLICY-001', 'issue': 151, 'pull_request': 152,
+        'merged_main_sha': BASE, 'ledger_state': 'policy_only_no_assets',
     }, 'policy dependency drift')
 
     package = machine['external_package']
@@ -107,18 +128,16 @@ def validate_machine(machine: dict[str, Any], schema: dict[str, Any]) -> None:
             need(value is False, f'forbidden authority enabled: {key}')
 
     boundary = machine['external_visual_boundary']
-    need(boundary['asset_count'] == 25, 'external image count drift')
-    need(boundary['maximum_rights_tier'] == 'R1_private_internal_reference', 'external rights tier promoted')
-    need(boundary['reference_only_nonproduction'] is True, 'reference-only boundary removed')
-    need(boundary['source_file_status'] == 'none_are_source_files', 'external images became sources')
+    need(boundary['asset_count'] == 25 and boundary['maximum_rights_tier'] == 'R1_private_internal_reference', 'external visual identity drift')
+    need(boundary['reference_only_nonproduction'] is True and boundary['source_file_status'] == 'none_are_source_files', 'external reference boundary drift')
     for key in ['upload_to_ai_tools_allowed', 'image_to_image_or_control_use_allowed', 'fragment_texture_mask_or_hidden_layer_use_allowed']:
         need(boundary[key] is False, f'restricted external-image use enabled: {key}')
 
     tools = machine['tool_strategy']
     need(tools['immediate_stack'] == ['openai_chatgpt_image_generation', 'google_gemini_apps_image_generation', 'ordinary_non_ai_editing', 'godot_procedural_rendering'], 'immediate tool stack drift')
-    need(tools['multiple_overlapping_subscriptions_authorized'] is False, 'overlapping subscriptions authorized')
     need(tools['recraft_role'] == 'optional_after_documented_vector_gap', 'Recraft gate drift')
     need(tools['firefly_role'] == 'optional_after_documented_editing_or_content_credentials_gap', 'Firefly gate drift')
+    need(tools['multiple_overlapping_subscriptions_authorized'] is False, 'overlapping subscriptions authorized')
 
     privacy = machine['privacy_controls']
     need(privacy['chatgpt'] == 'temporary_chat_or_improve_model_for_everyone_disabled', 'ChatGPT privacy control drift')
@@ -128,27 +147,22 @@ def validate_machine(machine: dict[str, Any], schema: dict[str, Any]) -> None:
     need(privacy['account_plan_and_privacy_mode_record_required'] is True, 'account/privacy record requirement removed')
 
     budget = machine['budget']
-    need(budget['immediate_incremental_spend_usd'] == 0, 'immediate spend promoted')
-    need(budget['initial_full_pilot_generation_count'] == 22, 'pilot generation count drift')
-    need(budget['recraft_api_optional_test_usd'] == 1, 'optional Recraft test budget drift')
-    need(budget['recraft_api_test_authorized_by_this_release'] is False, 'Recraft test activated')
+    need(budget['immediate_incremental_spend_usd'] == 0 and budget['initial_full_pilot_generation_count'] == 22, 'pilot budget/count drift')
+    need(budget['recraft_api_optional_test_usd'] == 1 and budget['recraft_api_test_authorized_by_this_release'] is False, 'Recraft test gate drift')
     need(budget['artist_or_contractor_authorized'] is False, 'artist/contractor authorized')
 
     board = machine['board_master']
     need(board['bounded_target'] == 'one_shared_low_tide_high_water_board_master_pilot', 'pilot target drift')
-    need(board['invariant_geometry_required'] is True, 'invariant geometry disabled')
-    need(board['independent_low_and_high_tide_boards_allowed'] is False, 'independent Tide boards enabled')
+    need(board['invariant_geometry_required'] is True and board['independent_low_and_high_tide_boards_allowed'] is False, 'shared master rule drift')
     need(board['planning_canvas_selected'] is False, 'planning hypothesis presented as selected')
     need(board['layer_group_count'] == 13 and len(board['layer_groups']) == 13, 'layer-group count drift')
     need(board['exact_text_labels_routes_and_state_baked_into_ai_images'] is False, 'exact state baked into AI images')
     need(board['runtime_and_procedural_information_required'] is True, 'runtime information authority removed')
 
     need(len(machine['prompt_families']) == 6, 'prompt-family count drift')
-    need(len(machine['generation_sequence']) == 8, 'generation sequence count drift')
-    need(len(machine['immediate_generation_candidates']) == 6, 'immediate candidate count drift')
-
-    provenance = machine['provenance_extensions']
-    need(all(value is True for value in provenance.values()), 'provenance requirement disabled')
+    need(len(machine['generation_sequence']) == 8, 'generation-sequence count drift')
+    need(len(machine['immediate_generation_candidates']) == 6, 'candidate count drift')
+    need(all(value is True for value in machine['provenance_extensions'].values()), 'provenance requirement disabled')
     need(len(machine['unresolved']) == 7, 'unresolved dependency count drift')
     need(set(machine['planned_repository_paths']) == ALLOWED, 'planned path set drift')
 
@@ -161,10 +175,11 @@ def validate_policy_dependency() -> None:
     need(decision['ai_generated_pixels_may_become_eligible_after_separate_asset_promotion'] is True, 'AI-generated source eligibility missing')
     for key in ['generation_authorized_by_this_release', 'import_authorized_by_this_release', 'runtime_integration_authorized_by_this_release', 'ordinary_export_authorized_by_this_release', 'marketing_authorized_by_this_release', 'storefront_publication_authorized_by_this_release', 'live_generation_authorized']:
         need(decision[key] is False, f'policy dependency grants forbidden authority: {key}')
-    ledger = load(LEDGER)
-    need(ledger == {'record_kind': 'terror_turn_ai_art_provenance_ledger', 'record_version': 1, 'policy_release': 'AI-ART-POLICY-001', 'state': 'policy_only_no_assets', 'assets': []}, 'AI-art ledger is not empty policy-only state')
-    providers = load(PROVIDERS)
-    provider_ids = {entry['provider_id'] for entry in providers['providers']}
+    need(load(LEDGER) == {
+        'record_kind': 'terror_turn_ai_art_provenance_ledger', 'record_version': 1,
+        'policy_release': 'AI-ART-POLICY-001', 'state': 'policy_only_no_assets', 'assets': [],
+    }, 'AI-art ledger is not empty policy-only state')
+    provider_ids = {entry['provider_id'] for entry in load(PROVIDERS)['providers']}
     need(provider_ids == {'openai_chatgpt_image_generation', 'google_gemini_apps_image_generation'}, 'approved-provider registry drift')
 
 def validate_provenance(provenance: dict[str, Any]) -> None:
@@ -186,13 +201,14 @@ def validate_provenance(provenance: dict[str, Any]) -> None:
         if key.endswith('_authorized'):
             need(value is False, f'provenance registration grants authority: {key}')
     supplements = provenance['release_coordinator_supplements']
-    need(supplements['immediate_incremental_spend_usd'] == 0, 'supplement immediate spend drift')
-    need(supplements['recraft_api_optional_non_sensitive_test_usd'] == 1, 'supplement Recraft amount drift')
-    need(supplements['recraft_api_test_authorized_by_registration'] is False, 'supplement Recraft test activated')
-    need(supplements['recraft_free_outputs_eligible'] is False, 'Recraft Free made eligible')
+    need(supplements['immediate_incremental_spend_usd'] == 0 and supplements['recraft_api_optional_non_sensitive_test_usd'] == 1, 'supplement budget drift')
+    need(supplements['recraft_api_test_authorized_by_registration'] is False and supplements['recraft_free_outputs_eligible'] is False, 'Recraft supplement gate drift')
     need(supplements['restricted_external_images_may_be_uploaded'] is False, 'restricted uploads allowed')
-    visual = provenance['external_visual_state']
-    need(visual == {'asset_count': 25, 'maximum_rights_tier': 'R1_private_internal_reference', 'reference_only_nonproduction': True, 'none_are_source_files': True, 'implementation_authorized': False}, 'provenance external visual state drift')
+    need(provenance['external_visual_state'] == {
+        'asset_count': 25, 'maximum_rights_tier': 'R1_private_internal_reference',
+        'reference_only_nonproduction': True, 'none_are_source_files': True,
+        'implementation_authorized': False,
+    }, 'provenance external visual state drift')
     need(set(provenance['planned_paths']) == ALLOWED, 'provenance path set drift')
 
 def validate_docs_and_workflow() -> None:
@@ -209,13 +225,12 @@ def validate_docs_and_workflow() -> None:
     ]
     for phrase in required:
         need(phrase in text, f'required advisory statement missing: {phrase}')
-    forbidden = [
+    for phrase in [
         'generation is authorized', 'image generation is authorized', 'source art has been created',
         'implementation is authorized', 'public release is approved', 'steam approval',
         'copyright is guaranteed', 'legal clearance is complete', 'accessibility is validated',
         'production ready', 'shipping ready', 'the 25 images may be uploaded',
-    ]
-    for phrase in forbidden:
+    ]:
         need(phrase not in text, f'unsupported advisory claim: {phrase}')
     workflow = (ROOT / WORKFLOW).read_text(encoding='utf-8')
     for token in [
