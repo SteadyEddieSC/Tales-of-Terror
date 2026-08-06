@@ -5,18 +5,21 @@
     "release_id": "AI-ART-POLICY-001",
     "governing_issue": 151,
     "repository": "SteadyEddieSC/Tales-of-Terror",
-    "protected_main": "0a6686d8cc4d15feac81c128cfc414b954e234b1",
-    "policy_date": "2026-08-05",
-    "release_type": "metadata_only_ai_art_policy_and_provenance_authority",
-    "state": "policy_only_no_assets"
+    "protected_main": "073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7",
+    "policy_date": "2026-08-06",
+    "release_type": "metadata_only_ai_art_policy_provenance_and_existing_asset_review_authority",
+    "state": "policy_and_existing_asset_review_no_promotions"
   },
   "decision": {
     "new_production_visuals_policy": "ai_generated_or_ai_assisted_source_required_unless_exception_approved",
     "human_drawn_or_painted_source_required": false,
     "human_art_direction_selection_arrangement_and_review_required": true,
-    "ai_generated_pixels_may_become_eligible_after_separate_asset_promotion": true,
+    "existing_drowned_harbor_images_eligible_for_controlled_use_review": true,
+    "existing_images_automatically_approved": false,
+    "unknown_historical_prompt_model_seed_or_timestamp_is_automatic_rejection": false,
+    "approved_uses_may_include_direct_source_editing_image_to_image_masks_controls_extraction_runtime_and_marketing": true,
     "generation_authorized_by_this_release": false,
-    "import_authorized_by_this_release": false,
+    "binary_import_authorized_by_this_release": false,
     "runtime_integration_authorized_by_this_release": false,
     "ordinary_export_authorized_by_this_release": false,
     "marketing_authorized_by_this_release": false,
@@ -31,21 +34,43 @@
     "superseded_future_requirements": [
       "blank_human_authored_editable_sources_required",
       "all_direct_ai_generated_pixel_use_permanently_prohibited",
-      "independent_human_authorship_disposition_required_for_future_source_acceptance"
+      "independent_human_authorship_disposition_required_for_future_source_acceptance",
+      "all_25_existing_drowned_harbor_images_permanently_reference_only",
+      "tracing_vectorization_paint_over_compositing_cropping_upscaling_recoloring_retouching_extraction_and_model_input_permanently_prohibited",
+      "dh_ai_source_001_restricted_external_images_upload_prohibition_for_registered_25_assets"
     ],
     "preserved_requirements": [
-      "all_25_external_reference_images_remain_R1_private_internal_reference",
-      "none_of_the_25_external_reference_images_are_source_files",
-      "no_tracing_vectorization_paint_over_or_fragment_extraction_from_external_reference_images",
+      "preserve_original_external_binary_and_registered_sha256",
+      "keep_exact_known_and_unknown_provenance",
       "authorized_inputs_only",
-      "provider_model_prompt_source_input_and_hash_provenance",
-      "independent_similarity_review",
+      "independent_human_visual_rights_similarity_and_quality_review",
+      "record_every_transformation_model_input_extraction_export_and_hash",
       "source_to_runtime_lineage",
       "public_private_authority_boundaries",
       "960x540_and_controller_first_design_constraints",
-      "no_current_generation_import_runtime_export_marketing_or_publication_authority",
+      "no_automatic_asset_promotion",
+      "no_current_generation_binary_import_runtime_export_marketing_or_publication_authority",
       "automation_is_not_human_evidence"
+    ],
+    "dependent_historical_authorities": [
+      "DH-AI-SOURCE-001"
     ]
+  },
+  "existing_drowned_harbor_review": {
+    "inventory_count": 25,
+    "inventory_source": "docs/tales/drowned_harbor/visual/drowned_harbor_external_visual_rights_and_provenance_register_v1.json",
+    "owner_attestation": "DH-OWNER-ATTEST-001",
+    "ledger": "art/ai/ai_art_provenance_ledger_v1.json",
+    "review_result": "all_25_eligible_for_at_least_one_controlled_future_use_no_assets_promoted",
+    "disposition_counts": {
+      "eligible_direct_source_after_edit": 1,
+      "eligible_production_input_after_edit": 16,
+      "eligible_model_input_after_review": 8,
+      "retain_reference_only": 0,
+      "reject": 0
+    },
+    "current_promotion_count": 0,
+    "full_resolution_human_review_still_required_before_exact_use": true
   },
   "registries": {
     "approved_generators": "art/ai/approved_generators_v1.json",
@@ -53,10 +78,10 @@
     "provenance_ledger": "art/ai/ai_art_provenance_ledger_v1.json"
   },
   "promotion_stages": [
-    "policy_only_no_assets",
-    "generation_request_approved",
-    "generated_source_quarantined",
-    "rights_and_similarity_review",
+    "policy_and_existing_asset_review_no_promotions",
+    "exact_use_request_approved",
+    "source_or_model_input_quarantined",
+    "rights_similarity_and_quality_review",
     "source_accepted_not_runtime",
     "runtime_candidate",
     "ordinary_export_candidate",
@@ -66,6 +91,7 @@
   "required_reviews": [
     "provider_terms_and_account_review",
     "input_rights_review",
+    "original_full_resolution_binary_review",
     "third_party_character_logo_trademark_and_likeness_review",
     "living_artist_or_active_studio_imitation_review",
     "substantial_similarity_review",
@@ -73,22 +99,22 @@
     "continuity_style_and_quality_review",
     "human_contribution_and_copyright_scope_record",
     "steam_pre_generated_ai_disclosure_review",
-    "runtime_asset_budget_and_import_review"
+    "runtime_asset_budget_import_and_television_review"
   ],
   "stop_conditions": [
     "unapproved_provider_or_account",
-    "provider_or_model_version_unknown",
-    "prompt_or_generation_record_missing",
-    "source_input_rights_unknown",
-    "third_party_character_logo_trademark_or_likeness_present_without_written_authorization",
+    "original_binary_or_registered_hash_unavailable",
+    "source_input_rights_unknown_or_contradict_owner_attestation",
+    "third_party_character_logo_trademark_or_likeness_present_without_authorization",
     "named_living_artist_or_active_studio_imitation_requested",
     "substantial_similarity_concern_unresolved",
     "accidental_text_signature_watermark_or_brand_unresolved",
-    "generator_output_or_runtime_hash_missing",
+    "transformation_model_input_extraction_or_export_hash_missing",
     "c2pa_or_watermark_disposition_missing_when_present",
-    "copyrightability_or_exclusivity_overclaimed",
+    "copyrightability_exclusivity_non_infringement_or_platform_approval_overclaimed",
     "steam_disclosure_inaccurate_or_incomplete",
     "private_information_would_enter_public_art",
+    "exact_use_exceeds_recorded_permitted_next_uses",
     "current_release_boundary_exceeded"
   ],
   "authoritative_documents": [
