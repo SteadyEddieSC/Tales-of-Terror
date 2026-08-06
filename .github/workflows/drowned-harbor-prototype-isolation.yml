@@ -48,6 +48,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Validate Drowned Harbor prototype isolation
         run: python tools/validate_drowned_harbor_prototype_isolation_p016.py
       - name: Run isolation regression mutations
