@@ -1,12 +1,12 @@
 # Drowned Harbor AI-Only Art and Provenance Amendment v1
 
-**Release:** `AI-ART-POLICY-001`  
-**Issue:** #151  
-**Amends future production method in:** `DH-SOURCE-PLAN-001`  
-**Historical record changed:** no  
-**Source art created:** no  
-**Runtime art created:** no  
-**Implementation authorized:** no
+- **Release:** `AI-ART-POLICY-001`
+- **Issue:** #151
+- **Amends future production method in:** `DH-SOURCE-PLAN-001`
+- **Historical record changed:** no
+- **Source art created:** no
+- **Runtime art created:** no
+- **Implementation authorized:** no
 
 ## Purpose
 
