@@ -33,7 +33,7 @@ permissions:
 
 jobs:
   validate:
-    name: Validate AI-only art policy and empty provenance ledger
+    name: Validate AI-only art policy and existing asset review ledger
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
