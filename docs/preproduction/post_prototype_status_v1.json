@@ -127,9 +127,9 @@
   "status_reconciliation": {
     "branch": "docs/post-dh-ai-source-status-reconciliation",
     "issue": 155,
-    "pull_request": null,
+    "pull_request": 156,
     "release_type": "documentation_and_governance_reconciliation",
-    "state": "draft_candidate"
+    "state": "draft_for_independent_review"
   },
   "unrelated_open_pull_requests": [],
   "ux_implementation_authorized": false,
