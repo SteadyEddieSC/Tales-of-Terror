@@ -39,7 +39,7 @@ def run_actionlint_when_available() -> None:
             flush=True,
         )
         return
-    run([actionlint, "-color", "never"])
+    run([actionlint])
 
 
 def main() -> int:
