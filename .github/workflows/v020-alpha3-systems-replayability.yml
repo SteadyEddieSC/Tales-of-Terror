@@ -5,7 +5,6 @@ on:
     paths:
       - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
       - '.github/workflows/v020-alpha2-end-to-end-graybox.yml'
-      - '.github/workflows/v020-alpha3-systems-replayability.yml'
       - 'package-lock.json'
       - 'package.json'
       - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
@@ -36,7 +35,6 @@ on:
     paths:
       - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
       - '.github/workflows/v020-alpha2-end-to-end-graybox.yml'
-      - '.github/workflows/v020-alpha3-systems-replayability.yml'
       - 'package-lock.json'
       - 'package.json'
       - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'

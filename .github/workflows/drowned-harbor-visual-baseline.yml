@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - '.github/workflows/drowned-harbor-visual-baseline.yml'
       - '.github/workflows/preproduction-shared-screen-storyboards.yml'
       - 'docs/releases/DH-VBL-001-visual-baseline-registration.md'
       - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Baseline_v1.md'

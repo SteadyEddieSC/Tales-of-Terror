@@ -122,10 +122,22 @@ jobs:
           python quality/run_quality.py godot --godot "$GODOT_BIN" 2>&1 | tee artifacts/godot/complete-headless-suite.log
           cp -a game/test-results/. artifacts/godot/ 2>/dev/null || true
 
-      - name: Set up locked Node runtime
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version: 24.18.0
+      - name: Install checksum-pinned Node 24.18.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          node_root="$RUNNER_TEMP/node-v24.18.0"
+          mkdir -p "$node_root"
+          curl -fsSL -o "$RUNNER_TEMP/node-v24.18.0-linux-x64.tar.xz" \
+            https://nodejs.org/dist/v24.18.0/node-v24.18.0-linux-x64.tar.xz
+          echo '55aa7153f9d88f28d765fcdad5ae6945b5c0f98a36881703817e4c450fa76742  node-v24.18.0-linux-x64.tar.xz' \
+            | (cd "$RUNNER_TEMP" && sha256sum --check -)
+          tar -xJf "$RUNNER_TEMP/node-v24.18.0-linux-x64.tar.xz" \
+            --strip-components=1 -C "$node_root"
+          echo "$node_root/bin" >> "$GITHUB_PATH"
+          export PATH="$node_root/bin:$PATH"
+          node --version
+          npm --version
 
       - name: Validate companion dependencies and supporting code
         shell: bash

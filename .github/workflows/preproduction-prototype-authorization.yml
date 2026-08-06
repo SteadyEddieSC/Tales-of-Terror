@@ -3,7 +3,6 @@ name: Preproduction prototype authorization validation
 on:
   pull_request:
     paths:
-      - '.github/workflows/preproduction-prototype-authorization.yml'
       - 'docs/preproduction/P0.12_Implementation_Issue_Set.md'
       - 'docs/preproduction/P0.12_Release_Summary.md'
       - 'docs/preproduction/prototype_authorization_schema_v1.json'

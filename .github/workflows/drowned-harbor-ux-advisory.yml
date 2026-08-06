@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - '.github/workflows/drowned-harbor-ux-advisory.yml'
       - 'docs/releases/DH-UX-001-shared-screen-ux-advisory-registration.md'
       - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Shared_Screen_UX_Architecture_and_Stage_Flows_v1.md'
       - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_960x540_Layout_and_Stable_Seat_Advisory_v1.md'
