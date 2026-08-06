@@ -1,0 +1,178 @@
+{
+  "record_kind": "drowned_harbor_ai_source_advisory",
+  "record_version": 1,
+  "release": {
+    "release_id": "DH-AI-SOURCE-001",
+    "governing_issue": 149,
+    "repository": "SteadyEddieSC/Tales-of-Terror",
+    "registration_protected_main": "209bba6498686cd392ddce4bbc32f549d381913f",
+    "release_type": "metadata_only_ai_first_art_pipeline_and_shared_board_master_advisory",
+    "state": "advisory_registered_no_generation"
+  },
+  "policy_dependency": {
+    "release_id": "AI-ART-POLICY-001",
+    "issue": 151,
+    "pull_request": 152,
+    "merged_main_sha": "209bba6498686cd392ddce4bbc32f549d381913f",
+    "ledger_state": "policy_only_no_assets"
+  },
+  "external_package": {
+    "filename": "DH-AI-SOURCE-001_External_UX_Helper_AI_First_Art_Pipeline_Advisory_v1.zip",
+    "package_authoring_protected_main": "f361fbfc9df9384f7c1eefb447a911a31fdc3fee",
+    "bytes": 32721,
+    "sha256": "dc4e91101c5906e5cef6f3b482d1c83e576849ce94a3dd33d03aa2644cdf530c",
+    "manifest_path": "12_MACHINE_READABLE/PACKAGE_MANIFEST.json",
+    "manifest_bytes": 2716,
+    "manifest_sha256": "0dba5c1b4c3ddcee0303d5a3feb1627f509896a0d3e75f559156db28dcff4853",
+    "manifested_payload_count": 15,
+    "total_file_count": 16,
+    "raw_advisory_record_sha256": "8e691c948e5d513f9eb0c8aaceaab31ae19567acb2b7dbf9ed99fca397c2ecc6",
+    "raw_advisory_schema_sha256": "fc360d67478ce18b7553b21bb7998077b4e7d46bd58062b1b4f9adf491a9c1f5",
+    "zip_crc_clean": true,
+    "admitted_to_repository": false,
+    "public_release_asset_authorized": false
+  },
+  "authorization": {
+    "metadata_only_advisory_authorized": true,
+    "generation_request_authorized": false,
+    "image_creation_or_import_authorized": false,
+    "source_acceptance_authorized": false,
+    "runtime_composition_authorized": false,
+    "godot_or_ux_implementation_authorized": false,
+    "ordinary_export_authorized": false,
+    "marketing_or_storefront_authorized": false,
+    "paid_tool_purchase_authorized": false,
+    "public_release_authorized": false,
+    "live_generation_authorized": false,
+    "human_evidence_claimed": false,
+    "production_or_shipping_authorized": false
+  },
+  "external_visual_boundary": {
+    "asset_count": 25,
+    "maximum_rights_tier": "R1_private_internal_reference",
+    "reference_only_nonproduction": true,
+    "source_file_status": "none_are_source_files",
+    "upload_to_ai_tools_allowed": false,
+    "image_to_image_or_control_use_allowed": false,
+    "fragment_texture_mask_or_hidden_layer_use_allowed": false
+  },
+  "tool_strategy": {
+    "immediate_stack": [
+      "openai_chatgpt_image_generation",
+      "google_gemini_apps_image_generation",
+      "ordinary_non_ai_editing",
+      "godot_procedural_rendering"
+    ],
+    "chatgpt_role": "concept_atmosphere_material_and_overlay_exploration",
+    "gemini_role": "independent_concept_atmosphere_material_and_overlay_exploration",
+    "ordinary_editing_role": "exact_geometry_alignment_masking_assembly_and_editable_master",
+    "godot_role": "exact_text_routes_focus_preview_warning_recovery_commitment_and_dynamic_state",
+    "recraft_role": "optional_after_documented_vector_gap",
+    "firefly_role": "optional_after_documented_editing_or_content_credentials_gap",
+    "multiple_overlapping_subscriptions_authorized": false
+  },
+  "privacy_controls": {
+    "chatgpt": "temporary_chat_or_improve_model_for_everyone_disabled",
+    "gemini": "temporary_chat_or_keep_activity_disabled_and_no_proprietary_feedback",
+    "recraft_api": "non_sensitive_prompt_only_due_temporary_signed_url_exposure",
+    "restricted_or_unlicensed_uploads_allowed": false,
+    "account_plan_and_privacy_mode_record_required": true
+  },
+  "budget": {
+    "immediate_incremental_spend_usd": 0,
+    "initial_full_pilot_generation_count": 22,
+    "recraft_api_optional_test_usd": 1,
+    "recraft_api_test_authorized_by_this_release": false,
+    "private_recraft_trigger": "selected_visual_direction_and_documented_vector_gap_after_manual_cleanup_fails",
+    "firefly_trigger": "documented_remaining_editing_commercial_positioning_or_content_credentials_gap",
+    "artist_or_contractor_authorized": false
+  },
+  "board_master": {
+    "bounded_target": "one_shared_low_tide_high_water_board_master_pilot",
+    "invariant_geometry_required": true,
+    "independent_low_and_high_tide_boards_allowed": false,
+    "planning_canvas_options": [
+      "4096x4096",
+      "6144x6144"
+    ],
+    "planning_canvas_selected": false,
+    "layer_group_count": 13,
+    "layer_groups": [
+      "00_METADATA_AND_GUIDES",
+      "01_INVARIANT_GEOMETRY_MASTER",
+      "02_SPACES_AND_IDS",
+      "03_CONNECTORS_AND_ROUTE_CLASSES",
+      "04_TERRAIN_AND_ELEVATION",
+      "05_LOW_TIDE_STATE",
+      "06_HIGH_WATER_STATE",
+      "07_HAZARD_AND_MUTATION_OVERLAYS",
+      "08_ANCHORS_AND_RUNTIME_GUIDES",
+      "09_PUBLIC_PRESENTATION_OVERLAYS",
+      "10_SAFE_REGIONS_AND_TEXT_RESERVES",
+      "11_SPOOKY_GRIM_INTENSITY",
+      "12_EXPORTS_AND_HASH_NOTES"
+    ],
+    "exact_text_labels_routes_and_state_baked_into_ai_images": false,
+    "runtime_and_procedural_information_required": true
+  },
+  "prompt_families": [
+    "invariant_harbor_silhouette_and_massing",
+    "terrain_and_material_sheet",
+    "low_tide_overlay",
+    "high_water_overlay",
+    "spooky_and_grim_intensity_layers",
+    "vector_friendly_ornaments_and_support_motifs"
+  ],
+  "generation_sequence": [
+    "batch_0_pre_generation_lock",
+    "batch_1_invariant_composition_exploration",
+    "batch_2_terrain_material_exploration",
+    "batch_3_low_tide_overlay_exploration",
+    "batch_4_high_water_overlay_exploration",
+    "batch_5_spooky_grim_atmosphere_exploration",
+    "batch_6_optional_vector_support_generation",
+    "batch_7_ordinary_editing_pilot_assembly"
+  ],
+  "immediate_generation_candidates": [
+    "invariant_harbor_silhouette_rough",
+    "terrain_material_surface_study",
+    "low_tide_state_overlay",
+    "high_water_state_overlay",
+    "spooky_atmosphere_layer",
+    "grim_atmosphere_layer"
+  ],
+  "provenance_extensions": {
+    "account_plan_required": true,
+    "privacy_mode_required": true,
+    "complete_prompt_and_exclusions_required": true,
+    "uploaded_reference_inventory_required": true,
+    "raw_output_sha256_required": true,
+    "editable_source_sha256_required_when_created": true,
+    "export_sha256_required_when_created": true,
+    "human_selection_and_arrangement_record_required": true,
+    "terms_snapshot_reference_required": true,
+    "steam_disclosure_category_required": true,
+    "unknown_facts_must_remain_unknown": true
+  },
+  "unresolved": [
+    "final_source_dimensions",
+    "final_color_profile_and_editable_format",
+    "runtime_interfaces_and_asset_budgets",
+    "independent_similarity_reviewer",
+    "purchase_time_tool_pricing",
+    "final_steam_disclosure_wording",
+    "issue_39_human_and_accessibility_evidence"
+  ],
+  "planned_repository_paths": [
+    ".github/workflows/drowned-harbor-ai-source-advisory.yml",
+    "docs/releases/DH-AI-SOURCE-001-ai-first-art-pipeline-and-board-master-advisory.md",
+    "docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_First_Art_Pipeline_and_Shared_Board_Master_Pilot_v1.md",
+    "docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Prompt_Tool_and_Budget_Plan_v1.md",
+    "docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Generation_Provenance_and_Review_Plan_v1.md",
+    "docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_v1.json",
+    "docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_schema_v1.json",
+    "art/ai/dh_ai_source_001_advisory_provenance_v1.json",
+    "tools/validate_drowned_harbor_ai_source_advisory.py",
+    "tools/test_validate_drowned_harbor_ai_source_advisory.py"
+  ]
+}
