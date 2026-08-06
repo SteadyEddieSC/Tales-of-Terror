@@ -15,8 +15,8 @@
     "manifested_payload_count": 14,
     "total_file_count": 15,
     "zip_crc_clean": true,
-    "raw_machine_record_sha256": "c62a971861ed6882ce36919399102023b896410ac1fb551c66e0fd28508e1c5c",
-    "raw_schema_sha256": "36daef082de4c6c732094d109160d8fc6203ec97ea5686a15e86b808585ac31d",
+    "raw_machine_record_sha256": "c62a34e86aee56d271169055c0092a9ac398c3badc8bde9fda208bf778901055",
+    "raw_schema_sha256": "36da33bd7618d09ac763acfe28edf823a8c139e153ab780d75f6b72b8b0d5341",
     "package_authoring_protected_main": "3ad17fbbf2ae8c2bf52c8535ba8936ea8b858dcb",
     "admitted_to_repository": false,
     "public_release_asset_authorized": false
