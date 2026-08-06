@@ -14,7 +14,7 @@ This baseline provides deterministic local and GitHub-native checks for Terror T
 | Python | `3.11.9` | deterministic repository validators |
 | Node | `24.18.0` | companion tests/build/audit/SBOM |
 | Gitleaks | `8.30.1`, release archive SHA-256 pinned | secret scanning |
-| Zizmor | CLI `1.26.0` through immutable action commit | workflow security analysis |
+| Zizmor | CLI `1.26.1`, PyPI wheel SHA-256 pinned | workflow security analysis |
 | CodeQL Action | `4.35.2`, immutable commit | JavaScript/TypeScript and Python static security analysis |
 
 ## Local commands
@@ -40,11 +40,11 @@ python quality/validate_repository.py save-fixtures
 python -m unittest discover -s quality -p 'test_*.py' -v
 ```
 
-Gitleaks and Zizmor are installed by CI with pinned versions. Local equivalents, when already installed, are:
+Gitleaks and Zizmor are installed by CI with checksum-pinned versions. Local equivalents, when already installed, are:
 
 ```powershell
-gitleaks git --source . --redact --no-banner
-zizmor .github/workflows
+gitleaks git . --log-opts='--all' --redact --no-banner
+zizmor --offline .github/workflows
 ```
 
 ## GitHub Actions
@@ -68,7 +68,7 @@ Runs on pull requests, pushes to `main`, `agent/**`, `release/**`, and `rc/**`, 
 
 Runs on the same development branches, pull requests, weekly schedule, and manual dispatch.
 
-- **Gitleaks:** blocking scan of repository content and complete fetched history. `.gitleaks.toml` extends the default rules and has no broad allowlist.
+- **Gitleaks:** blocking scan of repository content and complete fetched history. `.gitleaks.toml` extends the default rules. `.gitleaksignore` contains only an exact reviewed fingerprint for one historical prose false positive; no path-wide or rule-wide suppression exists.
 - **Workflow policy:** blocking deterministic checks for immutable action pins, explicit permissions, and dangerous triggers.
 - **Zizmor:** full-repository advisory scan while findings are triaged. A Zizmor non-success is retained in the evidence artifact; it does not override the blocking structural policy.
 - **npm audit:** blocks on high/critical findings in the locked graph.
