@@ -1,0 +1,96 @@
+name: Drowned Harbor AI-source advisory registration
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-ai-source-advisory.yml'
+      - 'docs/releases/DH-AI-SOURCE-001-ai-first-art-pipeline-and-board-master-advisory.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_First_Art_Pipeline_and_Shared_Board_Master_Pilot_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Prompt_Tool_and_Budget_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Generation_Provenance_and_Review_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_schema_v1.json'
+      - 'art/ai/dh_ai_source_001_advisory_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_ai_source_advisory.py'
+      - 'tools/test_validate_drowned_harbor_ai_source_advisory.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-ai-source-advisory.yml'
+      - 'docs/releases/DH-AI-SOURCE-001-ai-first-art-pipeline-and-board-master-advisory.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_First_Art_Pipeline_and_Shared_Board_Master_Pilot_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Prompt_Tool_and_Budget_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Generation_Provenance_and_Review_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_schema_v1.json'
+      - 'art/ai/dh_ai_source_001_advisory_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_ai_source_advisory.py'
+      - 'tools/test_validate_drowned_harbor_ai_source_advisory.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate metadata-only AI-first board-master advisory
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up pinned Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Install hash-locked validation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+
+      - name: Validate advisory, package identity, policy dependency, and exact path boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/validate_drowned_harbor_ai_source_advisory.py
+          python tools/test_validate_drowned_harbor_ai_source_advisory.py
+          python -m py_compile tools/validate_drowned_harbor_ai_source_advisory.py tools/test_validate_drowned_harbor_ai_source_advisory.py
+
+      - name: Parse governed JSON and workflow YAML
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import yaml
+
+          for path in [
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_v1.json'),
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_schema_v1.json'),
+              Path('art/ai/dh_ai_source_001_advisory_provenance_v1.json'),
+          ]:
+              json.loads(path.read_text(encoding='utf-8'))
+          yaml.safe_load(Path('.github/workflows/drowned-harbor-ai-source-advisory.yml').read_text(encoding='utf-8'))
+          print('Governed JSON and YAML parsed')
+          PY
+
+      - name: Validate repository quality-policy compatibility
+        run: python quality/validate_repository.py all --report-dir "$RUNNER_TEMP/dh-ai-source-quality"
+
+      - name: Prove clean source tree
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -path './.git' -prune -o -type d -name '__pycache__' -print | sort -r | xargs -r rm -rf
+          find . -path './.git' -prune -o -type f -name '*.pyc' -print0 | xargs -0 -r rm -f
+          git diff --check
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
