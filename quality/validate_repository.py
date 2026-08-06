@@ -6,7 +6,6 @@ import argparse
 import csv
 import hashlib
 import json
-import os
 import re
 import struct
 from collections import defaultdict
@@ -74,15 +73,15 @@ class Validator:
             self.validate_workflows()
         if "save-fixtures" in selected:
             self.validate_save_fixtures()
-        ordered = sorted(self.findings, key=lambda f: (f.severity, f.code, f.path, f.message))
-        blocking = sum(f.severity == BLOCK for f in ordered)
+        ordered = sorted(self.findings, key=lambda item: (item.severity, item.code, item.path, item.message))
+        blocking = sum(item.severity == BLOCK for item in ordered)
         return {
             "schema_version": 1,
             "status": "failed" if blocking else "passed",
             "blocking_count": blocking,
-            "advisory_count": sum(f.severity == ADVISORY for f in ordered),
+            "advisory_count": sum(item.severity == ADVISORY for item in ordered),
             "metrics": self.metrics,
-            "findings": [asdict(f) for f in ordered],
+            "findings": [asdict(item) for item in ordered],
         }
 
     def validate_project_config(self) -> None:
@@ -91,14 +90,12 @@ class Validator:
             self.add(BLOCK, "CONFIG_PROJECT_MISSING", path, "game/project.godot is required")
             return
         text = path.read_text(encoding="utf-8")
-        family = self.config["engine"]["feature_family"]
-        renderer = self.config["engine"]["renderer"]
-        required_fragments = {
-            "CONFIG_ENGINE_FEATURE": f'"{family}"',
-            "CONFIG_RENDERER": f'renderer/rendering_method="{renderer}"',
+        required = {
+            "CONFIG_ENGINE_FEATURE": f'"{self.config["engine"]["feature_family"]}"',
+            "CONFIG_RENDERER": f'renderer/rendering_method="{self.config["engine"]["renderer"]}"',
             "CONFIG_MAIN_SCENE": 'run/main_scene="res://src/main/Main.tscn"',
         }
-        for code, fragment in required_fragments.items():
+        for code, fragment in required.items():
             if fragment not in text:
                 self.add(BLOCK, code, path, f"required project setting is missing: {fragment}")
         section = self._section(text, "input")
@@ -113,10 +110,9 @@ class Validator:
                 self.add(BLOCK, "INPUT_REQUIRED_EMPTY", path, f"input action '{name}' is empty")
             if name in self.config["controller_required_actions"] and "InputEventJoypad" not in line:
                 self.add(BLOCK, "INPUT_CONTROLLER_MISSING", path, f"'{name}' lacks controller input")
-        if "[autoload]" in text:
-            names = re.findall(r"^([A-Za-z0-9_]+)=", self._section(text, "autoload"), re.M)
-            if len(names) != len(set(names)):
-                self.add(BLOCK, "CONFIG_AUTOLOAD_DUPLICATE", path, "duplicate autoload singleton names")
+        names = re.findall(r"^([A-Za-z0-9_]+)=", self._section(text, "autoload"), re.M)
+        if len(names) != len(set(names)):
+            self.add(BLOCK, "CONFIG_AUTOLOAD_DUPLICATE", path, "duplicate autoload singleton names")
 
     def validate_exports(self) -> None:
         path = self.root / "game" / "export_presets.cfg"
@@ -154,8 +150,8 @@ class Validator:
                         self.add(BLOCK, "RESOURCE_DUPLICATE_ID", path, f"duplicate ext_resource id '{resource_id}'")
                     ids.add(resource_id)
                     self._check_res_path(path, ref, generated, BLOCK)
+            severity = BLOCK if path.suffix in {".tscn", ".tres", ".godot"} else ADVISORY
             for ref in sorted(set(RES_REF.findall(text))):
-                severity = BLOCK if path.suffix in {".tscn", ".tres", ".godot"} else ADVISORY
                 self._check_res_path(path, ref.rstrip(".,;:"), generated, severity)
         self.metrics["godot_text_files_scanned"] = scanned
         self.metrics["production_scenes"] = sorted(scenes)
@@ -181,7 +177,7 @@ class Validator:
 
     def validate_uids(self) -> None:
         owners: defaultdict[str, list[str]] = defaultdict(list)
-        for path in self.root.joinpath("game").rglob("*.uid"):
+        for path in (self.root / "game").rglob("*.uid"):
             rel = path.relative_to(self.root).as_posix()
             if rel.startswith(("game/addons/", "game/.godot/")):
                 continue
@@ -192,7 +188,7 @@ class Validator:
         for value, paths in owners.items():
             if value and len(paths) > 1:
                 self.add(BLOCK, "UID_DUPLICATE", paths[0], f"{value} is shared by {', '.join(paths)}")
-        self.metrics["first_party_uid_count"] = sum(len(v) for v in owners.values())
+        self.metrics["first_party_uid_count"] = sum(map(len, owners.values()))
 
     def validate_assets(self) -> None:
         budgets = self.config["asset_budgets"]
@@ -208,8 +204,9 @@ class Validator:
             hashes[self._sha256(path)].append(rel)
             folded[rel.casefold()].append(rel)
             size = path.stat().st_size
-            source_master = rel.startswith(("art/source/", "audio/source/"))
-            if source_master and path.read_bytes()[:50].startswith(b"version https://git-lfs.github.com/spec/v1"):
+            if rel.startswith(("art/source/", "audio/source/")) and path.read_bytes()[:50].startswith(
+                b"version https://git-lfs.github.com/spec/v1"
+            ):
                 continue
             suffix = path.suffix.lower()
             if suffix in TEXTURES:
@@ -228,7 +225,7 @@ class Validator:
             else:
                 totals["other"] += size
                 self._budget(path, size, budgets["max_other_asset_bytes"], "ASSET_OTHER_SIZE")
-            if " " in path.name or any(ch.isupper() for ch in path.name):
+            if not rel.startswith("game/addons/") and (" " in path.name or any(ch.isupper() for ch in path.name)):
                 self.add(ADVISORY, "ASSET_FILENAME_POLICY", path, "prefer lowercase snake_case")
         if totals["texture"] > budgets["max_total_texture_bytes"]:
             self.add(BLOCK, "ASSET_TEXTURE_TOTAL", "game/assets", "total texture budget exceeded")
@@ -252,11 +249,34 @@ class Validator:
             try:
                 if path.suffix == ".json":
                     json_count += 1
-                    data = json.loads(path.read_text(encoding="utf-8"))
+                    duplicate_keys: list[str] = []
+
+                    def collect_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
+                        result: dict[str, object] = {}
+                        for key, value in pairs:
+                            if key in result:
+                                duplicate_keys.append(key)
+                            result[key] = value
+                        return result
+
+                    data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=collect_pairs)
+                    for key in sorted(set(duplicate_keys)):
+                        self.add(BLOCK, "DATA_JSON_DUPLICATE_KEY", path, f"duplicate key '{key}'")
                     if "localization" in path.name.lower() and isinstance(data, dict):
-                        for key, value in data.items():
-                            if not isinstance(key, str) or not key or not isinstance(value, str):
-                                self.add(BLOCK, "LOCALIZATION_ENTRY_INVALID", path, f"invalid entry '{key}'")
+                        entries = data.get("entries", data)
+                        if not isinstance(entries, dict):
+                            self.add(BLOCK, "LOCALIZATION_ENTRIES_INVALID", path, "localization entries must be an object")
+                        else:
+                            for key, value in entries.items():
+                                if not isinstance(key, str) or not key or not isinstance(value, str):
+                                    self.add(BLOCK, "LOCALIZATION_ENTRY_INVALID", path, f"invalid entry '{key}'")
+                                elif value.count("{") != value.count("}"):
+                                    self.add(
+                                        BLOCK,
+                                        "LOCALIZATION_PLACEHOLDER_INVALID",
+                                        path,
+                                        f"unbalanced placeholder braces in '{key}'",
+                                    )
                 else:
                     csv_count += 1
                     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -315,7 +335,7 @@ class Validator:
         match = re.search(rf"^\[{re.escape(name)}\]\s*$", text, re.M)
         if not match:
             return ""
-        tail = text[match.end():]
+        tail = text[match.end() :]
         end = re.search(r"^\[[^\]]+\]\s*$", tail, re.M)
         return tail[: end.start()] if end else tail
 
@@ -345,12 +365,13 @@ class Validator:
     @staticmethod
     def _dimensions(path: Path) -> tuple[int, int] | None:
         data = path.read_bytes()[:32]
-        if path.suffix.lower() == ".png" and data[:8] == b"\x89PNG\r\n\x1a\n" and len(data) >= 24:
+        suffix = path.suffix.lower()
+        if suffix == ".png" and data[:8] == b"\x89PNG\r\n\x1a\n" and len(data) >= 24:
             return struct.unpack(">II", data[16:24])
-        if path.suffix.lower() in {".webp", ".svg"}:
-            return 1, 1
-        if path.suffix.lower() in {".jpg", ".jpeg"} and data[:2] == b"\xff\xd8":
-            return 1, 1
+        if suffix in {".webp", ".svg"}:
+            return (1, 1)
+        if suffix in {".jpg", ".jpeg"} and data[:2] == b"\xff\xd8":
+            return (1, 1)
         return None
 
     @staticmethod
@@ -381,7 +402,8 @@ class Validator:
 def write_reports(report: dict[str, object], report_dir: Path) -> None:
     report_dir.mkdir(parents=True, exist_ok=True)
     (report_dir / "quality-report.json").write_text(
-        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        json.dumps(report, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
     )
     lines = [
         f"status={report['status']}",
