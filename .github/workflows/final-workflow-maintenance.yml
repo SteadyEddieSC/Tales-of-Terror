@@ -1,0 +1,144 @@
+name: One-time final workflow maintenance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/final-workflow-maintenance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-detached-commit:
+    if: >-
+      github.head_ref == 'agent/automated-quality-security-baseline' &&
+      github.repository == 'SteadyEddieSC/Tales-of-Terror'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact development branch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: agent/automated-quality-security-baseline
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Apply and verify final workflow maintenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('.github/workflows')
+          historical = [
+              'preproduction-prototype-authorization.yml',
+              'drowned-harbor-visual-baseline.yml',
+              'drowned-harbor-presentation-study.yml',
+              'drowned-harbor-presentation-family.yml',
+              'drowned-harbor-owner-attestation.yml',
+              'drowned-harbor-rights-provenance.yml',
+              'v020-alpha1-production-tale-scaffold.yml',
+              'v020-alpha3-systems-replayability.yml',
+              'drowned-harbor-ux-advisory.yml',
+          ]
+          for name in historical:
+              path = root / name
+              lines = path.read_text(encoding='utf-8').splitlines(keepends=True)
+              marker = f"- '.github/workflows/{name}'"
+              before_permissions = True
+              output = []
+              removed = 0
+              for line in lines:
+                  if line.startswith('permissions:'):
+                      before_permissions = False
+                  if before_permissions and line.strip() == marker:
+                      removed += 1
+                      continue
+                  output.append(line)
+              if removed == 0:
+                  raise SystemExit(f'No historical self-trigger found in {name}')
+              path.write_text(''.join(output), encoding='utf-8')
+
+          node_lines = [
+              "      - name: Install checksum-pinned Node 24.18.0\n",
+              "        shell: bash\n",
+              "        run: |\n",
+              "          set -euo pipefail\n",
+              "          node_root=\"$RUNNER_TEMP/node-v24.18.0\"\n",
+              "          mkdir -p \"$node_root\"\n",
+              "          curl -fsSL -o \"$RUNNER_TEMP/node-v24.18.0-linux-x64.tar.xz\" \\\n",
+              "            https://nodejs.org/dist/v24.18.0/node-v24.18.0-linux-x64.tar.xz\n",
+              "          echo '55aa7153f9d88f28d765fcdad5ae6945b5c0f98a36881703817e4c450fa76742  node-v24.18.0-linux-x64.tar.xz' \\\n",
+              "            | (cd \"$RUNNER_TEMP\" && sha256sum --check -)\n",
+              "          tar -xJf \"$RUNNER_TEMP/node-v24.18.0-linux-x64.tar.xz\" \\\n",
+              "            --strip-components=1 -C \"$node_root\"\n",
+              "          echo \"$node_root/bin\" >> \"$GITHUB_PATH\"\n",
+              "          export PATH=\"$node_root/bin:$PATH\"\n",
+              "          node --version\n",
+              "          npm --version\n",
+              "\n",
+          ]
+
+          def replace_step(path: Path, label: str) -> None:
+              lines = path.read_text(encoding='utf-8').splitlines(keepends=True)
+              start = next(index for index, line in enumerate(lines) if line.strip() == f'- name: {label}')
+              indent = len(lines[start]) - len(lines[start].lstrip(' '))
+              end = start + 1
+              while end < len(lines):
+                  stripped = lines[end].lstrip(' ')
+                  current = len(lines[end]) - len(stripped)
+                  if current == indent and stripped.startswith('- name:'):
+                      break
+                  end += 1
+              lines[start:end] = node_lines
+              path.write_text(''.join(lines), encoding='utf-8')
+
+          replace_step(root / 'quality-baseline.yml', 'Set up locked Node runtime')
+          replace_step(root / 'security-baseline.yml', 'Set up Node')
+
+          security = root / 'security-baseline.yml'
+          text = security.read_text(encoding='utf-8')
+          begin_marker = '# BEGIN ONE-TIME FINAL WORKFLOW MAINTENANCE'
+          end_marker = '# END ONE-TIME FINAL WORKFLOW MAINTENANCE'
+          if begin_marker in text:
+              begin = text.index(begin_marker)
+              end = text.index(end_marker, begin) + len(end_marker)
+              while end < len(text) and text[end] in '\r\n':
+                  end += 1
+              security.write_text(text[:begin].rstrip() + '\n', encoding='utf-8')
+
+          Path('.github/workflows/final-workflow-maintenance.yml').unlink()
+          PY
+
+          ruby -e "require 'yaml'; Dir['.github/workflows/*.yml'].each{|path| YAML.load_file(path)}; puts 'Workflow YAML parsed'"
+          python quality/validate_repository.py workflows --report-dir /tmp/workflow-policy
+          wheel="$RUNNER_TEMP/zizmor-1.26.1-py3-none-manylinux_2_28_x86_64.whl"
+          curl -fsSL -o "$wheel" \
+            https://files.pythonhosted.org/packages/a8/2b/61ab13d45d6ce57ef5a08bb3246981f62e30bb4938098b17bb7b88110b79/zizmor-1.26.1-py3-none-manylinux_2_28_x86_64.whl
+          echo '6a958d8a0941d7e1d0de8436670b5cb7fc64c8028b4d16e3f519ccc77f953cef  zizmor-1.26.1-py3-none-manylinux_2_28_x86_64.whl' \
+            | (cd "$RUNNER_TEMP" && sha256sum --check -)
+          python -m pip install --disable-pip-version-check --no-deps "$wheel"
+          zizmor --offline .github/workflows
+          git diff --check
+
+      - name: Create detached commit metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Terror Turn Development Agent'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/workflows
+          git commit -m 'Finalize workflow security and historical gate maintenance'
+          mkdir -p artifacts/final-workflow-maintenance
+          git rev-parse HEAD > artifacts/final-workflow-maintenance/commit-sha.txt
+          git rev-parse 'HEAD^{tree}' > artifacts/final-workflow-maintenance/tree-sha.txt
+          git show --stat --oneline --summary HEAD > artifacts/final-workflow-maintenance/commit-summary.txt
+
+      - name: Upload detached commit identifiers
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: final-workflow-maintenance-${{ github.sha }}
+          path: artifacts/final-workflow-maintenance
+          if-no-files-found: error
+          retention-days: 2
