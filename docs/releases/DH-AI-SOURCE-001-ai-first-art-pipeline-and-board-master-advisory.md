@@ -29,6 +29,8 @@ The bounded target is one shared Low Tide / High Water board master.
 
 The advisory defines eight batches.
 
+A source SHA-256 record and an export SHA-256 record are each required before later advancement.
+
 This release registers a bounded AI-first production advisory for one future Drowned Harbor shared Low Tide / High Water board-master pilot. It records:
 
 - ChatGPT and Gemini as the existing-subscription concept and atmosphere tools;
