@@ -2,157 +2,121 @@
 
 - **Release:** `AI-ART-POLICY-001`
 - **Issue:** #151
-- **Protected-main baseline:** `0a6686d8cc4d15feac81c128cfc414b954e234b1`
-- **Authority:** policy and provenance only
-- **Assets admitted:** none
+- **Protected-main baseline:** `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
+- **Authority:** policy, provenance, and preliminary existing-asset review
+- **Assets promoted:** none
 
 ## Production direction
 
-Terror Turn's default direction for new production visuals is AI-generated or AI-assisted source art. Human-drawn or human-painted artwork is not required.
+Terror Turn's normal direction for new production visuals is AI-generated or AI-assisted source art. Human-drawn or human-painted source artwork is not required.
 
-This does not remove human responsibility. Every promoted asset must have a named reviewer and recorded human decisions covering art direction, selection, arrangement, edits, integration, rights, similarity, quality, privacy, accessibility implications, and storefront disclosure.
+Human responsibility remains mandatory for art direction, prompt and brief authorship, output selection, arrangement, modification, integration, rights review, similarity review, quality review, accessibility implications, provenance, Steam disclosure, and final approval.
 
-## Copyright and exclusivity posture
+Machine-determined pixels are not presumed copyrightable, exclusive, non-infringing, or platform-approved.
 
-The project does not claim that purely machine-determined pixels are necessarily protected by copyright. The U.S. Copyright Office's January 29, 2025 Part 2 report states that protection depends on sufficient human-authored expressive elements; prompts alone generally do not establish authorship, while human-authored selection, arrangement, or modification may qualify.
+## Existing Drowned Harbor images
 
-For each asset, record separately:
+`DH-AI-SOURCE-001` remains a historical planning authority, but its blanket no-upload rule for the registered external images is superseded by the controlled-use ledger for these 25 assets. Other input, privacy, budget, and board-master controls remain in force.
 
-- machine-generated source elements;
-- human-authored prompt or brief;
-- human selection and rejection;
-- human-authored layout, sequencing, typography, masks, compositing, paint, color, animation, and integration;
-- compilation or arrangement choices;
-- any element excluded from a copyright claim.
+The 25 assets registered by `DH-RIGHTS-001` and attested by `DH-OWNER-ATTEST-001` are eligible for controlled review and later use.
 
-Provider ownership language is not treated as a government determination of copyrightability, exclusivity, or non-infringement.
+They are not permanently reference-only. Depending on the recorded per-asset disposition, a future exact-use release may authorize:
 
-## Approved-provider rule
+- use substantially as generated;
+- cropping, cleanup, recoloring, retouching, paint-over, compositing, vectorization, extension, or upscaling;
+- image-to-image generation;
+- masks or control images;
+- extraction and cleanup of textures, silhouettes, icons, or decorative fragments;
+- source-master incorporation;
+- runtime derivatives;
+- marketing or storefront derivatives.
 
-Only provider records in `art/ai/approved_generators_v1.json` are eligible.
+Eligibility is not approval. A filename-level disposition applies only to the uses listed in the provenance ledger. Every exact derivative must record its input SHA-256, tool and version, human choices, output SHA-256, and release coordinate.
 
-### OpenAI ChatGPT image generation
+## Historical unknowns
 
-Eligible after a separate generation activation.
+The following are unavailable for some or all existing images:
 
-Required:
+- exact prompts and negative prompts;
+- exact model variants and versions;
+- seeds;
+- exact timestamps;
+- generation-session identifiers.
 
-- Project Owner-controlled account.
-- Exact displayed model and version when available.
-- Prompt, date, account owner, source-input record, and SHA-256.
-- Confirmation that all inputs are owned or authorized.
-- Human review before use.
-- Acknowledgement that output may not be unique.
-- No representation that generated pixels were human-generated.
+These values remain `null` or explicitly unknown. They must not be reconstructed by guessing. Their absence is a risk factor and review limitation, not an automatic rejection, because the repository separately records immutable binary identity, provider family, Project Owner-controlled accounts, no reported external uploaded references, and the known edit/export history.
 
-### Google Gemini Apps image generation
+## Provider posture
 
-Conditionally eligible after a separate generation activation.
+Only providers in `art/ai/approved_generators_v1.json` are eligible for new generation.
 
-In addition to the common controls:
+OpenAI ChatGPT image generation is eligible after a separate generation activation. Google Gemini Apps image generation is conditionally eligible after separate activation, dated terms capture, and owner or legal review before storefront promotion.
 
-- retain a dated terms snapshot or stable terms reference for each promotion batch;
-- record the exact displayed model and version when available;
-- obtain owner or legal review before `storefront_candidate`;
-- do not infer exclusive rights from Google's statement that it will not claim ownership.
-
-Unlisted providers, local models, community checkpoints, fine-tunes, LoRAs, adapters, or third-party image services remain prohibited until their model source, license, training or use restrictions, output terms, privacy terms, and commercial-use posture are reviewed.
+Unlisted services, local models, checkpoints, fine-tunes, LoRAs, or adapters remain prohibited until reviewed.
 
 ## Input policy
 
-Every non-text input must be listed with:
+Every non-text input must identify its source, SHA-256 when available, owner or licensor, rights basis, and permitted purpose.
 
-- input ID;
-- type;
-- internal path or stable reference;
-- SHA-256 when available;
-- owner or licensor;
-- rights basis;
-- permitted purpose.
+Do not use third-party artwork, protected characters, franchise assets, logos, branded products, celebrity or private-person likenesses, or private data without an appropriate rights basis.
 
-Prohibited inputs include:
-
-- artwork copied from the web without documented rights;
-- the 25 Drowned Harbor external reference images as source images, masks, control images, hidden layers, texture sources, or image-to-image inputs;
-- copyrighted characters, franchise assets, logos, or branded products without written authorization;
-- celebrity or private-person likenesses without written authorization;
-- images supplied by a client, friend, contractor, or family member without an explicit rights basis;
-- private or sensitive data not required for the visual task.
+The 25 Drowned Harbor images may be used as inputs only after the exact asset's ledger disposition permits that use and the original binary is reviewed.
 
 ## Prompt policy
 
-Prompts and negative prompts must be retained when available.
-
-Prompts must not request:
+Do not intentionally request:
 
 - a named living artist's style;
 - an active studio's distinctive style;
 - a copyrighted character or franchise identifier;
 - a recognizable celebrity or private person;
-- a third-party logo, signature, watermark, product mark, or protected trade dress;
-- a close reproduction of a specific reference image.
+- a third-party logo, signature, watermark, protected trade dress, or close reproduction of a specific work.
 
-Use descriptive visual-language terms instead: period, medium, lighting, palette, composition, material, camera, silhouette, mood, geometry, and functional hierarchy.
+Use descriptive art-direction terms such as period, medium, lighting, palette, composition, material, camera, silhouette, mood, geometry, and functional hierarchy.
 
-## Quarantine and promotion
+## Review and promotion
 
-New output starts as `generated_source_quarantined`.
+The preliminary review in `art/ai/ai_art_provenance_ledger_v1.json` routes each existing image into one of these dispositions:
 
-Before source acceptance:
+- `eligible_direct_source_after_edit`;
+- `eligible_production_input_after_edit`;
+- `eligible_model_input_after_review`;
+- `retain_reference_only`;
+- `reject`.
 
-1. verify provider and account eligibility;
-2. verify every input;
-3. preserve the original output and SHA-256;
-4. inspect C2PA or Content Credentials when present;
-5. record watermark or signature disposition;
-6. perform rights and similarity review;
-7. record human contributions;
-8. complete quality review;
-9. create an editable master when material edits or arrangement require one;
-10. preserve transformation hashes.
+A preliminary disposition does not admit a binary into Git, create a source master, or make a runtime candidate.
 
-Before runtime candidacy:
+Before an exact use:
 
-- export dimensions, format, color space, alpha, compression, and SHA-256;
-- verify 960×540 readability and safe regions where applicable;
-- verify controller-first hierarchy;
-- run asset budgets and Godot import validation;
-- add the runtime asset to `art/provenance.json`;
-- maintain source-to-runtime lineage.
+1. open and inspect the original full-resolution binary;
+2. verify its SHA-256 against the registered inventory;
+3. review all visible text, logos, marks, signatures, watermarks, people, characters, branded objects, and suspicious similarities;
+4. confirm the requested use is listed under `permitted_next_uses`;
+5. preserve C2PA or Content Credentials evidence when present and record its disposition;
+6. create an edit or generation lineage record;
+7. review continuity, quality, geometry, scale, and accessibility implications;
+8. produce and hash the derivative;
+9. obtain a separate promotion decision.
 
-Before storefront candidacy:
+## Quality requirements
 
-- complete Steam disclosure review;
-- confirm store art and build content match;
-- confirm no live-generated content is present;
-- complete owner or legal review for any conditional provider or unresolved rights question.
+Reject, revise, or quarantine an asset for malformed anatomy, fused objects, perspective errors, accidental text, gibberish, dates, labels, signatures, logos, watermarks, repeated objects, inconsistent lighting or scale, continuity drift, weak silhouette readability, unsafe television margins, inaccessible color dependence, UI occlusion, style mismatch, or unresolved similarity.
 
-## Quality rejection criteria
+Concept sheets normally require isolation and cleanup. Generated text, route overlays, controller glyphs, UI copy, legal-action state, and icon semantics are never authoritative merely because they appear in an image.
 
-Reject or revise an asset for:
+## Drowned Harbor board relationship
 
-- malformed anatomy, objects, architecture, or perspective;
-- accidental text, gibberish, dates, labels, signatures, logos, or watermarks;
-- repeated or fused objects;
-- inconsistent lighting, materials, scale, or camera logic;
-- continuity drift across states or variants;
-- poor silhouette or low-distance readability;
-- inaccessible color dependence;
-- UI occlusion or unsafe television margins;
-- style mismatch;
-- unresolved similarity to an identifiable protected work;
-- missing source, transformation, or export hashes.
+`DH-ENV-001_Studio_v3.png` is the strongest existing Low-Tide board-source candidate, subject to editing and master-geometry construction.
+
+`DH-ENV-002_Studio_v2.png` is a useful High-Water production input but does not pixel-match the Low-Tide geometry. The final pair must derive from one shared camera, board bounds, landmark anchors, route endpoints, and editable source structure.
+
+Landmark, material, silhouette, profile, UI, icon, and storyboard sheets may supply controlled production inputs after cleanup. They are not automatically runtime-ready flattened assets.
 
 ## Steam disclosure
 
-Shipped AI-generated artwork is `Pre-Generated` AI content. Live generation is not authorized.
+Shipped AI-generated artwork is `Pre-Generated` AI content. Live generation is not authorized. The maintained draft is `docs/technical/Steam_PreGenerated_AI_Disclosure_Draft_v1.md` and must match the actual shipped build and marketing.
 
-The maintained draft is in `docs/technical/Steam_PreGenerated_AI_Disclosure_Draft_v1.md`. It must be updated to match the actual build and store materials before submission.
+## Current boundary
 
-## Drowned Harbor relationship
+This release authorizes policy and preliminary review only. It creates no generation request, binary import, source acceptance, Godot integration, runtime candidate, ordinary-export inclusion, marketing asset, storefront asset, public release, or shipping approval.
 
-`AI-ART-POLICY-001` supersedes the future production-method clauses of `DH-SOURCE-PLAN-001` that required blank human-authored source artwork and permanently prohibited all generated pixels.
-
-It does not promote or convert the existing 25 reference images. They remain `R1_private_internal_reference`, `reference_only_nonproduction`, and non-source.
-
-No asset generation, import, Godot integration, ordinary-export inclusion, marketing, or public use is authorized by this policy release.
+Automation is not human evidence. Physical television, controller, readability, motion, and accessibility conclusions remain under issue #39.
