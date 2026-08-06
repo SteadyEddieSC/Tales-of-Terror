@@ -197,7 +197,8 @@ jobs:
             printf 'Strict P0.23 historical status baseline is not applicable on later branch %s\n' "$effective_branch" | tee "$log_root/p023-validator.txt"
             echo 0 > "$log_root/p023-validator.status"
             cp "$log_root/p023-validator.txt" "$log_root/p023-validator.status" artifacts/alpha3/python/
-            run_check p023-mutations python tools/test_validate_p023_alpha3_systems_replayability_contract.py --later-succession
+            run_check current-status python tools/validate_post_dh_ux_final_status.py
+            run_check current-status-mutations python tools/test_validate_post_dh_ux_final_status.py
           fi
           run_check succession python tools/validate_post_prototype_reconciliation.py --skip-git-boundary --later-succession
           run_check succession-mutations python tools/test_validate_post_prototype_reconciliation.py
