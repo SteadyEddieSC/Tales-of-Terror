@@ -184,26 +184,72 @@ def validate_policy_dependency() -> None:
 
 def validate_provenance(provenance: dict[str, Any]) -> None:
     exact_keys(provenance, {'record_kind', 'record_version', 'release_id', 'issue', 'repository', 'registration_protected_main', 'policy_dependency', 'external_package', 'registration', 'release_coordinator_supplements', 'external_visual_state', 'planned_paths'}, 'advisory provenance')
-    need(provenance['release_id'] == 'DH-AI-SOURCE-001' and provenance['issue'] == 149, 'provenance identity drift')
+    need(provenance['record_kind'] == 'dh_ai_source_001_advisory_provenance' and provenance['record_version'] == 1, 'provenance record identity drift')
+    need(provenance['release_id'] == 'DH-AI-SOURCE-001' and provenance['issue'] == 149, 'provenance release identity drift')
+    need(provenance['repository'] == 'SteadyEddieSC/Tales-of-Terror', 'provenance repository drift')
     need(provenance['registration_protected_main'] == BASE, 'provenance baseline drift')
     need(provenance['policy_dependency'] == {'release_id': 'AI-ART-POLICY-001', 'issue': 151, 'pull_request': 152, 'merged_main_sha': BASE}, 'provenance policy dependency drift')
+
     package = provenance['external_package']
+    exact_keys(package, {
+        'filename', 'bytes', 'sha256', 'manifest_path', 'manifest_bytes', 'manifest_sha256',
+        'manifested_payload_count', 'total_file_count', 'raw_advisory_record_sha256',
+        'raw_advisory_schema_sha256', 'package_authoring_protected_main', 'zip_crc_clean',
+        'utf8_text_only_audit_passed', 'draft_2020_12_validation_passed',
+        'closed_object_schema_node_count', 'all_manifest_hashes_and_bytes_match',
+        'admitted_to_repository', 'public_release_asset_authorized',
+    }, 'external advisory package provenance')
+    need(package['filename'] == 'DH-AI-SOURCE-001_External_UX_Helper_AI_First_Art_Pipeline_Advisory_v1.zip', 'provenance package filename drift')
     need(package['bytes'] == 32721 and package['sha256'] == 'dc4e91101c5906e5cef6f3b482d1c83e576849ce94a3dd33d03aa2644cdf530c', 'provenance package drift')
+    need(package['manifest_path'] == '12_MACHINE_READABLE/PACKAGE_MANIFEST.json', 'provenance manifest path drift')
     need(package['manifest_bytes'] == 2716 and package['manifest_sha256'] == '0dba5c1b4c3ddcee0303d5a3feb1627f509896a0d3e75f559156db28dcff4853', 'provenance manifest drift')
     need(package['manifested_payload_count'] == 15 and package['total_file_count'] == 16, 'provenance package inventory drift')
+    need(package['raw_advisory_record_sha256'] == '8e691c948e5d513f9eb0c8aaceaab31ae19567acb2b7dbf9ed99fca397c2ecc6', 'raw advisory record hash drift')
+    need(package['raw_advisory_schema_sha256'] == 'fc360d67478ce18b7553b21bb7998077b4e7d46bd58062b1b4f9adf491a9c1f5', 'raw advisory schema hash drift')
+    need(package['package_authoring_protected_main'] == 'f361fbfc9df9384f7c1eefb447a911a31fdc3fee', 'package authoring baseline drift')
     for key in ['zip_crc_clean', 'utf8_text_only_audit_passed', 'draft_2020_12_validation_passed', 'all_manifest_hashes_and_bytes_match']:
         need(package[key] is True, f'package audit flag disabled: {key}')
     need(package['closed_object_schema_node_count'] == 6, 'raw package closed-schema count drift')
     need(package['admitted_to_repository'] is False and package['public_release_asset_authorized'] is False, 'package admission drift')
+
     registration = provenance['registration']
+    exact_keys(registration, {
+        'branch', 'path_count', 'text_only', 'package_specific_advisory_registered',
+        'generation_request_authorized', 'image_asset_created_or_imported',
+        'source_acceptance_authorized', 'runtime_or_godot_implementation_authorized',
+        'paid_tool_purchase_authorized', 'public_or_storefront_use_authorized',
+        'codex_authorized',
+    }, 'advisory registration provenance')
+    need(registration['branch'] == BRANCH, 'registration branch drift')
     need(registration['path_count'] == 10 and registration['text_only'] is True and registration['package_specific_advisory_registered'] is True, 'registration boundary drift')
-    for key, value in registration.items():
-        if key.endswith('_authorized'):
-            need(value is False, f'provenance registration grants authority: {key}')
+    for key in [
+        'generation_request_authorized', 'image_asset_created_or_imported',
+        'source_acceptance_authorized', 'runtime_or_godot_implementation_authorized',
+        'paid_tool_purchase_authorized', 'public_or_storefront_use_authorized',
+        'codex_authorized',
+    ]:
+        need(registration[key] is False, f'provenance registration grants authority: {key}')
+
     supplements = provenance['release_coordinator_supplements']
-    need(supplements['immediate_incremental_spend_usd'] == 0 and supplements['recraft_api_optional_non_sensitive_test_usd'] == 1, 'supplement budget drift')
-    need(supplements['recraft_api_test_authorized_by_registration'] is False and supplements['recraft_free_outputs_eligible'] is False, 'Recraft supplement gate drift')
+    exact_keys(supplements, {
+        'immediate_incremental_spend_usd', 'chatgpt_privacy_control',
+        'gemini_privacy_control', 'recraft_free_outputs_eligible',
+        'recraft_api_optional_non_sensitive_test_usd',
+        'recraft_api_test_authorized_by_registration',
+        'private_recraft_month_requires_documented_gap',
+        'firefly_is_fallback_not_current_purchase',
+        'restricted_external_images_may_be_uploaded',
+    }, 'release coordinator supplements')
+    need(supplements['immediate_incremental_spend_usd'] == 0, 'supplement immediate spend drift')
+    need(supplements['chatgpt_privacy_control'] == 'temporary_chat_or_improve_model_for_everyone_disabled', 'supplement ChatGPT privacy drift')
+    need(supplements['gemini_privacy_control'] == 'temporary_chat_or_keep_activity_disabled_and_no_proprietary_feedback', 'supplement Gemini privacy drift')
+    need(supplements['recraft_free_outputs_eligible'] is False, 'Recraft Free made eligible')
+    need(supplements['recraft_api_optional_non_sensitive_test_usd'] == 1, 'supplement Recraft amount drift')
+    need(supplements['recraft_api_test_authorized_by_registration'] is False, 'supplement Recraft test activated')
+    need(supplements['private_recraft_month_requires_documented_gap'] is True, 'private Recraft gap requirement removed')
+    need(supplements['firefly_is_fallback_not_current_purchase'] is True, 'Firefly fallback gate removed')
     need(supplements['restricted_external_images_may_be_uploaded'] is False, 'restricted uploads allowed')
+
     need(provenance['external_visual_state'] == {
         'asset_count': 25, 'maximum_rights_tier': 'R1_private_internal_reference',
         'reference_only_nonproduction': True, 'none_are_source_files': True,
