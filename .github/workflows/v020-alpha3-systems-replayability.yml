@@ -192,12 +192,13 @@ jobs:
           run_check p022-mutations python tools/test_validate_p022_alpha2_graybox_contract.py
           if [ "$effective_branch" = 'feature/v0.2.0-alpha.3-systems-replayability' ] || [ "$effective_branch" = 'docs/p0.23-alpha3-systems-replayability-contract' ]; then
             run_check p023-validator python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
+            run_check p023-mutations python tools/test_validate_p023_alpha3_systems_replayability_contract.py
           else
             printf 'Strict P0.23 historical status baseline is not applicable on later branch %s\n' "$effective_branch" | tee "$log_root/p023-validator.txt"
             echo 0 > "$log_root/p023-validator.status"
             cp "$log_root/p023-validator.txt" "$log_root/p023-validator.status" artifacts/alpha3/python/
+            run_check p023-mutations python tools/test_validate_p023_alpha3_systems_replayability_contract.py --later-succession
           fi
-          run_check p023-mutations python tools/test_validate_p023_alpha3_systems_replayability_contract.py
           run_check succession python tools/validate_post_prototype_reconciliation.py --skip-git-boundary --later-succession
           run_check succession-mutations python tools/test_validate_post_prototype_reconciliation.py
           run_check authoring python tools/validate_tale_authoring_reference.py
