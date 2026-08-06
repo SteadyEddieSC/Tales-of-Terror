@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import copy
 import json
 import os
 import re
@@ -10,8 +11,8 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(".")
-BASE = "0a6686d8cc4d15feac81c128cfc414b954e234b1"
-BRANCH = "docs/ai-art-policy-001"
+BASE = "073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7"
+BRANCH = "docs/ai-art-existing-assets-review"
 
 POLICY = Path("art/ai/ai_art_policy_v1.json")
 PROVIDERS = Path("art/ai/approved_generators_v1.json")
@@ -32,14 +33,32 @@ ALLOWED = {
     "docs/releases/AI-ART-POLICY-001-ai-only-production-art-and-provenance.md",
     "docs/technical/AI_Art_Production_and_Provenance_Policy_v1.md",
     "docs/technical/AI_Art_Similarity_and_Promotion_Checklist_v1.md",
-    "docs/technical/Steam_PreGenerated_AI_Disclosure_Draft_v1.md",
     "docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Only_Art_Provenance_Amendment_v1.md",
     "art/ai/ai_art_policy_v1.json",
-    "art/ai/approved_generators_v1.json",
     "art/ai/ai_art_provenance_schema_v1.json",
     "art/ai/ai_art_provenance_ledger_v1.json",
     "tools/validate_ai_art_policy.py",
     "tools/test_validate_ai_art_policy.py",
+}
+SHA256 = re.compile(r"^[0-9a-f]{64}$")
+ASSET_ID = re.compile(r"^EXT-VIS-(\d{3})$")
+DISPOSITIONS = {
+    "eligible_direct_source_after_edit",
+    "eligible_production_input_after_edit",
+    "eligible_model_input_after_review",
+    "retain_reference_only",
+    "reject",
+}
+PERMITTED_USES = {
+    "direct_source_candidate",
+    "edited_source_candidate",
+    "image_to_image_input",
+    "mask_or_control_input",
+    "texture_or_fragment_extraction",
+    "runtime_candidate",
+    "marketing_candidate",
+    "storefront_candidate",
+    "reference_only",
 }
 
 
@@ -60,90 +79,21 @@ def exact_keys(value: dict[str, Any], expected: set[str], label: str) -> None:
     need(set(value) == expected, f"{label} fields drift: {sorted(set(value) ^ expected)}")
 
 
-def resolve_ref(schema_root: dict[str, Any], ref: str) -> dict[str, Any]:
-    need(ref.startswith("#/"), f"unsupported schema reference: {ref}")
-    value: Any = schema_root
-    for part in ref[2:].split("/"):
-        value = value[part.replace("~1", "/").replace("~0", "~")]
-    need(isinstance(value, dict), f"schema reference is not an object: {ref}")
-    return value
-
-
-def type_matches(value: Any, expected: str) -> bool:
-    return {
-        "object": isinstance(value, dict),
-        "array": isinstance(value, list),
-        "string": isinstance(value, str),
-        "integer": isinstance(value, int) and not isinstance(value, bool),
-        "number": isinstance(value, (int, float)) and not isinstance(value, bool),
-        "boolean": isinstance(value, bool),
-        "null": value is None,
-    }.get(expected, False)
-
-
-def validate_instance(value: Any, schema: dict[str, Any], root_schema: dict[str, Any], path: str = "$") -> None:
-    if "$ref" in schema:
-        validate_instance(value, resolve_ref(root_schema, schema["$ref"]), root_schema, path)
-        return
-    if "anyOf" in schema:
-        errors = []
-        for candidate in schema["anyOf"]:
-            try:
-                validate_instance(value, candidate, root_schema, path)
-                return
-            except ValidationError as error:
-                errors.append(str(error))
-        raise ValidationError(f"{path}: no anyOf option matched: {errors}")
-    if "const" in schema:
-        need(value == schema["const"], f"{path}: const mismatch")
-    if "enum" in schema:
-        need(value in schema["enum"], f"{path}: enum mismatch")
-    if "type" in schema:
-        need(type_matches(value, schema["type"]), f"{path}: expected {schema['type']}")
-    if isinstance(value, dict):
-        properties = schema.get("properties", {})
-        required = schema.get("required", [])
-        for key in required:
-            need(key in value, f"{path}: missing {key}")
-        if schema.get("additionalProperties") is False:
-            extra = set(value) - set(properties)
-            need(not extra, f"{path}: unexpected fields {sorted(extra)}")
-        for key, child in value.items():
-            if key in properties:
-                validate_instance(child, properties[key], root_schema, f"{path}.{key}")
-    if isinstance(value, list):
-        if "minItems" in schema:
-            need(len(value) >= schema["minItems"], f"{path}: too few items")
-        if "maxItems" in schema:
-            need(len(value) <= schema["maxItems"], f"{path}: too many items")
-        if schema.get("uniqueItems"):
-            encoded = [json.dumps(item, sort_keys=True) for item in value]
-            need(len(encoded) == len(set(encoded)), f"{path}: duplicate items")
-        if "items" in schema:
-            for index, child in enumerate(value):
-                validate_instance(child, schema["items"], root_schema, f"{path}[{index}]")
-    if isinstance(value, str):
-        if "minLength" in schema:
-            need(len(value) >= schema["minLength"], f"{path}: string too short")
-        if "pattern" in schema:
-            need(re.search(schema["pattern"], value) is not None, f"{path}: pattern mismatch")
-
-
-def audit_closed_schema(schema: Any, path: str = "$") -> int:
+def audit_closed_schema(value: Any, path: str = "$") -> int:
     count = 0
-    if isinstance(schema, dict):
-        if schema.get("type") == "object":
+    if isinstance(value, dict):
+        if value.get("type") == "object":
             count += 1
-            need(schema.get("additionalProperties") is False, f"{path}: object schema is not closed")
-            properties = schema.get("properties")
-            required = schema.get("required")
+            need(value.get("additionalProperties") is False, f"{path}: object schema is not closed")
+            properties = value.get("properties")
+            required = value.get("required")
             need(isinstance(properties, dict), f"{path}: properties missing")
             need(isinstance(required, list), f"{path}: required missing")
             need(set(required) == set(properties), f"{path}: required/properties mismatch")
-        for key, child in schema.items():
+        for key, child in value.items():
             count += audit_closed_schema(child, f"{path}.{key}")
-    elif isinstance(schema, list):
-        for index, child in enumerate(schema):
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
             count += audit_closed_schema(child, f"{path}[{index}]")
     return count
 
@@ -151,163 +101,232 @@ def audit_closed_schema(schema: Any, path: str = "$") -> int:
 def validate_policy(policy: dict[str, Any]) -> None:
     exact_keys(
         policy,
-        {"record_kind", "record_version", "release", "decision", "supersession", "registries", "promotion_stages", "required_reviews", "stop_conditions", "authoritative_documents"},
+        {
+            "record_kind",
+            "record_version",
+            "release",
+            "decision",
+            "supersession",
+            "existing_drowned_harbor_review",
+            "registries",
+            "promotion_stages",
+            "required_reviews",
+            "stop_conditions",
+            "authoritative_documents",
+        },
         "policy",
     )
-    need(policy["record_kind"] == "terror_turn_ai_art_policy" and policy["record_version"] == 1, "policy identity drift")
+    need(policy["record_kind"] == "terror_turn_ai_art_policy", "policy kind drift")
+    need(policy["record_version"] == 1, "policy version drift")
     release = policy["release"]
-    exact_keys(release, {"release_id", "governing_issue", "repository", "protected_main", "policy_date", "release_type", "state"}, "release")
-    need(release == {
-        "release_id": "AI-ART-POLICY-001",
-        "governing_issue": 151,
-        "repository": "SteadyEddieSC/Tales-of-Terror",
-        "protected_main": BASE,
-        "policy_date": "2026-08-05",
-        "release_type": "metadata_only_ai_art_policy_and_provenance_authority",
-        "state": "policy_only_no_assets",
-    }, "release coordinates drift")
+    need(release["release_id"] == "AI-ART-POLICY-001", "release ID drift")
+    need(release["protected_main"] == BASE, "protected-main drift")
+    need(release["policy_date"] == "2026-08-06", "policy date drift")
+    need(release["state"] == "policy_and_existing_asset_review_no_promotions", "release state drift")
+
     decision = policy["decision"]
-    exact_keys(decision, {
-        "new_production_visuals_policy", "human_drawn_or_painted_source_required",
-        "human_art_direction_selection_arrangement_and_review_required",
-        "ai_generated_pixels_may_become_eligible_after_separate_asset_promotion",
-        "generation_authorized_by_this_release", "import_authorized_by_this_release",
-        "runtime_integration_authorized_by_this_release", "ordinary_export_authorized_by_this_release",
-        "marketing_authorized_by_this_release", "storefront_publication_authorized_by_this_release",
-        "live_generation_authorized", "copyrightability_of_machine_determined_pixels_assumed",
-        "steam_ai_classification",
-    }, "decision")
-    need(decision["new_production_visuals_policy"] == "ai_generated_or_ai_assisted_source_required_unless_exception_approved", "AI-only direction drift")
-    need(decision["human_drawn_or_painted_source_required"] is False, "human-drawn source requirement reintroduced")
-    need(decision["human_art_direction_selection_arrangement_and_review_required"] is True, "human review removed")
-    need(decision["ai_generated_pixels_may_become_eligible_after_separate_asset_promotion"] is True, "future AI eligibility removed")
-    for key in [
-        "generation_authorized_by_this_release", "import_authorized_by_this_release",
-        "runtime_integration_authorized_by_this_release", "ordinary_export_authorized_by_this_release",
-        "marketing_authorized_by_this_release", "storefront_publication_authorized_by_this_release",
-        "live_generation_authorized", "copyrightability_of_machine_determined_pixels_assumed",
-    ]:
-        need(decision[key] is False, f"forbidden current authority or claim enabled: {key}")
+    need(decision["human_drawn_or_painted_source_required"] is False, "human-drawn requirement returned")
+    need(decision["existing_drowned_harbor_images_eligible_for_controlled_use_review"] is True, "existing image eligibility removed")
+    need(decision["existing_images_automatically_approved"] is False, "automatic approval enabled")
+    need(decision["unknown_historical_prompt_model_seed_or_timestamp_is_automatic_rejection"] is False, "unknown historical metadata became automatic rejection")
+    need(decision["approved_uses_may_include_direct_source_editing_image_to_image_masks_controls_extraction_runtime_and_marketing"] is True, "controlled-use eligibility narrowed")
+    for key in (
+        "generation_authorized_by_this_release",
+        "binary_import_authorized_by_this_release",
+        "runtime_integration_authorized_by_this_release",
+        "ordinary_export_authorized_by_this_release",
+        "marketing_authorized_by_this_release",
+        "storefront_publication_authorized_by_this_release",
+        "live_generation_authorized",
+        "copyrightability_of_machine_determined_pixels_assumed",
+    ):
+        need(decision[key] is False, f"forbidden authority or claim enabled: {key}")
     need(decision["steam_ai_classification"] == "pre_generated_ai_content", "Steam classification drift")
+
     supersession = policy["supersession"]
-    exact_keys(supersession, {"historical_authority", "historical_record_unchanged", "superseded_future_requirements", "preserved_requirements"}, "supersession")
     need(supersession["historical_authority"] == "DH-SOURCE-PLAN-001", "historical authority drift")
     need(supersession["historical_record_unchanged"] is True, "historical record rewritten")
-    need(set(supersession["superseded_future_requirements"]) == {
-        "blank_human_authored_editable_sources_required",
-        "all_direct_ai_generated_pixel_use_permanently_prohibited",
-        "independent_human_authorship_disposition_required_for_future_source_acceptance",
-    }, "superseded requirement set drift")
+    need(supersession.get("dependent_historical_authorities") == ["DH-AI-SOURCE-001"], "dependent advisory supersession drift")
+    superseded = set(supersession["superseded_future_requirements"])
+    for value in {
+        "all_25_existing_drowned_harbor_images_permanently_reference_only",
+        "tracing_vectorization_paint_over_compositing_cropping_upscaling_recoloring_retouching_extraction_and_model_input_permanently_prohibited",
+        "dh_ai_source_001_restricted_external_images_upload_prohibition_for_registered_25_assets",
+    }:
+        need(value in superseded, f"required supersession missing: {value}")
     preserved = set(supersession["preserved_requirements"])
-    for required in {
-        "all_25_external_reference_images_remain_R1_private_internal_reference",
-        "none_of_the_25_external_reference_images_are_source_files",
-        "no_tracing_vectorization_paint_over_or_fragment_extraction_from_external_reference_images",
-        "provider_model_prompt_source_input_and_hash_provenance",
-        "independent_similarity_review",
-        "no_current_generation_import_runtime_export_marketing_or_publication_authority",
+    for value in {
+        "preserve_original_external_binary_and_registered_sha256",
+        "keep_exact_known_and_unknown_provenance",
+        "independent_human_visual_rights_similarity_and_quality_review",
+        "record_every_transformation_model_input_extraction_export_and_hash",
+        "no_automatic_asset_promotion",
+        "no_current_generation_binary_import_runtime_export_marketing_or_publication_authority",
         "automation_is_not_human_evidence",
     }:
-        need(required in preserved, f"preserved protection missing: {required}")
-    need(policy["registries"] == {
-        "approved_generators": "art/ai/approved_generators_v1.json",
-        "provenance_schema": "art/ai/ai_art_provenance_schema_v1.json",
-        "provenance_ledger": "art/ai/ai_art_provenance_ledger_v1.json",
-    }, "registry paths drift")
-    need(policy["promotion_stages"][0] == "policy_only_no_assets", "promotion lifecycle start drift")
-    need(policy["promotion_stages"][-1] == "retired_or_rejected", "promotion lifecycle end drift")
-    need(len(policy["promotion_stages"]) == 9 and len(set(policy["promotion_stages"])) == 9, "promotion stage count drift")
-    need(len(policy["required_reviews"]) == 10 and len(set(policy["required_reviews"])) == 10, "required review count drift")
-    need(len(policy["stop_conditions"]) == 14 and len(set(policy["stop_conditions"])) == 14, "stop condition count drift")
-    need(set(policy["authoritative_documents"]) == {path.as_posix() for path in DOCS if "releases/" not in path.as_posix()}, "authoritative document set drift")
+        need(value in preserved, f"preserved control missing: {value}")
+
+    review = policy["existing_drowned_harbor_review"]
+    need(review["inventory_count"] == 25, "inventory count drift")
+    need(review["owner_attestation"] == "DH-OWNER-ATTEST-001", "owner attestation drift")
+    need(review["current_promotion_count"] == 0, "existing image was promoted")
+    counts = review["disposition_counts"]
+    need(sum(counts.values()) == 25, "review disposition counts do not total 25")
+    need(counts == {
+        "eligible_direct_source_after_edit": 1,
+        "eligible_production_input_after_edit": 16,
+        "eligible_model_input_after_review": 8,
+        "retain_reference_only": 0,
+        "reject": 0,
+    }, "review disposition counts drift")
+    need(review["full_resolution_human_review_still_required_before_exact_use"] is True, "full-resolution review requirement removed")
+
+    need(len(policy["promotion_stages"]) == 9 and len(set(policy["promotion_stages"])) == 9, "promotion stages drift")
+    need(policy["promotion_stages"][0] == "policy_and_existing_asset_review_no_promotions", "promotion start drift")
+    need(policy["promotion_stages"][-1] == "retired_or_rejected", "promotion end drift")
+    need(len(policy["required_reviews"]) == 11, "required review count drift")
+    need(len(policy["stop_conditions"]) == 14, "stop condition count drift")
 
 
 def validate_providers(providers: dict[str, Any]) -> None:
-    exact_keys(providers, {"record_kind", "record_version", "policy_release", "verified_on", "providers"}, "providers")
     need(providers["record_kind"] == "terror_turn_approved_ai_generators", "provider registry kind drift")
-    need(providers["record_version"] == 1 and providers["policy_release"] == "AI-ART-POLICY-001", "provider registry identity drift")
-    need(providers["verified_on"] == "2026-08-05", "provider verification date drift")
+    need(providers["record_version"] == 1, "provider registry version drift")
     need(len(providers["providers"]) == 2, "provider count drift")
-    by_id = {entry["provider_id"]: entry for entry in providers["providers"]}
-    need(set(by_id) == {"openai_chatgpt_image_generation", "google_gemini_apps_image_generation"}, "provider IDs drift")
-    openai = by_id["openai_chatgpt_image_generation"]
-    google = by_id["google_gemini_apps_image_generation"]
-    for entry in providers["providers"]:
-        exact_keys(entry, {"provider_id", "provider", "service", "eligibility", "account_requirement", "model_record_requirement", "terms", "mandatory_controls"}, entry["provider_id"])
-        need(entry["terms"] and entry["mandatory_controls"], f"{entry['provider_id']}: missing terms or controls")
-        for term in entry["terms"]:
-            exact_keys(term, {"title", "effective", "url", "rights_summary"}, f"{entry['provider_id']} term")
-            need(term["url"].startswith("https://"), f"{entry['provider_id']}: non-HTTPS terms URL")
-    need(openai["provider"] == "OpenAI" and openai["eligibility"] == "eligible_after_separate_generation_activation", "OpenAI eligibility drift")
-    need(any(term["url"] == "https://openai.com/policies/terms-of-use/" for term in openai["terms"]), "OpenAI Terms of Use missing")
-    need("do_not_represent_output_as_human_generated" in openai["mandatory_controls"], "OpenAI disclosure control missing")
-    need(google["provider"] == "Google" and google["eligibility"] == "conditional_after_separate_generation_activation", "Google eligibility overpromoted")
-    need(any(term["url"].startswith("https://policies.google.com/terms") for term in google["terms"]), "Google Terms missing")
-    need("owner_or_legal_review_required_before_storefront_candidate" in google["mandatory_controls"], "Google conditional review missing")
+    ids = {entry["provider_id"] for entry in providers["providers"]}
+    need(ids == {"openai_chatgpt_image_generation", "google_gemini_apps_image_generation"}, "provider IDs drift")
 
 
-def validate_schema_and_ledger(schema: dict[str, Any], ledger: dict[str, Any]) -> None:
+def validate_schema(schema: dict[str, Any]) -> None:
     need(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "schema draft drift")
     need(audit_closed_schema(schema) >= 6, "closed schema coverage too small")
-    validate_instance(ledger, schema, schema)
-    need(ledger == {
-        "record_kind": "terror_turn_ai_art_provenance_ledger",
-        "record_version": 1,
-        "policy_release": "AI-ART-POLICY-001",
-        "state": "policy_only_no_assets",
-        "assets": [],
-    }, "ledger must remain empty policy state")
     asset = schema["$defs"]["asset"]
-    required = set(asset["required"])
-    for field in {
-        "asset_id", "provider_id", "model_name", "model_version", "generated_on", "account_owner", "prompt",
-        "source_inputs", "generator_output_sha256", "transformations", "runtime_exports",
-        "c2pa_or_content_credentials", "watermark_or_signature_disposition", "human_contributions",
-        "rights_review", "similarity_review", "quality_review", "promotion_state", "release_coordinate",
-    }:
-        need(field in required, f"asset schema missing required field: {field}")
-    need(asset.get("additionalProperties") is False, "asset schema is not closed")
+    need(asset["additionalProperties"] is False, "asset schema is open")
+    need(set(asset["properties"]) == set(asset["required"]), "asset schema required fields drift")
+    need(asset["properties"]["preliminary_disposition"]["enum"] == [
+        "eligible_direct_source_after_edit",
+        "eligible_production_input_after_edit",
+        "eligible_model_input_after_review",
+        "retain_reference_only",
+        "reject",
+    ], "disposition enum drift")
+
+
+def validate_ledger(ledger: dict[str, Any]) -> None:
+    exact_keys(
+        ledger,
+        {
+            "record_kind",
+            "record_version",
+            "policy_release",
+            "state",
+            "inventory_source",
+            "review_date",
+            "reviewer",
+            "review_method",
+            "summary",
+            "common_controls",
+            "assets",
+        },
+        "ledger",
+    )
+    need(ledger["record_kind"] == "terror_turn_ai_art_provenance_ledger", "ledger kind drift")
+    need(ledger["record_version"] == 1, "ledger version drift")
+    need(ledger["state"] == "existing_asset_review_complete_no_promotions", "ledger state drift")
+    need(ledger["review_date"] == "2026-08-06", "review date drift")
+    method = ledger["review_method"]
+    need(method["full_resolution_binary_review_complete"] is False, "review overclaims full-resolution completion")
+    need(method["limitations"], "review limitations missing")
+
+    assets = ledger["assets"]
+    need(len(assets) == 25, "ledger must contain exactly 25 reviewed assets")
+    ids = []
+    filenames = set()
+    hashes = set()
+    disposition_counts = {key: 0 for key in DISPOSITIONS}
+    for index, asset in enumerate(assets, 1):
+        source_id = asset["source_inventory_id"]
+        match = ASSET_ID.fullmatch(source_id)
+        need(match is not None, f"invalid source inventory ID: {source_id}")
+        need(int(match.group(1)) == index, f"asset ordering drift at {source_id}")
+        need(asset["asset_id"] == source_id.lower().replace("-", "_"), f"normalized asset ID drift: {source_id}")
+        need(SHA256.fullmatch(asset["sha256"]) is not None, f"invalid SHA-256: {source_id}")
+        need(asset["filename"] not in filenames, f"duplicate filename: {asset['filename']}")
+        need(asset["sha256"] not in hashes, f"duplicate SHA-256: {source_id}")
+        filenames.add(asset["filename"])
+        hashes.add(asset["sha256"])
+        ids.append(source_id)
+        need(asset["actual_format"] in {"PNG", "JPEG"}, f"actual format drift: {source_id}")
+        need(asset["dimensions"]["width"] > 0 and asset["dimensions"]["height"] > 0, f"invalid dimensions: {source_id}")
+        need(asset["bytes"] > 0, f"invalid bytes: {source_id}")
+        need(asset["preliminary_disposition"] in DISPOSITIONS, f"invalid disposition: {source_id}")
+        disposition_counts[asset["preliminary_disposition"]] += 1
+        uses = set(asset["permitted_next_uses"])
+        need(uses and uses <= PERMITTED_USES, f"invalid permitted uses: {source_id}")
+        need(asset["strengths"], f"strengths missing: {source_id}")
+
+    controls = ledger["common_controls"]
+    need(controls["owner_attestation_reference"] == "DH-OWNER-ATTEST-001", "attestation drift")
+    metadata = controls["historical_generation_metadata"]
+    need(metadata["uploaded_external_reference_inputs"] == "none_reported_by_owner", "input record drift")
+    need(metadata["unknown_metadata_is_automatic_rejection"] is False, "unknown metadata became automatic rejection")
+    need(metadata["known_unknowns"], "known unknowns missing")
+    need(controls["required_before_exact_use"], "exact-use controls missing")
+    need(controls["promotion_state"] == "existing_asset_reviewed_not_promoted", "asset review batch promoted")
+    need(controls["release_coordinate"] == "AI-ART-POLICY-001", "release coordinate drift")
+    for review_name in ("rights_review_baseline", "similarity_review_baseline", "quality_review_baseline"):
+        need(controls[review_name]["status"] and controls[review_name]["notes"], f"{review_name} incomplete")
+
+    need(ids == [f"EXT-VIS-{i:03d}" for i in range(1, 26)], "asset inventory IDs drift")
+    expected_counts = {
+        "eligible_direct_source_after_edit": 1,
+        "eligible_production_input_after_edit": 16,
+        "eligible_model_input_after_review": 8,
+        "retain_reference_only": 0,
+        "reject": 0,
+    }
+    need(disposition_counts == expected_counts, "ledger disposition counts drift")
+    summary = ledger["summary"]
+    need(summary["asset_count"] == 25 and summary["assets_promoted"] == 0, "ledger summary drift")
+    for key, value in expected_counts.items():
+        need(summary[key] == value, f"ledger summary mismatch: {key}")
 
 
 def validate_docs_and_workflow() -> None:
     text = " ".join("\n".join((ROOT / path).read_text(encoding="utf-8") for path in DOCS).lower().split())
-    for phrase in [
+    for phrase in (
         "ai-only production art",
         "human-drawn or human-painted",
-        "machine-determined pixels",
-        "not presumed copyrightable",
+        "all 25",
+        "eligible for controlled",
+        "image-to-image",
+        "mask",
+        "texture",
+        "unknown",
+        "not an automatic rejection",
+        "full-resolution",
+        "no image is automatically approved",
+        "assets promoted",
         "pre-generated",
         "live generation",
         "dh-source-plan-001",
-        "historical record",
-        "all 25",
-        "r1_private_internal_reference",
-        "named living artist",
-        "active studio",
-        "substantial similarity",
-        "c2pa",
         "sha-256",
-        "art/provenance.json",
         "960×540",
-        "controller-first",
         "automation is not human evidence",
-        "no asset",
-    ]:
+    ):
         need(phrase in text, f"required policy statement missing: {phrase}")
-    for phrase in [
+    for phrase in (
         "copyright protection guaranteed",
         "non-infringement guaranteed",
         "steam approval guaranteed",
-        "live-generated ai is authorized",
-        "asset generation is authorized by this release",
-        "the 25 external images are source files",
+        "all 25 images are approved for shipping",
         "legal clearance complete",
         "production ready",
         "shipping authorized",
-    ]:
-        need(phrase not in text, f"unsupported claim: {phrase}")
+    ):
+        need(phrase not in text, f"unsupported claim present: {phrase}")
+
     workflow = (ROOT / WORKFLOW).read_text(encoding="utf-8")
-    for token in [
+    for token in (
         "actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0",
         "actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1",
         "persist-credentials: false",
@@ -315,7 +334,7 @@ def validate_docs_and_workflow() -> None:
         "python tools/validate_ai_art_policy.py",
         "python tools/test_validate_ai_art_policy.py",
         "quality/validate_repository.py all",
-    ]:
+    ):
         need(token in workflow, f"workflow requirement missing: {token}")
     need("pull_request_target:" not in workflow, "dangerous workflow trigger")
 
@@ -341,13 +360,15 @@ def validate_all() -> dict[str, Any]:
     ledger = load(LEDGER)
     validate_policy(policy)
     validate_providers(providers)
-    validate_schema_and_ledger(schema, ledger)
+    validate_schema(schema)
+    validate_ledger(ledger)
     validate_docs_and_workflow()
     validate_git_boundary()
     return {
         "release": "AI-ART-POLICY-001",
         "providers": len(providers["providers"]),
         "ledger_assets": len(ledger["assets"]),
+        "assets_promoted": ledger["summary"]["assets_promoted"],
         "promotion_stages": len(policy["promotion_stages"]),
         "status": "passed",
     }
