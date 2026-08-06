@@ -14,6 +14,9 @@
     "state": "completed_developer_only"
   },
   "as_of_date": "2026-08-05",
+  "closed_unmerged_pull_requests": [
+    32
+  ],
   "companion_dependency_security": {
     "audit_threshold": "moderate",
     "miniflare": "4.20260722.0",
@@ -36,7 +39,7 @@
   },
   "drowned_harbor": {
     "ordinary_playable": false,
-    "status": "developer_only_alpha3_with_completed_metadata_only_visual_presentation_ux_addendum_rights_and_owner_attestation_authorities_export_excluded"
+    "status": "developer_only_alpha3_with_completed_metadata_only_visual_presentation_ux_rights_owner_attestation_and_clean_room_source_planning_export_excluded"
   },
   "gates": [
     {
@@ -46,7 +49,7 @@
     },
     {
       "issue": 39,
-      "purpose": "human household, physical-controller, television, and remote evidence",
+      "purpose": "human household, physical-controller, television, remote, readability, motion, and accessibility evidence",
       "state": "deferred_open"
     }
   ],
@@ -62,12 +65,14 @@
     "dh_present_family_registration_merge": "1cad8495c913d926c4422557ea59e8c6fa1f6c1a",
     "dh_present_registration_merge": "671b8f2512be80c0c5f2cec701c29445159620e2",
     "dh_rights_registration_merge": "afa65009237b7b5494bf088c640ff542f93e16b4",
+    "dh_source_plan_registration_merge": "a42d1104c16532e801164dc237a5fddc6187b489",
     "dh_ux_final_addendum_registration_merge": "eaa40667322928d39f6cee7c4bff3f74775c2792",
     "dh_ux_registration_merge": "22b43893b7726e5c5bea1078aced1cf11e08049f",
     "dh_visual_baseline_merge": "0cea1ac62733fda56d09cb0de8a789efc509308a",
     "p01_p07_package_index": "docs/preproduction/preproduction_package_index_v1.json",
     "p021_merge": "4efdd76efdf2aa34823dae5d3624a3dca3f0a349",
-    "p022_merge": "da86c0aa74bc0442862c97e3c371f6b714da4d0a"
+    "p022_merge": "da86c0aa74bc0442862c97e3c371f6b714da4d0a",
+    "quality_security_baseline_merge": "3d29b454868295c7d3f4f06708de9c29b462abb2"
   },
   "production": {
     "default_tale_id": "lantern_house_vertical_slice",
@@ -78,46 +83,48 @@
     "drowned_harbor_startup_or_fallback_registered": false,
     "tale_count": 1
   },
-  "protected_main": "eaa40667322928d39f6cee7c4bff3f74775c2792",
+  "protected_main": "a42d1104c16532e801164dc237a5fddc6187b489",
   "protected_main_semantics": "exact_reconciliation_starting_baseline",
+  "quality_security_baseline": {
+    "codeql_supported_languages": [
+      "javascript-typescript",
+      "python"
+    ],
+    "exact_head_exports": true,
+    "full_history_secret_scan": true,
+    "issue": null,
+    "merged_main_sha": "3d29b454868295c7d3f4f06708de9c29b462abb2",
+    "pull_request": 140,
+    "release_id": "automated_quality_security_baseline",
+    "sbom_generation": true,
+    "state": "completed_repository_wide_machine_assurance",
+    "workflow_policy_validation": true
+  },
   "recommended_next_release": {
     "activation_authorized": false,
     "codex_required": false,
     "github_issue": null,
     "release_id": null,
-    "state": "unselected_metadata_only_clean_room_source_planning_eligible_explicit_activation_required",
+    "state": "unselected_post_clean_room_planning_source_creation_requires_explicit_activation",
     "title": null
   },
   "runtime_implementation_authorized": false,
-  "schema_version": 8,
+  "schema_version": 9,
   "status_kind": "post_prototype_project_status",
-  "unrelated_open_pull_requests": [
-    32
-  ],
+  "unrelated_open_pull_requests": [],
   "ux_implementation_authorized": false,
   "visual_implementation_authorized": false,
   "visual_planning": {
     "external_binaries_in_git": false,
-    "held_source_plan": {
-      "admitted_to_repository": false,
-      "bytes": 14913,
-      "filename": "DH-SOURCE-PLAN-001_Clean_Room_Source_Art_and_Composition_Planning_Package_v1.zip",
-      "refresh_required_after_explicit_activation": true,
-      "sha256": "34fb5de40bd1dabfde66cd4792d8ad67173191de088cf65e5be0ecee1a1f444b",
-      "state": "external_draft_not_activated"
-    },
     "owner_attestation": {
       "attestation_complete": true,
       "clean_room_source_creation_authorized": false,
-      "clean_room_source_planning_authorized": false,
       "implementation_authorized": false,
       "issue": 131,
       "merged_main_sha": "7af430b5d9528c648d00291e4c32fa368279b41b",
-      "metadata_only_clean_room_planning_eligibility_established": true,
       "pull_request": 132,
       "record_id": "DH-OWNER-ATTEST-001",
       "release_id": "DH-OWNER-ATTEST-REG-001",
-      "review_result": "accepted_completed_owner_attestation_sufficient_for_metadata_only_clean_room_planning_eligibility",
       "state": "completed_metadata_only",
       "unknown_facts_preserved": true
     },
@@ -134,17 +141,7 @@
         "DH-PRESENT-001",
         "DH-PRESENT-002",
         "DH-PRESENT-003"
-      ],
-      "visual_candidate_created": false
-    },
-    "presentation_study": {
-      "issue": 114,
-      "merged_main_sha": "671b8f2512be80c0c5f2cec701c29445159620e2",
-      "pull_request": 115,
-      "release_id": "DH-PRESENT-REG-001",
-      "state": "completed_metadata_only",
-      "study_id": "DH-PRESENT-001",
-      "visual_candidate_created": false
+      ]
     },
     "production_art_authorized": false,
     "public_github_release_assets_authorized": false,
@@ -153,9 +150,7 @@
       "candidate_created": false,
       "conversion_readiness": "not_ready",
       "direct_pixel_use_cleared": false,
-      "disposition": "partial_resolution_for_private_internal_reference_only",
       "gemini_family_count": 4,
-      "gemini_source_attribution_only_count": 4,
       "implementation_authorized": false,
       "issue": 127,
       "jpeg_with_png_extension_count": 4,
@@ -164,10 +159,7 @@
       "max_rights_tier": "R1_private_internal_reference",
       "merged_main_sha": "afa65009237b7b5494bf088c640ff542f93e16b4",
       "openai_family_count": 21,
-      "openai_source_attribution_only_count": 5,
-      "owner_attestation_required": false,
       "png_count": 21,
-      "prerequisite_state": "owner_attestation_and_ux_addendum_complete_clean_room_planning_eligible_not_authorized",
       "public_distribution_cleared": false,
       "pull_request": 128,
       "record_id": "DH-RIGHTS-001",
@@ -178,44 +170,55 @@
       "state": "completed_metadata_only"
     },
     "runtime_art_authorized": false,
+    "source_plan": {
+      "blank_human_authored_sources_required": true,
+      "candidate_created": false,
+      "clean_room_planning_complete": true,
+      "control_traceability_count": 20,
+      "direct_generated_pixel_use_authorized": false,
+      "editable_source_created": false,
+      "external_package": {
+        "admitted_to_repository": false,
+        "bytes": 36122,
+        "filename": "DH-SOURCE-PLAN-001_Clean_Room_Source_Art_and_Composition_Planning_Package_v2.zip",
+        "manifest_bytes": 3304,
+        "manifest_sha256": "63b4c87e0a5ce9782c53994db49d6709eb864ab58585e5fbbdd5a8b09d6f4ca9",
+        "manifested_payload_count": 14,
+        "sha256": "c16988b86f14a6d813d01dfbc3508865716c1e84bf78dfb792ca65f31abd2064",
+        "total_file_count": 15
+      },
+      "future_evidence_performed": false,
+      "godot_authorized": false,
+      "implementation_authorized": false,
+      "issue": 139,
+      "merged_main_sha": "a42d1104c16532e801164dc237a5fddc6187b489",
+      "mutation_count": 529,
+      "no_pixel_reuse_required": true,
+      "pull_request": 146,
+      "record_id": "DH-SOURCE-PLAN-001",
+      "release_id": "DH-SOURCE-PLAN-001",
+      "runtime_composition_authorized": false,
+      "shared_low_high_tide_board_master_required": true,
+      "similarity_review_required": true,
+      "source_art_creation_authorized": false,
+      "source_family_count": 10,
+      "source_to_runtime_lineage_required": true,
+      "state": "completed_metadata_only_planning"
+    },
     "ux_addendum": {
       "addendum_to_record_id": "DH-UX-001",
-      "addendum_to_release_id": "DH-UX-REG-001",
-      "clean_room_source_planning_authorized": false,
-      "direct_pixel_use_authorized": false,
-      "five_recommendation_classes": [
-        "pixel_independent_advisory",
-        "clean_room_source_planning_input_gated",
-        "implementation_dependent_deferred",
-        "human_evidence_dependent",
-        "rejected_or_out_of_scope"
-      ],
       "governing_advisory_replaced": false,
-      "held_source_plan_activated": false,
       "implementation_authorized": false,
       "issue": 135,
       "merged_main_sha": "eaa40667322928d39f6cee7c4bff3f74775c2792",
       "pull_request": 136,
       "record_id": "DH-UX-FINAL-001",
       "release_id": "DH-UX-ADDENDUM-REG-001",
-      "review_result": "accepted_final_external_ux_advisory_as_bounded_dh_ux_001_addendum_with_required_schema_correction",
-      "schema_correction": "repository_exact_const_fully_closed",
-      "six_part_rights_planning_gate": [
-        "owner_attestation_complete_to_best_firsthand_knowledge",
-        "r1_private_reference_governance_complete_with_qualifications",
-        "direct_generated_pixel_public_commercial_clearance_absent_and_not_requested",
-        "clean_room_source_planning_release_not_active",
-        "human_authored_source_package_absent",
-        "source_runtime_composition_authority_absent"
-      ],
-      "source_creation_authorized": false,
       "state": "completed_metadata_only_subordinate_addendum"
     },
     "ux_advisory": {
       "advisory_id": "DH-UX-001",
-      "candidate_id": null,
       "conversion_readiness": "not_ready",
-      "disposition": "accepted_external_ux_advisory_with_required_corrections",
       "implementation_authorized": false,
       "issue": 120,
       "merged_main_sha": "22b43893b7726e5c5bea1078aced1cf11e08049f",
