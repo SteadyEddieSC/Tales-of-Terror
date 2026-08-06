@@ -19,7 +19,7 @@ The workflow:
 Local use is optional when Actionlint is already installed:
 
 ```powershell
-actionlint -color never
+actionlint
 python quality/run_quality.py static
 ```
 
