@@ -13,9 +13,10 @@
     "snapshot_version": 3,
     "state": "completed_developer_only"
   },
-  "as_of_date": "2026-08-05",
+  "as_of_date": "2026-08-06",
   "closed_unmerged_pull_requests": [
-    32
+    32,
+    154
   ],
   "companion_dependency_security": {
     "audit_threshold": "moderate",
@@ -39,7 +40,7 @@
   },
   "drowned_harbor": {
     "ordinary_playable": false,
-    "status": "developer_only_alpha3_with_completed_metadata_only_visual_presentation_ux_rights_owner_attestation_and_clean_room_source_planning_export_excluded"
+    "status": "developer_only_alpha3_with_completed_ai_art_policy_and_metadata_only_ai_source_advisory_export_excluded"
   },
   "gates": [
     {
@@ -57,10 +58,12 @@
   "pending_inputs": [],
   "playable_release": "v0.1.9",
   "preserved_authorities": {
+    "ai_art_policy_merge": "209bba6498686cd392ddce4bbc32f549d381913f",
     "alpha1_merge": "85b77d5216472afdb4abb7598917d5052eed180a",
     "alpha2_merge": "4e28ce1d7b471c9be1113986647ccbc3147c0d9d",
     "alpha3_candidate_head": "08fdbe8b52a66fc44a98bdd27878554c5478aef1",
     "alpha3_merge": "cad70c5c8f0db1de7d557aff242cc8fe3610361b",
+    "dh_ai_source_advisory_merge": "073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7",
     "dh_owner_attestation_registration_merge": "7af430b5d9528c648d00291e4c32fa368279b41b",
     "dh_present_family_registration_merge": "1cad8495c913d926c4422557ea59e8c6fa1f6c1a",
     "dh_present_registration_merge": "671b8f2512be80c0c5f2cec701c29445159620e2",
@@ -83,7 +86,7 @@
     "drowned_harbor_startup_or_fallback_registered": false,
     "tale_count": 1
   },
-  "protected_main": "a42d1104c16532e801164dc237a5fddc6187b489",
+  "protected_main": "073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7",
   "protected_main_semantics": "exact_reconciliation_starting_baseline",
   "quality_security_baseline": {
     "codeql_supported_languages": [
@@ -104,17 +107,65 @@
     "activation_authorized": false,
     "codex_required": false,
     "github_issue": null,
-    "release_id": null,
-    "state": "unselected_post_clean_room_planning_source_creation_requires_explicit_activation",
-    "title": null
+    "immediate_incremental_spend_usd": 0,
+    "planned_generation_count": 22,
+    "release_id": "DH-AI-GEN-001",
+    "state": "selected_not_activated",
+    "title": "Drowned Harbor Shared Board-Master Visual Source Pilot"
+  },
+  "rejected_competing_release": {
+    "accepted": false,
+    "exact_head_sha": "973d9d94c0b828f6e54990df3c335a4a9f36b5d7",
+    "policy_amendments_accepted": false,
+    "pull_request": 154,
+    "state": "closed_unmerged_rejected",
+    "visual_asset_dispositions_accepted": false
   },
   "runtime_implementation_authorized": false,
-  "schema_version": 9,
+  "schema_version": 10,
   "status_kind": "post_prototype_project_status",
+  "status_reconciliation": {
+    "branch": "docs/post-dh-ai-source-status-reconciliation",
+    "issue": 155,
+    "pull_request": null,
+    "release_type": "documentation_and_governance_reconciliation",
+    "state": "draft_candidate"
+  },
   "unrelated_open_pull_requests": [],
   "ux_implementation_authorized": false,
   "visual_implementation_authorized": false,
   "visual_planning": {
+    "ai_art_policy": {
+      "ai_generated_or_assisted_source_may_become_eligible_after_asset_specific_promotion": true,
+      "asset_generation_authorized": false,
+      "human_art_direction_selection_arrangement_and_review_required": true,
+      "human_drawn_or_painted_source_required": false,
+      "issue": 151,
+      "ledger_asset_count": 0,
+      "ledger_state": "policy_only_no_assets",
+      "merged_main_sha": "209bba6498686cd392ddce4bbc32f549d381913f",
+      "pull_request": 152,
+      "release_id": "AI-ART-POLICY-001",
+      "state": "completed_policy_only"
+    },
+    "ai_source_advisory": {
+      "generation_request_authorized": false,
+      "immediate_incremental_spend_usd": 0,
+      "issue": 149,
+      "merged_main_sha": "073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7",
+      "ordinary_editing_role": "exact_geometry_alignment_masking_assembly_and_editable_master",
+      "planned_generation_count": 22,
+      "primary_generation_tools": [
+        "openai_chatgpt_image_generation",
+        "google_gemini_apps_image_generation"
+      ],
+      "pull_request": 153,
+      "record_id": "DH-AI-SOURCE-001",
+      "release_id": "DH-AI-SOURCE-001",
+      "runtime_procedural_role": "exact_text_routes_focus_preview_warning_recovery_commitment_and_dynamic_state",
+      "shared_invariant_low_high_tide_board_master_required": true,
+      "state": "completed_metadata_only_advisory"
+    },
     "external_binaries_in_git": false,
     "owner_attestation": {
       "attestation_complete": true,
@@ -150,12 +201,16 @@
       "candidate_created": false,
       "conversion_readiness": "not_ready",
       "direct_pixel_use_cleared": false,
+      "extracted_fragment_use_allowed": false,
       "gemini_family_count": 4,
+      "hidden_reference_use_allowed": false,
+      "image_to_image_input_allowed": false,
       "implementation_authorized": false,
       "issue": 127,
       "jpeg_with_png_extension_count": 4,
       "legal_clearance_created": false,
       "local_c2pa_detected_not_authenticated_count": 16,
+      "mask_or_control_input_allowed": false,
       "max_rights_tier": "R1_private_internal_reference",
       "merged_main_sha": "afa65009237b7b5494bf088c640ff542f93e16b4",
       "openai_family_count": 21,
@@ -167,33 +222,26 @@
       "release_id": "DH-RIGHTS-REG-001",
       "runtime_art_authorized": false,
       "source_art_authorized": false,
-      "state": "completed_metadata_only"
+      "state": "completed_metadata_only",
+      "texture_use_allowed": false,
+      "upload_to_ai_tool_allowed": false
     },
     "runtime_art_authorized": false,
     "source_plan": {
-      "blank_human_authored_sources_required": true,
+      "blank_human_authored_sources_required_in_historical_record": true,
       "candidate_created": false,
       "clean_room_planning_complete": true,
       "control_traceability_count": 20,
+      "current_blank_human_authored_source_requirement": false,
       "direct_generated_pixel_use_authorized": false,
       "editable_source_created": false,
-      "external_package": {
-        "admitted_to_repository": false,
-        "bytes": 36122,
-        "filename": "DH-SOURCE-PLAN-001_Clean_Room_Source_Art_and_Composition_Planning_Package_v2.zip",
-        "manifest_bytes": 3304,
-        "manifest_sha256": "63b4c87e0a5ce9782c53994db49d6709eb864ab58585e5fbbdd5a8b09d6f4ca9",
-        "manifested_payload_count": 14,
-        "sha256": "c16988b86f14a6d813d01dfbc3508865716c1e84bf78dfb792ca65f31abd2064",
-        "total_file_count": 15
-      },
       "future_evidence_performed": false,
       "godot_authorized": false,
       "implementation_authorized": false,
       "issue": 139,
       "merged_main_sha": "a42d1104c16532e801164dc237a5fddc6187b489",
       "mutation_count": 529,
-      "no_pixel_reuse_required": true,
+      "no_pixel_reuse_from_restricted_external_images_required": true,
       "pull_request": 146,
       "record_id": "DH-SOURCE-PLAN-001",
       "release_id": "DH-SOURCE-PLAN-001",
@@ -203,7 +251,7 @@
       "source_art_creation_authorized": false,
       "source_family_count": 10,
       "source_to_runtime_lineage_required": true,
-      "state": "completed_metadata_only_planning"
+      "state": "completed_historical_metadata_only_planning_superseded_where_conflicting_with_ai_art_policy"
     },
     "ux_addendum": {
       "addendum_to_record_id": "DH-UX-001",
