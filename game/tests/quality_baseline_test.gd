@@ -86,8 +86,7 @@ func _test_all_production_scenes_load() -> void:
 		scene_times[scene_path] = elapsed
 		_expect(
 			elapsed <= SCENE_LOAD_BUDGET_MSEC,
-			"scene load stays within broad smoke budget: %s (%d ms)"
-			% [scene_path, elapsed],
+			"scene load stays within broad smoke budget: %s (%d ms)" % [scene_path, elapsed],
 		)
 		instance.queue_free()
 		await process_frame
@@ -95,7 +94,9 @@ func _test_all_production_scenes_load() -> void:
 	var final_orphans: int = int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
 	_metrics.orphan_nodes_before = baseline_orphans
 	_metrics.orphan_nodes_after = final_orphans
-	_expect(final_orphans <= baseline_orphans + 2, "scene smoke loop does not grow orphan-node count")
+	_expect(
+		final_orphans <= baseline_orphans + 2, "scene smoke loop does not grow orphan-node count"
+	)
 
 
 func _collect_scenes(path: String, output: PackedStringArray) -> void:
@@ -140,7 +141,9 @@ func _test_state_transitions_and_snapshots() -> void:
 	var snapshot: Dictionary = coordinator.to_snapshot()
 	var encoded_once: String = JSON.stringify(snapshot)
 	var encoded_twice: String = JSON.stringify(coordinator.to_snapshot())
-	_expect(encoded_once == encoded_twice, "snapshot serialization is deterministic without mutation")
+	_expect(
+		encoded_once == encoded_twice, "snapshot serialization is deterministic without mutation"
+	)
 	var restored := VerticalSliceCoordinator.new()
 	var restore_result: Dictionary = restored.restore_snapshot(snapshot)
 	_expect(restore_result.accepted, "current snapshot restores")
