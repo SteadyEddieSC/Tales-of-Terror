@@ -122,6 +122,8 @@ jobs:
         run: |
           mkdir -p artifacts/security/workflow-sources
           cp -a .github/workflows/. artifacts/security/workflow-sources/
+          git rev-parse 'HEAD^{tree}' > artifacts/security/source-tree-sha.txt
+          git ls-tree -r HEAD > artifacts/security/source-tree-manifest.txt
 
       - name: Upload security reports
         if: always()
