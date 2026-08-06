@@ -1,0 +1,73 @@
+name: GitHub Actions lint
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'quality/run_quality.py'
+      - 'docs/technical/Workflow_and_Dependency_Review.md'
+      - 'docs/releases/quality-actionlint-dependency-review.md'
+  push:
+    branches:
+      - main
+      - 'agent/**'
+      - 'release/**'
+      - 'rc/**'
+    paths:
+      - '.github/workflows/**'
+      - 'quality/run_quality.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  workflow-lint:
+    name: Actionlint and embedded ShellCheck
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prepare workflow-lint evidence
+        run: mkdir -p artifacts/workflow-lint
+
+      - name: Install checksum-pinned Actionlint 1.7.12
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/actionlint_1.7.12_linux_amd64.tar.gz"
+          curl -fsSL -o "$archive" \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          echo '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  actionlint_1.7.12_linux_amd64.tar.gz' \
+            | (cd "$RUNNER_TEMP" && sha256sum --check -)
+          tar -xzf "$archive" -C "$RUNNER_TEMP" actionlint
+          chmod +x "$RUNNER_TEMP/actionlint"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/actionlint" -version | tee artifacts/workflow-lint/actionlint-version.txt
+
+      - name: Verify embedded ShellCheck integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v shellcheck
+          shellcheck --version | tee artifacts/workflow-lint/shellcheck-version.txt
+
+      - name: Lint all GitHub Actions workflows
+        shell: bash
+        run: |
+          set -o pipefail
+          actionlint -color never 2>&1 | tee artifacts/workflow-lint/actionlint.txt
+
+      - name: Upload workflow-lint evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: terror-turn-actionlint-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/workflow-lint
+          if-no-files-found: error
+          retention-days: 14
