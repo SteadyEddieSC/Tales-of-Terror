@@ -25,6 +25,8 @@
 
 ## Registered result
 
+The bounded target is one shared Low Tide / High Water board master.
+
 This release registers a bounded AI-first production advisory for one future Drowned Harbor shared Low Tide / High Water board-master pilot. It records:
 
 - ChatGPT and Gemini as the existing-subscription concept and atmosphere tools;
