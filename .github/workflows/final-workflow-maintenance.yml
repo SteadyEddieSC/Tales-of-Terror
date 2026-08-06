@@ -142,3 +142,14 @@ jobs:
           path: artifacts/final-workflow-maintenance
           if-no-files-found: error
           retention-days: 2
+
+      - name: Transfer detached Git objects without advancing the branch
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          authorization="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.extraheader=AUTHORIZATION: basic $authorization" \
+            push origin "HEAD:agent/automated-quality-security-baseline"
