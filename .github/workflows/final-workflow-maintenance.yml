@@ -13,6 +13,8 @@ jobs:
     if: >-
       github.head_ref == 'agent/automated-quality-security-baseline' &&
       github.repository == 'SteadyEddieSC/Tales-of-Terror'
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
