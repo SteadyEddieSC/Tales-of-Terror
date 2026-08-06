@@ -20,12 +20,12 @@
     "undici": "7.29.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "5.20260722.1",
-    "@types/node": "26.1.1",
+    "@cloudflare/workers-types": "5.20260801.1",
+    "@types/node": "26.1.2",
     "jsdom": "29.1.1",
     "typescript": "7.0.2",
-    "vite": "8.1.4",
+    "vite": "8.2.0",
     "vitest": "4.1.10",
-    "wrangler": "4.114.0"
+    "wrangler": "4.118.0"
   }
 }
