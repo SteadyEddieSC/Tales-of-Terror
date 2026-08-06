@@ -1,10 +1,10 @@
 # AI Art Production and Provenance Policy v1
 
-**Release:** `AI-ART-POLICY-001`  
-**Issue:** #151  
-**Protected-main baseline:** `0a6686d8cc4d15feac81c128cfc414b954e234b1`  
-**Authority:** policy and provenance only  
-**Assets admitted:** none
+- **Release:** `AI-ART-POLICY-001`
+- **Issue:** #151
+- **Protected-main baseline:** `0a6686d8cc4d15feac81c128cfc414b954e234b1`
+- **Authority:** policy and provenance only
+- **Assets admitted:** none
 
 ## Production direction
 
