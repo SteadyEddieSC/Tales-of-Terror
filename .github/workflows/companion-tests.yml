@@ -40,7 +40,7 @@ jobs:
           npm run dev:service -- --port 8787 > /tmp/terror-turn-room.log 2>&1 &
           pid=$!
           trap 'kill "$pid" 2>/dev/null || true' EXIT
-          for attempt in $(seq 1 30); do
+          for ((attempt = 0; attempt < 30; attempt++)); do
             if curl -fsS http://127.0.0.1:8787/v1/health > /tmp/health.json; then
               break
             fi
