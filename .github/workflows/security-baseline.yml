@@ -141,3 +141,175 @@ jobs:
           ZIZMOR_OUTCOME: ${{ steps.zizmor.outcome }}
         run: |
           test "$ZIZMOR_OUTCOME" = success
+
+# BEGIN ONE-TIME WORKFLOW REMEDIATION
+  remediate-inherited-workflows:
+    name: Apply isolated workflow hardening
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.head_ref == 'agent/automated-quality-security-baseline' &&
+      github.repository == 'SteadyEddieSC/Tales-of-Terror'
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact development branch without persisted credentials
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: agent/automated-quality-security-baseline
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Apply reviewed checkout and cache hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow_root = Path('.github/workflows')
+          for path in sorted(workflow_root.glob('*.y*ml')):
+              if path.name == 'security-remediation.yml':
+                  continue
+              lines = path.read_text(encoding='utf-8').splitlines(keepends=True)
+              index = 0
+              while index < len(lines):
+                  line = lines[index]
+                  if 'uses: actions/checkout@' not in line:
+                      index += 1
+                      continue
+                  leading = len(line) - len(line.lstrip(' '))
+                  step_indent = leading if line.lstrip().startswith('- uses:') else leading - 2
+                  property_indent = step_indent + 2
+                  end = index + 1
+                  while end < len(lines):
+                      stripped = lines[end].lstrip(' ')
+                      current_indent = len(lines[end]) - len(stripped)
+                      if current_indent == step_indent and stripped.startswith('- '):
+                          break
+                      if current_indent < step_indent:
+                          break
+                      end += 1
+                  block = ''.join(lines[index:end])
+                  if 'persist-credentials:' in block:
+                      index = end
+                      continue
+                  with_index = None
+                  for candidate in range(index + 1, end):
+                      if (
+                          lines[candidate].strip() == 'with:'
+                          and len(lines[candidate]) - len(lines[candidate].lstrip(' '))
+                          == property_indent
+                      ):
+                          with_index = candidate
+                          break
+                  newline = '\r\n' if line.endswith('\r\n') else '\n'
+                  if with_index is not None:
+                      lines.insert(
+                          with_index + 1,
+                          ' ' * (property_indent + 2)
+                          + 'persist-credentials: false'
+                          + newline,
+                      )
+                      index = end + 1
+                  else:
+                      lines[index + 1:index + 1] = [
+                          ' ' * property_indent + 'with:' + newline,
+                          ' ' * (property_indent + 2)
+                          + 'persist-credentials: false'
+                          + newline,
+                      ]
+                      index = end + 2
+              text = ''.join(lines)
+              if path.name in {'quality-baseline.yml', 'security-baseline.yml'}:
+                  text = ''.join(
+                      candidate
+                      for candidate in text.splitlines(keepends=True)
+                      if candidate.strip()
+                      not in {
+                          'cache: pip',
+                          'cache: npm',
+                          'cache-dependency-path: requirements-dev.txt',
+                      }
+                  )
+              path.write_text(text, encoding='utf-8')
+
+          security_path = workflow_root / 'security-baseline.yml'
+          security_text = security_path.read_text(encoding='utf-8')
+          begin = security_text.index('# BEGIN ONE-TIME WORKFLOW REMEDIATION')
+          end_marker = '# END ONE-TIME WORKFLOW REMEDIATION'
+          end = security_text.index(end_marker, begin) + len(end_marker)
+          while end < len(security_text) and security_text[end] in '\r\n':
+              end += 1
+          security_path.write_text(
+              security_text[:begin].rstrip() + '\n',
+              encoding='utf-8',
+          )
+          temporary = workflow_root / 'security-remediation.yml'
+          if temporary.exists():
+              temporary.unlink()
+          PY
+
+      - name: Verify the final workflow set before commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          failures = []
+          for path in sorted(Path('.github/workflows').glob('*.y*ml')):
+              lines = path.read_text(encoding='utf-8').splitlines()
+              for index, line in enumerate(lines):
+                  if 'uses: actions/checkout@' not in line:
+                      continue
+                  leading = len(line) - len(line.lstrip(' '))
+                  step_indent = leading if line.lstrip().startswith('- uses:') else leading - 2
+                  end = index + 1
+                  while end < len(lines):
+                      stripped = lines[end].lstrip(' ')
+                      current_indent = len(lines[end]) - len(stripped)
+                      if current_indent == step_indent and stripped.startswith('- '):
+                          break
+                      if current_indent < step_indent:
+                          break
+                      end += 1
+                  if not any(
+                      candidate.strip() == 'persist-credentials: false'
+                      for candidate in lines[index:end]
+                  ):
+                      failures.append(f'{path}:{index + 1}: missing persist-credentials=false')
+          for name in ('quality-baseline.yml', 'security-baseline.yml'):
+              text = Path('.github/workflows', name).read_text(encoding='utf-8')
+              if any(
+                  candidate.strip()
+                  in {
+                      'cache: pip',
+                      'cache: npm',
+                      'cache-dependency-path: requirements-dev.txt',
+                  }
+                  for candidate in text.splitlines()
+              ):
+                  failures.append(f'{name}: dependency cache remains')
+          if Path('.github/workflows/security-remediation.yml').exists():
+              failures.append('temporary remediation workflow remains')
+          if failures:
+              raise SystemExit('\n'.join(failures))
+          PY
+          git diff --check
+
+      - name: Commit and push one atomic hardening change
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'Terror Turn Development Agent'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/workflows
+          git commit -m 'Harden inherited GitHub Actions workflows'
+          authorization="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.extraheader=AUTHORIZATION: basic $authorization" \
+            push origin "HEAD:agent/automated-quality-security-baseline"
+# END ONE-TIME WORKFLOW REMEDIATION
