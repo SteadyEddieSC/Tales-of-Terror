@@ -61,7 +61,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          actionlint -color never 2>&1 | tee artifacts/workflow-lint/actionlint.txt
+          actionlint 2>&1 | tee artifacts/workflow-lint/actionlint.txt
 
       - name: Upload workflow-lint evidence
         if: always()
