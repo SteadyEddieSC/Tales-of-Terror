@@ -1,0 +1,77 @@
+{
+  "record_kind": "dh_ai_source_001_advisory_provenance",
+  "record_version": 1,
+  "release_id": "DH-AI-SOURCE-001",
+  "issue": 149,
+  "repository": "SteadyEddieSC/Tales-of-Terror",
+  "registration_protected_main": "209bba6498686cd392ddce4bbc32f549d381913f",
+  "policy_dependency": {
+    "release_id": "AI-ART-POLICY-001",
+    "issue": 151,
+    "pull_request": 152,
+    "merged_main_sha": "209bba6498686cd392ddce4bbc32f549d381913f"
+  },
+  "external_package": {
+    "filename": "DH-AI-SOURCE-001_External_UX_Helper_AI_First_Art_Pipeline_Advisory_v1.zip",
+    "bytes": 32721,
+    "sha256": "dc4e91101c5906e5cef6f3b482d1c83e576849ce94a3dd33d03aa2644cdf530c",
+    "manifest_path": "12_MACHINE_READABLE/PACKAGE_MANIFEST.json",
+    "manifest_bytes": 2716,
+    "manifest_sha256": "0dba5c1b4c3ddcee0303d5a3feb1627f509896a0d3e75f559156db28dcff4853",
+    "manifested_payload_count": 15,
+    "total_file_count": 16,
+    "raw_advisory_record_sha256": "8e691c948e5d513f9eb0c8aaceaab31ae19567acb2b7dbf9ed99fca397c2ecc6",
+    "raw_advisory_schema_sha256": "fc360d67478ce18b7553b21bb7998077b4e7d46bd58062b1b4f9adf491a9c1f5",
+    "package_authoring_protected_main": "f361fbfc9df9384f7c1eefb447a911a31fdc3fee",
+    "zip_crc_clean": true,
+    "utf8_text_only_audit_passed": true,
+    "draft_2020_12_validation_passed": true,
+    "closed_object_schema_node_count": 6,
+    "all_manifest_hashes_and_bytes_match": true,
+    "admitted_to_repository": false,
+    "public_release_asset_authorized": false
+  },
+  "registration": {
+    "branch": "docs/dh-ai-source-001-board-master-advisory",
+    "path_count": 10,
+    "text_only": true,
+    "package_specific_advisory_registered": true,
+    "generation_request_authorized": false,
+    "image_asset_created_or_imported": false,
+    "source_acceptance_authorized": false,
+    "runtime_or_godot_implementation_authorized": false,
+    "paid_tool_purchase_authorized": false,
+    "public_or_storefront_use_authorized": false,
+    "codex_authorized": false
+  },
+  "release_coordinator_supplements": {
+    "immediate_incremental_spend_usd": 0,
+    "chatgpt_privacy_control": "temporary_chat_or_improve_model_for_everyone_disabled",
+    "gemini_privacy_control": "temporary_chat_or_keep_activity_disabled_and_no_proprietary_feedback",
+    "recraft_free_outputs_eligible": false,
+    "recraft_api_optional_non_sensitive_test_usd": 1,
+    "recraft_api_test_authorized_by_registration": false,
+    "private_recraft_month_requires_documented_gap": true,
+    "firefly_is_fallback_not_current_purchase": true,
+    "restricted_external_images_may_be_uploaded": false
+  },
+  "external_visual_state": {
+    "asset_count": 25,
+    "maximum_rights_tier": "R1_private_internal_reference",
+    "reference_only_nonproduction": true,
+    "none_are_source_files": true,
+    "implementation_authorized": false
+  },
+  "planned_paths": [
+    ".github/workflows/drowned-harbor-ai-source-advisory.yml",
+    "docs/releases/DH-AI-SOURCE-001-ai-first-art-pipeline-and-board-master-advisory.md",
+    "docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_First_Art_Pipeline_and_Shared_Board_Master_Pilot_v1.md",
+    "docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Prompt_Tool_and_Budget_Plan_v1.md",
+    "docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Generation_Provenance_and_Review_Plan_v1.md",
+    "docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_v1.json",
+    "docs/tales/drowned_harbor/visual/drowned_harbor_ai_source_001_advisory_schema_v1.json",
+    "art/ai/dh_ai_source_001_advisory_provenance_v1.json",
+    "tools/validate_drowned_harbor_ai_source_advisory.py",
+    "tools/test_validate_drowned_harbor_ai_source_advisory.py"
+  ]
+}
