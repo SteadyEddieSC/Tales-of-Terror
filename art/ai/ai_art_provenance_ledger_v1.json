@@ -1,0 +1,7 @@
+{
+  "record_kind": "terror_turn_ai_art_provenance_ledger",
+  "record_version": 1,
+  "policy_release": "AI-ART-POLICY-001",
+  "state": "policy_only_no_assets",
+  "assets": []
+}
