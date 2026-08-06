@@ -1,0 +1,101 @@
+{
+  "record_kind": "terror_turn_ai_art_policy",
+  "record_version": 1,
+  "release": {
+    "release_id": "AI-ART-POLICY-001",
+    "governing_issue": 151,
+    "repository": "SteadyEddieSC/Tales-of-Terror",
+    "protected_main": "0a6686d8cc4d15feac81c128cfc414b954e234b1",
+    "policy_date": "2026-08-05",
+    "release_type": "metadata_only_ai_art_policy_and_provenance_authority",
+    "state": "policy_only_no_assets"
+  },
+  "decision": {
+    "new_production_visuals_policy": "ai_generated_or_ai_assisted_source_required_unless_exception_approved",
+    "human_drawn_or_painted_source_required": false,
+    "human_art_direction_selection_arrangement_and_review_required": true,
+    "ai_generated_pixels_may_become_eligible_after_separate_asset_promotion": true,
+    "generation_authorized_by_this_release": false,
+    "import_authorized_by_this_release": false,
+    "runtime_integration_authorized_by_this_release": false,
+    "ordinary_export_authorized_by_this_release": false,
+    "marketing_authorized_by_this_release": false,
+    "storefront_publication_authorized_by_this_release": false,
+    "live_generation_authorized": false,
+    "copyrightability_of_machine_determined_pixels_assumed": false,
+    "steam_ai_classification": "pre_generated_ai_content"
+  },
+  "supersession": {
+    "historical_authority": "DH-SOURCE-PLAN-001",
+    "historical_record_unchanged": true,
+    "superseded_future_requirements": [
+      "blank_human_authored_editable_sources_required",
+      "all_direct_ai_generated_pixel_use_permanently_prohibited",
+      "independent_human_authorship_disposition_required_for_future_source_acceptance"
+    ],
+    "preserved_requirements": [
+      "all_25_external_reference_images_remain_R1_private_internal_reference",
+      "none_of_the_25_external_reference_images_are_source_files",
+      "no_tracing_vectorization_paint_over_or_fragment_extraction_from_external_reference_images",
+      "authorized_inputs_only",
+      "provider_model_prompt_source_input_and_hash_provenance",
+      "independent_similarity_review",
+      "source_to_runtime_lineage",
+      "public_private_authority_boundaries",
+      "960x540_and_controller_first_design_constraints",
+      "no_current_generation_import_runtime_export_marketing_or_publication_authority",
+      "automation_is_not_human_evidence"
+    ]
+  },
+  "registries": {
+    "approved_generators": "art/ai/approved_generators_v1.json",
+    "provenance_schema": "art/ai/ai_art_provenance_schema_v1.json",
+    "provenance_ledger": "art/ai/ai_art_provenance_ledger_v1.json"
+  },
+  "promotion_stages": [
+    "policy_only_no_assets",
+    "generation_request_approved",
+    "generated_source_quarantined",
+    "rights_and_similarity_review",
+    "source_accepted_not_runtime",
+    "runtime_candidate",
+    "ordinary_export_candidate",
+    "storefront_candidate",
+    "retired_or_rejected"
+  ],
+  "required_reviews": [
+    "provider_terms_and_account_review",
+    "input_rights_review",
+    "third_party_character_logo_trademark_and_likeness_review",
+    "living_artist_or_active_studio_imitation_review",
+    "substantial_similarity_review",
+    "accidental_text_signature_watermark_and_brand_review",
+    "continuity_style_and_quality_review",
+    "human_contribution_and_copyright_scope_record",
+    "steam_pre_generated_ai_disclosure_review",
+    "runtime_asset_budget_and_import_review"
+  ],
+  "stop_conditions": [
+    "unapproved_provider_or_account",
+    "provider_or_model_version_unknown",
+    "prompt_or_generation_record_missing",
+    "source_input_rights_unknown",
+    "third_party_character_logo_trademark_or_likeness_present_without_written_authorization",
+    "named_living_artist_or_active_studio_imitation_requested",
+    "substantial_similarity_concern_unresolved",
+    "accidental_text_signature_watermark_or_brand_unresolved",
+    "generator_output_or_runtime_hash_missing",
+    "c2pa_or_watermark_disposition_missing_when_present",
+    "copyrightability_or_exclusivity_overclaimed",
+    "steam_disclosure_inaccurate_or_incomplete",
+    "private_information_would_enter_public_art",
+    "current_release_boundary_exceeded"
+  ],
+  "authoritative_documents": [
+    "docs/decisions/ADR-0025-ai-only-production-art-policy.md",
+    "docs/technical/AI_Art_Production_and_Provenance_Policy_v1.md",
+    "docs/technical/AI_Art_Similarity_and_Promotion_Checklist_v1.md",
+    "docs/technical/Steam_PreGenerated_AI_Disclosure_Draft_v1.md",
+    "docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Only_Art_Provenance_Amendment_v1.md"
+  ]
+}
