@@ -299,16 +299,35 @@ jobs:
           PY
           git diff --check
 
-      - name: Commit and push one atomic hardening change
+      - name: Commit one atomic hardening change
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git config user.name 'Terror Turn Development Agent'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add .github/workflows
           git commit -m 'Harden inherited GitHub Actions workflows'
+          mkdir -p artifacts/remediation
+          git rev-parse HEAD | tee artifacts/remediation/commit-sha.txt
+          git rev-parse 'HEAD^{tree}' | tee artifacts/remediation/tree-sha.txt
+          git show --stat --oneline --summary HEAD | tee artifacts/remediation/commit-summary.txt
+          git ls-tree -r HEAD > artifacts/remediation/tree-manifest.txt
+
+      - name: Upload detached remediation object metadata
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: workflow-remediation-object-${{ github.sha }}
+          path: artifacts/remediation
+          if-no-files-found: error
+          retention-days: 2
+
+      - name: Transfer detached Git objects to GitHub
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
           authorization="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
           git -c "http.extraheader=AUTHORIZATION: basic $authorization" \
             push origin "HEAD:agent/automated-quality-security-baseline"
