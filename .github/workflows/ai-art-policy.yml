@@ -71,5 +71,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          find tools -type d -name '__pycache__' -prune -exec rm -rf {} +
+          find tools -type f -name '*.pyc' -delete
           git diff --check
           test -z "$(git status --porcelain)"
