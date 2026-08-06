@@ -53,10 +53,15 @@ jobs:
       - name: Render temporary review file
         run: python tools/render_shared_screen_storyboards.py --output "$RUNNER_TEMP/drowned_harbor_storyboards.html"
       - name: Verify offline, normal-catalog isolation, and clean output
+        shell: bash
         run: |
+          set -euo pipefail
           test -s "$RUNNER_TEMP/drowned_harbor_storyboards.html"
           test "$(grep -c 'class="storyboard"' "$RUNNER_TEMP/drowned_harbor_storyboards.html")" = "22"
-          ! grep -Eiq 'https?://|<script|src=' "$RUNNER_TEMP/drowned_harbor_storyboards.html"
+          if grep -Eiq 'https?://|<script|src=' "$RUNNER_TEMP/drowned_harbor_storyboards.html"; then
+            echo 'Rendered storyboard review contains an external or script-capable reference'
+            exit 1
+          fi
           test -d game/data/tales/drowned_harbor
           python tools/tale_catalog.py validate
           test -z "$(git status --porcelain)"

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -29,6 +30,18 @@ def run(command: list[str]) -> None:
     subprocess.run(command, cwd=ROOT, check=True)
 
 
+def run_actionlint_when_available() -> None:
+    actionlint = shutil.which("actionlint")
+    if actionlint is None:
+        print(
+            "! actionlint is not installed locally; CI enforces checksum-pinned "
+            "Actionlint 1.7.12 with ShellCheck integration.",
+            flush=True,
+        )
+        return
+    run([actionlint])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("scope", choices=["static", "godot", "all"], default="all", nargs="?")
@@ -37,6 +50,7 @@ def main() -> int:
     if args.scope in {"static", "all"}:
         run([sys.executable, "-m", "unittest", "discover", "-s", "quality", "-p", "test_*.py"])
         run([sys.executable, "quality/validate_repository.py", "all"])
+        run_actionlint_when_available()
     if args.scope in {"godot", "all"}:
         run([args.godot, "--headless", "--editor", "--path", "game", "--quit"])
         run([args.godot, "--headless", "--path", "game", "--quit-after", "3"])
