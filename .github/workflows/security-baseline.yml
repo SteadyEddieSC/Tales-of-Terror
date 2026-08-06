@@ -89,14 +89,13 @@ jobs:
         env:
           ZIZMOR_OUTCOME: ${{ steps.zizmor.outcome }}
         run: |
-          printf '{"schema_version":1,"tool":"zizmor","version":"1.26.1","outcome":"%s","blocking_policy":"high-risk structural rules are enforced by validate_repository.py; full Zizmor findings are advisory until individually triaged"}\n' \
+          printf '{"schema_version":1,"tool":"zizmor","version":"1.26.1","outcome":"%s","blocking_policy":"all Zizmor findings are blocking; the final gate preserves evidence before failing"}\n' \
             "$ZIZMOR_OUTCOME" > artifacts/security/zizmor-disposition.json
 
       - name: Set up Node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: 24.18.0
-          cache: npm
 
       - name: Audit locked npm dependency graph
         shell: bash
@@ -117,6 +116,13 @@ jobs:
           python -m pip install --disable-pip-version-check pip-audit==2.9.0
           pip-audit --requirement requirements-dev.txt --format json --output artifacts/security/pip-audit.json
 
+      - name: Snapshot workflow sources for audit evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p artifacts/security/workflow-sources
+          cp -a .github/workflows/. artifacts/security/workflow-sources/
+
       - name: Upload security reports
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -125,3 +131,11 @@ jobs:
           path: artifacts/security
           if-no-files-found: error
           retention-days: 14
+
+      - name: Enforce Zizmor findings
+        if: always()
+        shell: bash
+        env:
+          ZIZMOR_OUTCOME: ${{ steps.zizmor.outcome }}
+        run: |
+          test "$ZIZMOR_OUTCOME" = success
