@@ -1,6 +1,7 @@
 name: Temporary format probe
 
 on:
+  pull_request:
   push:
     branches:
       - 'agent/automated-quality-security-baseline'
