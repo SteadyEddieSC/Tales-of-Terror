@@ -1,0 +1,68 @@
+{
+  "record_kind": "dh_source_plan_001_provenance",
+  "record_version": 1,
+  "release_id": "DH-SOURCE-PLAN-001",
+  "issue": 139,
+  "repository": "SteadyEddieSC/Tales-of-Terror",
+  "phase_b_protected_main": "3d29b454868295c7d3f4f06708de9c29b462abb2",
+  "external_package": {
+    "filename": "DH-SOURCE-PLAN-001_Clean_Room_Source_Art_and_Composition_Planning_Package_v2.zip",
+    "bytes": 36122,
+    "sha256": "c16988b86f14a6d813d01dfbc3508865716c1e84bf78dfb792ca65f31abd2064",
+    "manifest_path": "11_MACHINE_READABLE/PACKAGE_MANIFEST.json",
+    "manifest_bytes": 3304,
+    "manifest_sha256": "63b4c87e0a5ce9782c53994db49d6709eb864ab58585e5fbbdd5a8b09d6f4ca9",
+    "manifested_payload_count": 14,
+    "total_file_count": 15,
+    "zip_crc_clean": true,
+    "raw_machine_record_sha256": "c62a34e86aee56d271169055c0092a9ac398c3badc8bde9fda208bf778901055",
+    "raw_schema_sha256": "36da33bd7618d09ac763acfe28edf823a8c139e153ab780d75f6b72b8b0d5341",
+    "package_authoring_protected_main": "3ad17fbbf2ae8c2bf52c8535ba8936ea8b858dcb",
+    "admitted_to_repository": false,
+    "public_release_asset_authorized": false
+  },
+  "registration": {
+    "branch": "docs/dh-source-plan-001-clean-room-planning",
+    "planned_paths": [
+      ".github/workflows/drowned-harbor-clean-room-source-planning.yml",
+      "docs/releases/DH-SOURCE-PLAN-001-clean-room-source-art-and-composition-planning.md",
+      "docs/tales/drowned_harbor/visual/Drowned_Harbor_Clean_Room_Source_Art_and_Composition_Plan_v1.md",
+      "docs/tales/drowned_harbor/visual/Drowned_Harbor_Source_Asset_Taxonomy_and_Ownership_Matrix_v1.md",
+      "docs/tales/drowned_harbor/visual/Drowned_Harbor_Shared_Board_Master_and_State_Composition_Plan_v1.md",
+      "docs/tales/drowned_harbor/ux/Drowned_Harbor_Clean_Room_UX_Token_and_Control_Traceability_Plan_v1.md",
+      "docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_v1.json",
+      "docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_schema_v1.json",
+      "art/licenses/drowned_harbor/visual/dh_source_plan_001_provenance_v1.json",
+      "tools/validate_drowned_harbor_clean_room_source_planning.py",
+      "tools/test_validate_drowned_harbor_clean_room_source_planning.py"
+    ],
+    "text_only": true,
+    "source_creation_authorized": false,
+    "runtime_composition_authorized": false,
+    "direct_generated_pixel_use_authorized": false,
+    "godot_authorized": false,
+    "ux_implementation_authorized": false,
+    "candidate_authorized": false,
+    "public_use_authorized": false,
+    "codex_authorized": false
+  },
+  "registered_authorities": [
+    "DH-UX-001",
+    "DH-UX-FINAL-001",
+    "DH-RIGHTS-001",
+    "DH-OWNER-ATTEST-001",
+    "DH-PRESENT-FAMILY-001"
+  ],
+  "external_visual_state": {
+    "asset_count": 25,
+    "max_rights_tier": "R1_private_internal_reference",
+    "reference_only_nonproduction": true,
+    "conversion_readiness": "not_ready",
+    "implementation_authorized": false
+  },
+  "quality_security_baseline": {
+    "merge_sha": "3d29b454868295c7d3f4f06708de9c29b462abb2",
+    "pull_request": 140,
+    "inherited": true
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/drowned_harbor_clean_room_source_planning_v1.schema.json",
+  "title": "Drowned Harbor clean-room source planning v1",
+  "$defs": {
+    "nonempty_string": {"type":"string","minLength":1},
+    "asset_family": {
+      "type":"object",
+      "properties": {
+        "owner":{"$ref":"#/$defs/nonempty_string"},
+        "information_class":{"$ref":"#/$defs/nonempty_string"},
+        "status":{"$ref":"#/$defs/nonempty_string"}
+      },
+      "required":["owner","information_class","status"],
+      "additionalProperties":false
+    },
+    "control": {
+      "type":"object",
+      "properties": {
+        "owner":{"$ref":"#/$defs/nonempty_string"},
+        "legal_intent_source":{"$ref":"#/$defs/nonempty_string"},
+        "availability":{"$ref":"#/$defs/nonempty_string"},
+        "information_class":{"$ref":"#/$defs/nonempty_string"},
+        "interaction_category":{"$ref":"#/$defs/nonempty_string"},
+        "source_responsibility":{"$ref":"#/$defs/nonempty_string"},
+        "future_consumer":{"type":"string","pattern":"_hypothesis_not_implemented$"}
+      },
+      "required":["owner","legal_intent_source","availability","information_class","interaction_category","source_responsibility","future_consumer"],
+      "additionalProperties":false
+    }
+  },
+  "type":"object",
+  "properties": {
+    "record_kind":{"const":"drowned_harbor_clean_room_source_planning"},
+    "record_version":{"const":1},
+    "release": {
+      "type":"object",
+      "properties": {
+        "release_id":{"const":"DH-SOURCE-PLAN-001"},
+        "governing_issue":{"const":139},
+        "repository":{"const":"SteadyEddieSC/Tales-of-Terror"},
+        "protected_main":{"const":"3d29b454868295c7d3f4f06708de9c29b462abb2"},
+        "release_type":{"const":"metadata_only_clean_room_source_art_and_composition_planning"},
+        "package_state":{"const":"accepted_external_package_registered_as_metadata_only_planning"}
+      },
+      "required":["release_id","governing_issue","repository","protected_main","release_type","package_state"],
+      "additionalProperties":false
+    },
+    "governing_authorities": {
+      "type":"object",
+      "properties": {
+        "governing_ux_advisory":{"const":"DH-UX-001"},
+        "subordinate_ux_addendum":{"const":"DH-UX-FINAL-001"},
+        "rights_provenance":{"const":"DH-RIGHTS-001"},
+        "owner_attestation":{"const":"DH-OWNER-ATTEST-001"},
+        "presentation_family":{"const":"DH-PRESENT-FAMILY-001"},
+        "post_ux_addendum_reconciliation":{"const":"3ad17fbbf2ae8c2bf52c8535ba8936ea8b858dcb"}
+      },
+      "required":["governing_ux_advisory","subordinate_ux_addendum","rights_provenance","owner_attestation","presentation_family","post_ux_addendum_reconciliation"],
+      "additionalProperties":false
+    },
+    "authority_split": {
+      "type":"object",
+      "properties": {
+        "BoardState":{"$ref":"#/$defs/nonempty_string"},
+        "RulesSession":{"$ref":"#/$defs/nonempty_string"},
+        "RoleSession":{"$ref":"#/$defs/nonempty_string"},
+        "session_coordinator":{"$ref":"#/$defs/nonempty_string"},
+        "presentation":{"$ref":"#/$defs/nonempty_string"}
+      },
+      "required":["BoardState","RulesSession","RoleSession","session_coordinator","presentation"],
+      "additionalProperties":false
+    },
+    "authorization": {
+      "type":"object",
+      "properties": {
+        "metadata_only_clean_room_planning_authorized":{"const":true},
+        "source_art_creation_authorized":{"const":false},
+        "runtime_composition_authorized":{"const":false},
+        "godot_authorized":{"const":false},
+        "ux_implementation_authorized":{"const":false},
+        "runtime_implementation_authorized":{"const":false},
+        "candidate_authorized":{"const":false},
+        "public_distribution_authorized":{"const":false},
+        "marketing_or_merchandise_authorized":{"const":false},
+        "accessibility_claim_authorized":{"const":false},
+        "human_evidence_claim_authorized":{"const":false},
+        "conversion_readiness":{"const":"not_ready"},
+        "implementation_authorized":{"const":false}
+      },
+      "required":["metadata_only_clean_room_planning_authorized","source_art_creation_authorized","runtime_composition_authorized","godot_authorized","ux_implementation_authorized","runtime_implementation_authorized","candidate_authorized","public_distribution_authorized","marketing_or_merchandise_authorized","accessibility_claim_authorized","human_evidence_claim_authorized","conversion_readiness","implementation_authorized"],
+      "additionalProperties":false
+    },
+    "external_visual_state": {
+      "type":"object",
+      "properties": {
+        "asset_count":{"const":25},
+        "maximum_rights_tier":{"const":"R1_private_internal_reference"},
+        "reference_only_nonproduction":{"const":true},
+        "abstract_concept_planning_without_pixel_reuse_allowed":{"const":true},
+        "source_file_status":{"const":"none_of_the_25_images_are_source_files"}
+      },
+      "required":["asset_count","maximum_rights_tier","reference_only_nonproduction","abstract_concept_planning_without_pixel_reuse_allowed","source_file_status"],
+      "additionalProperties":false
+    },
+    "clean_room_requirements": {
+      "type":"object",
+      "properties": {
+        "blank_human_authored_editable_sources_required":{"const":true},
+        "independent_geometry_and_composition_required":{"const":true},
+        "tracing_allowed":{"const":false},
+        "generated_image_vectorization_allowed":{"const":false},
+        "paint_over_allowed":{"const":false},
+        "generated_image_compositing_allowed":{"const":false},
+        "extracted_textures_allowed":{"const":false},
+        "direct_generated_pixel_reuse_allowed":{"const":false},
+        "generated_text_icons_or_logos_as_source_allowed":{"const":false},
+        "contributor_records_required":{"const":true},
+        "tool_records_required":{"const":true},
+        "font_records_required":{"const":true},
+        "asset_records_required":{"const":true},
+        "license_records_required":{"const":true},
+        "source_sha256_required":{"const":true},
+        "export_sha256_required":{"const":true},
+        "source_to_runtime_lineage_required":{"const":true},
+        "similarity_review_before_later_advancement_required":{"const":true},
+        "unknown_facts_must_remain_unknown":{"const":true}
+      },
+      "required":["blank_human_authored_editable_sources_required","independent_geometry_and_composition_required","tracing_allowed","generated_image_vectorization_allowed","paint_over_allowed","generated_image_compositing_allowed","extracted_textures_allowed","direct_generated_pixel_reuse_allowed","generated_text_icons_or_logos_as_source_allowed","contributor_records_required","tool_records_required","font_records_required","asset_records_required","license_records_required","source_sha256_required","export_sha256_required","source_to_runtime_lineage_required","similarity_review_before_later_advancement_required","unknown_facts_must_remain_unknown"],
+      "additionalProperties":false
+    },
+    "asset_taxonomy": {
+      "type":"object",
+      "properties": {
+        "DH-SRC-BOARD-MASTER":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-BOARD-OVERLAYS":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-SEAT-IDENTITY":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-PRIVATE-SHIELD":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-PUBLIC-HIERARCHY":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-INTERACTION-TOKENS":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-PROFILE-INTENSITY":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-CAPTION-GLYPH":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-PROVENANCE":{"$ref":"#/$defs/asset_family"},
+        "DH-SRC-EVIDENCE":{"$ref":"#/$defs/asset_family"}
+      },
+      "required":["DH-SRC-BOARD-MASTER","DH-SRC-BOARD-OVERLAYS","DH-SRC-SEAT-IDENTITY","DH-SRC-PRIVATE-SHIELD","DH-SRC-PUBLIC-HIERARCHY","DH-SRC-INTERACTION-TOKENS","DH-SRC-PROFILE-INTENSITY","DH-SRC-CAPTION-GLYPH","DH-SRC-PROVENANCE","DH-SRC-EVIDENCE"],
+      "additionalProperties":false
+    },
+    "control_traceability": {
+      "type":"object",
+      "properties": {
+        "DH-UX-CTRL-SEAT-IDENTITY":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-ROUTE-EMPHASIS":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-FOCUS":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-PREVIEW":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-CONFIRMATION":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-COMMITTED":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-WARNING":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-RECOVERY":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-RECONNECT":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-GAME-CONTROL":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-TAKEOVER-PENDING":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-PRIVATE-SHIELD":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-PUBLIC-RETURN":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-UPPER-STATUS":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-CAPTIONS":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-PROMPTS":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-TRANSCRIPT":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-REPLAY":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-OUTCOME":{"$ref":"#/$defs/control"},
+        "DH-UX-CTRL-PROFILE-INTENSITY":{"$ref":"#/$defs/control"}
+      },
+      "required":["DH-UX-CTRL-SEAT-IDENTITY","DH-UX-CTRL-ROUTE-EMPHASIS","DH-UX-CTRL-FOCUS","DH-UX-CTRL-PREVIEW","DH-UX-CTRL-CONFIRMATION","DH-UX-CTRL-COMMITTED","DH-UX-CTRL-WARNING","DH-UX-CTRL-RECOVERY","DH-UX-CTRL-RECONNECT","DH-UX-CTRL-GAME-CONTROL","DH-UX-CTRL-TAKEOVER-PENDING","DH-UX-CTRL-PRIVATE-SHIELD","DH-UX-CTRL-PUBLIC-RETURN","DH-UX-CTRL-UPPER-STATUS","DH-UX-CTRL-CAPTIONS","DH-UX-CTRL-PROMPTS","DH-UX-CTRL-TRANSCRIPT","DH-UX-CTRL-REPLAY","DH-UX-CTRL-OUTCOME","DH-UX-CTRL-PROFILE-INTENSITY"],
+      "additionalProperties":false
+    },
+    "future_evidence": {
+      "type":"object",
+      "properties": {
+        "DH-EVID-SOURCE-SIMILARITY":{"type":"string","pattern":"^unperformed_"},
+        "DH-EVID-BOARD-MASTER":{"type":"string","pattern":"^unperformed_"},
+        "DH-EVID-960X540":{"type":"string","pattern":"^unperformed_"},
+        "DH-EVID-SEAT-DENSITY":{"type":"string","pattern":"^unperformed_"},
+        "DH-EVID-PRIVACY":{"type":"string","pattern":"^unperformed_"},
+        "DH-EVID-STATE-INVARIANCE":{"type":"string","pattern":"^unperformed_"},
+        "DH-EVID-MOTION-REPLAY":{"type":"string","pattern":"^unperformed_"},
+        "DH-EVID-HUMAN-39":{"type":"string","pattern":"^unperformed_"}
+      },
+      "required":["DH-EVID-SOURCE-SIMILARITY","DH-EVID-BOARD-MASTER","DH-EVID-960X540","DH-EVID-SEAT-DENSITY","DH-EVID-PRIVACY","DH-EVID-STATE-INVARIANCE","DH-EVID-MOTION-REPLAY","DH-EVID-HUMAN-39"],
+      "additionalProperties":false
+    },
+    "unresolved_questions": {
+      "type":"object",
+      "properties": {
+        "DH-Q-001":{"$ref":"#/$defs/nonempty_string"},
+        "DH-Q-002":{"$ref":"#/$defs/nonempty_string"},
+        "DH-Q-003":{"$ref":"#/$defs/nonempty_string"},
+        "DH-Q-004":{"$ref":"#/$defs/nonempty_string"},
+        "DH-Q-005":{"$ref":"#/$defs/nonempty_string"},
+        "DH-Q-006":{"$ref":"#/$defs/nonempty_string"},
+        "DH-Q-007":{"$ref":"#/$defs/nonempty_string"},
+        "DH-Q-008":{"$ref":"#/$defs/nonempty_string"}
+      },
+      "required":["DH-Q-001","DH-Q-002","DH-Q-003","DH-Q-004","DH-Q-005","DH-Q-006","DH-Q-007","DH-Q-008"],
+      "additionalProperties":false
+    },
+    "stop_conditions":{"type":"array","minItems":12,"maxItems":12,"uniqueItems":true,"items":{"$ref":"#/$defs/nonempty_string"}},
+    "planned_repository_paths_after_package_acceptance": {
+      "const":[
+        ".github/workflows/drowned-harbor-clean-room-source-planning.yml",
+        "docs/releases/DH-SOURCE-PLAN-001-clean-room-source-art-and-composition-planning.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Clean_Room_Source_Art_and_Composition_Plan_v1.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Source_Asset_Taxonomy_and_Ownership_Matrix_v1.md",
+        "docs/tales/drowned_harbor/visual/Drowned_Harbor_Shared_Board_Master_and_State_Composition_Plan_v1.md",
+        "docs/tales/drowned_harbor/ux/Drowned_Harbor_Clean_Room_UX_Token_and_Control_Traceability_Plan_v1.md",
+        "docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_v1.json",
+        "docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_schema_v1.json",
+        "art/licenses/drowned_harbor/visual/dh_source_plan_001_provenance_v1.json",
+        "tools/validate_drowned_harbor_clean_room_source_planning.py",
+        "tools/test_validate_drowned_harbor_clean_room_source_planning.py"
+      ]
+    }
+  },
+  "required":["record_kind","record_version","release","governing_authorities","authority_split","authorization","external_visual_state","clean_room_requirements","asset_taxonomy","control_traceability","future_evidence","unresolved_questions","stop_conditions","planned_repository_paths_after_package_acceptance"],
+  "additionalProperties":false
+}

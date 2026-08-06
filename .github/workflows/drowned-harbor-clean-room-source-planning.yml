@@ -1,0 +1,79 @@
+name: Drowned Harbor clean-room source planning registration
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-clean-room-source-planning.yml'
+      - 'docs/releases/DH-SOURCE-PLAN-001-clean-room-source-art-and-composition-planning.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Clean_Room_Source_Art_and_Composition_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Source_Asset_Taxonomy_and_Ownership_Matrix_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Shared_Board_Master_and_State_Composition_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Clean_Room_UX_Token_and_Control_Traceability_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_schema_v1.json'
+      - 'art/licenses/drowned_harbor/visual/dh_source_plan_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_clean_room_source_planning.py'
+      - 'tools/test_validate_drowned_harbor_clean_room_source_planning.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/drowned-harbor-clean-room-source-planning.yml'
+      - 'docs/releases/DH-SOURCE-PLAN-001-clean-room-source-art-and-composition-planning.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Clean_Room_Source_Art_and_Composition_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Source_Asset_Taxonomy_and_Ownership_Matrix_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Shared_Board_Master_and_State_Composition_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Clean_Room_UX_Token_and_Control_Traceability_Plan_v1.md'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_v1.json'
+      - 'docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_schema_v1.json'
+      - 'art/licenses/drowned_harbor/visual/dh_source_plan_001_provenance_v1.json'
+      - 'tools/validate_drowned_harbor_clean_room_source_planning.py'
+      - 'tools/test_validate_drowned_harbor_clean_room_source_planning.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate metadata-only clean-room planning authority
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+      - name: Install hash-locked validation dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+      - name: Validate planning contract and exact path boundary
+        run: |
+          python tools/validate_drowned_harbor_clean_room_source_planning.py
+          python tools/test_validate_drowned_harbor_clean_room_source_planning.py
+      - name: Parse governed Python, JSON, and workflow YAML
+        run: |
+          python -m py_compile tools/validate_drowned_harbor_clean_room_source_planning.py tools/test_validate_drowned_harbor_clean_room_source_planning.py
+          python - <<'PY2'
+          import json
+          from pathlib import Path
+          import yaml
+          for path in [
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_v1.json'),
+              Path('docs/tales/drowned_harbor/visual/drowned_harbor_clean_room_source_planning_schema_v1.json'),
+              Path('art/licenses/drowned_harbor/visual/dh_source_plan_001_provenance_v1.json'),
+          ]:
+              json.loads(path.read_text(encoding='utf-8'))
+          yaml.safe_load(Path('.github/workflows/drowned-harbor-clean-room-source-planning.yml').read_text(encoding='utf-8'))
+          print('Governed Python, JSON, and YAML parsed')
+          PY2
+      - name: Validate repository quality-policy compatibility
+        run: python quality/validate_repository.py all --report-dir "$RUNNER_TEMP/dh-source-plan-quality"
+      - name: Prove clean source tree
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
