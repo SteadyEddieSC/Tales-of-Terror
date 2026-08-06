@@ -72,7 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           find . -path './.git' -prune -o -type d -name '__pycache__' -print | sort -r | xargs -r rm -rf
-          find . -path './.git' -prune -o -type f -name '*.pyc' -delete
+          find . -path './.git' -prune -o -type f -name '*.pyc' -print0 | xargs -0 -r rm -f
           git diff --check
           status=$(git status --porcelain=v1 --untracked-files=all)
           if [ -n "$status" ]; then
