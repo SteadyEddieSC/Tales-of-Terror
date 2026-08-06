@@ -1,11 +1,11 @@
 # Drowned Harbor Clean-Room Source Art and Composition Plan v1
 
-**Release:** `DH-SOURCE-PLAN-001`  
-**Issue:** #139  
-**Phase B protected-main baseline:** `3d29b454868295c7d3f4f06708de9c29b462abb2`  
-**Authority:** metadata-only clean-room planning  
-**Source creation:** unauthorized  
-**Runtime composition:** unauthorized  
+**Release:** `DH-SOURCE-PLAN-001`
+**Issue:** #139
+**Phase B protected-main baseline:** `3d29b454868295c7d3f4f06708de9c29b462abb2`
+**Authority:** metadata-only clean-room planning
+**Source creation:** unauthorized
+**Runtime composition:** unauthorized
 **Implementation:** unauthorized
 
 This record registers the accepted external v2 planning package as a bounded v1 repository planning authority. The external ZIP remains outside Git and public GitHub Releases. Its package-authoring coordinate remains `3ad17fbbf2ae8c2bf52c8535ba8936ea8b858dcb`; this registration is based on protected main `3d29b454868295c7d3f4f06708de9c29b462abb2` after the automated quality and security baseline.
