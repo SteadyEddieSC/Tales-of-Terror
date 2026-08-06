@@ -129,7 +129,14 @@ def main() -> int:
             count += 1
         write_json(prov_path, provenance)
 
-        for rel in [validator.WORKFLOW, *validator.DOCS]:
+        workflow_path = root / validator.WORKFLOW
+        workflow = workflow_path.read_text(encoding='utf-8')
+        workflow_path.write_text(workflow.replace('persist-credentials: false', 'persist-credentials: true'), encoding='utf-8')
+        expect_failure(root)
+        count += 1
+        workflow_path.write_text(workflow, encoding='utf-8')
+
+        for rel in validator.DOCS:
             path = root / rel
             original = path.read_text(encoding='utf-8')
             path.write_text(original + '\nsource creation is authorized\n', encoding='utf-8')
