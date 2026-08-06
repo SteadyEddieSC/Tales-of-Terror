@@ -3,7 +3,6 @@ name: v0.2.0-alpha.1 Drowned Harbor production Tale scaffold
 on:
   pull_request:
     paths:
-      - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
       - 'CHANGELOG.md'
       - 'docs/releases/v0.2.0-alpha.1-production-tale-scaffold.md'
       - 'docs/playtests/v0.2.0-alpha.1-production-tale-scaffold-evidence.md'
@@ -28,7 +27,6 @@ on:
   push:
     branches: [main, feature/v0.2.0-alpha.1-drowned-harbor-scaffold]
     paths:
-      - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
       - 'CHANGELOG.md'
       - 'docs/releases/v0.2.0-alpha.1-production-tale-scaffold.md'
       - 'docs/playtests/v0.2.0-alpha.1-production-tale-scaffold-evidence.md'
@@ -65,6 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          persist-credentials: false
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
 

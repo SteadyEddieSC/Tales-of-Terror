@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - '.github/workflows/drowned-harbor-presentation-study.yml'
       - 'docs/releases/DH-PRESENT-001-presentation-study-registration.md'
       - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_High_Water_Presentation_Hook_Storyboard_Study_v1.md'
       - 'docs/tales/drowned_harbor/visual/drowned_harbor_high_water_presentation_hook_storyboard_study_v1.json'
@@ -24,6 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:

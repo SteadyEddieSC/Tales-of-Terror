@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "engine": {
+    "version": "4.7.1",
+    "feature_family": "4.7",
+    "renderer": "gl_compatibility"
+  },
+  "required_input_actions": [
+    "ui_navigate_up",
+    "ui_navigate_down",
+    "ui_navigate_left",
+    "ui_navigate_right",
+    "ui_confirm",
+    "ui_cancel_action",
+    "player_join",
+    "pause_options",
+    "help_accessibility",
+    "reset_seats",
+    "move_left",
+    "move_right",
+    "move_up",
+    "move_down",
+    "interact"
+  ],
+  "controller_required_actions": [
+    "ui_navigate_up",
+    "ui_navigate_down",
+    "ui_navigate_left",
+    "ui_navigate_right",
+    "ui_confirm",
+    "ui_cancel_action",
+    "player_join",
+    "pause_options",
+    "help_accessibility",
+    "reset_seats",
+    "move_left",
+    "move_right",
+    "move_up",
+    "move_down",
+    "interact"
+  ],
+  "debug_actions": ["diagnostic_test", "safe_area_decrease", "safe_area_increase"],
+  "debug_action_allowed_export_features": ["internal_playtest"],
+  "generated_resource_allowlist": ["res://build_identity.generated.json"],
+  "scene_excludes": ["game/addons/", "game/tests/"],
+  "asset_budgets": {
+    "max_texture_dimension": 8192,
+    "max_texture_bytes": 33554432,
+    "max_total_texture_bytes": 536870912,
+    "max_audio_bytes": 67108864,
+    "max_total_audio_bytes": 1073741824,
+    "max_other_asset_bytes": 99614720
+  },
+  "performance_thresholds_ms": {
+    "production_scene_load": 5000,
+    "coordinator_initialization": 5000,
+    "snapshot_round_trip": 1000
+  },
+  "accepted_warning_patterns": [
+    "WARNING: Resources still in use at exit",
+    "WARNING: ObjectDB instances leaked at exit"
+  ]
+}

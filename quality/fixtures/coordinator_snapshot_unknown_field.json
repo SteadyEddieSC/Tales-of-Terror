@@ -1,0 +1,6 @@
+{
+  "fixture_classification": "synthetic_test_only",
+  "snapshot_version": 2,
+  "unexpected_future_field": "must_not_be_silently_discarded",
+  "purpose": "unknown-field rejection and no-mutation fixture"
+}

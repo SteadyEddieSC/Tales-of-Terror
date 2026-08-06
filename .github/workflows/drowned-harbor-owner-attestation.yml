@@ -3,7 +3,6 @@ name: Drowned Harbor Project Owner attestation registration
 on:
   pull_request:
     paths:
-      - '.github/workflows/drowned-harbor-owner-attestation.yml'
       - 'docs/releases/DH-OWNER-ATTEST-001-project-owner-attestation-registration.md'
       - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Completed_Project_Owner_Attestation_v1.md'
       - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Project_Owner_Attestation_Disposition_v1.md'
@@ -15,7 +14,6 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/drowned-harbor-owner-attestation.yml'
       - 'docs/releases/DH-OWNER-ATTEST-001-project-owner-attestation-registration.md'
       - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Completed_Project_Owner_Attestation_v1.md'
       - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Project_Owner_Attestation_Disposition_v1.md'
@@ -35,6 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:

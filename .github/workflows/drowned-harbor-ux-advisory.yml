@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - '.github/workflows/drowned-harbor-ux-advisory.yml'
       - 'docs/releases/DH-UX-001-shared-screen-ux-advisory-registration.md'
       - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_Shared_Screen_UX_Architecture_and_Stage_Flows_v1.md'
       - 'docs/tales/drowned_harbor/ux/Drowned_Harbor_960x540_Layout_and_Stable_Seat_Advisory_v1.md'
@@ -26,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:

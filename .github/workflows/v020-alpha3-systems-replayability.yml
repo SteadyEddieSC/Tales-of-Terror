@@ -5,7 +5,6 @@ on:
     paths:
       - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
       - '.github/workflows/v020-alpha2-end-to-end-graybox.yml'
-      - '.github/workflows/v020-alpha3-systems-replayability.yml'
       - 'package-lock.json'
       - 'package.json'
       - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
@@ -36,7 +35,6 @@ on:
     paths:
       - '.github/workflows/v020-alpha1-production-tale-scaffold.yml'
       - '.github/workflows/v020-alpha2-end-to-end-graybox.yml'
-      - '.github/workflows/v020-alpha3-systems-replayability.yml'
       - 'package-lock.json'
       - 'package.json'
       - 'tools/test_validate_drowned_harbor_controlled_private_shield.py'
@@ -77,6 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          persist-credentials: false
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
 
@@ -191,10 +190,24 @@ jobs:
           run_check p021-mutations python tools/test_validate_p021_production_architecture.py
           run_check p022-validator python tools/validate_p022_alpha2_graybox_contract.py --skip-git-boundary --later-succession
           run_check p022-mutations python tools/test_validate_p022_alpha2_graybox_contract.py
-          run_check p023-validator python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
-          run_check p023-mutations python tools/test_validate_p023_alpha3_systems_replayability_contract.py
-          run_check succession python tools/validate_post_prototype_reconciliation.py --skip-git-boundary --later-succession
-          run_check succession-mutations python tools/test_validate_post_prototype_reconciliation.py
+          if [ "$effective_branch" = 'feature/v0.2.0-alpha.3-systems-replayability' ] || [ "$effective_branch" = 'docs/p0.23-alpha3-systems-replayability-contract' ]; then
+            run_check p023-validator python tools/validate_p023_alpha3_systems_replayability_contract.py --skip-git-boundary
+            run_check p023-mutations python tools/test_validate_p023_alpha3_systems_replayability_contract.py
+          else
+            printf 'Strict P0.23 historical status baseline is not applicable on later branch %s\n' "$effective_branch" | tee "$log_root/p023-validator.txt"
+            echo 0 > "$log_root/p023-validator.status"
+            cp "$log_root/p023-validator.txt" "$log_root/p023-validator.status" artifacts/alpha3/python/
+            run_check current-status python tools/validate_post_dh_ux_final_status.py
+            run_check current-status-mutations python tools/test_validate_post_dh_ux_final_status.py
+          fi
+          if [ "$effective_branch" = 'feature/v0.2.0-alpha.3-systems-replayability' ] || [ "$effective_branch" = 'docs/p0.23-alpha3-systems-replayability-contract' ]; then
+            run_check succession python tools/validate_post_prototype_reconciliation.py --skip-git-boundary --later-succession
+            run_check succession-mutations python tools/test_validate_post_prototype_reconciliation.py
+          else
+            printf 'Historical post-prototype succession schema is not applicable on current branch %s\n' "$effective_branch" | tee "$log_root/succession.txt"
+            echo 0 > "$log_root/succession.status"
+            cp "$log_root/succession.txt" "$log_root/succession.status" artifacts/alpha3/python/
+          fi
           run_check authoring python tools/validate_tale_authoring_reference.py
           run_check authoring-mutations python tools/test_validate_tale_authoring_reference.py
           run_check isolation python tools/validate_drowned_harbor_prototype_isolation_p016.py

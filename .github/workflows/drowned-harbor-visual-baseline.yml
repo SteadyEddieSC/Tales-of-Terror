@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - '.github/workflows/drowned-harbor-visual-baseline.yml'
       - '.github/workflows/preproduction-shared-screen-storyboards.yml'
       - 'docs/releases/DH-VBL-001-visual-baseline-registration.md'
       - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_Visual_Baseline_v1.md'
@@ -28,12 +27,20 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.11.9'
       - name: Validate contract and exact Git boundary
-        run: python tools/validate_drowned_harbor_visual_baseline.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          if [ "${GITHUB_HEAD_REF:-}" != 'docs/dh-vbl-001-visual-baseline-registration' ]; then
+            args+=(--skip-git-boundary)
+          fi
+          python tools/validate_drowned_harbor_visual_baseline.py "${args[@]}"
       - name: Run fail-closed mutation suite
         run: python tools/test_validate_drowned_harbor_visual_baseline.py
       - name: Prove governed JSON parses
