@@ -1,91 +1,68 @@
 # AI Art Similarity and Promotion Checklist v1
 
-Use one completed copy per asset or tightly bounded visual batch. A checked item is evidence only when the reviewer, date, notes, and referenced files or hashes are recorded in the provenance ledger.
+Use this checklist for every exact AI-art use, including direct reuse, editing, image-to-image generation, masks, control images, extraction, runtime assets, marketing, and storefront art.
 
-## 1. Provider and account
+## Identity and provenance
 
-- [ ] Provider ID exists in `art/ai/approved_generators_v1.json`.
-- [ ] Provider eligibility permits the requested stage.
-- [ ] Account is controlled by the Project Owner or an authorized contributor.
-- [ ] Current terms reference or dated snapshot is retained.
-- [ ] Exact model name and version are recorded when available.
-- [ ] Generation date and account owner are recorded.
+- [ ] Original filename matches the registered inventory.
+- [ ] Original SHA-256 matches the registered inventory.
+- [ ] Provider family and account owner are recorded.
+- [ ] Known metadata is recorded exactly.
+- [ ] Unknown prompt, model, seed, timestamp, or session data remains explicitly unknown.
+- [ ] Original external binary is preserved unchanged.
+- [ ] Requested use is listed in the asset's `permitted_next_uses`.
 
-## 2. Inputs and prompt
+## Full-resolution human review
 
-- [ ] Full prompt is retained.
-- [ ] Negative prompt is retained when available.
-- [ ] Seed is retained when available.
-- [ ] Every uploaded image, mask, control image, or other input is listed.
-- [ ] Every non-text input has an owner or licensor and rights basis.
-- [ ] No Drowned Harbor R1 reference image was uploaded or used as a hidden source.
-- [ ] No copyrighted character, franchise asset, logo, trademark, branded product, celebrity, or private-person likeness was requested without written authorization.
-- [ ] No named living artist or active studio was requested as the target style.
+- [ ] The original full-resolution binary was opened and inspected.
+- [ ] No unintended third-party character, franchise identifier, logo, trademark, branded product, trade dress, celebrity, or private-person likeness remains unresolved.
+- [ ] No accidental signature, watermark, provider mark, generated text, gibberish, date, label, or emblem remains unresolved.
+- [ ] No malformed anatomy, fused object, repeated structure, impossible mechanism, or perspective defect remains unresolved.
+- [ ] No identifiable protected work or suspiciously close arrangement remains unresolved.
+- [ ] Any review uncertainty is recorded rather than guessed.
 
-## 3. Original output
+## Use-specific controls
 
-- [ ] Original provider output is preserved.
-- [ ] Original output SHA-256 is recorded.
-- [ ] C2PA or Content Credentials status is recorded.
-- [ ] Provider watermark, signature, or visible mark status is recorded.
-- [ ] Output remains quarantined until review is complete.
+### Direct or edited source
 
-## 4. Rights and similarity
+- [ ] Embedded presentation-board text and borders are removed unless deliberately re-authored.
+- [ ] Components are isolated at appropriate resolution.
+- [ ] Geometry, silhouette, scale, lighting, and continuity are checked.
+- [ ] Human selection, arrangement, editing, compositing, color, typography, animation, and integration choices are recorded.
 
-- [ ] No unintended third-party character, logo, mark, product, signature, or likeness is visible.
-- [ ] No accidental text, date, label, watermark, or gibberish remains unresolved.
-- [ ] Composition was compared against known references actually consulted.
-- [ ] Silhouette, landmark, prop arrangement, decorative detail, palette, material treatment, and typography were reviewed.
-- [ ] No substantial similarity concern remains unresolved.
-- [ ] Reviewer did not rely solely on automated image similarity.
-- [ ] Conditional-provider legal or owner review is complete before storefront promotion.
+### Image-to-image, mask, or control use
 
-Allowed similarity dispositions:
+- [ ] The exact input image and SHA-256 are recorded.
+- [ ] The permitted purpose is recorded.
+- [ ] Prompt, model, provider, account, settings, and resulting SHA-256 are recorded when available.
+- [ ] The result is treated as a new quarantined asset and reviewed independently.
 
-- `pass_no_material_similarity_concern`;
-- `revise_similarity_or_rights_concern`;
-- `stop_inconclusive`;
-- `reject_identifiable_third_party_derivation`.
+### Texture, icon, silhouette, or fragment extraction
 
-Only the first disposition may advance.
+- [ ] The extracted region is identified.
+- [ ] Text, logos, signatures, and watermarks are excluded or resolved.
+- [ ] Scale, seamlessness, vector quality, alpha, color space, and compression are checked.
+- [ ] The extraction does not silently make generated gameplay semantics authoritative.
 
-## 5. Human creative contribution
+### Runtime, marketing, or storefront use
 
-- [ ] Human prompt or brief authorship is recorded.
-- [ ] Selection and rejection decisions are recorded.
-- [ ] Arrangement, sequencing, layout, typography, masking, compositing, color, paint, animation, or UI integration choices are recorded when present.
-- [ ] Machine-determined elements are not mislabeled as human-authored.
-- [ ] Any intended copyright claim identifies only supported human-authored material.
-- [ ] Output is not represented as wholly human-generated.
+- [ ] Runtime path, dimensions, format, alpha, compression, and SHA-256 are recorded.
+- [ ] `art/provenance.json` is updated when applicable.
+- [ ] 960×540, safe-region, one/four/eight-seat, grayscale, and controller-first review is complete when applicable.
+- [ ] Physical television and accessibility evidence is recorded separately under issue #39.
+- [ ] Steam pre-generated-AI disclosure matches the actual build and store material.
+- [ ] Conditional-provider review is complete.
 
-## 6. Visual quality
+## Promotion decision
 
-- [ ] Anatomy, object construction, architecture, and perspective are coherent.
-- [ ] Lighting, materials, scale, camera, and shadows are coherent.
-- [ ] Repeated, fused, or malformed objects are absent.
-- [ ] State and character continuity is maintained.
-- [ ] Style matches the approved visual family.
-- [ ] Essential silhouette and hierarchy remain readable at 960×540.
-- [ ] Meaning does not depend on color alone.
-- [ ] Television safe areas and UI occlusion are acceptable.
-- [ ] Spooky and Grim variants preserve information and mechanics.
+Choose exactly one:
 
-## 7. Transformation and export
+- `approve_exact_use`
+- `approve_after_listed_corrections`
+- `retain_quarantined`
+- `retain_reference_only`
+- `reject`
 
-- [ ] Every material transformation records tool, version, description, input hash, and output hash.
-- [ ] Editable master path and hash are recorded when one exists.
-- [ ] Runtime dimensions, format, color space, alpha, compression, and SHA-256 are recorded.
-- [ ] Runtime path follows repository naming and directory rules.
-- [ ] `art/provenance.json` contains the runtime derivative before import.
-- [ ] Asset budgets and Godot import validation pass.
-- [ ] Source-to-runtime lineage has no broken link.
+Record reviewer, date, exact input and output hashes, corrections, and release coordinate.
 
-## 8. Promotion
-
-- [ ] Current promotion stage is recorded.
-- [ ] No stage was skipped.
-- [ ] Required reviewer and release coordinate are recorded.
-- [ ] Steam disclosure batch is assigned before storefront candidacy.
-- [ ] Build and store materials match the disclosure.
-- [ ] Live AI generation is absent.
-- [ ] Rejection or retirement preserves the audit record.
+Approval does not guarantee copyrightability, exclusivity, non-infringement, legal clearance, Steam approval, production readiness, or shipping approval.
