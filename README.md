@@ -6,11 +6,11 @@ A controller-first, 1–8 player digital horror board-game adventure about survi
 
 ## Current project status
 
-This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, a developer-only Drowned Harbor Alpha.3 runtime, a repository-wide automated quality/security baseline, and completed metadata-only Drowned Harbor visual, presentation, UX, rights/provenance, owner-attestation, and clean-room source-planning authorities. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
+This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, a developer-only Drowned Harbor Alpha.3 runtime, a repository-wide automated quality/security baseline, completed metadata-only Drowned Harbor visual/UX/source-planning authorities, the completed `AI-ART-POLICY-001` production-art policy, and the completed metadata-only `DH-AI-SOURCE-001` board-master advisory. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
 
 - **Normal playable version:** `v0.1.9`
 - **Sole production/default Tale:** `lantern_house_vertical_slice` — Lantern House
-- **Status-reconciliation baseline:** `a42d1104c16532e801164dc237a5fddc6187b489`
+- **Status-reconciliation baseline:** `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
 - **Latest completed runtime release:** `v0.2.0-alpha.3` — issue #108 / PR #109
 - **Automated quality/security baseline:** PR #140 — merge `3d29b454868295c7d3f4f06708de9c29b462abb2`
 - **Completed visual baseline release:** `DH-VBL-001` — issue #110 / PR #113
@@ -21,13 +21,15 @@ This repository contains a functional **internal vertical slice**, a completed i
 - **Completed Project Owner attestation registration:** `DH-OWNER-ATTEST-REG-001` / `DH-OWNER-ATTEST-001` — issue #131 / PR #132
 - **Completed final UX addendum registration:** `DH-UX-ADDENDUM-REG-001` / `DH-UX-FINAL-001` — issue #135 / PR #136
 - **Completed clean-room source-planning release:** `DH-SOURCE-PLAN-001` — issue #139 / PR #146
-- **Current status reconciliation:** issue #147; documentation and governance only
-- **Next release:** unselected and not authorized; source creation, runtime composition, and implementation require separate explicit activation
+- **Completed AI-art policy:** `AI-ART-POLICY-001` — issue #151 / PR #152, merge `209bba6498686cd392ddce4bbc32f549d381913f`
+- **Completed AI-first board-master advisory:** `DH-AI-SOURCE-001` — issue #149 / PR #153, merge `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
+- **Current status reconciliation:** issue #155 / draft PR #156; documentation and governance only
+- **Selected successor:** `DH-AI-GEN-001 — Drowned Harbor Shared Board-Master Visual Source Pilot`; selected, not activated
 - **Human-evidence issue #39:** deferred and still authoritative
 - **Naming issue #7:** open
-- **Dependabot PR #32:** closed and unmerged
+- **Closed/unmerged pull requests:** PR #32 and rejected PR #154
 
-Lantern House remains the sole normal/default Tale. Drowned Harbor remains developer-only and is not ordinarily playable. Clean-room planning is complete as metadata, but no editable source, source art, runtime composition, Godot or UX implementation, candidate, or public-use authority exists. All 25 external images remain R1 private internal references and are not source files.
+Lantern House remains the sole normal/default Tale. Drowned Harbor remains developer-only and is not ordinarily playable. `AI-ART-POLICY-001` permits future AI-generated or AI-assisted production visuals only after separate asset-specific authorization, review, and promotion; it does not authorize generation now. All 25 external images remain `R1_private_internal_reference`, `reference_only_nonproduction`, non-source, and prohibited as uploads, image-to-image inputs, masks, controls, hidden references, extracted fragments, textures, or runtime assets. PR #154 is closed, unmerged, and rejected; none of its amendments or asset dispositions is accepted.
 
 ## Elevator pitch
 
@@ -69,7 +71,7 @@ Lantern House remains the sole production Tale. It is an integration route used 
 
 **Drowned Harbor is not a production Tale and is not ordinarily playable.**
 
-The P0.1–P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; Alpha.3 implemented the developer-only systems runtime; and the completed visual, presentation-family, UX, rights/provenance, owner-attestation, and clean-room source-planning releases registered metadata-only authority.
+The P0.1–P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; Alpha.3 implemented the developer-only systems runtime; the visual, presentation-family, UX, rights/provenance, owner-attestation, and clean-room source-planning releases registered metadata-only authority; `AI-ART-POLICY-001` established the repository-wide future AI-art policy; and `DH-AI-SOURCE-001` registered a metadata-only AI-first board-master advisory without generation authority.
 
 Alpha.3 merged through issue #108 / PR #109 at protected-main SHA `cad70c5c8f0db1de7d557aff242cc8fe3610361b`. Its candidate source head was `08fdbe8b52a66fc44a98bdd27878554c5478aef1`.
 
@@ -101,7 +103,9 @@ The completed planning authorities add:
 - `DH-RIGHTS-001` — accepted-with-corrections external visual rights/provenance inventory, limited to private R1 reference use;
 - `DH-OWNER-ATTEST-001` — completed firsthand Project Owner attestation;
 - `DH-UX-FINAL-001` — bounded subordinate addendum defining five recommendation classes, a six-part rights/planning gate, control traceability, and no-pixel-reuse rules;
-- `DH-SOURCE-PLAN-001` — completed metadata-only clean-room source-art and composition plan with ten source families, twenty authority-traced controls, one shared Low Tide/High Water board-master plan, provenance requirements, similarity review, and stop conditions;
+- `DH-SOURCE-PLAN-001` — completed historical metadata-only clean-room source-art and composition plan with ten source families, twenty authority-traced controls, one shared Low Tide/High Water board-master plan, provenance requirements, similarity review, and stop conditions;
+- `AI-ART-POLICY-001` — completed policy permitting future AI-generated or AI-assisted production sources after separate asset-specific authorization, human direction/review, provenance, similarity review, and promotion;
+- `DH-AI-SOURCE-001` — completed metadata-only advisory assigning ChatGPT and Gemini to concept/material/overlay/atmosphere exploration, ordinary editing to exact geometry and assembly, and Godot to dynamic authoritative information; its smallest complete pilot is approximately 22 generations at immediate incremental spend `$0`;
 - exact Tide, connector, ownership, privacy, layout-hypothesis, provenance, and evidence boundaries;
 - no visual, source, runtime, or UX candidate creation or promotion;
 - no image or archive in Git history and no public GitHub Release asset authorization.
@@ -114,7 +118,7 @@ The completed planning authorities add:
 
 `DH-OWNER-ATTEST-001` records the completed firsthand response: authorized OpenAI and Gemini accounts, no external uploaded references, no intentional third-party or restricted inputs, no known edit/export-chain changes, approximate generation timing, preserved unknown facts, and agreement to no direct pixel reuse.
 
-`DH-SOURCE-PLAN-001` registers requirements for later blank human-authored editable sources, independent geometry and composition, contributor/tool/font/asset/license records, source and export SHA-256 values, source-to-runtime lineage, and independent similarity review. It does not create or authorize a source file, generated-pixel derivative, runtime composition, Godot or UX implementation, candidate, or public use.
+`DH-SOURCE-PLAN-001` remains an unchanged historical record. `AI-ART-POLICY-001` supersedes its future blank-human-source requirement and permanent ban on direct AI-generated pixels, while preserving the prohibition on using any of the 25 restricted images, authorized-input controls, provider/model/prompt/hash provenance, independent similarity review, source-to-runtime lineage, privacy/authority boundaries, and the rule that automation is not human evidence. `DH-AI-SOURCE-001` selects one invariant Low Tide/High Water board-master pilot direction but authorizes no generation, import, editing session, source acceptance, runtime composition, Godot/UX implementation, export, marketing, storefront, or public release.
 
 Drowned Harbor remains:
 
@@ -164,12 +168,15 @@ A **Tale** is a self-contained authored horror adventure with its own location, 
 20. **Post-DH-UX-FINAL-001 status reconciliation:** completed, issue #137 / PR #138.
 21. **Automated quality/security baseline:** completed, PR #140.
 22. **DH-SOURCE-PLAN-001 — Clean-Room Source Art and Composition Planning:** completed metadata-only planning release, issue #139 / PR #146.
-23. **Post-DH-SOURCE-PLAN-001 status reconciliation:** issue #147; documentation and governance only.
-24. **Next bounded release:** unselected; source creation, runtime composition, and implementation require separate explicit activation.
-25. **v0.2.0-beta — Presentation & Content Integration:** future and blocked.
-26. **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
+23. **Post-DH-SOURCE-PLAN-001 status reconciliation:** completed, issue #147 / PR #148.
+24. **AI-ART-POLICY-001 — AI-Generated and AI-Assisted Production Art Policy:** completed metadata-only policy release, issue #151 / PR #152.
+25. **DH-AI-SOURCE-001 — AI-First Art Pipeline and Shared Board-Master Advisory:** completed metadata-only advisory, issue #149 / PR #153.
+26. **Post-DH-AI-SOURCE-001 status reconciliation:** issue #155 / draft PR #156; documentation and governance only.
+27. **DH-AI-GEN-001 — Drowned Harbor Shared Board-Master Visual Source Pilot:** selected but not activated; requires a separate issue after this reconciliation merges.
+28. **v0.2.0-beta — Presentation & Content Integration:** future and blocked.
+29. **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
 
-The completed planning releases authorize metadata-only planning, not direct generated-pixel use, advancement beyond R1, source creation, runtime art, Godot asset integration, UX implementation, candidate promotion, public distribution, completed legal clearance, or substantial Codex implementation.
+The completed planning and policy releases authorize metadata and future eligibility rules only. They do not authorize a generation session, image import, use of any restricted external image as an input or production source, source acceptance, runtime art, Godot asset integration, UX implementation, candidate promotion, ordinary export, public distribution, completed legal clearance, accessibility claims, production readiness, or substantial Codex implementation.
 
 ## Development routing
 
@@ -253,7 +260,7 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 
 ## Validation
 
-GitHub Actions check repository integrity, secret history, workflow policy, CodeQL-supported languages, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux exact-head portable builds and exported-artifact smoke, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1–3 contracts, inherited mutation suites, visual/presentation/UX/UX-addendum/rights/owner-attestation/source-planning metadata boundaries, Companion audit/typecheck/tests/build/smoke, real local relay integration, checksums, build metadata, inventories, SBOM generation, and clean generated-output boundaries.
+GitHub Actions check repository integrity, secret history, workflow policy, CodeQL-supported languages, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux exact-head portable builds and exported-artifact smoke, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1–3 contracts, inherited mutation suites, visual/presentation/UX/UX-addendum/rights/owner-attestation/source-planning/AI-art-policy/AI-source-advisory/current-status metadata boundaries, Companion audit/typecheck/tests/build/smoke, real local relay integration, checksums, build metadata, inventories, SBOM generation, and clean generated-output boundaries.
 
 ## Documentation and licensing
 

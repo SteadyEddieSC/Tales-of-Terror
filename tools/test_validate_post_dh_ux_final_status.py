@@ -1,264 +1,70 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-
-import copy
-import importlib.util
-import shutil
-import tempfile
+import copy,importlib.util,re,shutil,tempfile
 from pathlib import Path
 from typing import Any
-
-MODULE_PATH = Path('tools/validate_post_dh_ux_final_status.py')
-spec = importlib.util.spec_from_file_location('post_source_plan_validator', MODULE_PATH)
-module = importlib.util.module_from_spec(spec)
-assert spec.loader is not None
-spec.loader.exec_module(module)
-
-def get_path(value: Any, path: tuple[Any, ...]) -> Any:
-    node = value
-    for part in path:
-        node = node[part]
-    return node
-
-def set_path(value: Any, path: tuple[Any, ...], replacement: Any) -> None:
-    node = value
-    for part in path[:-1]:
-        node = node[part]
-    node[path[-1]] = replacement
-
-def mutate_scalar(value: Any) -> Any:
-    if isinstance(value, bool):
-        return not value
-    if isinstance(value, int):
-        return value + 1
-    if isinstance(value, str):
-        return value + '__MUTATED'
-    if value is None:
-        return 'MUTATED'
-    raise TypeError(type(value))
-
-def must_fail(fn, *args) -> None:
-    try:
-        fn(*args)
-    except module.ValidationError:
-        return
-    raise AssertionError('mutation unexpectedly passed')
-
-status = module.load(module.STATUS)
-source_plan = module.load(module.SOURCE_PLAN)
-provenance = module.load(module.PROVENANCE)
-module.validate(False)
-count = 0
-
-status_paths = [
-    ('schema_version',), ('status_kind',), ('protected_main',), ('protected_main_semantics',),
-    ('as_of_date',), ('playable_release',), ('human_evidence_claimed',),
-    ('runtime_implementation_authorized',), ('ux_implementation_authorized',),
-    ('visual_implementation_authorized',),
-    ('current_release','activation_authorized'), ('current_release','issue'),
-    ('current_release','release_id'), ('current_release','runtime_authority_created'),
-    ('current_release','state'), ('current_release','type'),
-    ('recommended_next_release','activation_authorized'),
-    ('recommended_next_release','codex_required'), ('recommended_next_release','github_issue'),
-    ('recommended_next_release','release_id'), ('recommended_next_release','state'),
-    ('recommended_next_release','title'),
-    ('preserved_authorities','dh_source_plan_registration_merge'),
-    ('preserved_authorities','quality_security_baseline_merge'),
-    ('preserved_authorities','dh_ux_final_addendum_registration_merge'),
-    ('preserved_authorities','dh_owner_attestation_registration_merge'),
-    ('preserved_authorities','dh_rights_registration_merge'),
-    ('preserved_authorities','alpha3_merge'),
-    ('quality_security_baseline','merged_main_sha'), ('quality_security_baseline','pull_request'),
-    ('quality_security_baseline','release_id'), ('quality_security_baseline','state'),
-    ('quality_security_baseline','exact_head_exports'),
-    ('quality_security_baseline','full_history_secret_scan'),
-    ('quality_security_baseline','sbom_generation'),
-    ('quality_security_baseline','workflow_policy_validation'),
-    ('production','default_tale_id'), ('production','tale_count'),
-    ('production','drowned_harbor_catalog_registered'),
-    ('production','drowned_harbor_normal_library_visible'),
-    ('production','drowned_harbor_ordinary_export_included'),
-    ('production','drowned_harbor_provider_registered'),
-    ('production','drowned_harbor_startup_or_fallback_registered'),
-    ('drowned_harbor','ordinary_playable'),
-    ('visual_planning','external_binaries_in_git'),
-    ('visual_planning','production_art_authorized'),
-    ('visual_planning','public_github_release_assets_authorized'),
-    ('visual_planning','runtime_art_authorized'),
-    ('visual_planning','rights_provenance','asset_count'),
-    ('visual_planning','rights_provenance','max_rights_tier'),
-    ('visual_planning','rights_provenance','reference_only_nonproduction'),
-    ('visual_planning','rights_provenance','conversion_readiness'),
-    ('visual_planning','rights_provenance','candidate_created'),
-    ('visual_planning','rights_provenance','direct_pixel_use_cleared'),
-    ('visual_planning','rights_provenance','implementation_authorized'),
-    ('visual_planning','rights_provenance','legal_clearance_created'),
-    ('visual_planning','rights_provenance','public_distribution_cleared'),
-    ('visual_planning','rights_provenance','runtime_art_authorized'),
-    ('visual_planning','rights_provenance','source_art_authorized'),
-    ('visual_planning','source_plan','release_id'),
-    ('visual_planning','source_plan','record_id'),
-    ('visual_planning','source_plan','issue'),
-    ('visual_planning','source_plan','pull_request'),
-    ('visual_planning','source_plan','merged_main_sha'),
-    ('visual_planning','source_plan','state'),
-    ('visual_planning','source_plan','clean_room_planning_complete'),
-    ('visual_planning','source_plan','source_family_count'),
-    ('visual_planning','source_plan','control_traceability_count'),
-    ('visual_planning','source_plan','mutation_count'),
-    ('visual_planning','source_plan','blank_human_authored_sources_required'),
-    ('visual_planning','source_plan','no_pixel_reuse_required'),
-    ('visual_planning','source_plan','shared_low_high_tide_board_master_required'),
-    ('visual_planning','source_plan','similarity_review_required'),
-    ('visual_planning','source_plan','source_to_runtime_lineage_required'),
-    ('visual_planning','source_plan','candidate_created'),
-    ('visual_planning','source_plan','direct_generated_pixel_use_authorized'),
-    ('visual_planning','source_plan','editable_source_created'),
-    ('visual_planning','source_plan','future_evidence_performed'),
-    ('visual_planning','source_plan','godot_authorized'),
-    ('visual_planning','source_plan','implementation_authorized'),
-    ('visual_planning','source_plan','runtime_composition_authorized'),
-    ('visual_planning','source_plan','source_art_creation_authorized'),
-    ('visual_planning','source_plan','external_package','admitted_to_repository'),
-    ('visual_planning','source_plan','external_package','bytes'),
-    ('visual_planning','source_plan','external_package','filename'),
-    ('visual_planning','source_plan','external_package','manifest_bytes'),
-    ('visual_planning','source_plan','external_package','manifest_sha256'),
-    ('visual_planning','source_plan','external_package','manifested_payload_count'),
-    ('visual_planning','source_plan','external_package','sha256'),
-    ('visual_planning','source_plan','external_package','total_file_count'),
-]
-
-for path in status_paths:
-    candidate = copy.deepcopy(status)
-    set_path(candidate, path, mutate_scalar(get_path(candidate, path)))
-    must_fail(module.validate_status, candidate)
-    count += 1
-
-for replacement in [[99], [], [32, 99]]:
-    candidate = copy.deepcopy(status)
-    candidate['closed_unmerged_pull_requests'] = replacement
-    must_fail(module.validate_status, candidate)
-    count += 1
-for replacement in [[32], [99]]:
-    candidate = copy.deepcopy(status)
-    candidate['unrelated_open_pull_requests'] = replacement
-    must_fail(module.validate_status, candidate)
-    count += 1
-
-for key in list(status):
-    candidate = copy.deepcopy(status)
-    del candidate[key]
-    must_fail(module.validate_status, candidate)
-    count += 1
-candidate = copy.deepcopy(status)
-candidate['unexpected'] = True
-must_fail(module.validate_status, candidate)
-count += 1
-
-source_paths = [
-    ('record_kind',), ('record_version',),
-    ('release','release_id'), ('release','governing_issue'), ('release','protected_main'),
-    ('release','package_state'),
-    ('authorization','metadata_only_clean_room_planning_authorized'),
-    ('authorization','source_art_creation_authorized'),
-    ('authorization','runtime_composition_authorized'),
-    ('authorization','godot_authorized'),
-    ('authorization','ux_implementation_authorized'),
-    ('authorization','runtime_implementation_authorized'),
-    ('authorization','candidate_authorized'),
-    ('authorization','public_distribution_authorized'),
-    ('authorization','marketing_or_merchandise_authorized'),
-    ('authorization','accessibility_claim_authorized'),
-    ('authorization','human_evidence_claim_authorized'),
-    ('authorization','conversion_readiness'),
-    ('authorization','implementation_authorized'),
-    ('external_visual_state','asset_count'),
-    ('external_visual_state','maximum_rights_tier'),
-    ('external_visual_state','reference_only_nonproduction'),
-    ('external_visual_state','source_file_status'),
-]
-for path in source_paths:
-    candidate = copy.deepcopy(source_plan)
-    set_path(candidate, path, mutate_scalar(get_path(candidate, path)))
-    must_fail(module.validate_source_plan, candidate)
-    count += 1
-
-candidate = copy.deepcopy(source_plan)
-candidate['asset_taxonomy'].pop(next(iter(candidate['asset_taxonomy'])))
-must_fail(module.validate_source_plan, candidate)
-count += 1
-candidate = copy.deepcopy(source_plan)
-candidate['control_traceability'].pop(next(iter(candidate['control_traceability'])))
-must_fail(module.validate_source_plan, candidate)
-count += 1
-candidate = copy.deepcopy(source_plan)
-first_evidence = next(iter(candidate['future_evidence']))
-candidate['future_evidence'][first_evidence] = 'passed'
-must_fail(module.validate_source_plan, candidate)
-count += 1
-for key in list(source_plan):
-    candidate = copy.deepcopy(source_plan)
-    del candidate[key]
-    must_fail(module.validate_source_plan, candidate)
-    count += 1
-candidate = copy.deepcopy(source_plan)
-candidate['unexpected'] = True
-must_fail(module.validate_source_plan, candidate)
-count += 1
-
-provenance_paths = [
-    ('release_id',), ('issue',), ('phase_b_protected_main',),
-    ('external_package','bytes'), ('external_package','sha256'),
-    ('external_package','manifest_bytes'), ('external_package','manifest_sha256'),
-    ('external_package','admitted_to_repository'),
-    ('external_package','public_release_asset_authorized'),
-    ('registration','text_only'),
-    ('registration','source_creation_authorized'),
-    ('registration','runtime_composition_authorized'),
-    ('registration','direct_generated_pixel_use_authorized'),
-    ('registration','godot_authorized'),
-    ('registration','ux_implementation_authorized'),
-    ('registration','candidate_authorized'),
-    ('registration','public_use_authorized'),
-    ('registration','codex_authorized'),
-    ('quality_security_baseline','merge_sha'),
-    ('quality_security_baseline','pull_request'),
-    ('quality_security_baseline','inherited'),
-]
-for path in provenance_paths:
-    candidate = copy.deepcopy(provenance)
-    set_path(candidate, path, mutate_scalar(get_path(candidate, path)))
-    must_fail(module.validate_provenance, candidate)
-    count += 1
-for key in list(provenance):
-    candidate = copy.deepcopy(provenance)
-    del candidate[key]
-    must_fail(module.validate_provenance, candidate)
-    count += 1
-candidate = copy.deepcopy(provenance)
-candidate['unexpected'] = True
-must_fail(module.validate_provenance, candidate)
-count += 1
-
-with tempfile.TemporaryDirectory(prefix='post-source-plan-doc-mutation-') as raw:
-    temp_root = Path(raw)
-    for path in module.DOCS:
-        target = temp_root / path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(path, target)
-    old_root = module.ROOT
-    module.ROOT = temp_root
-    try:
-        module.validate_docs()
-        for path in module.DOCS:
-            target = temp_root / path
-            original = target.read_text(encoding='utf-8')
-            target.write_text(original + '\nsource creation is authorized\n', encoding='utf-8')
-            must_fail(module.validate_docs)
-            count += 1
-            target.write_text(original, encoding='utf-8')
-    finally:
-        module.ROOT = old_root
-
-print(f'Validated {count} fail-closed post-DH-SOURCE-PLAN status mutations')
+P=Path('tools/validate_post_dh_ux_final_status.py');s=importlib.util.spec_from_file_location('v',P);v=importlib.util.module_from_spec(s);assert s.loader;s.loader.exec_module(v)
+def get(x:Any,p:tuple[Any,...])->Any:
+ for k in p:x=x[k]
+ return x
+def put(x:Any,p:tuple[Any,...],r:Any)->None:
+ for k in p[:-1]:x=x[k]
+ x[p[-1]]=r
+def mut(x:Any)->Any:
+ if isinstance(x,bool):return not x
+ if isinstance(x,int):return x+1
+ if isinstance(x,str):return x+'__MUTATED'
+ if x is None:return 'MUTATED'
+ if isinstance(x,list):return x+['MUTATED']
+ raise TypeError(type(x))
+def fail(fn,*a)->None:
+ try:fn(*a)
+ except v.ValidationError:return
+ raise AssertionError('mutation unexpectedly passed')
+st=v.load(v.STATUS);v.validate(False);n=0
+paths=[('schema_version',),('status_kind',),('protected_main',),('protected_main_semantics',),('as_of_date',),('playable_release',),('human_evidence_claimed',),('runtime_implementation_authorized',),('ux_implementation_authorized',),('visual_implementation_authorized',),('closed_unmerged_pull_requests',),('unrelated_open_pull_requests',),('pending_inputs',)]
+for group,keys in {
+'current_release':['activation_authorized','issue','release_id','runtime_authority_created','state','type'],
+'status_reconciliation':['branch','issue','pull_request','release_type','state'],
+'recommended_next_release':['activation_authorized','codex_required','github_issue','immediate_incremental_spend_usd','planned_generation_count','release_id','state','title'],
+'rejected_competing_release':['accepted','exact_head_sha','policy_amendments_accepted','pull_request','state','visual_asset_dispositions_accepted'],
+'quality_security_baseline':['merged_main_sha','pull_request','release_id','state','codeql_supported_languages','exact_head_exports','full_history_secret_scan','sbom_generation','workflow_policy_validation'],
+'production':['default_tale_id','tale_count','drowned_harbor_catalog_registered','drowned_harbor_normal_library_visible','drowned_harbor_ordinary_export_included','drowned_harbor_provider_registered','drowned_harbor_startup_or_fallback_registered'],
+}.items():paths += [(group,k) for k in keys]
+paths += [('drowned_harbor','ordinary_playable')]
+for k in ['ai_art_policy_merge','dh_ai_source_advisory_merge','dh_source_plan_registration_merge','quality_security_baseline_merge','alpha3_merge']:paths.append(('preserved_authorities',k))
+for k in ['external_binaries_in_git','production_art_authorized','public_github_release_assets_authorized','runtime_art_authorized']:paths.append(('visual_planning',k))
+for group,keys in {
+'ai_art_policy':['ai_generated_or_assisted_source_may_become_eligible_after_asset_specific_promotion','asset_generation_authorized','human_art_direction_selection_arrangement_and_review_required','human_drawn_or_painted_source_required','issue','ledger_asset_count','ledger_state','merged_main_sha','pull_request','release_id','state'],
+'ai_source_advisory':['generation_request_authorized','immediate_incremental_spend_usd','issue','merged_main_sha','ordinary_editing_role','planned_generation_count','primary_generation_tools','pull_request','record_id','release_id','runtime_procedural_role','shared_invariant_low_high_tide_board_master_required','state'],
+'rights_provenance':['asset_count','max_rights_tier','reference_only_nonproduction','conversion_readiness','candidate_created','direct_pixel_use_cleared','extracted_fragment_use_allowed','hidden_reference_use_allowed','image_to_image_input_allowed','implementation_authorized','legal_clearance_created','mask_or_control_input_allowed','public_distribution_cleared','runtime_art_authorized','source_art_authorized','texture_use_allowed','upload_to_ai_tool_allowed'],
+'source_plan':['release_id','record_id','issue','pull_request','merged_main_sha','state','blank_human_authored_sources_required_in_historical_record','current_blank_human_authored_source_requirement','clean_room_planning_complete','source_family_count','control_traceability_count','mutation_count','no_pixel_reuse_from_restricted_external_images_required','shared_low_high_tide_board_master_required','similarity_review_required','source_to_runtime_lineage_required','candidate_created','direct_generated_pixel_use_authorized','editable_source_created','future_evidence_performed','godot_authorized','implementation_authorized','runtime_composition_authorized','source_art_creation_authorized'],
+}.items():paths += [('visual_planning',group,k) for k in keys]
+for p in paths:
+ c=copy.deepcopy(st);put(c,p,mut(get(c,p)));fail(v.validate_status,c);n+=1
+for r in [[],[32],[154],[154,32],[32,154,999]]:
+ c=copy.deepcopy(st);c['closed_unmerged_pull_requests']=r;fail(v.validate_status,c);n+=1
+for r in [[32],[154],[156]]:
+ c=copy.deepcopy(st);c['unrelated_open_pull_requests']=r;fail(v.validate_status,c);n+=1
+for k in list(st):
+ c=copy.deepcopy(st);del c[k];fail(v.validate_status,c);n+=1
+c=copy.deepcopy(st);c['unexpected']=True;fail(v.validate_status,c);n+=1
+for i,k in [(0,'issue'),(0,'state'),(1,'issue'),(1,'state')]:
+ c=copy.deepcopy(st);c['gates'][i][k]=mut(c['gates'][i][k]);fail(v.validate_status,c);n+=1
+with tempfile.TemporaryDirectory(prefix='post-ai-source-') as raw:
+ r=Path(raw);orig={p:(Path(p).read_text(encoding='utf-8')) for p in v.DOCS}
+ for p,t in orig.items():q=r/p;q.parent.mkdir(parents=True,exist_ok=True);q.write_text(t,encoding='utf-8')
+ old=v.ROOT;v.ROOT=r
+ try:
+  v.validate_docs();combined='\n'.join(orig.values())
+  req=[v.BASE,v.POLICY,v.REJECTED,'AI-ART-POLICY-001','DH-AI-SOURCE-001','issue #155','draft PR #156','DH-AI-GEN-001','selected but not activated','approximately 22 generations','immediate incremental spend `$0`','ChatGPT and Gemini','ordinary editing','R1_private_internal_reference','reference_only_nonproduction','image-to-image inputs','hidden references','extracted fragments','PR #154 is closed, unmerged, and rejected','Automation is not human evidence']
+  for x in req:
+   if x in combined:
+    for p,t in orig.items():(r/p).write_text(re.sub(re.escape(x),'[REMOVED]',t,flags=re.I),encoding='utf-8')
+    fail(v.validate_docs);n+=1
+    for p,t in orig.items():(r/p).write_text(t,encoding='utf-8')
+  target=r/v.DOCS[0]
+  for x in ['no successor release is selected or activated','requires blank human-authored editable sources','generation is authorized','image import is authorized','source acceptance is authorized','runtime composition is authorized','godot implementation is authorized','ux implementation is authorized','ordinary export is authorized','public release is authorized','production ready','shipping authorized','accessibility certified','human evidence passed','rights are fully cleared','PR #154 is merged']:
+   target.write_text(orig[v.DOCS[0]]+'\n'+x+'\n',encoding='utf-8');fail(v.validate_docs);n+=1;target.write_text(orig[v.DOCS[0]],encoding='utf-8')
+ finally:v.ROOT=old
+print(f'Validated {n} fail-closed post-DH-AI-SOURCE status mutations')
