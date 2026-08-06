@@ -1,58 +1,58 @@
-# AI-ART-POLICY-001 — AI-Only Production Art and Provenance
+# AI-ART-POLICY-001 — AI-Only Production Art, Provenance, and Existing Asset Review
 
-## Disposition
+## Release coordinates
 
-**Proposed metadata-only policy release.**
-
-- Governing issue: #151
-- Protected-main baseline: `0a6686d8cc4d15feac81c128cfc414b954e234b1`
-- Release type: policy, schema, empty ledger, documentation, and deterministic validation
-- Asset generation: not authorized
-- Asset import: not authorized
-- Runtime integration: not authorized
-- Ordinary-export inclusion: not authorized
-- Marketing or storefront use: not authorized
-- Live generation: not authorized
+- Issue: #151
+- Original policy merge: PR #152
+- Corrective follow-up pull request: pending draft
+- Protected-main base: `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
+- Branch: `docs/ai-art-existing-assets-review`
+- Type: metadata-only policy, provenance, and preliminary asset-review release
+- Binary assets added: none
+- Existing Drowned Harbor images reviewed: 25
+- Assets promoted: none
 
 ## Decision
 
-New production visual sources may be AI-generated or AI-assisted and do not require human-drawn or human-painted artwork.
+Terror Turn may use AI-generated or AI-assisted production art without requiring human-drawn or human-painted source art.
 
-Human art direction, selection, arrangement, modification, integration, rights review, similarity review, quality review, provenance, and final approval remain required.
+The 25 registered Drowned Harbor images are no longer permanently reference-only. They are eligible for controlled direct-source, edited-source, image-to-image, mask, control, extraction, runtime, marketing, or storefront review according to each asset's recorded permitted uses.
 
-Purely machine-determined pixels are not presumed copyrightable, exclusive, non-infringing, or platform-approved.
+Missing historical prompt, model, seed, timestamp, or session metadata remains unknown but is not an automatic rejection.
 
-## Supersession
+`DH-AI-SOURCE-001` remains a historical advisory, but its blanket no-upload rule is superseded for these 25 ledgered images when an exact permitted use completes full-resolution review and separate promotion.
 
-This release preserves `DH-SOURCE-PLAN-001` as a historical record while superseding three future-facing requirements:
+## Preliminary review
 
-1. blank human-authored editable source is mandatory;
-2. all direct AI-generated pixel use is permanently prohibited;
-3. independent human authorship is the only acceptable future source disposition.
+The review records:
 
-All 25 Drowned Harbor external images remain R1 private references, non-source, nonproduction, and unusable as generated-image inputs, masks, control images, hidden layers, extracted fragments, or runtime assets.
+- 1 `eligible_direct_source_after_edit`;
+- 16 `eligible_production_input_after_edit`;
+- 8 `eligible_model_input_after_review`;
+- 0 `retain_reference_only`;
+- 0 `reject`;
+- 0 promoted.
 
-## Registered controls
+The review is preliminary and expressly records that the File Library full-image opener was unavailable during this review. Some assets were therefore assessed using File Library visual summaries plus repository records or prior visual-development handoffs. Every exact use still requires review of the original full-resolution binary.
 
-- ADR-0025 repository decision;
-- AI production and provenance policy;
-- Drowned Harbor amendment;
-- approved-provider registry;
-- closed per-asset provenance schema;
-- empty policy-state ledger;
-- similarity and promotion checklist;
-- Steam pre-generated-AI disclosure draft;
-- dependency-free validator and mutation tests;
-- dedicated GitHub Actions workflow.
+No reverse-image search, provider-side verification, trademark clearance search, or legal opinion was performed.
 
-## Current provider posture
+## Controls
 
-- OpenAI ChatGPT image generation: eligible only after a separate generation activation.
-- Google Gemini Apps image generation: conditionally eligible only after a separate generation activation and with a dated terms reference plus owner or legal review before storefront promotion.
-- All other providers, checkpoints, models, fine-tunes, LoRAs, and services: prohibited until reviewed and registered.
+- immutable original filename and SHA-256;
+- Project Owner attestation and exact known/unknown provenance;
+- closed 25-asset ledger schema;
+- per-asset disposition, strengths, blockers, permitted next uses, and required actions;
+- full-resolution review before exact use;
+- transformation and derivative hashes;
+- rights, similarity, accidental-text, watermark, likeness, quality, and continuity review;
+- Steam pre-generated-AI disclosure;
+- no live generation;
+- no automatic promotion;
+- no binary import or runtime authority in this release.
 
-## Persistent boundaries
+## Boundaries
 
-No asset is admitted by this release. `art/ai/ai_art_provenance_ledger_v1.json` must remain `policy_only_no_assets` with an empty `assets` array.
+This release creates no source master, edit, generated derivative, Godot import, runtime candidate, ordinary export, marketing asset, storefront asset, public release, accessibility claim, production-readiness claim, legal-clearance claim, or shipping approval.
 
-Lantern House remains the sole normal/default Tale. Drowned Harbor remains developer-only and ordinary-export excluded. Issue #39 remains the human-evidence authority. Automation is not legal advice, human evidence, art-direction approval, accessibility certification, or Steam certification.
+Automation is not human evidence.
