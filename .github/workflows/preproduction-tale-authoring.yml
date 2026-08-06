@@ -42,6 +42,18 @@ jobs:
         run: python tools/test_validate_tale_authoring_reference.py
       - name: Confirm production Tale boundaries remain unchanged
         run: |
-          test ! -e game/data/tales/drowned_harbor
-          test "$(find game/data/tales -mindepth 1 -maxdepth 1 -type d | sort)" = "game/data/tales/lantern_house"
+          test -d game/data/tales/lantern_house
+          test -d game/data/tales/drowned_harbor
+          python tools/tale_catalog.py validate
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          catalog = json.loads(Path('game/data/tales/tale_catalog_v1.json').read_text(encoding='utf-8'))
+          tale_ids = [entry['tale_id'] for entry in catalog['entries']]
+          assert catalog['default_tale_id'] == 'lantern_house_vertical_slice', catalog
+          assert tale_ids == ['lantern_house_vertical_slice'], tale_ids
+          assert all('drowned_harbor' not in entry['package_path'] for entry in catalog['entries'])
+          print('Drowned Harbor remains development-only and excluded from the production Tale catalog')
+          PY
           git diff --exit-code -- game/data/tales game/src/session tools/tale_package.py tools/tale_catalog.py
