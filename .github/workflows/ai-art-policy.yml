@@ -71,7 +71,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          find tools -type d -name '__pycache__' -prune -exec rm -rf {} +
-          find tools -type f -name '*.pyc' -delete
+          find . -path './.git' -prune -o -type d -name '__pycache__' -print | sort -r | xargs -r rm -rf
+          find . -path './.git' -prune -o -type f -name '*.pyc' -delete
           git diff --check
-          test -z "$(git status --porcelain)"
+          status=$(git status --porcelain=v1 --untracked-files=all)
+          if [ -n "$status" ]; then
+            echo 'Unexpected generated repository state:'
+            printf '%s\n' "$status"
+            exit 1
+          fi
