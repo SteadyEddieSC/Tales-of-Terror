@@ -1,8 +1,8 @@
 # Steam Pre-Generated AI Disclosure Draft v1
 
-**Status:** planning draft only  
-**Policy release:** `AI-ART-POLICY-001`  
-**Live-generated AI:** not authorized
+- **Status:** planning draft only
+- **Policy release:** `AI-ART-POLICY-001`
+- **Live-generated AI:** not authorized
 
 ## Draft Content Survey description
 
