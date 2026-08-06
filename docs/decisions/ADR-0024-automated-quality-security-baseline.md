@@ -25,7 +25,7 @@ The active Drowned Harbor governance release is metadata-only and prohibits runt
    - records broad startup/load/snapshot timing and orphan-node smoke metrics.
 4. Add one branch-capable quality workflow that runs the inherited repository validators, complete direct Godot test surface, GUT JUnit suite, companion tests and native-authority E2E, clean Windows/Linux exports, Linux exported-artifact smoke, checksums, dependency inventories, add-on inventory, and CycloneDX npm SBOM.
 5. Add Gitleaks as a blocking full-history secret scan using a checksum-pinned binary.
-6. Add Zizmor for full workflow analysis. Existing high-risk structural requirements—immutable action pins, least-privilege permission blocks, and prohibition of `pull_request_target`—are blocking through the deterministic validator. Full Zizmor findings are advisory until individually reviewed, because broad automatic suppression or retroactive failure on untriaged informational findings would be unsafe.
+6. Add Zizmor as a blocking full-repository workflow-security scan. The baseline preserves the report artifact before enforcing the result. The initial audit exposed 36 checkout credential-persistence findings and three dependency-cache poisoning findings in inherited workflows; this change remediates all 39 by disabling persisted checkout credentials and removing the unnecessary artifact-producing workflow caches rather than suppressing them.
 7. Add CodeQL for the repository's supported **JavaScript/TypeScript** and **Python** sources. CodeQL is not represented as GDScript coverage.
 8. Expand Dependabot to GitHub Actions, npm, and pip with grouped minor/patch updates and no automatic merge.
 9. Preserve all existing internal-only export classifications, denylisted test/development resources, unsigned packaging, and non-publication behavior.
@@ -41,6 +41,7 @@ The active Drowned Harbor governance release is metadata-only and prohibits runt
 - companion typecheck/tests/build/native-authority E2E;
 - high-severity npm audit;
 - Gitleaks repository/history scan;
+- full Zizmor workflow-security scan;
 - exact-head Windows and Linux export;
 - Linux exported-artifact smoke;
 - checksum and metadata generation;
@@ -53,7 +54,6 @@ The active Drowned Harbor governance release is metadata-only and prohibits runt
 - potential unused/orphan assets where static confidence is insufficient;
 - dense but potentially intentional input-binding overlap;
 - lowercase asset naming drift inherited from approved/vendor content;
-- full Zizmor finding set pending finding-by-finding disposition;
 - Python tooling vulnerability audit pending ecosystem severity mapping;
 - broad CI performance measurements, which are regression smoke signals rather than player-hardware benchmarks.
 

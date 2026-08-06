@@ -23,7 +23,8 @@ Development-assurance infrastructure only. This change does not authorize or imp
 - broad performance regression smoke metrics;
 - complete branch-capable quality/test/export workflow;
 - Gitleaks full-history secret detection;
-- Zizmor workflow-security analysis plus blocking structural workflow policy;
+- blocking Zizmor workflow-security analysis;
+- inherited workflow hardening that disables persisted checkout credentials and removes unnecessary dependency caches from artifact-producing quality/security jobs;
 - CodeQL for JavaScript/TypeScript and Python;
 - Dependabot coverage for GitHub Actions, npm, and pip;
 - Windows/Linux exact-head exports, Linux artifact smoke, SHA-256 checksums, build metadata, dependency inventories, add-on inventory, and npm SBOM;
@@ -31,9 +32,11 @@ Development-assurance infrastructure only. This change does not authorize or imp
 
 ## Blocking versus advisory
 
-Blocking checks cover correctness, parser/import/resource/scene failures, current deterministic snapshot compatibility, asset budget/header/case collisions, complete headless tests, high dependency vulnerabilities, secrets, high-risk workflow configuration, and export/smoke failures.
+Blocking checks cover correctness, parser/import/resource/scene failures, current deterministic snapshot compatibility, asset budget/header/case collisions, complete headless tests, high dependency vulnerabilities, secrets, Zizmor workflow findings, high-risk workflow configuration, and export/smoke failures.
 
-Advisory checks cover potential unused assets, duplicate asset hashes, inherited naming drift, full Zizmor findings pending individual triage, Python tooling vulnerabilities without severity mapping, and broad CI performance trends.
+Advisory checks cover potential unused assets, duplicate asset hashes, inherited naming drift, Python tooling vulnerabilities without severity mapping, and broad CI performance trends.
+
+The initial Zizmor pass identified 39 inherited findings: 36 persisted-checkout-credential findings and three cache-poisoning findings. All were remediated in the branch rather than allowlisted.
 
 ## Save compatibility boundary
 

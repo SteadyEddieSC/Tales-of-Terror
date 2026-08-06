@@ -14,7 +14,7 @@ This baseline provides deterministic local and GitHub-native checks for Terror T
 | Python | `3.11.9` | deterministic repository validators |
 | Node | `24.18.0` | companion tests/build/audit/SBOM |
 | Gitleaks | `8.30.1`, release archive SHA-256 pinned | secret scanning |
-| Zizmor | CLI `1.26.1`, PyPI wheel SHA-256 pinned | workflow security analysis |
+| Zizmor | CLI `1.26.1`, PyPI wheel SHA-256 pinned | blocking workflow security analysis |
 | CodeQL Action | `4.35.2`, immutable commit | JavaScript/TypeScript and Python static security analysis |
 
 ## Local commands
@@ -70,9 +70,11 @@ Runs on the same development branches, pull requests, weekly schedule, and manua
 
 - **Gitleaks:** blocking scan of repository content and complete fetched history. `.gitleaks.toml` extends the default rules. `.gitleaksignore` contains only an exact reviewed fingerprint for one historical prose false positive; no path-wide or rule-wide suppression exists.
 - **Workflow policy:** blocking deterministic checks for immutable action pins, explicit permissions, and dangerous triggers.
-- **Zizmor:** full-repository advisory scan while findings are triaged. A Zizmor non-success is retained in the evidence artifact; it does not override the blocking structural policy.
+- **Zizmor:** blocking full-repository scan. Reports are uploaded before the final gate fails. The initial pass identified and drove remediation of 36 persisted-checkout-credential findings and three cache-poisoning findings; no Zizmor finding is broadly suppressed.
 - **npm audit:** blocks on high/critical findings in the locked graph.
 - **pip-audit:** advisory for the development-only Python lock until severity-aware disposition is available.
+
+Every checkout in the repository uses `persist-credentials: false`. The quality and security artifact-producing jobs do not use setup-action dependency caches, avoiding the cache-poisoning paths identified by Zizmor.
 
 ### CodeQL
 
@@ -144,11 +146,11 @@ The quality artifact retains:
 - SHA-256 checksums and build metadata;
 - npm CycloneDX SBOM, Python inventory, and Godot add-on inventory.
 
-Security artifacts retain Gitleaks SARIF, npm/pip audit output, workflow-policy reports, and Zizmor disposition.
+Security artifacts retain Gitleaks SARIF, npm/pip audit output, workflow-policy reports, and Zizmor results/disposition.
 
 ## Warning and false-positive policy
 
-Blocking errors are parser failures, missing/invalid resources, scene-load failures, failed assertions, invalid accesses identified in logs, crashes, export failures, secret findings, high dependency vulnerabilities, or high-risk workflow-policy violations.
+Blocking errors are parser failures, missing/invalid resources, scene-load failures, failed assertions, invalid accesses identified in logs, crashes, export failures, secret findings, high dependency vulnerabilities, or any Zizmor/workflow-policy finding.
 
 Accepted warning patterns are narrowly listed in `quality/quality_config.json`. New exceptions require an exact pattern or fingerprint, a reason, an owner, and review in the pull request. Broad path or rule suppression is prohibited.
 
