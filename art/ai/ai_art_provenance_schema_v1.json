@@ -1,0 +1,404 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/terror_turn_ai_art_provenance_v1.schema.json",
+  "title": "Terror Turn AI art provenance ledger v1",
+  "$defs": {
+    "nonempty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_input": {
+      "type": "object",
+      "properties": {
+        "input_id": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "kind": {
+          "enum": [
+            "text_prompt",
+            "project_owned_image",
+            "licensed_third_party_image",
+            "mask",
+            "control_image",
+            "other_authorized_input"
+          ]
+        },
+        "source_path_or_reference": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rights_basis": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "owner_or_licensor": {
+          "$ref": "#/$defs/nonempty_string"
+        }
+      },
+      "required": [
+        "input_id",
+        "kind",
+        "source_path_or_reference",
+        "sha256",
+        "rights_basis",
+        "owner_or_licensor"
+      ],
+      "additionalProperties": false
+    },
+    "transformation": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "tool": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "version": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "description": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "human_authored_choice": {
+          "type": "boolean"
+        },
+        "input_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "output_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "step",
+        "tool",
+        "version",
+        "description",
+        "human_authored_choice",
+        "input_sha256",
+        "output_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "runtime_export": {
+      "type": "object",
+      "properties": {
+        "runtime_path": {
+          "type": "string",
+          "pattern": "^game/assets/"
+        },
+        "format": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "color_space": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "alpha": {
+          "type": "boolean"
+        },
+        "compression": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "promotion_state": {
+          "enum": [
+            "runtime_candidate",
+            "ordinary_export_candidate",
+            "storefront_candidate"
+          ]
+        }
+      },
+      "required": [
+        "runtime_path",
+        "format",
+        "width",
+        "height",
+        "color_space",
+        "alpha",
+        "compression",
+        "sha256",
+        "promotion_state"
+      ],
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "properties": {
+        "reviewer": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "reviewed_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "disposition": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "notes": {
+          "$ref": "#/$defs/nonempty_string"
+        }
+      },
+      "required": [
+        "reviewer",
+        "reviewed_on",
+        "disposition",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "asset": {
+      "type": "object",
+      "properties": {
+        "asset_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_\\-]*$"
+        },
+        "tale_or_scope": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "asset_family": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "intended_use": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "provider_id": {
+          "enum": [
+            "openai_chatgpt_image_generation",
+            "google_gemini_apps_image_generation"
+          ]
+        },
+        "model_name": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "model_version": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/nonempty_string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generated_on": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "account_owner": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "prompt": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "negative_prompt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_input"
+          }
+        },
+        "generator_output_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "editable_master_path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^art/source/"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "editable_master_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transformations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/transformation"
+          }
+        },
+        "runtime_exports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/runtime_export"
+          }
+        },
+        "c2pa_or_content_credentials": {
+          "enum": [
+            "present_preserved",
+            "present_recorded_but_not_preserved_in_runtime",
+            "not_detected",
+            "unknown"
+          ]
+        },
+        "watermark_or_signature_disposition": {
+          "enum": [
+            "none_detected",
+            "provider_mark_preserved",
+            "provider_mark_removed_with_terms_review",
+            "unresolved_blocking"
+          ]
+        },
+        "human_contributions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonempty_string"
+          }
+        },
+        "rights_review": {
+          "$ref": "#/$defs/review"
+        },
+        "similarity_review": {
+          "$ref": "#/$defs/review"
+        },
+        "quality_review": {
+          "$ref": "#/$defs/review"
+        },
+        "steam_disclosure_batch": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/nonempty_string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "promotion_state": {
+          "enum": [
+            "generated_source_quarantined",
+            "rights_and_similarity_review",
+            "source_accepted_not_runtime",
+            "runtime_candidate",
+            "ordinary_export_candidate",
+            "storefront_candidate",
+            "retired_or_rejected"
+          ]
+        },
+        "release_coordinate": {
+          "$ref": "#/$defs/nonempty_string"
+        }
+      },
+      "required": [
+        "asset_id",
+        "tale_or_scope",
+        "asset_family",
+        "intended_use",
+        "provider_id",
+        "model_name",
+        "model_version",
+        "generated_on",
+        "account_owner",
+        "prompt",
+        "negative_prompt",
+        "seed",
+        "source_inputs",
+        "generator_output_sha256",
+        "editable_master_path",
+        "editable_master_sha256",
+        "transformations",
+        "runtime_exports",
+        "c2pa_or_content_credentials",
+        "watermark_or_signature_disposition",
+        "human_contributions",
+        "rights_review",
+        "similarity_review",
+        "quality_review",
+        "steam_disclosure_batch",
+        "promotion_state",
+        "release_coordinate"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "record_kind": {
+      "const": "terror_turn_ai_art_provenance_ledger"
+    },
+    "record_version": {
+      "const": 1
+    },
+    "policy_release": {
+      "const": "AI-ART-POLICY-001"
+    },
+    "state": {
+      "enum": [
+        "policy_only_no_assets",
+        "active_asset_ledger"
+      ]
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    }
+  },
+  "required": [
+    "record_kind",
+    "record_version",
+    "policy_release",
+    "state",
+    "assets"
+  ],
+  "additionalProperties": false
+}

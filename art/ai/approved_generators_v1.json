@@ -1,0 +1,69 @@
+{
+  "record_kind": "terror_turn_approved_ai_generators",
+  "record_version": 1,
+  "policy_release": "AI-ART-POLICY-001",
+  "verified_on": "2026-08-05",
+  "providers": [
+    {
+      "provider_id": "openai_chatgpt_image_generation",
+      "provider": "OpenAI",
+      "service": "ChatGPT image generation",
+      "eligibility": "eligible_after_separate_generation_activation",
+      "account_requirement": "project_owner_controlled_account_with_current_terms_applicable",
+      "model_record_requirement": "record_exact_displayed_model_and_version_when_available",
+      "terms": [
+        {
+          "title": "OpenAI Terms of Use",
+          "effective": "2026-01-01",
+          "url": "https://openai.com/policies/terms-of-use/",
+          "rights_summary": "As_between_the_user_and_OpenAI_and_to_the_extent_permitted_by_law_the_user_owns_output_and_OpenAI_assigns_any_right_title_and_interest_it_has"
+        },
+        {
+          "title": "OpenAI Service Terms",
+          "effective": "2026-06-12",
+          "url": "https://openai.com/policies/service-terms/",
+          "rights_summary": "Service_specific_terms_apply_and_do_not_remove_the_users_responsibility_for_inputs_outputs_and_third_party_rights"
+        }
+      ],
+      "mandatory_controls": [
+        "all_inputs_owned_or_authorized",
+        "do_not_represent_output_as_human_generated",
+        "human_review_before_use",
+        "non_unique_output_acknowledged",
+        "prompt_model_date_account_and_hash_recorded",
+        "no_third_party_rights_violation"
+      ]
+    },
+    {
+      "provider_id": "google_gemini_apps_image_generation",
+      "provider": "Google",
+      "service": "Gemini Apps image generation",
+      "eligibility": "conditional_after_separate_generation_activation",
+      "account_requirement": "project_owner_controlled_consumer_account_with_current_terms_applicable",
+      "model_record_requirement": "record_exact_displayed_model_and_version_when_available",
+      "terms": [
+        {
+          "title": "Google Terms of Service",
+          "effective": "2024-05-22",
+          "url": "https://policies.google.com/terms?hl=en-US",
+          "rights_summary": "Google_states_it_will_not_claim_ownership_over_original_content_generated_by_services"
+        },
+        {
+          "title": "Generate and edit images with Gemini Apps",
+          "effective": "current_as_verified_2026-08-05",
+          "url": "https://support.google.com/gemini/answer/14286560?hl=en",
+          "rights_summary": "User_must_follow_Google_terms_and_prohibited_use_policy_and_avoid_copyright_or_privacy_violations"
+        }
+      ],
+      "mandatory_controls": [
+        "dated_terms_snapshot_or_reference_retained_for_each_promotion_batch",
+        "all_inputs_owned_or_authorized",
+        "human_review_before_use",
+        "non_unique_output_and_no_provider_exclusivity_assumed",
+        "prompt_model_date_account_and_hash_recorded",
+        "no_third_party_rights_violation",
+        "owner_or_legal_review_required_before_storefront_candidate"
+      ]
+    }
+  ]
+}

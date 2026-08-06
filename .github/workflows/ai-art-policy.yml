@@ -1,0 +1,84 @@
+name: AI art policy and provenance validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ai-art-policy.yml'
+      - 'docs/decisions/ADR-0025-ai-only-production-art-policy.md'
+      - 'docs/releases/AI-ART-POLICY-001-ai-only-production-art-and-provenance.md'
+      - 'docs/technical/AI_Art_Production_and_Provenance_Policy_v1.md'
+      - 'docs/technical/AI_Art_Similarity_and_Promotion_Checklist_v1.md'
+      - 'docs/technical/Steam_PreGenerated_AI_Disclosure_Draft_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Only_Art_Provenance_Amendment_v1.md'
+      - 'art/ai/**'
+      - 'tools/validate_ai_art_policy.py'
+      - 'tools/test_validate_ai_art_policy.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ai-art-policy.yml'
+      - 'docs/decisions/ADR-0025-ai-only-production-art-policy.md'
+      - 'docs/releases/AI-ART-POLICY-001-ai-only-production-art-and-provenance.md'
+      - 'docs/technical/AI_Art_Production_and_Provenance_Policy_v1.md'
+      - 'docs/technical/AI_Art_Similarity_and_Promotion_Checklist_v1.md'
+      - 'docs/technical/Steam_PreGenerated_AI_Disclosure_Draft_v1.md'
+      - 'docs/tales/drowned_harbor/visual/Drowned_Harbor_AI_Only_Art_Provenance_Amendment_v1.md'
+      - 'art/ai/**'
+      - 'tools/validate_ai_art_policy.py'
+      - 'tools/test_validate_ai_art_policy.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate AI-only art policy and empty provenance ledger
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up pinned Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+
+      - name: Install reviewed validation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+          python -m pip check
+
+      - name: Validate policy, providers, schema, ledger, documents, and exact path boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/validate_ai_art_policy.py
+          python tools/test_validate_ai_art_policy.py
+          python -m py_compile tools/validate_ai_art_policy.py tools/test_validate_ai_art_policy.py
+
+      - name: Validate repository quality-policy compatibility
+        run: python quality/validate_repository.py all
+
+      - name: Prove clean source tree
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -path './.git' -prune -o -type d -name '__pycache__' -print | sort -r | xargs -r rm -rf
+          find . -path './.git' -prune -o -type f -name '*.pyc' -print0 | xargs -0 -r rm -f
+          rm -f artifacts/quality/quality-report.json artifacts/quality/quality-report.txt
+          rmdir artifacts/quality artifacts 2>/dev/null || true
+          git diff --check
+          status=$(git status --porcelain=v1 --untracked-files=all)
+          if [ -n "$status" ]; then
+            echo 'Unexpected generated repository state:'
+            printf '%s\n' "$status"
+            exit 1
+          fi
