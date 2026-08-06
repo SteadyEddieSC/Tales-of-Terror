@@ -1,6 +1,6 @@
 # Drowned Harbor Source Asset Taxonomy and Ownership Matrix v1
 
-**Release:** `DH-SOURCE-PLAN-001`  
+**Release:** `DH-SOURCE-PLAN-001`
 **Status:** metadata-only planning; no source files exist or are authorized
 
 Every future family starts from a blank human-authored editable source, uses independent geometry and composition, carries complete contributor/tool/font/asset/license records, and remains blocked until source SHA-256, export SHA-256, lineage, and similarity review are complete.
