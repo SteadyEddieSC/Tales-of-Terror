@@ -1,7 +1,7 @@
 # Preproduction and Production-Planning Index
 
 **Status:** Internal design, developer-only runtime, automated quality/security assurance, completed AI-art policy, and completed metadata-only AI-first board-master advisory
-**Latest completed planning release:** `DH-AI-SOURCE-001` â€” issue #149 / PR #153
+**Latest completed planning release:** `DH-AI-SOURCE-001` — issue #149 / PR #153
 **Status-reconciliation baseline:** `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
 **Current reconciliation:** issue #155 / draft PR #156
 **Selected successor:** `DH-AI-GEN-001`; selected but not activated
@@ -21,7 +21,7 @@
 - [Ending and epilogue presentation-hook storyboard study](../tales/drowned_harbor/visual/Drowned_Harbor_Ending_Resolution_and_Epilogue_Attribution_Presentation_Hook_Storyboard_Study_v1.md)
 - [Presentation-family consistency and conversion-readiness assessment](../tales/drowned_harbor/visual/Drowned_Harbor_Presentation_Family_Consistency_and_Conversion_Readiness_v1.md)
 - [Shared-screen UX architecture and stage flows](../tales/drowned_harbor/ux/Drowned_Harbor_Shared_Screen_UX_Architecture_and_Stage_Flows_v1.md)
-- [960Ã—540 layout and stable-seat advisory](../tales/drowned_harbor/ux/Drowned_Harbor_960x540_Layout_and_Stable_Seat_Advisory_v1.md)
+- [960×540 layout and stable-seat advisory](../tales/drowned_harbor/ux/Drowned_Harbor_960x540_Layout_and_Stable_Seat_Advisory_v1.md)
 - [UX validation and human-evidence plan](../tales/drowned_harbor/ux/Drowned_Harbor_UX_Validation_and_Human_Evidence_Plan_v1.md)
 - [Final UX advisory addendum](../tales/drowned_harbor/ux/Drowned_Harbor_Final_UX_Advisory_Addendum_v2.md)
 - [Gated clean-room source-planning inputs](../tales/drowned_harbor/ux/Drowned_Harbor_Clean_Room_Source_Planning_Inputs_Gated_v2.md)
@@ -45,7 +45,7 @@ P0.21 production architecture, Alpha.1 production scaffold, P0.22 Alpha.2 route 
 
 The post-Alpha.3 status reconciliation completed through issue #111 / PR #112. The metadata-only visual baseline and board conversion authority completed through issue #110 / PR #113 at `0cea1ac62733fda56d09cb0de8a789efc509308a`. The High Water presentation registration completed through issue #114 / PR #115 at `671b8f2512be80c0c5f2cec701c29445159620e2`. The presentation-family registration completed through issue #118 / PR #119 at `1cad8495c913d926c4422557ea59e8c6fa1f6c1a`. The corrected external UX advisory registration completed through issue #120 / PR #124 at `22b43893b7726e5c5bea1078aced1cf11e08049f`. The external visual rights/provenance registration completed through issue #127 / PR #128 at `afa65009237b7b5494bf088c640ff542f93e16b4`. The Project Owner attestation completed through issue #131 / PR #132 at `7af430b5d9528c648d00291e4c32fa368279b41b`. The final UX addendum completed through issue #135 / PR #136 at `eaa40667322928d39f6cee7c4bff3f74775c2792`. The automated quality/security baseline completed through PR #140 at `3d29b454868295c7d3f4f06708de9c29b462abb2`. The clean-room source-planning release completed through issue #139 / PR #146 at `a42d1104c16532e801164dc237a5fddc6187b489`, followed by its reconciliation through issue #147 / PR #148. `AI-ART-POLICY-001` completed through issue #151 / PR #152 at `209bba6498686cd392ddce4bbc32f549d381913f`. `DH-AI-SOURCE-001` completed through issue #149 / PR #153 at `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`. The current post-advisory reconciliation is issue #155 / draft PR #156.
 
-`preproduction_package_index_v1.json` remains the frozen P0.1â€“P0.7 historical contract.
+`preproduction_package_index_v1.json` remains the frozen P0.1–P0.7 historical contract.
 
 ## Current boundary
 
@@ -63,7 +63,7 @@ All 25 assets remain `R1_private_internal_reference`, `reference_only_nonproduct
 
 The Companion development graph retains Wrangler `4.114.0`, Workers Types `5.20260722.1`, Miniflare `4.20260722.0`, and Sharp `0.35.2`, with reviewed exact npm overrides PostCSS `8.5.23` and Undici `7.29.0`.
 
-`DH-AI-GEN-001 â€” Drowned Harbor Shared Board-Master Visual Source Pilot` is selected as the recommended successor but is not activated. A separate Release Coordination issue is required after this reconciliation merges. Generation, editing, source acceptance, source/runtime composition, Godot, UX implementation, candidates, ordinary export, marketing, storefront, and public use remain separately gated and unauthorized.
+`DH-AI-GEN-001 — Drowned Harbor Shared Board-Master Visual Source Pilot` is selected as the recommended successor but is not activated. A separate Release Coordination issue is required after this reconciliation merges. Generation, editing, source acceptance, source/runtime composition, Godot, UX implementation, candidates, ordinary export, marketing, storefront, and public use remain separately gated and unauthorized.
 
 Automation is not human evidence. Issue #39 remains the human-evidence authority, issue #7 remains the naming gate, and PRs #32 and #154 are closed and unmerged.
 
