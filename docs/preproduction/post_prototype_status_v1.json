@@ -13,20 +13,29 @@
     "snapshot_version": 3,
     "state": "completed_developer_only"
   },
-  "as_of_date": "2026-08-06",
+  "as_of_date": "2026-09-08",
   "closed_unmerged_pull_requests": [
     32,
     154
   ],
   "companion_dependency_security": {
     "audit_threshold": "moderate",
+    "current_audit": {
+      "advisory": "GHSA-2v37-7h3g-55p8",
+      "affected_range": "<3.3.18",
+      "as_of_date": "2026-09-08",
+      "human_evidence_claimed": false,
+      "package": "nanoid",
+      "severity": "high",
+      "state": "blocked_requires_lockfile_scope_amendment"
+    },
     "miniflare": "4.20260722.0",
     "override_policy": {
       "postcss": "8.5.23",
       "undici": "7.29.0"
     },
     "sharp": "0.35.2",
-    "state": "remediated_and_exact_head_validated",
+    "state": "historical_remediation_current_audit_blocked",
     "workers_types": "5.20260722.1",
     "wrangler": "4.114.0"
   },
@@ -131,7 +140,13 @@
     "release_type": "documentation_and_governance_reconciliation",
     "state": "draft_for_independent_review"
   },
-  "unrelated_open_pull_requests": [],
+  "unrelated_open_pull_requests": [
+    142,
+    143,
+    144,
+    145,
+    158
+  ],
   "ux_implementation_authorized": false,
   "visual_implementation_authorized": false,
   "visual_planning": {

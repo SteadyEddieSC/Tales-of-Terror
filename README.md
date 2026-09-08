@@ -1,6 +1,6 @@
 # Terror Turn *(working title)*
 
-A controller-first, 1–8 player digital horror board-game adventure about surviving living storybook Tales, navigating shifting alliances, and staying meaningfully involved even after defeat.
+A controller-first, 1â€“8 player digital horror board-game adventure about surviving living storybook Tales, navigating shifting alliances, and staying meaningfully involved even after defeat.
 
 > **Naming status:** `Terror Turn` and `The Underteller` remain provisional pending the legal and common-law review tracked by issue #7. The repository remains `SteadyEddieSC/Tales-of-Terror` until that gate is resolved.
 
@@ -9,22 +9,22 @@ A controller-first, 1–8 player digital horror board-game adventure about survi
 This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, a developer-only Drowned Harbor Alpha.3 runtime, a repository-wide automated quality/security baseline, completed metadata-only Drowned Harbor visual/UX/source-planning authorities, the completed `AI-ART-POLICY-001` production-art policy, and the completed metadata-only `DH-AI-SOURCE-001` board-master advisory. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
 
 - **Normal playable version:** `v0.1.9`
-- **Sole production/default Tale:** `lantern_house_vertical_slice` — Lantern House
+- **Sole production/default Tale:** `lantern_house_vertical_slice` â€” Lantern House
 - **Status-reconciliation baseline:** `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
-- **Latest completed runtime release:** `v0.2.0-alpha.3` — issue #108 / PR #109
-- **Automated quality/security baseline:** PR #140 — merge `3d29b454868295c7d3f4f06708de9c29b462abb2`
-- **Completed visual baseline release:** `DH-VBL-001` — issue #110 / PR #113
-- **Completed High Water presentation registration:** `DH-PRESENT-REG-001` / `DH-PRESENT-001` — issue #114 / PR #115
-- **Completed presentation-family registration:** `DH-PRESENT-REG-002` / `DH-PRESENT-FAMILY-001` — issue #118 / PR #119
-- **Completed UX advisory registration:** `DH-UX-REG-001` / `DH-UX-001` — issue #120 / PR #124
-- **Completed rights/provenance registration:** `DH-RIGHTS-REG-001` / `DH-RIGHTS-001` — issue #127 / PR #128
-- **Completed Project Owner attestation registration:** `DH-OWNER-ATTEST-REG-001` / `DH-OWNER-ATTEST-001` — issue #131 / PR #132
-- **Completed final UX addendum registration:** `DH-UX-ADDENDUM-REG-001` / `DH-UX-FINAL-001` — issue #135 / PR #136
-- **Completed clean-room source-planning release:** `DH-SOURCE-PLAN-001` — issue #139 / PR #146
-- **Completed AI-art policy:** `AI-ART-POLICY-001` — issue #151 / PR #152, merge `209bba6498686cd392ddce4bbc32f549d381913f`
-- **Completed AI-first board-master advisory:** `DH-AI-SOURCE-001` — issue #149 / PR #153, merge `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
+- **Latest completed runtime release:** `v0.2.0-alpha.3` â€” issue #108 / PR #109
+- **Automated quality/security baseline:** PR #140 â€” merge `3d29b454868295c7d3f4f06708de9c29b462abb2`
+- **Completed visual baseline release:** `DH-VBL-001` â€” issue #110 / PR #113
+- **Completed High Water presentation registration:** `DH-PRESENT-REG-001` / `DH-PRESENT-001` â€” issue #114 / PR #115
+- **Completed presentation-family registration:** `DH-PRESENT-REG-002` / `DH-PRESENT-FAMILY-001` â€” issue #118 / PR #119
+- **Completed UX advisory registration:** `DH-UX-REG-001` / `DH-UX-001` â€” issue #120 / PR #124
+- **Completed rights/provenance registration:** `DH-RIGHTS-REG-001` / `DH-RIGHTS-001` â€” issue #127 / PR #128
+- **Completed Project Owner attestation registration:** `DH-OWNER-ATTEST-REG-001` / `DH-OWNER-ATTEST-001` â€” issue #131 / PR #132
+- **Completed final UX addendum registration:** `DH-UX-ADDENDUM-REG-001` / `DH-UX-FINAL-001` â€” issue #135 / PR #136
+- **Completed clean-room source-planning release:** `DH-SOURCE-PLAN-001` â€” issue #139 / PR #146
+- **Completed AI-art policy:** `AI-ART-POLICY-001` â€” issue #151 / PR #152, merge `209bba6498686cd392ddce4bbc32f549d381913f`
+- **Completed AI-first board-master advisory:** `DH-AI-SOURCE-001` â€” issue #149 / PR #153, merge `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
 - **Current status reconciliation:** issue #155 / draft PR #156; documentation and governance only
-- **Selected successor:** `DH-AI-GEN-001 — Drowned Harbor Shared Board-Master Visual Source Pilot`; selected, not activated
+- **Selected successor:** `DH-AI-GEN-001 â€” Drowned Harbor Shared Board-Master Visual Source Pilot`; selected, not activated
 - **Human-evidence issue #39:** deferred and still authoritative
 - **Naming issue #7:** open
 - **Closed/unmerged pull requests:** PR #32 and rejected PR #154
@@ -33,7 +33,7 @@ Lantern House remains the sole normal/default Tale. Drowned Harbor remains devel
 
 ## Elevator pitch
 
-**One sentence:** Terror Turn is a shared-screen horror board game where 1–8 players explore a living storybook world, make dangerous group and private choices, survive a mid-story **Terror Turn**, and may change sides, transform, or return in an afterlife role instead of being eliminated.
+**One sentence:** Terror Turn is a shared-screen horror board game where 1â€“8 players explore a living storybook world, make dangerous group and private choices, survive a mid-story **Terror Turn**, and may change sides, transform, or return in an afterlife role instead of being eliminated.
 
 **Expanded pitch:** Friends gather around one television and enter an authored horror **Tale** hosted by **The Underteller**, an undead master of ceremonies who introduces the story, reacts to public choices, and presents the ending. Players explore a shifting **Living Board**, collect clues and items, face deterministic checks and events, and decide when to cooperate, bargain, conceal information, or pursue a private objective. A rule-based Director adjusts authored pacing within strict limits, while transformations, betrayals, third factions, and Restless afterlife forms keep the group involved until the final scene.
 
@@ -42,7 +42,7 @@ Lantern House remains the sole normal/default Tale. Drowned Harbor remains devel
 The current production runtime proves a complete controller-first route through Lantern House:
 
 1. title and setup;
-2. a 1–8 stable-seat local lobby;
+2. a 1â€“8 stable-seat local lobby;
 3. mode confirmation and a Tale Library;
 4. public briefing;
 5. controller-owned private reveal ceremonies;
@@ -60,26 +60,26 @@ Reusable production foundations include:
 - cooperative, betrayal, faction, transformation, and Restless afterlife systems;
 - public, seat-private, faction-private, and controlled-private information boundaries;
 - optional browser companion devices through a local development prototype;
-- controller-first Tale selection, replay-safe actions, and automated 1–8-seat completion evidence;
+- controller-first Tale selection, replay-safe actions, and automated 1â€“8-seat completion evidence;
 - Windows and Linux internal exports, including Linux validation relevant to Batocera.
 
 ## Current production Tale: Lantern House
 
-Lantern House remains the sole production Tale. It is an integration route used to prove that the project’s major systems work together, not the final standard for story volume, art, atmosphere, encounter variety, balance, or replayability.
+Lantern House remains the sole production Tale. It is an integration route used to prove that the projectâ€™s major systems work together, not the final standard for story volume, art, atmosphere, encounter variety, balance, or replayability.
 
 ## Future Tale in design: Drowned Harbor
 
 **Drowned Harbor is not a production Tale and is not ordinarily playable.**
 
-The P0.1–P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; Alpha.3 implemented the developer-only systems runtime; the visual, presentation-family, UX, rights/provenance, owner-attestation, and clean-room source-planning releases registered metadata-only authority; `AI-ART-POLICY-001` established the repository-wide future AI-art policy; and `DH-AI-SOURCE-001` registered a metadata-only AI-first board-master advisory without generation authority.
+The P0.1â€“P0.19 program established the design package and isolated high-risk prototype proofs. P0.21 established production architecture; Alpha.1 created a production scaffold; P0.22 and Alpha.2 created the complete end-to-end graybox route; P0.23 established the systems/replayability contract; Alpha.3 implemented the developer-only systems runtime; the visual, presentation-family, UX, rights/provenance, owner-attestation, and clean-room source-planning releases registered metadata-only authority; `AI-ART-POLICY-001` established the repository-wide future AI-art policy; and `DH-AI-SOURCE-001` registered a metadata-only AI-first board-master advisory without generation authority.
 
 Alpha.3 merged through issue #108 / PR #109 at protected-main SHA `cad70c5c8f0db1de7d557aff242cc8fe3610361b`. Its candidate source head was `08fdbe8b52a66fc44a98bdd27878554c5478aef1`.
 
 Alpha.3 includes:
 
-- Cooperative play for seats 1–8;
-- Hidden Betrayer for seats 3–8 with deterministic Cooperative fallback below three seats;
-- Outbreak for seats 2–8 with Tidebound conversion only after High Water;
+- Cooperative play for seats 1â€“8;
+- Hidden Betrayer for seats 3â€“8 with deterministic Cooperative fallback below three seats;
+- Outbreak for seats 2â€“8 with Tidebound conversion only after High Water;
 - six Living roles;
 - six Living, five Bellmarked, and four Tidebound objective families;
 - Bell-Witness, Lifeboat Survivor, Lighthouse Guardian, and Drowned Guide continuation forms;
@@ -93,24 +93,24 @@ Alpha.3 includes:
 
 The completed planning authorities add:
 
-- `DH-VBL-001` — recognized preproduction visual baseline;
-- `DH-CB-002` — truthful external candidate register with unresolved source facts preserved;
-- `DH-VCB-001` — board-production conversion authority and shared-board-master requirements;
-- `DH-PRESENT-001` — accepted external High Water presentation-hook storyboard reference;
-- `DH-PRESENT-002` and `DH-PRESENT-003` — qualified Last Light and ending/epilogue storyboard references;
-- `DH-PRESENT-FAMILY-001` — presentation-family consistency assessment with conversion readiness `not_ready`;
-- `DH-UX-001` — accepted external shared-screen UX advisory with required corrections;
-- `DH-RIGHTS-001` — accepted-with-corrections external visual rights/provenance inventory, limited to private R1 reference use;
-- `DH-OWNER-ATTEST-001` — completed firsthand Project Owner attestation;
-- `DH-UX-FINAL-001` — bounded subordinate addendum defining five recommendation classes, a six-part rights/planning gate, control traceability, and no-pixel-reuse rules;
-- `DH-SOURCE-PLAN-001` — completed historical metadata-only clean-room source-art and composition plan with ten source families, twenty authority-traced controls, one shared Low Tide/High Water board-master plan, provenance requirements, similarity review, and stop conditions;
-- `AI-ART-POLICY-001` — completed policy permitting future AI-generated or AI-assisted production sources after separate asset-specific authorization, human direction/review, provenance, similarity review, and promotion;
-- `DH-AI-SOURCE-001` — completed metadata-only advisory assigning ChatGPT and Gemini to concept/material/overlay/atmosphere exploration, ordinary editing to exact geometry and assembly, and Godot to dynamic authoritative information; its smallest complete pilot is approximately 22 generations at immediate incremental spend `$0`;
+- `DH-VBL-001` â€” recognized preproduction visual baseline;
+- `DH-CB-002` â€” truthful external candidate register with unresolved source facts preserved;
+- `DH-VCB-001` â€” board-production conversion authority and shared-board-master requirements;
+- `DH-PRESENT-001` â€” accepted external High Water presentation-hook storyboard reference;
+- `DH-PRESENT-002` and `DH-PRESENT-003` â€” qualified Last Light and ending/epilogue storyboard references;
+- `DH-PRESENT-FAMILY-001` â€” presentation-family consistency assessment with conversion readiness `not_ready`;
+- `DH-UX-001` â€” accepted external shared-screen UX advisory with required corrections;
+- `DH-RIGHTS-001` â€” accepted-with-corrections external visual rights/provenance inventory, limited to private R1 reference use;
+- `DH-OWNER-ATTEST-001` â€” completed firsthand Project Owner attestation;
+- `DH-UX-FINAL-001` â€” bounded subordinate addendum defining five recommendation classes, a six-part rights/planning gate, control traceability, and no-pixel-reuse rules;
+- `DH-SOURCE-PLAN-001` â€” completed historical metadata-only clean-room source-art and composition plan with ten source families, twenty authority-traced controls, one shared Low Tide/High Water board-master plan, provenance requirements, similarity review, and stop conditions;
+- `AI-ART-POLICY-001` â€” completed policy permitting future AI-generated or AI-assisted production sources after separate asset-specific authorization, human direction/review, provenance, similarity review, and promotion;
+- `DH-AI-SOURCE-001` â€” completed metadata-only advisory assigning ChatGPT and Gemini to concept/material/overlay/atmosphere exploration, ordinary editing to exact geometry and assembly, and Godot to dynamic authoritative information; its smallest complete pilot is approximately 22 generations at immediate incremental spend `$0`;
 - exact Tide, connector, ownership, privacy, layout-hypothesis, provenance, and evidence boundaries;
 - no visual, source, runtime, or UX candidate creation or promotion;
 - no image or archive in Git history and no public GitHub Release asset authorization.
 
-`DH-UX-001` establishes planning direction for six layout modes, 1–8 stable-seat continuity, focus/preview/confirmation/authority-owned commit semantics, public-only transcript and replay, neutral private shielding, stage-by-stage UX flows, and issue #39 evidence plans. Its coordinates, tile sizes, drawer dimensions, type sizes, prompts, and microcopy remain advisory hypotheses rather than implementation or evidence.
+`DH-UX-001` establishes planning direction for six layout modes, 1â€“8 stable-seat continuity, focus/preview/confirmation/authority-owned commit semantics, public-only transcript and replay, neutral private shielding, stage-by-stage UX flows, and issue #39 evidence plans. Its coordinates, tile sizes, drawer dimensions, type sizes, prompts, and microcopy remain advisory hypotheses rather than implementation or evidence.
 
 `DH-UX-FINAL-001` is a subordinate addendum rather than a replacement. It classifies recommendations as pixel-independent advisory, gated clean-room planning input, implementation-dependent deferred, human-evidence dependent, or rejected/out of scope; splits the rights/planning gate into six explicit states; and requires control-level authority, legal-intent, availability, privacy, and interaction traceability.
 
@@ -130,7 +130,7 @@ Drowned Harbor remains:
 
 ### Drowned Harbor premise
 
-At an impossible low tide, a drowned coastal town rises from black tidal mud. Travelers cross a broken causeway toward a Bellhouse, Salt Market, lifeboat shed, flooded archive, and distant lighthouse. The town’s leaders once wrecked ships and used a ledger-and-bell ritual to erase the harbor from memory, but one missing name left the ritual incomplete. As the sea returns, the group must recover the truth, decide whom to trust, survive the **High Water Terror Turn**, and choose whether the harbor is sealed, released, raised, abandoned, or remembered.
+At an impossible low tide, a drowned coastal town rises from black tidal mud. Travelers cross a broken causeway toward a Bellhouse, Salt Market, lifeboat shed, flooded archive, and distant lighthouse. The townâ€™s leaders once wrecked ships and used a ledger-and-bell ritual to erase the harbor from memory, but one missing name left the ritual incomplete. As the sea returns, the group must recover the truth, decide whom to trust, survive the **High Water Terror Turn**, and choose whether the harbor is sealed, released, raised, abandoned, or remembered.
 
 Its authored stages are:
 
@@ -146,35 +146,35 @@ A **Tale** is a self-contained authored horror adventure with its own location, 
 
 ## Development sequence
 
-1. **P0.20 — Post-Prototype Reconciliation:** completed.
-2. **P0.21 — Production Architecture & Tale Compilation:** completed, PR #99.
-3. **v0.2.0-alpha.1 — Production Tale Scaffold:** completed, PR #101.
-4. **P0.22 — Alpha.2 Route Contract:** completed, PR #103.
-5. **v0.2.0-alpha.2 — End-to-End Graybox:** completed, PR #105.
-6. **P0.23 — Alpha.3 Systems & Replayability Contract:** completed, issue #106 / PR #107.
-7. **v0.2.0-alpha.3 — Systems & Replayability:** completed developer-only runtime, issue #108 / PR #109.
+1. **P0.20 â€” Post-Prototype Reconciliation:** completed.
+2. **P0.21 â€” Production Architecture & Tale Compilation:** completed, PR #99.
+3. **v0.2.0-alpha.1 â€” Production Tale Scaffold:** completed, PR #101.
+4. **P0.22 â€” Alpha.2 Route Contract:** completed, PR #103.
+5. **v0.2.0-alpha.2 â€” End-to-End Graybox:** completed, PR #105.
+6. **P0.23 â€” Alpha.3 Systems & Replayability Contract:** completed, issue #106 / PR #107.
+7. **v0.2.0-alpha.3 â€” Systems & Replayability:** completed developer-only runtime, issue #108 / PR #109.
 8. **Post-Alpha.3 status reconciliation:** completed, issue #111 / PR #112.
-9. **DH-VBL-001 — Visual Baseline Registration & Board Production Conversion Brief 01:** completed metadata-only planning release, issue #110 / PR #113.
-10. **DH-PRESENT-REG-001 — High Water Presentation Study Metadata Registration:** completed metadata-only planning release, issue #114 / PR #115.
+9. **DH-VBL-001 â€” Visual Baseline Registration & Board Production Conversion Brief 01:** completed metadata-only planning release, issue #110 / PR #113.
+10. **DH-PRESENT-REG-001 â€” High Water Presentation Study Metadata Registration:** completed metadata-only planning release, issue #114 / PR #115.
 11. **Post-DH-PRESENT-001 status reconciliation:** completed, issue #116 / PR #117.
-12. **DH-PRESENT-REG-002 — Last Light, Ending & Presentation-Family Registration:** completed metadata-only planning release, issue #118 / PR #119.
-13. **DH-UX-REG-001 — Shared-Screen UX Advisory Registration:** completed metadata-only planning release, issue #120 / PR #124.
+12. **DH-PRESENT-REG-002 â€” Last Light, Ending & Presentation-Family Registration:** completed metadata-only planning release, issue #118 / PR #119.
+13. **DH-UX-REG-001 â€” Shared-Screen UX Advisory Registration:** completed metadata-only planning release, issue #120 / PR #124.
 14. **Post-DH-UX-001 status reconciliation:** completed, issue #125 / PR #126.
-15. **DH-RIGHTS-REG-001 — External Visual Rights & Provenance Metadata Registration:** completed with required corrections, issue #127 / PR #128.
+15. **DH-RIGHTS-REG-001 â€” External Visual Rights & Provenance Metadata Registration:** completed with required corrections, issue #127 / PR #128.
 16. **Post-DH-RIGHTS-001 status reconciliation:** completed, issue #129 / PR #130.
-17. **DH-OWNER-ATTEST-REG-001 — Project Owner Attestation Registration and Clean-Room Planning Eligibility:** completed, issue #131 / PR #132.
+17. **DH-OWNER-ATTEST-REG-001 â€” Project Owner Attestation Registration and Clean-Room Planning Eligibility:** completed, issue #131 / PR #132.
 18. **Post-DH-OWNER-ATTEST-001 status reconciliation:** completed, issue #133 / PR #134.
-19. **DH-UX-ADDENDUM-REG-001 — Final UX Advisory Addendum Registration:** completed with required schema correction, issue #135 / PR #136.
+19. **DH-UX-ADDENDUM-REG-001 â€” Final UX Advisory Addendum Registration:** completed with required schema correction, issue #135 / PR #136.
 20. **Post-DH-UX-FINAL-001 status reconciliation:** completed, issue #137 / PR #138.
 21. **Automated quality/security baseline:** completed, PR #140.
-22. **DH-SOURCE-PLAN-001 — Clean-Room Source Art and Composition Planning:** completed metadata-only planning release, issue #139 / PR #146.
+22. **DH-SOURCE-PLAN-001 â€” Clean-Room Source Art and Composition Planning:** completed metadata-only planning release, issue #139 / PR #146.
 23. **Post-DH-SOURCE-PLAN-001 status reconciliation:** completed, issue #147 / PR #148.
-24. **AI-ART-POLICY-001 — AI-Generated and AI-Assisted Production Art Policy:** completed metadata-only policy release, issue #151 / PR #152.
-25. **DH-AI-SOURCE-001 — AI-First Art Pipeline and Shared Board-Master Advisory:** completed metadata-only advisory, issue #149 / PR #153.
+24. **AI-ART-POLICY-001 â€” AI-Generated and AI-Assisted Production Art Policy:** completed metadata-only policy release, issue #151 / PR #152.
+25. **DH-AI-SOURCE-001 â€” AI-First Art Pipeline and Shared Board-Master Advisory:** completed metadata-only advisory, issue #149 / PR #153.
 26. **Post-DH-AI-SOURCE-001 status reconciliation:** issue #155 / draft PR #156; documentation and governance only.
-27. **DH-AI-GEN-001 — Drowned Harbor Shared Board-Master Visual Source Pilot:** selected but not activated; requires a separate issue after this reconciliation merges.
-28. **v0.2.0-beta — Presentation & Content Integration:** future and blocked.
-29. **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
+27. **DH-AI-GEN-001 â€” Drowned Harbor Shared Board-Master Visual Source Pilot:** selected but not activated; requires a separate issue after this reconciliation merges.
+28. **v0.2.0-beta â€” Presentation & Content Integration:** future and blocked.
+29. **v0.2.0-rc â€” Hardening & Distribution Readiness:** future and blocked.
 
 The completed planning and policy releases authorize metadata and future eligibility rules only. They do not authorize a generation session, image import, use of any restricted external image as an input or production source, source acceptance, runtime art, Godot asset integration, UX implementation, candidate promotion, ordinary export, public distribution, completed legal clearance, accessibility claims, production readiness, or substantial Codex implementation.
 
@@ -214,23 +214,23 @@ The intended experience includes:
 
 **The Underteller** is the fictional host and interface voice. He introduces Tales, frames choices, acknowledges public consequences, recaps connected chapters, and delivers epilogues. He does not secretly decide the rules.
 
-The **Director** is the underlying authored pacing system. It begins local, deterministic, and explainable—not as a cloud language model. It may adjust legal event weights, clues, scarcity, spawn timing, music, lighting, and hints within a Tale’s declared limits. It may not inspect unrevealed roles, private objectives, hidden targets, private messages, or pending private transformations.
+The **Director** is the underlying authored pacing system. It begins local, deterministic, and explainableâ€”not as a cloud language model. It may adjust legal event weights, clues, scarcity, spawn timing, music, lighting, and hints within a Taleâ€™s declared limits. It may not inspect unrevealed roles, private objectives, hidden targets, private messages, or pending private transformations.
 
 ## Design pillars
 
-1. **Board game first** — choices and state remain understandable and reproducible.
-2. **Horror is social** — tension comes from the group as well as the monsters.
-3. **No player becomes irrelevant** — defeat changes participation rather than ending it.
-4. **Every chapter tells a memorable story** — mechanics serve an authored arc.
-5. **Readable on a living-room television** — silhouettes, symbols, text, and focus remain clear.
-6. **Private devices are optional** — they enhance hidden information but are not required.
-7. **Systems before content volume** — reusable foundations come before a large Tale catalog.
-8. **Quality over speed** — major claims require the right automated and human evidence.
+1. **Board game first** â€” choices and state remain understandable and reproducible.
+2. **Horror is social** â€” tension comes from the group as well as the monsters.
+3. **No player becomes irrelevant** â€” defeat changes participation rather than ending it.
+4. **Every chapter tells a memorable story** â€” mechanics serve an authored arc.
+5. **Readable on a living-room television** â€” silhouettes, symbols, text, and focus remain clear.
+6. **Private devices are optional** â€” they enhance hidden information but are not required.
+7. **Systems before content volume** â€” reusable foundations come before a large Tale catalog.
+8. **Quality over speed** â€” major claims require the right automated and human evidence.
 
 ## Technical and production boundaries
 
 - Godot **4.7.1-stable**, typed GDScript, Compatibility renderer.
-- 960×540 logical world viewport with 16:9 output and scalable UI.
+- 960Ã—540 logical world viewport with 16:9 output and scalable UI.
 - Windows and Linux first.
 - Native Godot authority owns gameplay in the current architecture.
 - The production Tale catalog contains exactly one entry: Lantern House.
@@ -244,26 +244,34 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 
 ## Repository map
 
-- `game/` — Godot project and production runtime
-- `game/tests/` — export-excluded tests, fixtures, prototypes, and developer-only proofs
-- `docs/gdd/` — canonical living Game Design Document
-- `docs/tales/` — governed Tale design and authoring packages
-- `docs/technical/` — architecture, contracts, tooling, and isolation rules
-- `docs/preproduction/` — P0.x package records, schemas, and current status
-- `docs/roadmap/` — historical and current roadmaps
-- `docs/decisions/` — design and architecture decisions
-- `docs/playtests/` — automated evidence and carefully classified human records
-- `art/` and `audio/` — source and exports when approved
-- `web/companion/` — accessible browser companion prototype
-- `services/room-service/` — ephemeral Cloudflare-compatible room coordinator
-- `tools/` — validators, generators, packaging tools, and regression suites
+- `game/` â€” Godot project and production runtime
+- `game/tests/` â€” export-excluded tests, fixtures, prototypes, and developer-only proofs
+- `docs/gdd/` â€” canonical living Game Design Document
+- `docs/tales/` â€” governed Tale design and authoring packages
+- `docs/technical/` â€” architecture, contracts, tooling, and isolation rules
+- `docs/preproduction/` â€” P0.x package records, schemas, and current status
+- `docs/roadmap/` â€” historical and current roadmaps
+- `docs/decisions/` â€” design and architecture decisions
+- `docs/playtests/` â€” automated evidence and carefully classified human records
+- `art/` and `audio/` â€” source and exports when approved
+- `web/companion/` â€” accessible browser companion prototype
+- `services/room-service/` â€” ephemeral Cloudflare-compatible room coordinator
+- `tools/` â€” validators, generators, packaging tools, and regression suites
 
 ## Validation
 
-GitHub Actions check repository integrity, secret history, workflow policy, CodeQL-supported languages, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux exact-head portable builds and exported-artifact smoke, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1–3 contracts, inherited mutation suites, visual/presentation/UX/UX-addendum/rights/owner-attestation/source-planning/AI-art-policy/AI-source-advisory/current-status metadata boundaries, Companion audit/typecheck/tests/build/smoke, real local relay integration, checksums, build metadata, inventories, SBOM generation, and clean generated-output boundaries.
+GitHub Actions check repository integrity, secret history, workflow policy, CodeQL-supported languages, Godot import and tests, deterministic simulations, replay and privacy behavior, GDScript quality, Windows/Linux exact-head portable builds and exported-artifact smoke, Tale package/catalog/provider boundaries, Drowned Harbor isolation and export exclusion, Alpha.1â€“3 contracts, inherited mutation suites, visual/presentation/UX/UX-addendum/rights/owner-attestation/source-planning/AI-art-policy/AI-source-advisory/current-status metadata boundaries, Companion audit/typecheck/tests/build/smoke, real local relay integration, checksums, build metadata, inventories, SBOM generation, and clean generated-output boundaries.
 
 ## Documentation and licensing
 
 Markdown is canonical for Git history. Polished snapshots may be generated at meaningful milestones, but source-of-truth changes belong in the repository.
 
 The repository is public, but no final reuse license has been selected. The intended direction is source-available and noncommercial rather than an OSI open-source license. See `LICENSE-DECISION.md`.
+
+### Independent reconciliation review — 2026-09-08 UTC
+
+PR #156 remains draft and is not merge-ready. Independent review restored historical source-plan/provenance validation, registered external-package metadata, preserved authority coordinates, and fail-closed checks against actual catalog/provider/startup/export resources. A normal authenticated corrective push restarted the inherited PR workflows; current-status validation is covered by the P0.21, P0.22, P0.23, and post-prototype succession workflows. The Alpha.3-specific workflow does not select these six reconciliation paths, so its native matrix requires separate execution.
+
+Fresh dependency audits flag the unchanged locked `nanoid` version under `GHSA-2v37-7h3g-55p8` (affected versions `<3.3.18`, high severity). The earlier remediation record is historical, not a current clean-audit claim. Updating `package-lock.json` requires a Release Coordinator scope amendment or a separately activated dependency repair; no audit threshold is weakened. Unrelated open dependency PRs are #142, #143, #144, #145, and #158. No dependency PR is adopted by this reconciliation.
+
+Drowned Harbor Alpha.3 provides a tested session model but has no integrated player-facing Alpha.3 scene. Its developer frontend and any separate developer export require a separately activated implementation issue. This review creates no implementation or publication authority and does not claim a new playable release.

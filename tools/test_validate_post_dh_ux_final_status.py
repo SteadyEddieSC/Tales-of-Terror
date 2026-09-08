@@ -165,6 +165,10 @@ count += 1
 n += count
 
 # Lost protections reproduced during independent review: these are release invariants.
+for key in st['companion_dependency_security']['current_audit']:
+ c=copy.deepcopy(st);p=('companion_dependency_security','current_audit',key)
+ put(c,p,mut(get(c,p)));fail(v.validate_status,c);n+=1
+c=copy.deepcopy(st);c['companion_dependency_security']['state']='remediated_and_exact_head_validated';fail(v.validate_status,c);n+=1
 for group in ['preserved_authorities', 'alpha3']:
  for key in st[group]:
   c=copy.deepcopy(st); c[group][key]=mut(c[group][key]); fail(v.validate_status,c); n+=1
