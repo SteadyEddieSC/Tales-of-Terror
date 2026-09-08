@@ -235,6 +235,16 @@
       "current_blank_human_authored_source_requirement": false,
       "direct_generated_pixel_use_authorized": false,
       "editable_source_created": false,
+      "external_package": {
+        "admitted_to_repository": false,
+        "bytes": 36122,
+        "filename": "DH-SOURCE-PLAN-001_Clean_Room_Source_Art_and_Composition_Planning_Package_v2.zip",
+        "manifest_bytes": 3304,
+        "manifest_sha256": "63b4c87e0a5ce9782c53994db49d6709eb864ab58585e5fbbdd5a8b09d6f4ca9",
+        "manifested_payload_count": 14,
+        "sha256": "c16988b86f14a6d813d01dfbc3508865716c1e84bf78dfb792ca65f31abd2064",
+        "total_file_count": 15
+      },
       "future_evidence_performed": false,
       "godot_authorized": false,
       "implementation_authorized": false,

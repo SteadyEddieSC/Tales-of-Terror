@@ -67,4 +67,145 @@ with tempfile.TemporaryDirectory(prefix='post-ai-source-') as raw:
   for x in ['no successor release is selected or activated','requires blank human-authored editable sources','generation is authorized','image import is authorized','source acceptance is authorized','runtime composition is authorized','godot implementation is authorized','ux implementation is authorized','ordinary export is authorized','public release is authorized','production ready','shipping authorized','accessibility certified','human evidence passed','rights are fully cleared','PR #154 is merged']:
    target.write_text(orig[v.DOCS[0]]+'\n'+x+'\n',encoding='utf-8');fail(v.validate_docs);n+=1;target.write_text(orig[v.DOCS[0]],encoding='utf-8')
  finally:v.ROOT=old
+
+module=v
+source_plan=v.load(v.SOURCE_PLAN)
+provenance=v.load(v.PROVENANCE)
+set_path=put
+get_path=get
+mutate_scalar=mut
+must_fail=fail
+count=0
+source_paths = [
+    ('record_kind',), ('record_version',),
+    ('release','release_id'), ('release','governing_issue'), ('release','protected_main'),
+    ('release','package_state'),
+    ('authorization','metadata_only_clean_room_planning_authorized'),
+    ('authorization','source_art_creation_authorized'),
+    ('authorization','runtime_composition_authorized'),
+    ('authorization','godot_authorized'),
+    ('authorization','ux_implementation_authorized'),
+    ('authorization','runtime_implementation_authorized'),
+    ('authorization','candidate_authorized'),
+    ('authorization','public_distribution_authorized'),
+    ('authorization','marketing_or_merchandise_authorized'),
+    ('authorization','accessibility_claim_authorized'),
+    ('authorization','human_evidence_claim_authorized'),
+    ('authorization','conversion_readiness'),
+    ('authorization','implementation_authorized'),
+    ('external_visual_state','asset_count'),
+    ('external_visual_state','maximum_rights_tier'),
+    ('external_visual_state','reference_only_nonproduction'),
+    ('external_visual_state','source_file_status'),
+]
+for path in source_paths:
+    candidate = copy.deepcopy(source_plan)
+    set_path(candidate, path, mutate_scalar(get_path(candidate, path)))
+    must_fail(module.validate_source_plan, candidate)
+    count += 1
+
+candidate = copy.deepcopy(source_plan)
+candidate['asset_taxonomy'].pop(next(iter(candidate['asset_taxonomy'])))
+must_fail(module.validate_source_plan, candidate)
+count += 1
+candidate = copy.deepcopy(source_plan)
+candidate['control_traceability'].pop(next(iter(candidate['control_traceability'])))
+must_fail(module.validate_source_plan, candidate)
+count += 1
+candidate = copy.deepcopy(source_plan)
+first_evidence = next(iter(candidate['future_evidence']))
+candidate['future_evidence'][first_evidence] = 'passed'
+must_fail(module.validate_source_plan, candidate)
+count += 1
+for key in list(source_plan):
+    candidate = copy.deepcopy(source_plan)
+    del candidate[key]
+    must_fail(module.validate_source_plan, candidate)
+    count += 1
+candidate = copy.deepcopy(source_plan)
+candidate['unexpected'] = True
+must_fail(module.validate_source_plan, candidate)
+count += 1
+
+provenance_paths = [
+    ('release_id',), ('issue',), ('phase_b_protected_main',),
+    ('external_package','bytes'), ('external_package','sha256'),
+    ('external_package','manifest_bytes'), ('external_package','manifest_sha256'),
+    ('external_package','admitted_to_repository'),
+    ('external_package','public_release_asset_authorized'),
+    ('registration','text_only'),
+    ('registration','source_creation_authorized'),
+    ('registration','runtime_composition_authorized'),
+    ('registration','direct_generated_pixel_use_authorized'),
+    ('registration','godot_authorized'),
+    ('registration','ux_implementation_authorized'),
+    ('registration','candidate_authorized'),
+    ('registration','public_use_authorized'),
+    ('registration','codex_authorized'),
+    ('quality_security_baseline','merge_sha'),
+    ('quality_security_baseline','pull_request'),
+    ('quality_security_baseline','inherited'),
+]
+for path in provenance_paths:
+    candidate = copy.deepcopy(provenance)
+    set_path(candidate, path, mutate_scalar(get_path(candidate, path)))
+    must_fail(module.validate_provenance, candidate)
+    count += 1
+for key in list(provenance):
+    candidate = copy.deepcopy(provenance)
+    del candidate[key]
+    must_fail(module.validate_provenance, candidate)
+    count += 1
+candidate = copy.deepcopy(provenance)
+candidate['unexpected'] = True
+must_fail(module.validate_provenance, candidate)
+count += 1
+
+
+n += count
+
+# Lost protections reproduced during independent review: these are release invariants.
+for group in ['preserved_authorities', 'alpha3']:
+ for key in st[group]:
+  c=copy.deepcopy(st); c[group][key]=mut(c[group][key]); fail(v.validate_status,c); n+=1
+for key in st['visual_planning']['source_plan']['external_package']:
+ c=copy.deepcopy(st); p=('visual_planning','source_plan','external_package',key)
+ put(c,p,mut(get(c,p))); fail(v.validate_status,c); n+=1
+for group in ['source_plan']:
+ for key in st['visual_planning'][group]:
+  c=copy.deepcopy(st); del c['visual_planning'][group][key]; fail(v.validate_status,c); n+=1
+ c=copy.deepcopy(st); c['visual_planning'][group]['unexpected_authority']=True; fail(v.validate_status,c); n+=1
+for i in range(len(st['gates'])):
+ c=copy.deepcopy(st); c['gates'][i]['human_evidence_claimed']=True; fail(v.validate_status,c); n+=1
+c=copy.deepcopy(st); c['gates'].append(copy.deepcopy(c['gates'][0])); fail(v.validate_status,c); n+=1
+
+# Exercise the public validation entry point with real on-disk resources.
+with tempfile.TemporaryDirectory(prefix='reconciliation-boundary-') as raw:
+ root=Path(raw)
+ runtime_paths=[Path(p) for p in [
+  'game/data/tales/tale_catalog_v1.json',
+  'game/data/tales/lantern_house/tale_package_v1.json',
+  'game/src/session/tale_provider_registry.gd',
+  'game/project.godot','game/export_presets.cfg','tools/portable_bundle.py',
+ ]]
+ for path in [v.STATUS,v.SOURCE_PLAN,v.PROVENANCE,*v.DOCS,*runtime_paths]:
+  target=root/path;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(path,target)
+ old=v.ROOT;v.ROOT=root
+ try:
+  v.validate(False)
+  cases=[
+   (v.SOURCE_PLAN,lambda t:t.replace('"runtime_implementation_authorized": false','"runtime_implementation_authorized": true')),
+   (v.PROVENANCE,lambda t:t.replace('"public_release_asset_authorized": false','"public_release_asset_authorized": true')),
+   (runtime_paths[0],lambda t:t.replace('lantern_house_vertical_slice','drowned_harbor')),
+   (runtime_paths[2],lambda t:t+'\n# drowned_harbor\n'),
+   (runtime_paths[3],lambda t:t.replace('res://src/main/Main.tscn','res://src/tales/drowned_harbor/Main.tscn')),
+   (runtime_paths[4],lambda t:t.replace('src/tales/drowned_harbor/*,','',1)),
+  ]
+  for path,change in cases:
+   target=root/path;original=target.read_text(encoding='utf-8');changed=change(original)
+   assert changed!=original, f'ineffective mutation: {path}'
+   target.write_text(changed,encoding='utf-8');fail(v.validate,False);n+=1
+   target.write_text(original,encoding='utf-8')
+ finally:v.ROOT=old
+
 print(f'Validated {n} fail-closed post-DH-AI-SOURCE status mutations')
