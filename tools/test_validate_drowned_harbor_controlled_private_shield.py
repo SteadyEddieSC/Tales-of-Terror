@@ -484,11 +484,23 @@ def main() -> int:
             ),
         ),
         (
-            "extra override key",
+            "vulnerable Sharp override rejected",
             lambda: boundary_mutation(
                 lambda _m, _c, _p, _e, j, _l: j["overrides"].__setitem__(
                     "sharp", "0.35.2"
                 )
+            ),
+        ),
+        (
+            "unrelated override rejected",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, j, _l: j["overrides"].__setitem__("unrelated", "1.0.0")
+            ),
+        ),
+        (
+            "vulnerable locked Sharp rejected",
+            lambda: boundary_mutation(
+                lambda _m, _c, _p, _e, _j, lock: lock["packages"]["node_modules/sharp"].__setitem__("version", "0.35.2")
             ),
         ),
         (
