@@ -948,7 +948,7 @@ def validate_manifest_and_production_boundary(
         "lock Miniflare changed",
     )
     require(
-        lock_packages.get("node_modules/sharp", {}).get("version") == "0.35.2",
+        lock_packages.get("node_modules/sharp", {}).get("version") == "0.35.4",
         "lock Sharp changed",
     )
     require("sharp" not in package_json.get("dependencies", {}), "direct Sharp dependency prohibited")
@@ -963,7 +963,7 @@ def validate_manifest_and_production_boundary(
     )
     require(
         package_json.get("overrides")
-        == {"postcss": "8.5.23", "undici": "7.29.0"},
+        == {"postcss": "8.5.23", "undici": "7.29.0", "sharp": "0.35.4"},
         "approved override set drifted",
     )
     require("resolutions" not in package_json, "resolutions prohibited")
