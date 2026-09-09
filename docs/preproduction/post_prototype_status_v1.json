@@ -13,7 +13,7 @@
     "snapshot_version": 3,
     "state": "completed_developer_only"
   },
-  "as_of_date": "2026-09-08",
+  "as_of_date": "2026-09-09",
   "closed_unmerged_pull_requests": [
     32,
     154
@@ -21,7 +21,7 @@
   "companion_dependency_security": {
     "audit_threshold": "moderate",
     "current_audit": {
-      "as_of_date": "2026-09-08",
+      "as_of_date": "2026-09-09",
       "advisory": "GHSA-2v37-7h3g-55p8",
       "package": "nanoid",
       "affected_range": "<3.3.18",
@@ -32,10 +32,14 @@
       "repair_issue": 159,
       "repair_pull_request": 160,
       "repair_branch": "codex/sec-dependency-001-nanoid",
-      "repair_head": "e1fd31f7024a8d4a0675b6fcdbccf709287fbee0",
+      "repair_head": "99d9a28693e0547fe1f81bc7065a6e50e889035c",
       "repair_paths": [
         "package.json",
-        "package-lock.json"
+        "package-lock.json",
+        "tools/validate_drowned_harbor_controlled_private_shield.py",
+        "tools/test_validate_drowned_harbor_controlled_private_shield.py",
+        "tools/validate_drowned_harbor_high_water_transformation.py",
+        "tools/test_validate_drowned_harbor_high_water_transformation.py"
       ],
       "remaining_advisories": [],
       "remaining_package_findings": 0,
@@ -157,7 +161,7 @@
     "issue": 155,
     "pull_request": 156,
     "release_type": "documentation_and_governance_reconciliation",
-    "state": "draft_for_independent_review"
+    "state": "candidate_for_independent_review"
   },
   "unrelated_open_pull_requests": [
     142,

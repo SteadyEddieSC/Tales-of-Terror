@@ -3,7 +3,7 @@
 **Version:** 2.1
 **Status:** Alpha.3 developer-only runtime, automated quality/security baseline, `AI-ART-POLICY-001`, and metadata-only `DH-AI-SOURCE-001` complete; `DH-AI-GEN-001` selected but not activated
 **Status-reconciliation baseline:** `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
-**Current reconciliation:** issue #155 / draft PR #156
+**Current reconciliation:** issue #155 / PR #156
 
 ## Current decision
 
@@ -61,7 +61,7 @@ The visual baseline, presentation-family studies, governing UX advisory, final U
 - **Post-DH-SOURCE-PLAN-001 status reconciliation:** completed, issue #147 / PR #148.
 - **AI-ART-POLICY-001 — AI-Generated and AI-Assisted Production Art Policy:** completed, issue #151 / PR #152.
 - **DH-AI-SOURCE-001 — AI-First Art Pipeline and Shared Board-Master Advisory:** completed metadata-only, issue #149 / PR #153.
-- **Post-DH-AI-SOURCE-001 status reconciliation:** issue #155 / draft PR #156; documentation and governance only.
+- **Post-DH-AI-SOURCE-001 status reconciliation:** issue #155 / PR #156; documentation and governance only.
 - **DH-AI-GEN-001 — Drowned Harbor Shared Board-Master Visual Source Pilot:** selected but not activated; no generation issue exists.
 - **v0.2.0-beta — Presentation & Content Integration:** future and blocked; no issue, branch, or implementation authority.
 - **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
@@ -100,7 +100,7 @@ Automation is machine evidence only. It does not establish fun, balance, physica
 
 ## Immediate next action
 
-1. Complete issue #155 and draft PR #156 as the exact six-path post-`DH-AI-SOURCE-001` status reconciliation.
+1. Complete issue #155 and PR #156 as the exact six-path post-`DH-AI-SOURCE-001` status reconciliation.
 2. Independently review the exact final head and all inherited checks.
 3. Keep `DH-AI-GEN-001` selected but not activated until a separate issue is opened after merge.
 4. Do not use any of the 25 restricted external images as uploads, image-to-image inputs, masks, controls, hidden references, extracted fragments, textures, or runtime assets.
@@ -108,11 +108,11 @@ Automation is machine evidence only. It does not establish fun, balance, physica
 
 No generation, image import, source acceptance, runtime composition, Godot asset integration, visual-candidate promotion, UX implementation, completed legal clearance, accessibility claim, production-readiness claim, shipping authorization, or public distribution is authorized by this roadmap.
 
-### Independent reconciliation review — 2026-09-08 UTC
+### Independent reconciliation review — 2026-09-09 UTC
 
-PR #156 is a draft review candidate; merge readiness requires all applicable exact-head checks and independent prerequisite promotion. Independent review restored historical source-plan/provenance validation, registered external-package metadata, preserved authority coordinates, and fail-closed checks against actual catalog/provider/startup/export resources. A normal authenticated corrective push restarted the inherited PR workflows; current-status validation is covered by the P0.21, P0.22, P0.23, and post-prototype succession workflows. The Alpha.3-specific workflow does not select these six reconciliation paths, so its native matrix requires separate execution.
+PR #156 is a review candidate; merge readiness requires all applicable exact-head checks and independent prerequisite promotion. Independent review restored historical source-plan/provenance validation, registered external-package metadata, preserved authority coordinates, and fail-closed checks against actual catalog/provider/startup/export resources. A normal authenticated corrective push restarted the inherited PR workflows; current-status validation is covered by the P0.21, P0.22, P0.23, and post-prototype succession workflows. The Alpha.3-specific workflow does not select these six reconciliation paths, so its native matrix requires separate execution.
 
-Issue #159 / draft PR #160 independently repairs `nanoid` from `3.3.16` to `3.3.18` for `GHSA-2v37-7h3g-55p8`, and the owner-approved Vitest `4.1.11` / Sharp `0.35.4` security patches, with changes confined to `package.json` and its npm-generated lockfile at `e1fd31f7024a8d4a0675b6fcdbccf709287fbee0`. PR #156 is stacked on `codex/sec-dependency-001-nanoid`; its own diff remains exactly the six issue #155 paths. Its validator pins the inherited lockfile and independently enforces both scopes. Release Coordination must promote the dependency repair, retarget PR #156 to main, and rerun all applicable gates before reconciliation promotion. No dependency repair is merged by this review.
+Issue #159 / PR #160 independently repairs `nanoid` from `3.3.16` to `3.3.18` for `GHSA-2v37-7h3g-55p8`, and the owner-approved Vitest `4.1.11` / Sharp `0.35.4` security patches, with changes confined to `package.json`, its npm-generated lockfile, and four directly necessary Sharp validator/test files at `99d9a28693e0547fe1f81bc7065a6e50e889035c`. PR #156 is stacked on `codex/sec-dependency-001-nanoid`; its own diff remains exactly the six issue #155 paths. Its validator pins the inherited lockfile and independently enforces both scopes. Release Coordination must promote the dependency repair, retarget PR #156 to main, and rerun all applicable gates before reconciliation promotion. No dependency repair is merged by this review.
 
 The fresh full npm audit reports zero vulnerabilities after remediating `GHSA-82fw-gwwq-j7x9` (Vitest/mocker) and `GHSA-rgj7-g3m4-5g8c` (Sharp/libheif), in addition to nanoid. A narrow Sharp override is necessary because Miniflare pins its older version. Wrangler, Miniflare, Vite, TypeScript, Workers Types and unrelated locked packages remain unchanged; only patched package families and required children change. Existing moderate/high audit thresholds remain enforced. This is a dated audit observation, not a security certification. Unrelated open PRs #142, #143, #144, #145, and #158 remain unadopted.
 

@@ -213,13 +213,13 @@ with tempfile.TemporaryDirectory(prefix='reconciliation-boundary-') as raw:
  finally:v.ROOT=old
 
 # Stacking cannot launder unrelated dependency edits into the six-path release.
-v.validate_changed_paths({'package.json','package-lock.json'},v.ALLOWED)
+v.validate_changed_paths(v.DEPENDENCY_ALLOWED,v.ALLOWED)
 for repair,own in [
  (set(),v.ALLOWED),({'package-lock.json'},v.ALLOWED),
- ({'package.json','package-lock.json','game/project.godot'},v.ALLOWED),
- ({'package.json','package-lock.json'},v.ALLOWED|{'package.json','package-lock.json'}),
- ({'package.json','package-lock.json'},v.ALLOWED|{'game/project.godot'}),
- ({'package.json','package-lock.json'},v.ALLOWED-{'README.md'}),
+ (v.DEPENDENCY_ALLOWED|{'game/project.godot'},v.ALLOWED),
+ (v.DEPENDENCY_ALLOWED,v.ALLOWED|v.DEPENDENCY_ALLOWED),
+ (v.DEPENDENCY_ALLOWED,v.ALLOWED|{'game/project.godot'}),
+ (v.DEPENDENCY_ALLOWED,v.ALLOWED-{'README.md'}),
 ]:
  fail(v.validate_changed_paths,repair,own);n+=1
 locked=v.load(Path('package-lock.json'))
