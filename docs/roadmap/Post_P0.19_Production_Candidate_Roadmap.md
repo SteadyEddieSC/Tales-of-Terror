@@ -1,16 +1,17 @@
 # Post-P0.19 Drowned Harbor Production-Candidate Roadmap
 
-**Version:** 2.0
-**Status:** Alpha.3 developer-only runtime, automated quality/security baseline, and metadata-only visual, presentation, UX, rights/provenance, owner-attestation, and clean-room source planning complete; successor unselected
-**Status-reconciliation baseline:** `a42d1104c16532e801164dc237a5fddc6187b489`
+**Version:** 2.1
+**Status:** Alpha.3 developer-only runtime, automated quality/security baseline, `AI-ART-POLICY-001`, and metadata-only `DH-AI-SOURCE-001` complete; `DH-AI-GEN-001` selected but not activated
+**Status-reconciliation baseline:** `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`
+**Current reconciliation:** issue #155 / PR #156
 
 ## Current decision
 
 P0.21, Alpha.1, P0.22, Alpha.2, P0.23, and `v0.2.0-alpha.3` are complete. Alpha.3 supplies developer-only systems and replayability authority; it does not make Drowned Harbor a normal production Tale.
 
-The visual baseline, board-production conversion brief, presentation-family studies, governing UX advisory, final UX addendum, rights/provenance inventory, Project Owner attestation, and clean-room source-art and composition plan are registered as metadata authorities. Clean-room planning is complete. Actual source creation, editable artwork admission, direct generated-pixel use, source/runtime composition, Godot integration, UX implementation, candidate promotion, public distribution, completed legal clearance, and human-evidence claims remain unauthorized.
+The visual baseline, presentation-family studies, governing UX advisory, final UX addendum, rights/provenance inventory, Project Owner attestation, and historical clean-room source-art plan remain registered metadata authorities. `AI-ART-POLICY-001` now permits future AI-generated or AI-assisted production sources after separate asset-specific authorization, human direction and review, provenance, similarity review, and staged promotion. It supersedes the historical future blank-human-source requirement where the two conflict without altering the historical record.
 
-There is no active successor release after this reconciliation. Any human-authored source release requires a new explicit Release Coordination activation, a named source owner and contributors, declared tools/formats/licenses, a bounded source family, exact repository paths, provenance and hash requirements, and independent similarity-review evidence. No such release is selected.
+`DH-AI-SOURCE-001` registers a metadata-only shared board-master direction: ChatGPT and Gemini for concept/material/overlay/atmosphere exploration; ordinary editing for exact geometry, alignment, masks, assembly, and editable masters; and Godot for exact dynamic text, routes, focus, warnings, recovery, commitment, captions, prompts, and state. The smallest complete pilot remains approximately 22 generations at immediate incremental spend `$0`. `DH-AI-GEN-001` is selected as the recommended successor but is not activated; a separate Release Coordination issue is required after this reconciliation merges.
 
 ## Production boundary
 
@@ -28,7 +29,10 @@ There is no active successor release after this reconciliation. Any human-author
 - `DH-OWNER-ATTEST-REG-001` / `DH-OWNER-ATTEST-001` completed through issue #131 / PR #132 at `7af430b5d9528c648d00291e4c32fa368279b41b`.
 - `DH-UX-ADDENDUM-REG-001` / `DH-UX-FINAL-001` completed through issue #135 / PR #136 at `eaa40667322928d39f6cee7c4bff3f74775c2792`.
 - The automated quality/security baseline completed through PR #140 at `3d29b454868295c7d3f4f06708de9c29b462abb2`.
-- `DH-SOURCE-PLAN-001` completed through issue #139 / PR #146 at `a42d1104c16532e801164dc237a5fddc6187b489`.
+- `DH-SOURCE-PLAN-001` completed through issue #139 / PR #146 at `a42d1104c16532e801164dc237a5fddc6187b489`; its reconciliation completed through issue #147 / PR #148.
+- `AI-ART-POLICY-001` completed through issue #151 / PR #152 at `209bba6498686cd392ddce4bbc32f549d381913f`.
+- `DH-AI-SOURCE-001` completed through issue #149 / PR #153 at `073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7`.
+- PR #154 is closed, unmerged, and rejected at exact head `973d9d94c0b828f6e54990df3c335a4a9f36b5d7`; none of its policy amendments, ledger entries, asset dispositions, or exact-use findings is accepted.
 - External images, archives, editable sources, and runtime binaries remain outside normal Git history and public GitHub Releases unless separately authorized.
 
 ## Governed sequence
@@ -54,8 +58,11 @@ There is no active successor release after this reconciliation. Any human-author
 - **Post-DH-UX-FINAL-001 status reconciliation:** completed, issue #137 / PR #138.
 - **Automated quality/security baseline:** completed, PR #140.
 - **DH-SOURCE-PLAN-001 — Clean-Room Source Art and Composition Planning:** completed, issue #139 / PR #146.
-- **Post-DH-SOURCE-PLAN-001 status reconciliation:** issue #147; documentation and governance only.
-- **Next release:** unselected; source creation, runtime composition, and implementation require explicit activation.
+- **Post-DH-SOURCE-PLAN-001 status reconciliation:** completed, issue #147 / PR #148.
+- **AI-ART-POLICY-001 — AI-Generated and AI-Assisted Production Art Policy:** completed, issue #151 / PR #152.
+- **DH-AI-SOURCE-001 — AI-First Art Pipeline and Shared Board-Master Advisory:** completed metadata-only, issue #149 / PR #153.
+- **Post-DH-AI-SOURCE-001 status reconciliation:** issue #155 / PR #156; documentation and governance only.
+- **DH-AI-GEN-001 — Drowned Harbor Shared Board-Master Visual Source Pilot:** selected but not activated; no generation issue exists.
 - **v0.2.0-beta — Presentation & Content Integration:** future and blocked; no issue, branch, or implementation authority.
 - **v0.2.0-rc — Hardening & Distribution Readiness:** future and blocked.
 
@@ -71,7 +78,7 @@ PR #140 adds repository-controlled configuration, scene/resource/UID, content, a
 
 This machine evidence does not replace gameplay-feel review, art direction, audio review, physical-device testing, television readability, accessibility review, privacy/security certification, store certification, code signing, production readiness, or final release approval.
 
-## Visual, presentation, UX, rights, and source-planning result
+## Visual, presentation, UX, rights, policy, and AI-source result
 
 `DH-VBL-001` recognizes the preproduction visual baseline, `DH-CB-002` preserves a truthful external candidate register, and `DH-VCB-001` records board-production conversion planning. Low Tide and High Water must derive from one authoritative shared board master.
 
@@ -83,20 +90,30 @@ This machine evidence does not replace gameplay-feel review, art direction, audi
 
 `DH-OWNER-ATTEST-001` records the completed firsthand Project Owner response and preserves unknown facts.
 
-`DH-SOURCE-PLAN-001` registers ten source families and twenty authority-traced UX controls; requires blank human-authored editable sources, independent geometry and composition, a shared Low Tide/High Water board master, contributor/tool/font/asset/license records, source and export SHA-256 values, source-to-runtime lineage, and independent similarity review; and defines immediate stop conditions and unperformed evidence plans. It creates no source file or implementation authority.
+`DH-SOURCE-PLAN-001` remains an unchanged historical metadata record with ten source families and twenty authority-traced UX controls. `AI-ART-POLICY-001` supersedes its future blank-human-source requirement and permanent prohibition on direct AI-generated pixels while preserving authorized-input controls, provider/model/prompt/source-input/hash provenance, independent similarity review, source-to-runtime lineage, privacy boundaries, and no-pixel-reuse from restricted external images. `DH-AI-SOURCE-001` creates no generation request, image, source acceptance, runtime composition, Godot/UX implementation, ordinary-export admission, paid-tool purchase, marketing, storefront, public release, human-evidence claim, production-readiness claim, or shipping authority.
 
 ## Persistent invariants
 
-Stable-seat identity, no-op rejection, four privacy classes, public-only Director inputs, explicit migration, bounded deterministic variation, authoring/runtime separation, developer-only admission, ordinary-export exclusion, R1-only visual rights, external binary isolation, blank-source and no-pixel-reuse requirements, source/runtime separation, human-evidence limits, issue #39, issue #7, and closed/unmerged PR #32 remain unchanged.
+Stable-seat identity, no-op rejection, four privacy classes, public-only Director inputs, explicit migration, bounded deterministic variation, authoring/runtime separation, developer-only admission, ordinary-export exclusion, R1-only visual rights, external binary isolation, prohibited restricted-image inputs, source/runtime separation, human-evidence limits, issue #39, issue #7, and closed/unmerged PRs #32 and #154 remain unchanged. Generated or depicted pixels do not become gameplay authority.
 
 Automation is machine evidence only. It does not establish fun, balance, physical-controller behavior, television readability, accessibility compliance, privacy/security certification, production readiness, or shipping authorization.
 
 ## Immediate next action
 
-1. Complete issue #147 as the exact six-path post-source-plan status reconciliation.
-2. Reverify protected `main` after its expected-head squash merge.
-3. Leave all successors unselected.
-4. Do not activate source creation until a source owner, contributors, tool/format/license records, bounded source family, repository scope, provenance requirements, and independent similarity-review plan are explicitly approved.
-5. Create no runtime-art, Godot, UX implementation, private-surface, candidate, public-use, or Codex task until separately authorized.
+1. Complete issue #155 and PR #156 as the exact six-path post-`DH-AI-SOURCE-001` status reconciliation.
+2. Independently review the exact final head and all inherited checks.
+3. Keep `DH-AI-GEN-001` selected but not activated until a separate issue is opened after merge.
+4. Do not use any of the 25 restricted external images as uploads, image-to-image inputs, masks, controls, hidden references, extracted fragments, textures, or runtime assets.
+5. Create no generation session, editing session, source acceptance, runtime-art, Godot, UX implementation, private-surface, candidate, ordinary-export, marketing, storefront, public-use, or Codex task until separately authorized.
 
-No direct generated-pixel use, source creation, runtime composition, Godot asset integration, visual-candidate promotion, UX implementation, completed legal clearance, or public distribution is authorized by this roadmap.
+No generation, image import, source acceptance, runtime composition, Godot asset integration, visual-candidate promotion, UX implementation, completed legal clearance, accessibility claim, production-readiness claim, shipping authorization, or public distribution is authorized by this roadmap.
+
+### Independent reconciliation review — 2026-09-09 UTC
+
+PR #156 is a review candidate; merge readiness requires all applicable exact-head checks and independent prerequisite promotion. Independent review restored historical source-plan/provenance validation, registered external-package metadata, preserved authority coordinates, and fail-closed checks against actual catalog/provider/startup/export resources. A normal authenticated corrective push restarted the inherited PR workflows; current-status validation is covered by the P0.21, P0.22, P0.23, and post-prototype succession workflows. The Alpha.3-specific workflow does not select these six reconciliation paths, so its native matrix requires separate execution.
+
+Issue #159 / PR #160 independently repairs `nanoid` from `3.3.16` to `3.3.18` for `GHSA-2v37-7h3g-55p8`, and the owner-approved Vitest `4.1.11` / Sharp `0.35.4` security patches, with changes confined to `package.json`, its npm-generated lockfile, and four directly necessary Sharp validator/test files at `93b496f9fe6c268467dcbba53f7b1c4d716033bd`. PR #156 is stacked on `codex/sec-dependency-001-nanoid`; its own diff remains exactly the six issue #155 paths. Its validator pins the inherited lockfile and independently enforces both scopes. Release Coordination must first promote the dependency repair. Retarget PR #156 to main and, if promotion squashes the prerequisite, use a verified signed merge of the resulting main into this branch while preserving the pinned prerequisite ancestry; do not rebase away that reviewed ancestor. GitHub branch update can perform this integration. Verify all candidate commits remain signed and the three-dot diff still contains exactly six reconciliation paths, then rerun all applicable gates on the resulting head before reconciliation promotion. No dependency repair is merged by this review.
+
+The fresh full npm audit reports zero vulnerabilities after remediating `GHSA-82fw-gwwq-j7x9` (Vitest/mocker) and `GHSA-rgj7-g3m4-5g8c` (Sharp/libheif), in addition to nanoid. A narrow Sharp override is necessary because Miniflare pins its older version. Wrangler, Miniflare, Vite, TypeScript, Workers Types and unrelated locked packages remain unchanged; only patched package families and required children change. Existing moderate/high audit thresholds remain enforced. This is a dated audit observation, not a security certification. Unrelated open PRs #142, #143, #144, #145, and #158 remain unadopted.
+
+Drowned Harbor Alpha.3 provides a tested session model but has no integrated player-facing Alpha.3 scene. Its developer frontend and any separate developer export require a separately activated implementation issue. This review creates no implementation or publication authority and does not claim a new playable release.
