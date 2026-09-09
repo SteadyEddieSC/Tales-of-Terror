@@ -25,6 +25,7 @@ ALPHA3 = {'candidate_head_sha': '08fdbe8b52a66fc44a98bdd27878554c5478aef1', 'dev
 GATES = [{'issue': 7, 'purpose': 'professional naming and branding clearance', 'state': 'open'}, {'issue': 39, 'purpose': 'human household, physical-controller, television, remote, readability, motion, and accessibility evidence', 'state': 'deferred_open'}]
 SOURCE_PACKAGE = {'admitted_to_repository': False, 'bytes': 36122, 'filename': 'DH-SOURCE-PLAN-001_Clean_Room_Source_Art_and_Composition_Planning_Package_v2.zip', 'manifest_bytes': 3304, 'manifest_sha256': '63b4c87e0a5ce9782c53994db49d6709eb864ab58585e5fbbdd5a8b09d6f4ca9', 'manifested_payload_count': 14, 'sha256': 'c16988b86f14a6d813d01dfbc3508865716c1e84bf78dfb792ca65f31abd2064', 'total_file_count': 15}
 COMPANION_SECURITY = {'audit_threshold': 'moderate', 'current_audit': {'as_of_date': '2026-09-09', 'advisory': 'GHSA-2v37-7h3g-55p8', 'package': 'nanoid', 'affected_range': '<3.3.18', 'severity': 'high', 'resolved_version': '3.3.18', 'state': 'zero_reported_vulnerabilities', 'human_evidence_claimed': False, 'repair_issue': 159, 'repair_pull_request': 160, 'repair_branch': 'codex/sec-dependency-001-nanoid', 'repair_head': '99d9a28693e0547fe1f81bc7065a6e50e889035c', 'repair_paths': ['package.json', 'package-lock.json', 'tools/validate_drowned_harbor_controlled_private_shield.py', 'tools/test_validate_drowned_harbor_controlled_private_shield.py', 'tools/validate_drowned_harbor_high_water_transformation.py', 'tools/test_validate_drowned_harbor_high_water_transformation.py'], 'remaining_advisories': [], 'remaining_package_findings': 0, 'additional_remediation_authorized': True, 'vitest': '4.1.11', 'remediated_advisories': ['GHSA-2v37-7h3g-55p8', 'GHSA-82fw-gwwq-j7x9', 'GHSA-rgj7-g3m4-5g8c']}, 'miniflare': '4.20260722.0', 'override_policy': {'postcss': '8.5.23', 'undici': '7.29.0', 'sharp': '0.35.4'}, 'sharp': '0.35.4', 'state': 'current_advisories_remediated_pending_independent_promotion', 'workers_types': '5.20260722.1', 'wrangler': '4.114.0'}
+HISTORICAL_VISUAL = {'owner_attestation': {'attestation_complete': True, 'clean_room_source_creation_authorized': False, 'implementation_authorized': False, 'issue': 131, 'merged_main_sha': '7af430b5d9528c648d00291e4c32fa368279b41b', 'pull_request': 132, 'record_id': 'DH-OWNER-ATTEST-001', 'release_id': 'DH-OWNER-ATTEST-REG-001', 'state': 'completed_metadata_only', 'unknown_facts_preserved': True}, 'presentation_family': {'conversion_readiness': 'not_ready', 'family_id': 'DH-PRESENT-FAMILY-001', 'implementation_authorized': False, 'issue': 118, 'merged_main_sha': '1cad8495c913d926c4422557ea59e8c6fa1f6c1a', 'pull_request': 119, 'release_id': 'DH-PRESENT-REG-002', 'state': 'completed_metadata_only', 'study_ids': ['DH-PRESENT-001', 'DH-PRESENT-002', 'DH-PRESENT-003']}, 'ux_addendum': {'addendum_to_record_id': 'DH-UX-001', 'governing_advisory_replaced': False, 'implementation_authorized': False, 'issue': 135, 'merged_main_sha': 'eaa40667322928d39f6cee7c4bff3f74775c2792', 'pull_request': 136, 'record_id': 'DH-UX-FINAL-001', 'release_id': 'DH-UX-ADDENDUM-REG-001', 'state': 'completed_metadata_only_subordinate_addendum'}, 'ux_advisory': {'advisory_id': 'DH-UX-001', 'conversion_readiness': 'not_ready', 'implementation_authorized': False, 'issue': 120, 'merged_main_sha': '22b43893b7726e5c5bea1078aced1cf11e08049f', 'pull_request': 124, 'release_id': 'DH-UX-REG-001', 'state': 'completed_metadata_only_governing_advisory'}}
 SOURCE_KEYS = {'source_art_creation_authorized', 'future_evidence_performed', 'current_blank_human_authored_source_requirement', 'state', 'godot_authorized', 'editable_source_created', 'merged_main_sha', 'source_family_count', 'clean_room_planning_complete', 'control_traceability_count', 'runtime_composition_authorized', 'release_id', 'mutation_count', 'issue', 'shared_low_high_tide_board_master_required', 'no_pixel_reuse_from_restricted_external_images_required', 'record_id', 'source_to_runtime_lineage_required', 'direct_generated_pixel_use_authorized', 'implementation_authorized', 'pull_request', 'candidate_created', 'blank_human_authored_sources_required_in_historical_record', 'external_package', 'similarity_review_required'}
 
 class ValidationError(Exception):pass
@@ -34,26 +35,34 @@ def load(p:Path)->Any:return json.loads((ROOT/p).read_text(encoding='utf-8'))
 def at(v:Any,p:str)->Any:
  for k in p.split('.'):v=v[int(k)] if k.isdigit() else v[k]
  return v
+def strict_equal(actual:Any,expected:Any)->bool:
+ # JSON booleans must never be substituted with numeric 0/1 (Python == accepts it).
+ if type(actual) is not type(expected):return False
+ if isinstance(expected,dict):return actual.keys()==expected.keys() and all(strict_equal(actual[k],v) for k,v in expected.items())
+ if isinstance(expected,list):return len(actual)==len(expected) and all(strict_equal(a,e) for a,e in zip(actual,expected))
+ return actual==expected
 def checks(v:Any,items:list[tuple[str,Any]])->None:
- for p,e in items:need(at(v,p)==e,f'{p} drift')
+ for p,e in items:need(strict_equal(at(v,p),e),f'{p} drift')
 def exact_keys(value: dict[str, Any], expected: set[str], label: str) -> None:
     actual = set(value)
     need(actual == expected, f'{label} fields drift: missing={sorted(expected-actual)} unexpected={sorted(actual-expected)}')
 
 
 def validate_preserved_status(status: dict[str, Any]) -> None:
-    need(status['preserved_authorities'] == PRESERVED_AUTHORITIES, 'preserved authority coordinates drift')
-    need(status['companion_dependency_security'] == COMPANION_SECURITY, 'current dependency audit status drift')
-    need(status['alpha3'] == ALPHA3, 'Alpha.3 version or developer/export boundary drift')
-    need(status['gates'] == GATES, 'human/legal gate shape or evidence drift')
+    need(strict_equal(status['preserved_authorities'], PRESERVED_AUTHORITIES), 'preserved authority coordinates drift')
+    need(strict_equal(status['companion_dependency_security'], COMPANION_SECURITY), 'current dependency audit status drift')
+    need(strict_equal(status['alpha3'], ALPHA3), 'Alpha.3 version or developer/export boundary drift')
+    need(strict_equal(status['gates'], GATES), 'human/legal gate shape or evidence drift')
     exact_keys(status['quality_security_baseline'], {
         'codeql_supported_languages', 'exact_head_exports', 'full_history_secret_scan', 'issue',
         'merged_main_sha', 'pull_request', 'release_id', 'sbom_generation', 'state',
         'workflow_policy_validation',
     }, 'quality baseline')
+    for key, expected in HISTORICAL_VISUAL.items():
+        need(strict_equal(status['visual_planning'][key],expected),f'historical visual authority drift: {key}')
     source = status['visual_planning']['source_plan']
     exact_keys(source, SOURCE_KEYS, 'source plan')
-    need(source['external_package'] == SOURCE_PACKAGE, 'registered external package drift')
+    need(strict_equal(source['external_package'], SOURCE_PACKAGE), 'registered external package drift')
 
 def validate_status(s:dict[str,Any])->None:
  need(set(s)=={'alpha3','as_of_date','closed_unmerged_pull_requests','companion_dependency_security','current_release','drowned_harbor','gates','human_evidence_claimed','pending_inputs','playable_release','preserved_authorities','production','protected_main','protected_main_semantics','quality_security_baseline','recommended_next_release','rejected_competing_release','runtime_implementation_authorized','schema_version','status_kind','status_reconciliation','unrelated_open_pull_requests','ux_implementation_authorized','visual_implementation_authorized','visual_planning'},'status fields drift')
@@ -124,7 +133,7 @@ def validate_provenance(prov: dict[str, Any]) -> None:
     for key, value in registration.items():
         if key.endswith('_authorized'):
             need(value is False, f'provenance grants forbidden authority: {key}')
-    need(prov['quality_security_baseline'] == {'merge_sha': QUALITY_BASELINE, 'pull_request': 140, 'inherited': True}, 'quality baseline provenance drift')
+    need(strict_equal(prov['quality_security_baseline'], {'merge_sha': QUALITY_BASELINE, 'pull_request': 140, 'inherited': True}), 'quality baseline provenance drift')
 
 def validate_docs()->None:
  t='\n'.join((ROOT/p).read_text(encoding='utf-8') for p in DOCS).lower()

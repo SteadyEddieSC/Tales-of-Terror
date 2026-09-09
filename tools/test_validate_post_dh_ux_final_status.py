@@ -229,4 +229,19 @@ for key,value in [('version','3.3.16'),('resolved','https://example.invalid/nano
 candidate=copy.deepcopy(locked);candidate['packages']['node_modules/vitest']['version']='4.1.10'
 fail(v.validate_dependency_lock,candidate);n+=1
 
+# Numeric lookalikes must not stand in for any current authority/evidence boolean.
+def boolean_paths(value,path=()):
+ if isinstance(value,bool):yield path
+ elif isinstance(value,dict):
+  for key,item in value.items():yield from boolean_paths(item,path+(key,))
+ elif isinstance(value,list):
+  for index,item in enumerate(value):yield from boolean_paths(item,path+(index,))
+for path in boolean_paths(st):
+ candidate=copy.deepcopy(st);put(candidate,path,int(get(candidate,path)))
+ try:fail(v.validate_status,candidate)
+ except AssertionError as exc:raise AssertionError(f'numeric boolean accepted at {path}') from exc
+ n+=1
+candidate=copy.deepcopy(provenance);candidate['quality_security_baseline']['inherited']=1
+fail(v.validate_provenance,candidate);n+=1
+
 print(f'Validated {n} fail-closed post-DH-AI-SOURCE status mutations')
