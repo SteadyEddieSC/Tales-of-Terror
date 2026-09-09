@@ -21,21 +21,40 @@
   "companion_dependency_security": {
     "audit_threshold": "moderate",
     "current_audit": {
-      "advisory": "GHSA-2v37-7h3g-55p8",
-      "affected_range": "<3.3.18",
       "as_of_date": "2026-09-08",
-      "human_evidence_claimed": false,
+      "advisory": "GHSA-2v37-7h3g-55p8",
       "package": "nanoid",
+      "affected_range": "<3.3.18",
       "severity": "high",
-      "state": "blocked_requires_lockfile_scope_amendment"
+      "resolved_version": "3.3.18",
+      "state": "zero_reported_vulnerabilities",
+      "human_evidence_claimed": false,
+      "repair_issue": 159,
+      "repair_pull_request": 160,
+      "repair_branch": "codex/sec-dependency-001-nanoid",
+      "repair_head": "e1fd31f7024a8d4a0675b6fcdbccf709287fbee0",
+      "repair_paths": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "remaining_advisories": [],
+      "remaining_package_findings": 0,
+      "additional_remediation_authorized": true,
+      "vitest": "4.1.11",
+      "remediated_advisories": [
+        "GHSA-2v37-7h3g-55p8",
+        "GHSA-82fw-gwwq-j7x9",
+        "GHSA-rgj7-g3m4-5g8c"
+      ]
     },
     "miniflare": "4.20260722.0",
     "override_policy": {
       "postcss": "8.5.23",
-      "undici": "7.29.0"
+      "undici": "7.29.0",
+      "sharp": "0.35.4"
     },
-    "sharp": "0.35.2",
-    "state": "historical_remediation_current_audit_blocked",
+    "sharp": "0.35.4",
+    "state": "current_advisories_remediated_pending_independent_promotion",
     "workers_types": "5.20260722.1",
     "wrangler": "4.114.0"
   },

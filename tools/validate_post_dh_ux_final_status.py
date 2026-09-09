@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse,importlib.util,json,os,subprocess,sys
+import argparse,hashlib,importlib.util,json,os,subprocess,sys
 from pathlib import Path
 from typing import Any
 ROOT=Path('.')
 BASE='073e1a65c47f7ec39463fa5a04ed3b4d0e2e73c7'
+DEPENDENCY_BASE='e1fd31f7024a8d4a0675b6fcdbccf709287fbee0'
+DEPENDENCY_LOCK_SHA256='be0e45ab293bb81f0573873fe05d664f9d0ae4ef1ae3b0022b0cddcd60d69256'
 POLICY='209bba6498686cd392ddce4bbc32f549d381913f'
 QUALITY='3d29b454868295c7d3f4f06708de9c29b462abb2'
 REJECTED='973d9d94c0b828f6e54990df3c335a4a9f36b5d7'
@@ -21,7 +23,7 @@ PRESERVED_AUTHORITIES = {'ai_art_policy_merge': '209bba6498686cd392ddce4bbc32f54
 ALPHA3 = {'candidate_head_sha': '08fdbe8b52a66fc44a98bdd27878554c5478aef1', 'developer_only': True, 'issue': 108, 'merged_main_sha': 'cad70c5c8f0db1de7d557aff242cc8fe3610361b', 'ordinary_export_included': False, 'package_version': 3, 'provider_version': 3, 'pull_request': 109, 'release_id': 'v0.2.0-alpha.3', 'scenario_version': 3, 'snapshot_version': 3, 'state': 'completed_developer_only'}
 GATES = [{'issue': 7, 'purpose': 'professional naming and branding clearance', 'state': 'open'}, {'issue': 39, 'purpose': 'human household, physical-controller, television, remote, readability, motion, and accessibility evidence', 'state': 'deferred_open'}]
 SOURCE_PACKAGE = {'admitted_to_repository': False, 'bytes': 36122, 'filename': 'DH-SOURCE-PLAN-001_Clean_Room_Source_Art_and_Composition_Planning_Package_v2.zip', 'manifest_bytes': 3304, 'manifest_sha256': '63b4c87e0a5ce9782c53994db49d6709eb864ab58585e5fbbdd5a8b09d6f4ca9', 'manifested_payload_count': 14, 'sha256': 'c16988b86f14a6d813d01dfbc3508865716c1e84bf78dfb792ca65f31abd2064', 'total_file_count': 15}
-COMPANION_SECURITY = {'audit_threshold': 'moderate', 'miniflare': '4.20260722.0', 'override_policy': {'postcss': '8.5.23', 'undici': '7.29.0'}, 'sharp': '0.35.2', 'state': 'historical_remediation_current_audit_blocked', 'workers_types': '5.20260722.1', 'wrangler': '4.114.0', 'current_audit': {'as_of_date': '2026-09-08', 'advisory': 'GHSA-2v37-7h3g-55p8', 'package': 'nanoid', 'affected_range': '<3.3.18', 'severity': 'high', 'state': 'blocked_requires_lockfile_scope_amendment', 'human_evidence_claimed': False}}
+COMPANION_SECURITY = {'audit_threshold': 'moderate', 'current_audit': {'as_of_date': '2026-09-08', 'advisory': 'GHSA-2v37-7h3g-55p8', 'package': 'nanoid', 'affected_range': '<3.3.18', 'severity': 'high', 'resolved_version': '3.3.18', 'state': 'zero_reported_vulnerabilities', 'human_evidence_claimed': False, 'repair_issue': 159, 'repair_pull_request': 160, 'repair_branch': 'codex/sec-dependency-001-nanoid', 'repair_head': 'e1fd31f7024a8d4a0675b6fcdbccf709287fbee0', 'repair_paths': ['package.json', 'package-lock.json'], 'remaining_advisories': [], 'remaining_package_findings': 0, 'additional_remediation_authorized': True, 'vitest': '4.1.11', 'remediated_advisories': ['GHSA-2v37-7h3g-55p8', 'GHSA-82fw-gwwq-j7x9', 'GHSA-rgj7-g3m4-5g8c']}, 'miniflare': '4.20260722.0', 'override_policy': {'postcss': '8.5.23', 'undici': '7.29.0', 'sharp': '0.35.4'}, 'sharp': '0.35.4', 'state': 'current_advisories_remediated_pending_independent_promotion', 'workers_types': '5.20260722.1', 'wrangler': '4.114.0'}
 SOURCE_KEYS = {'source_art_creation_authorized', 'future_evidence_performed', 'current_blank_human_authored_source_requirement', 'state', 'godot_authorized', 'editable_source_created', 'merged_main_sha', 'source_family_count', 'clean_room_planning_complete', 'control_traceability_count', 'runtime_composition_authorized', 'release_id', 'mutation_count', 'issue', 'shared_low_high_tide_board_master_required', 'no_pixel_reuse_from_restricted_external_images_required', 'record_id', 'source_to_runtime_lineage_required', 'direct_generated_pixel_use_authorized', 'implementation_authorized', 'pull_request', 'candidate_created', 'blank_human_authored_sources_required_in_historical_record', 'external_package', 'similarity_review_required'}
 
 class ValidationError(Exception):pass
@@ -130,10 +132,28 @@ def validate_docs()->None:
  for x in req:need(x in t,f'missing documentation {x}')
  for x in bad:need(x not in t,f'unsupported documentation {x}')
 def branch_name()->str:return os.environ.get('GITHUB_HEAD_REF') or os.environ.get('GITHUB_REF_NAME') or subprocess.check_output(['git','branch','--show-current'],text=True).strip()
+def validate_dependency_lock(lock:dict[str,Any])->None:
+ # Canonical JSON ignores checkout line endings while pinning every dependency field.
+ digest=hashlib.sha256(json.dumps(lock,sort_keys=True,separators=(',', ':')).encode()).hexdigest()
+ need(digest==DEPENDENCY_LOCK_SHA256,'inherited security repair lockfile drift')
+
+def validate_changed_paths(repair_paths:set[str],reconciliation_paths:set[str])->None:
+ need(repair_paths=={'package.json','package-lock.json'},'isolated dependency repair scope drift')
+ need(reconciliation_paths==ALLOWED,f'path mismatch {sorted(reconciliation_paths)}')
+ for x in reconciliation_paths:need(not x.startswith(('game/','art/source/','game/assets/','audio/','web/companion/','services/room-service/')) and Path(x).suffix.lower() not in {'.png','.jpg','.jpeg','.webp','.zip','.psd','.kra','.blend','.aseprite','.tscn','.tres','.gd','.gdshader','.wav','.ogg','.mp3','.flac'},f'prohibited path {x}')
+
 def validate_git()->None:
  if branch_name()!=BRANCH:return
- a={x for x in subprocess.check_output(['git','diff','--name-only',f'{BASE}...HEAD'],text=True).splitlines() if x};need(a==ALLOWED,f'path mismatch {sorted(a)}')
- for x in a:need(not x.startswith(('game/','art/source/','game/assets/','audio/','web/companion/','services/room-service/')) and Path(x).suffix.lower() not in {'.png','.jpg','.jpeg','.webp','.zip','.psd','.kra','.blend','.aseprite','.tscn','.tres','.gd','.gdshader','.wav','.ogg','.mp3','.flac'},f'prohibited path {x}')
+ # PR160 is a separately reviewed prerequisite. PR156 still owns exactly six paths.
+ subprocess.run(['git','merge-base','--is-ancestor',BASE,DEPENDENCY_BASE],check=True)
+ subprocess.run(['git','merge-base','--is-ancestor',DEPENDENCY_BASE,'HEAD'],check=True)
+ def changed(base:str,head:str)->set[str]:
+  return set(subprocess.check_output(['git','diff','--name-only',f'{base}...{head}'],text=True).splitlines())
+ validate_changed_paths(changed(BASE,DEPENDENCY_BASE),changed(DEPENDENCY_BASE,'HEAD'))
+ validate_dependency_lock(json.loads(subprocess.check_output(['git','show',f'{DEPENDENCY_BASE}:package-lock.json'],text=True)))
+ validate_dependency_lock(json.loads(subprocess.check_output(['git','show','HEAD:package-lock.json'],text=True)))
+ validate_dependency_lock(load(Path('package-lock.json')))
+
 def validate_runtime_boundaries()->None:
  # Check actual resources, not only status booleans. Reuse the accepted Alpha.3 policy.
  path=Path(__file__).resolve().with_name('validate_drowned_harbor_alpha3_systems.py')

@@ -192,7 +192,7 @@ with tempfile.TemporaryDirectory(prefix='reconciliation-boundary-') as raw:
   'game/src/session/tale_provider_registry.gd',
   'game/project.godot','game/export_presets.cfg','tools/portable_bundle.py',
  ]]
- for path in [v.STATUS,v.SOURCE_PLAN,v.PROVENANCE,*v.DOCS,*runtime_paths]:
+ for path in [Path('package-lock.json'),v.STATUS,v.SOURCE_PLAN,v.PROVENANCE,*v.DOCS,*runtime_paths]:
   target=root/path;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(path,target)
  old=v.ROOT;v.ROOT=root
  try:
@@ -211,5 +211,22 @@ with tempfile.TemporaryDirectory(prefix='reconciliation-boundary-') as raw:
    target.write_text(changed,encoding='utf-8');fail(v.validate,False);n+=1
    target.write_text(original,encoding='utf-8')
  finally:v.ROOT=old
+
+# Stacking cannot launder unrelated dependency edits into the six-path release.
+v.validate_changed_paths({'package.json','package-lock.json'},v.ALLOWED)
+for repair,own in [
+ (set(),v.ALLOWED),({'package-lock.json'},v.ALLOWED),
+ ({'package.json','package-lock.json','game/project.godot'},v.ALLOWED),
+ ({'package.json','package-lock.json'},v.ALLOWED|{'package.json','package-lock.json'}),
+ ({'package.json','package-lock.json'},v.ALLOWED|{'game/project.godot'}),
+ ({'package.json','package-lock.json'},v.ALLOWED-{'README.md'}),
+]:
+ fail(v.validate_changed_paths,repair,own);n+=1
+locked=v.load(Path('package-lock.json'))
+for key,value in [('version','3.3.16'),('resolved','https://example.invalid/nanoid.tgz'),('integrity','sha512-invalid')]:
+ candidate=copy.deepcopy(locked);candidate['packages']['node_modules/nanoid'][key]=value
+ fail(v.validate_dependency_lock,candidate);n+=1
+candidate=copy.deepcopy(locked);candidate['packages']['node_modules/vitest']['version']='4.1.10'
+fail(v.validate_dependency_lock,candidate);n+=1
 
 print(f'Validated {n} fail-closed post-DH-AI-SOURCE status mutations')
