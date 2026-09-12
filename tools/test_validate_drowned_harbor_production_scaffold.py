@@ -128,6 +128,8 @@ def main() -> int:
         ("rollback cleanup removed", lambda root: replace(root / validator.SOURCE_ROOT / "drowned_harbor_developer_admission_gate.gd", "_session = null", "# session retained")),
         ("production readiness claimed", lambda root: (root / "docs/playtests/v0.2.0-alpha.1-production-tale-scaffold-evidence.md").write_text("production ready\n", encoding="utf-8")),
         ("workflow validator command removed", lambda root: replace(root / validator.WORKFLOW_PATH, "python tools/validate_drowned_harbor_production_scaffold.py", "echo validator omitted")),
+        ("current succession validator removed", lambda root: replace(root / validator.WORKFLOW_PATH, "python tools/validate_post_dh_ux_final_status.py", "echo validator omitted")),
+        ("current succession mutations removed", lambda root: replace(root / validator.WORKFLOW_PATH, "python tools/test_validate_post_dh_ux_final_status.py", "echo mutations omitted")),
         ("focused Godot coverage removed", lambda root: replace(root / validator.TEST_ROOT / "drowned_harbor_production_scaffold_test.gd", "duplicate remains rejected after restore", "duplicate accepted after restore")),
         ("canonical package digest changed", lambda root: mutate_json(root / validator.PACKAGE_PATH, lambda value: value["display"].__setitem__("status", "final"))),
         ("duplicate new UID", lambda root: (root / validator.SOURCE_ROOT / "drowned_harbor_board_definition.gd.uid").write_text((root / validator.SOURCE_ROOT / "drowned_harbor_rules_content.gd.uid").read_text(encoding="ascii"), encoding="ascii")),

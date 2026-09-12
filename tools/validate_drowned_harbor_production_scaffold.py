@@ -441,6 +441,8 @@ def validate_workflow(root: Path) -> None:
         "4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9",
         "run_check scaffold-validator python tools/validate_drowned_harbor_production_scaffold.py",
         "run_check scaffold-mutations python tools/test_validate_drowned_harbor_production_scaffold.py",
+        "run_check current-status python tools/validate_post_dh_ux_final_status.py",
+        "run_check current-status-mutations python tools/test_validate_post_dh_ux_final_status.py",
         "drowned_harbor_production_scaffold_test.gd",
         '--export-pack "Internal Windows x86_64"',
         '--export-pack "Internal Linux x86_64"',
