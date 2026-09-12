@@ -491,7 +491,7 @@ func _private_copy(data: Dictionary) -> String:
 		)
 	if _private_tab == 1:
 		var account: String = "Your account is still being written."
-		if session.public_view().stage in ["epilogue", "complete"]:
+		if session.public_view().stage == "complete":
 			account = (
 				"Objective fulfilled."
 				if data.get("objective_complete", false)

@@ -1,6 +1,6 @@
 # Drowned Harbor Alpha.4 implementation evidence
 
-Recorded 2026-09-11 for issue #161. This is automated and agent-reviewed developer
+Recorded 2026-09-12 for issue #161. This is automated and agent-reviewed developer
 evidence, not a human playtest, accessibility certification or production admission.
 
 ## Executed checks
@@ -22,6 +22,8 @@ evidence, not a human playtest, accessibility certification or production admiss
   repeated mode/seat/seed runs. Their fixture content coverage is not a claim that
   every old fixture has a selectable Alpha.4 player action.
 - GUT: 23 tests and 150 assertions passed.
+- Complete headless quality runner: all 29 standalone suites plus GUT passed,
+  including 335 Lantern House deterministic runs and 160 replay configurations.
 - First-party GDScript: lint and formatting checks pass for 151 files.
 - Repository policy, provenance, catalog/package, privacy, toolchain, portable
   bundle, pilot templates, historical boundary and quality-validator checks pass
@@ -30,11 +32,18 @@ evidence, not a human playtest, accessibility certification or production admiss
 - Companion TypeScript and 10 browser tests pass. Twenty service unit tests pass;
   six worker integration cases do not run because local worker startup reaches
   the existing 60-second hook timeout. Companion source and lockfile are unchanged.
+  The GitHub Actions Companion protocol/service/browser job passes on the draft PR,
+  including its worker integration environment.
 - `npm audit --audit-level=moderate`: zero reported vulnerabilities.
 
 The complete headless command surface remains `python quality/run_quality.py godot
 --godot <official executable>`; it includes the Alpha.4 suites and rejects runtime
 GDScript errors even when the engine process returns zero.
+
+One full headless frontend run reported four ObjectDB instances and two resources
+still in use at process shutdown. A focused verbose rerun completed without that
+warning; the rendered frontend and exported Windows smoke also exited cleanly.
+This intermittent test-teardown warning is not claimed to be resolved.
 
 ## Visual review
 
@@ -58,7 +67,9 @@ SHA-256 values are recorded in `builds/alpha4/build_manifest.json`. Each identit
 records the source commit and whether any source changes were uncommitted.
 
 The executable accepts `-- --demo-smoke` for an offline native scene/content/art/
-audio admission check. Linux export creation does not establish Linux runtime or
+audio admission check. Both Windows and Linux demo ZIPs were exported from clean
+committed source, and the actual Windows executable passed that smoke check.
+Linux export creation does not establish Linux runtime or
 physical display evidence on this Windows workstation.
 
 ## Remaining evidence and content limits

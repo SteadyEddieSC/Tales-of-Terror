@@ -110,6 +110,15 @@ func _play_scene(count: int) -> void:
 		if not captured.has(state.stage):
 			captured[state.stage] = true
 			await _capture(state.stage, count)
+		if state.stage == "epilogue":
+			await _press(KEY_V)
+			await _pick("open_private")
+			await _pick("next_private")
+			_check(
+				_demo._model().subtitle.contains("Your account is still being written."),
+				"epilogue keeps private objective pending until rules evaluate completion"
+			)
+			await _pick("close_private")
 		if step == 2:
 			await _save_restore()
 		if state.actions.is_empty():
@@ -135,6 +144,18 @@ func _play_scene(count: int) -> void:
 		_check(_demo.session.public_view().revision > state.revision, "UI commits displayed action")
 	_check(_demo._page == "results", "whole frontend route reaches results")
 	await _capture("results", count)
+	await _press(KEY_V)
+	await _pick("open_private")
+	await _pick("next_private")
+	var own: Dictionary = _demo.session.private_view(_demo._private_seat)
+	var objective_result: String = (
+		"Objective fulfilled." if own.get("objective_complete", false) else "Objective unfulfilled."
+	)
+	_check(
+		_demo._model().subtitle.contains(objective_result),
+		"completed Tale displays the evaluated private objective result"
+	)
+	await _pick("close_private")
 	await _pick("rematch")
 	_check(_demo._page == "intro", "rematch returns to new intro")
 	_check(_demo.session.public_view().revision == 0, "rematch clears prior decisions")
