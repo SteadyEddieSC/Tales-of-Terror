@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "locale": "en",
+  "stages": {
+    "low_tide": {
+      "key": "dh.stage.low_tide",
+      "title": "The Harbor at Low Tide",
+      "text": "A town without a place on any chart. Its lamps are lit. Someone expected you.",
+      "variants": {
+        "spooky": "A town has come out of the sea, and every lamp is waiting for a visitor.",
+        "grim": "A town without a place on any chart. Its lamps are lit. Someone expected you.",
+        "gore_dread": "The sea has peeled back its skin. Beneath it: a town, still breathing through its lamps."
+      }
+    },
+    "bellhouse": {
+      "key": "dh.stage.bellhouse",
+      "title": "The Bellhouse Ledger",
+      "text": "The Council recorded every stolen cargo. The missing column was people.",
+      "variants": {
+        "spooky": "These records tell a sad truth. Help the town remember the people it forgot.",
+        "grim": "The Council recorded every stolen cargo. The missing column was people.",
+        "gore_dread": "The Council recorded every stolen cargo. The missing column was people."
+      }
+    },
+    "council": {
+      "key": "dh.stage.council",
+      "title": "Council Beneath the Light",
+      "text": "An empty chair is still a chair. Sit carefully. Decide what this light is for.",
+      "variants": {
+        "spooky": "The chairs are empty. The decision is yours: where should the light lead?",
+        "grim": "An empty chair is still a chair. Sit carefully. Decide what this light is for.",
+        "gore_dread": "An empty chair is still a chair. Sit carefully. Decide what this light is for."
+      }
+    },
+    "high_water": {
+      "key": "dh.stage.high_water",
+      "title": "The Terror Turn",
+      "text": "There goes the road. The sea has remembered where it left this town.",
+      "variants": {
+        "spooky": "The tide is back. Stay together; a new route waits through the channel.",
+        "grim": "There goes the road. The sea has remembered where it left this town.",
+        "gore_dread": "The streets fill like opened lungs. The Harbor is drawing its next breath."
+      }
+    },
+    "flood": {
+      "key": "dh.stage.flood",
+      "title": "High Water",
+      "text": "Rope, oil, names. Keep what you can carry. Decide who you can bring.",
+      "variants": {
+        "spooky": "Keep your ropes close and your friends closer. There is still time to help.",
+        "grim": "Rope, oil, names. Keep what you can carry. Decide who you can bring.",
+        "gore_dread": "Cold fingers rise through the floorboards. Some are asking for help. Some remember your name."
+      }
+    },
+    "last_light": {
+      "key": "dh.stage.last_light",
+      "title": "Last Light",
+      "text": "A lighthouse promises a destination. Before you turn the lens, choose who should find it.",
+      "variants": {
+        "spooky": "One last light. Make it a promise you can keep.",
+        "grim": "A lighthouse promises a destination. Before you turn the lens, choose who should find it.",
+        "gore_dread": "A lighthouse promises a destination. Before you turn the lens, choose who should find it."
+      }
+    },
+    "ending": {
+      "key": "dh.stage.ending",
+      "title": "The Last Bell",
+      "text": "No more rehearsals. Ring it. Let the Harbor hear what you decided.",
+      "variants": {
+        "spooky": "No more rehearsals. Ring it. Let the Harbor hear what you decided.",
+        "grim": "No more rehearsals. Ring it. Let the Harbor hear what you decided.",
+        "gore_dread": "No more rehearsals. Ring it. Let the Harbor hear what you decided."
+      }
+    },
+    "epilogue": {
+      "key": "dh.stage.epilogue",
+      "title": "What Came Home",
+      "text": "The shore will ask what happened here. You may find yourselves giving different answers.",
+      "variants": {
+        "spooky": "The shore will ask what happened here. You may find yourselves giving different answers.",
+        "grim": "The shore will ask what happened here. You may find yourselves giving different answers.",
+        "gore_dread": "The shore will ask what happened here. You may find yourselves giving different answers."
+      }
+    },
+    "complete": {
+      "key": "dh.stage.complete",
+      "title": "Until the Next Low Tide",
+      "text": "That is where your account ends. The sea, of course, keeps its own.",
+      "variants": {
+        "spooky": "That is where your account ends. The sea, of course, keeps its own.",
+        "grim": "That is where your account ends. The sea, of course, keeps its own.",
+        "gore_dread": "That is where your account ends. The sea, of course, keeps its own."
+      }
+    }
+  },
+  "roles": {
+    "lantern_surveyor": {
+      "key": "dh.role.lantern_surveyor",
+      "title": "Lantern Surveyor",
+      "text": "You map the passages nobody believes are still there. A steady lamp makes a route out of a rumor.",
+      "portrait": "role_lantern_surveyor_portrait.png"
+    },
+    "bellhouse_archivist": {
+      "key": "dh.role.bellhouse_archivist",
+      "title": "Bellhouse Archivist",
+      "text": "You know the difference between an absent name and an erased one. The ledger owes you both.",
+      "portrait": "role_bellhouse_archivist_portrait.png"
+    },
+    "lifeboat_keeper": {
+      "key": "dh.role.lifeboat_keeper",
+      "title": "Lifeboat Keeper",
+      "text": "You count places, not promises. A rope in your hands has always meant someone gets another chance.",
+      "portrait": "role_lifeboat_keeper_portrait.png"
+    },
+    "fog_listener": {
+      "key": "dh.role.fog_listener",
+      "title": "Fog Listener",
+      "text": "The fog carries voices before it carries shapes. You have learned when to listen, and when to move.",
+      "portrait": "role_fog_listener_portrait.png"
+    },
+    "wreckers_heir": {
+      "key": "dh.role.wreckers_heir",
+      "title": "Wrecker’s Heir",
+      "text": "Your inheritance washed ashore in pieces. You can turn wreckage into shelter, if you can bear what it belonged to.",
+      "portrait": "role_wreckers_heir_portrait.png"
+    },
+    "tide_chapel_warden": {
+      "key": "dh.role.tide_chapel_warden",
+      "title": "Tide Chapel Warden",
+      "text": "You keep a place for those who cannot cross the water. Even a ghost should have somewhere to stand.",
+      "portrait": "role_tide_chapel_warden_portrait.png"
+    }
+  },
+  "events": {
+    "search_manifest": {
+      "key": "dh.event.search_manifest",
+      "text": "A relief ship. Food. Medicine. Passengers. The wreck was deliberate."
+    },
+    "search_wreck": {
+      "key": "dh.event.search_wreck",
+      "text": "A survivor wrote between the cargo lines. Small handwriting can carry a great accusation."
+    },
+    "salvage_oil": {
+      "key": "dh.event.salvage_oil",
+      "text": "The lantern takes the oil. The patrol takes an interest."
+    },
+    "secure_boat": {
+      "key": "dh.event.secure_boat",
+      "text": "An extra knot. Two more places. Sometimes hope is this practical."
+    },
+    "shelter": {
+      "key": "dh.event.shelter",
+      "text": "For a moment, even the bell has nothing to add."
+    },
+    "aid_resident": {
+      "key": "dh.event.aid_resident",
+      "text": "The rope tightens. Someone on the other end remembers being alive."
+    },
+    "follow_names": {
+      "key": "dh.event.follow_names",
+      "text": "Give a stolen name its place again, and listen to what changes."
+    },
+    "follow_light": {
+      "key": "dh.event.follow_light",
+      "text": "The lens is cracked. Its invitation is perfectly clear."
+    },
+    "follow_missing": {
+      "key": "dh.event.follow_missing",
+      "text": "One blank line. One open passage. Absence can be a kind of mercy."
+    },
+    "search_archive": {
+      "key": "dh.event.search_archive",
+      "text": "The pages survived. Your breath may not last as long."
+    },
+    "salt_ward": {
+      "key": "dh.event.salt_ward",
+      "text": "Salt draws a boundary the water understands."
+    },
+    "harbor_bargain": {
+      "key": "dh.event.harbor_bargain",
+      "text": "An offer can sound like rescue. Read it twice."
+    },
+    "refuse_bargain": {
+      "key": "dh.event.refuse_bargain",
+      "text": "You keep your own name. The Harbor does not thank you for it."
+    },
+    "restless_warn": {
+      "key": "dh.event.restless_warn",
+      "text": "A voice from beneath the water. Still yours. Still useful."
+    },
+    "rescue": {
+      "key": "dh.event.rescue",
+      "text": "Not every name in the ledger has to stay there."
+    },
+    "defeat": {
+      "key": "dh.event.defeat",
+      "text": "The tide has taken your breath. It has not taken your turn."
+    },
+    "director": {
+      "key": "dh.event.director",
+      "text": "The Harbor changes its attention. It has learned which streets you favor."
+    }
+  },
+  "aliases": {}
+}

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "creator": "OpenAI Codex, original procedural synthesis",
+  "source": "audio/source/drowned_harbor_alpha4/generate_demo_audio.py",
+  "license": "Project-owned generated code and synthesized output; no external samples",
+  "sample_rate": 12000,
+  "loops": [
+    "harbor_wind_loop",
+    "bellhouse_memory_loop",
+    "lighthouse_memory_loop",
+    "high_water_current_loop",
+    "last_light_memory_loop"
+  ],
+  "cues": [
+    "bell_strike_cue",
+    "high_water_cue",
+    "rope_rescue_cue",
+    "ledger_page_cue",
+    "ui_confirm_cue",
+    "last_light_cue",
+    "route_warning_cue"
+  ],
+  "voice_status": "No speech generated. narrative_en.json is the caption and voice-script source."
+}

@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "generator": "OpenAI image_gen",
+  "session": "Terror Turn Alpha.4 whole-game build",
+  "authorization": "Project Owner pasted request d8c99069-1516-46d6-bf85-01b613745e31",
+  "source_kind": "New text-to-image generation, no referenced images",
+  "direction": "Original modern storybook coastal folk horror; six landmark shared harbor master and six role portraits",
+  "prompt_record": "Direction summary retained; verbatim tool prompts remain in the presentation_assets agent task history.",
+  "sources": [
+    {
+      "id": "dh_alpha4_harbor_board_texture",
+      "runtime_path": "game/assets/drowned_harbor_alpha4/harbor_board_texture.png",
+      "source": "art/source/drowned_harbor_alpha4/harbor_board_texture.png",
+      "creator": "OpenAI image_gen via Codex",
+      "license": "Generated for the Project Owner under OpenAI terms; no third-party inputs",
+      "derivation": "Unmodified generated PNG copied from retained source master",
+      "sha256": "e8e8cb240fdc4269d589c876046cbb8c2c4d46e9a5b49bc2b3fa2c45e5052cfa",
+      "status": "owner_authorized_alpha4_demo_candidate",
+      "human_review": "Pending; no independent human review claimed",
+      "external_reference_inputs": []
+    },
+    {
+      "id": "dh_alpha4_role_bellhouse_archivist_portrait",
+      "runtime_path": "game/assets/drowned_harbor_alpha4/role_bellhouse_archivist_portrait.png",
+      "source": "art/source/drowned_harbor_alpha4/role_bellhouse_archivist_portrait.png",
+      "creator": "OpenAI image_gen via Codex",
+      "license": "Generated for the Project Owner under OpenAI terms; no third-party inputs",
+      "derivation": "Unmodified generated PNG copied from retained source master",
+      "sha256": "75b08e7e6a5d41ecdd954bad288e91d4c532e47c328f0e7c312da29177163195",
+      "status": "owner_authorized_alpha4_demo_candidate",
+      "human_review": "Pending; no independent human review claimed",
+      "external_reference_inputs": []
+    },
+    {
+      "id": "dh_alpha4_role_fog_listener_portrait",
+      "runtime_path": "game/assets/drowned_harbor_alpha4/role_fog_listener_portrait.png",
+      "source": "art/source/drowned_harbor_alpha4/role_fog_listener_portrait.png",
+      "creator": "OpenAI image_gen via Codex",
+      "license": "Generated for the Project Owner under OpenAI terms; no third-party inputs",
+      "derivation": "Unmodified generated PNG copied from retained source master",
+      "sha256": "9292982876f6fdc22d36a209cb7c41fd62810ed0090aa27ab2f2a765b02afbeb",
+      "status": "owner_authorized_alpha4_demo_candidate",
+      "human_review": "Pending; no independent human review claimed",
+      "external_reference_inputs": []
+    },
+    {
+      "id": "dh_alpha4_role_lantern_surveyor_portrait",
+      "runtime_path": "game/assets/drowned_harbor_alpha4/role_lantern_surveyor_portrait.png",
+      "source": "art/source/drowned_harbor_alpha4/role_lantern_surveyor_portrait.png",
+      "creator": "OpenAI image_gen via Codex",
+      "license": "Generated for the Project Owner under OpenAI terms; no third-party inputs",
+      "derivation": "Unmodified generated PNG copied from retained source master",
+      "sha256": "cdae5782c314cfeb27b01ee40953076b1344c39ad32cf2edd436d43e7528c601",
+      "status": "owner_authorized_alpha4_demo_candidate",
+      "human_review": "Pending; no independent human review claimed",
+      "external_reference_inputs": []
+    },
+    {
+      "id": "dh_alpha4_role_lifeboat_keeper_portrait",
+      "runtime_path": "game/assets/drowned_harbor_alpha4/role_lifeboat_keeper_portrait.png",
+      "source": "art/source/drowned_harbor_alpha4/role_lifeboat_keeper_portrait.png",
+      "creator": "OpenAI image_gen via Codex",
+      "license": "Generated for the Project Owner under OpenAI terms; no third-party inputs",
+      "derivation": "Unmodified generated PNG copied from retained source master",
+      "sha256": "8c99b1d399c18abbf244544ee638241d45a6f97920fca99e172814117ccfb8ac",
+      "status": "owner_authorized_alpha4_demo_candidate",
+      "human_review": "Pending; no independent human review claimed",
+      "external_reference_inputs": []
+    },
+    {
+      "id": "dh_alpha4_role_tide_chapel_warden_portrait",
+      "runtime_path": "game/assets/drowned_harbor_alpha4/role_tide_chapel_warden_portrait.png",
+      "source": "art/source/drowned_harbor_alpha4/role_tide_chapel_warden_portrait.png",
+      "creator": "OpenAI image_gen via Codex",
+      "license": "Generated for the Project Owner under OpenAI terms; no third-party inputs",
+      "derivation": "Unmodified generated PNG copied from retained source master",
+      "sha256": "71f5b0ec54b7ba0d09de20f6e7eebe71eb0f2950b03eed67ea564f1e36e37062",
+      "status": "owner_authorized_alpha4_demo_candidate",
+      "human_review": "Pending; no independent human review claimed",
+      "external_reference_inputs": []
+    },
+    {
+      "id": "dh_alpha4_role_wreckers_heir_portrait",
+      "runtime_path": "game/assets/drowned_harbor_alpha4/role_wreckers_heir_portrait.png",
+      "source": "art/source/drowned_harbor_alpha4/role_wreckers_heir_portrait.png",
+      "creator": "OpenAI image_gen via Codex",
+      "license": "Generated for the Project Owner under OpenAI terms; no third-party inputs",
+      "derivation": "Unmodified generated PNG copied from retained source master",
+      "sha256": "d56f99b2896c5339e6a024fa023a170befc285a6f7461442961bcbb11d2c4c42",
+      "status": "owner_authorized_alpha4_demo_candidate",
+      "human_review": "Pending; no independent human review claimed",
+      "external_reference_inputs": []
+    }
+  ]
+}
