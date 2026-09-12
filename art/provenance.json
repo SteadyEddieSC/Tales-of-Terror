@@ -8,7 +8,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "8f3b0ada696973e7fd73bcae5ddf355f1e0a7f304b7cbfe9a058a12af5b0e06e",
+      "sha256": "4562f1ec32b94ad9724d2be8a30373e3de3db60accf8b7824e53002f6fa39252",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -20,7 +20,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "c51485069f1c82e803371fe2e67343e175f5a97076a2bb4478cd44bfbfffe2d4",
+      "sha256": "44d1d739bd2f8e0befb384196843c39b84694c57e64cda17c6d52ee3f24ceb20",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -44,7 +44,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "71d52bcee8c59f5c7d04d58872ab2af92b7c20650c74f801dc1427382297223e",
+      "sha256": "56983c479a7142aaf1711dad9f7c7456bdb9c55a1cb6562d57e25ad101ce6d8d",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -56,7 +56,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "4796e8343eb036a1e3390a76f91f6059e827d373ca47c9ea78be3a9d3b58b6a7",
+      "sha256": "eed1f74f41e347db51b2d5eb4fd45fb963c2fe4df9cdf05896443e149cc27684",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -68,7 +68,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "cd58653d9247f4f5ff34a88a8f60823b15243cca3ddd0b760d1eb352a716e80b",
+      "sha256": "00ca1e799f8246fb43d927f27a5265ec488fe1b605c4b791d0768e6ab88ee496",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -80,7 +80,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "1a7db3a0367279d495fed83aa6bcf4b1d509ae4b4e2714c6cc3cc18d0a1a701e",
+      "sha256": "6cfd72c3621875d4a53308452b8e8c5b76f86ff0031cfb13b706cdb5fbb8b34c",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -92,7 +92,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "77bf3003c1d5c1826899cbe53c4b1558fc6be096cab9c08ff1846298e01ea979",
+      "sha256": "a48b318e7ea2a51a5a8c382b933f698db26d913969e9cac8d3223f863e72265b",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -104,7 +104,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "c1857184d51133e235fd0de7cab0b20c0fed82ab194a46b59d6f772184b56567",
+      "sha256": "e34290e50d0b59fa6c01fef762fdbe0759d043e7166725effe82707dfa5ac905",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -116,7 +116,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "47ce002ababb250cb9d8a8f444ec99a212fbac3d37a89f25bdf8c8bf6d7faf68",
+      "sha256": "a7aa58f58f5993ec5d81606262cb317da734fb9235d08f68ad3f5fd056fd699e",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -128,7 +128,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "90e3acc44116c50d4536c21a34f1bbf16e732a0fdddbc2b7cde80a02e2829869",
+      "sha256": "4390be51925a8fba5b0fae86b21fa13eada0f9a29748620347c928b3de73f487",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -212,7 +212,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "729eb6e459b1060d46e5742be23d89ab5eb4c1d63375489da607af2bc08fc76e",
+      "sha256": "d7d1563fb139716ba3a8209d332fbc8aede02296f07f84db16bc27618b95f5a3",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -224,7 +224,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "2f26f714462490d5c66d7eb1c9f28e0357dc52decae6c35937d735a6652c9fef",
+      "sha256": "0dd7a4e96572f67340c537c45dfcba488b2c0c6a1c8099ee3c59a242775f0e59",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []
@@ -236,7 +236,7 @@
       "creator": "OpenAI Codex original authored source",
       "license": "Project-owned authored source and derived output; no external samples",
       "derivation": "Deterministic generation from retained source script",
-      "sha256": "040f5bf932774c8e171e9838138306a02d19f7ace6ada8938f7b624fb30c22f3",
+      "sha256": "c30ae30339189335e7f521cd09f8d678a375474a52d34b9160999298c10768b1",
       "status": "owner_authorized_alpha4_demo_candidate",
       "human_review": "Pending; no independent human review claimed",
       "external_reference_inputs": []

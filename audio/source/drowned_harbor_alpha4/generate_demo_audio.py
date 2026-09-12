@@ -52,7 +52,7 @@ def render(name: str, frequency: float, seconds: float, noise: float, loop: bool
     if loop:
         text += f'loop_mode = 1\nloop_begin = 0\nloop_end = {length}\n'
     text += 'data = PackedByteArray(' + ', '.join(map(str, data)) + ')\n'
-    (DEST / (name + '.tres')).write_text(text, encoding='utf-8')
+    (DEST / (name + '.tres')).write_text(text, encoding='utf-8', newline='\n')
 
 
 def main() -> None:
@@ -69,7 +69,7 @@ def main() -> None:
         'voice_status': 'No speech generated. narrative_en.json is the caption and voice-script source.',
     }
     (Path(__file__).parent / 'synthesis_manifest.json').write_text(
-        json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+        json.dumps(manifest, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(f'Generated {len(LOOPS)} ambience/music loops and {len(CUES)} cues.')
 
 

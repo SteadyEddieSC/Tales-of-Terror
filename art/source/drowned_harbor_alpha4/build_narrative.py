@@ -70,7 +70,7 @@ def main() -> None:
             'portrait': 'role_' + key + '_portrait.png'}
     for key, text in EVENTS.items():
         catalog['events'][key] = {'key': 'dh.event.' + key, 'text': text}
-    (DEST / 'narrative_en.json').write_text(json.dumps(catalog, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+    (DEST / 'narrative_en.json').write_text(json.dumps(catalog, indent=2, ensure_ascii=False) + '\n', encoding='utf-8', newline='\n')
     lines = []
     for section in ['stages', 'events']:
         for key, row in catalog[section].items():
@@ -78,7 +78,7 @@ def main() -> None:
                 'delivery': 'Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.',
                 'audience': 'public', 'audio_path': None, 'status': 'generation_ready_not_recorded'})
     (ROOT / 'audio/source/drowned_harbor_alpha4/voice_manifest.json').write_text(
-        json.dumps({'version': 1, 'lines': lines}, indent=2) + '\n', encoding='utf-8')
+        json.dumps({'version': 1, 'lines': lines}, indent=2) + '\n', encoding='utf-8', newline='\n')
     provenance_path = ROOT / 'art/provenance.json'
     provenance = json.loads(provenance_path.read_text(encoding='utf-8'))
     entries = [e for e in provenance['assets'] if '/drowned_harbor_alpha4/' not in e.get('runtime_path', '')]
@@ -101,14 +101,14 @@ def main() -> None:
         if visual:
             sources.append(entry)
     provenance['assets'] = entries
-    provenance_path.write_text(json.dumps(provenance, indent=2) + '\n', encoding='utf-8')
+    provenance_path.write_text(json.dumps(provenance, indent=2) + '\n', encoding='utf-8', newline='\n')
     (Path(__file__).parent / 'generation_manifest.json').write_text(json.dumps({
         'version': 1, 'generator': 'OpenAI image_gen', 'session': 'Terror Turn Alpha.4 whole-game build',
         'authorization': 'Project Owner pasted request d8c99069-1516-46d6-bf85-01b613745e31',
         'source_kind': 'New text-to-image generation, no referenced images',
         'direction': 'Original modern storybook coastal folk horror; six landmark shared harbor master and six role portraits',
         'prompt_record': 'Direction summary retained; verbatim tool prompts remain in the presentation_assets agent task history.',
-        'sources': sources}, indent=2) + '\n', encoding='utf-8')
+        'sources': sources}, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(f'Created {len(STAGES)} stage families, {len(ROLES)} roles, {len(EVENTS)} event lines, {len(entries)} provenance records.')
 
 
