@@ -413,10 +413,15 @@ def validate_protected_boundaries(root: Path) -> None:
 def validate_export_policy(root: Path) -> None:
     source = (root / "game/export_presets.cfg").read_text(encoding="utf-8")
     expected = (
-        "data/scenarios/drowned_harbor_scaffold_v1.json,"
-        "data/tales/drowned_harbor/*,src/tales/drowned_harbor/*"
+        'exclude_filter=".gutconfig.json,tests/*,addons/*,'
+        'src/exploration/ExplorationShowcase.tscn,'
+        'src/exploration/exploration_showcase.gd,'
+        'data/scenarios/drowned_harbor_scaffold_v1.json,'
+        'assets/drowned_harbor_alpha4/*,data/tales/drowned_harbor/*,src/tales/drowned_harbor/*,'
+        'data/scenarios/drowned_harbor_graybox_v2.json,'
+        'data/scenarios/drowned_harbor_systems_v3.json"'
     )
-    require(source.count(expected) == 2, "both ordinary export presets must exclude alpha.1 data and source")
+    require(source.count(expected) == 2, "both ordinary export presets must use the full Drowned Harbor exclusion")
     require(source.count("tests/*") == 2, "both ordinary export presets must exclude tests")
     require(source.count('name="Internal Windows x86_64"') == 1, "Windows preset identity changed")
     require(source.count('name="Internal Linux x86_64"') == 1, "Linux preset identity changed")
