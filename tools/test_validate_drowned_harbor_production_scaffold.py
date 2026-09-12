@@ -103,6 +103,8 @@ def expect_export_failure(name: str, paths: list[str], marker: bytes = b"") -> N
 
 
 def main() -> int:
+    validator.validate_static(ROOT, git_boundary=False)
+    print("Validated current ordinary-export exclusions with preserved alpha.1 scaffold")
     mutations: list[tuple[str, Callable[[Path], None]]] = [
         ("wrong Tale identity", lambda root: mutate_json(root / validator.PACKAGE_PATH, lambda value: value.__setitem__("tale_id", "other_tale"))),
         ("wrong provider identity", lambda root: mutate_json(root / validator.PACKAGE_PATH, lambda value: value["provider"].__setitem__("provider_id", "dynamic_provider"))),
@@ -114,6 +116,9 @@ def main() -> int:
         ("normal catalog registration", lambda root: mutate_json(root / Path("game/data/tales/tale_catalog_v1.json"), lambda value: value["entries"].append({"tale_id": "drowned_harbor"}))),
         ("central provider registration", lambda root: replace(root / Path("game/src/session/tale_provider_registry.gd"), "extends RefCounted", "extends RefCounted\n# drowned_harbor_authorities_v1")),
         ("ordinary export inclusion", lambda root: replace(root / Path("game/export_presets.cfg"), "data/tales/drowned_harbor/*", "data/tales/drowned_harbor_package_only.json")),
+        ("ordinary export includes Alpha.4 art", lambda root: replace(root / Path("game/export_presets.cfg"), "assets/drowned_harbor_alpha4/*,", "")),
+        ("ordinary export includes native Tale source", lambda root: replace(root / Path("game/export_presets.cfg"), "src/tales/drowned_harbor/*,", "")),
+        ("ordinary export includes scaffold scenario", lambda root: replace(root / Path("game/export_presets.cfg"), "data/scenarios/drowned_harbor_scaffold_v1.json,", "")),
         ("private Director input", lambda root: replace(root / validator.SOURCE_ROOT / "drowned_harbor_director_content.gd", '"stage_id"', '"stage_id", "private_terms"')),
         ("developer admission weakened", lambda root: replace(root / validator.SOURCE_ROOT / "drowned_harbor_developer_admission_gate.gd", "developer_only_explicit_launch", "ambiguous_launch")),
         ("complete candidate validation removed", lambda root: replace(root / validator.SOURCE_ROOT / "drowned_harbor_scoped_provider.gd", "_complete_content", "_unchecked_content")),
@@ -123,6 +128,8 @@ def main() -> int:
         ("rollback cleanup removed", lambda root: replace(root / validator.SOURCE_ROOT / "drowned_harbor_developer_admission_gate.gd", "_session = null", "# session retained")),
         ("production readiness claimed", lambda root: (root / "docs/playtests/v0.2.0-alpha.1-production-tale-scaffold-evidence.md").write_text("production ready\n", encoding="utf-8")),
         ("workflow validator command removed", lambda root: replace(root / validator.WORKFLOW_PATH, "python tools/validate_drowned_harbor_production_scaffold.py", "echo validator omitted")),
+        ("current succession validator removed", lambda root: replace(root / validator.WORKFLOW_PATH, "python tools/validate_post_dh_ux_final_status.py", "echo validator omitted")),
+        ("current succession mutations removed", lambda root: replace(root / validator.WORKFLOW_PATH, "python tools/test_validate_post_dh_ux_final_status.py", "echo mutations omitted")),
         ("focused Godot coverage removed", lambda root: replace(root / validator.TEST_ROOT / "drowned_harbor_production_scaffold_test.gd", "duplicate remains rejected after restore", "duplicate accepted after restore")),
         ("canonical package digest changed", lambda root: mutate_json(root / validator.PACKAGE_PATH, lambda value: value["display"].__setitem__("status", "final"))),
         ("duplicate new UID", lambda root: (root / validator.SOURCE_ROOT / "drowned_harbor_board_definition.gd.uid").write_text((root / validator.SOURCE_ROOT / "drowned_harbor_rules_content.gd.uid").read_text(encoding="ascii"), encoding="ascii")),

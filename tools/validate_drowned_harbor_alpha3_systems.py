@@ -246,7 +246,7 @@ EXACT_EXCLUDE_FILTER = (
     'src/exploration/ExplorationShowcase.tscn,'
     'src/exploration/exploration_showcase.gd,'
     'data/scenarios/drowned_harbor_scaffold_v1.json,'
-    'data/tales/drowned_harbor/*,src/tales/drowned_harbor/*,'
+    'assets/drowned_harbor_alpha4/*,data/tales/drowned_harbor/*,src/tales/drowned_harbor/*,'
     'data/scenarios/drowned_harbor_graybox_v2.json,'
     'data/scenarios/drowned_harbor_systems_v3.json"'
 )
@@ -668,14 +668,20 @@ def _run_git(root: Path, *args: str) -> str:
 
 
 def validate_git_boundary(root: Path = ROOT) -> None:
-    require(_run_git(root, "rev-parse", "origin/main") == BASELINE, "protected origin/main changed")
+    require(
+        _run_git(root, "merge-base", "origin/main", BASELINE) == BASELINE,
+        "protected origin/main lost Alpha.3 baseline ancestry",
+    )
+    require(_run_git(root, "merge-base", "HEAD", BASELINE) == BASELINE, "Alpha.3 baseline changed")
     branch = (
         os.environ.get("GITHUB_HEAD_REF")
         or os.environ.get("GITHUB_REF_NAME")
         or _run_git(root, "branch", "--show-current")
     )
-    require(branch == BRANCH, f"wrong Alpha.3 branch: {branch}")
-    require(_run_git(root, "merge-base", "HEAD", BASELINE) == BASELINE, "Alpha.3 baseline changed")
+    # Keep the exact release diff on its original branch; later releases retain
+    # unconditional content, replay, privacy, export, and baseline validation.
+    if branch != BRANCH:
+        return
     changed = set(filter(None, _run_git(root, "diff", "--name-only", BASELINE).splitlines()))
     changed.update(filter(None, _run_git(root, "ls-files", "--others", "--exclude-standard").splitlines()))
     require(changed == AUTHORIZED_PATHS, f"Alpha.3 path boundary mismatch; missing={sorted(AUTHORIZED_PATHS-changed)} unexpected={sorted(changed-AUTHORIZED_PATHS)}")

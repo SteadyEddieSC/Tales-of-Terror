@@ -125,6 +125,7 @@ jobs:
           python tools/test_tale_catalog.py
           python tools/portable_bundle.py validate-repository
           python tools/test_portable_bundle.py
+          python tools/test_build_drowned_harbor_demo.py
           python tools/pilot_evidence.py validate-templates
           python tools/test_pilot_evidence.py
       - name: Reject whitespace errors in committed range

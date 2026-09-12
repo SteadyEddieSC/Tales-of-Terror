@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "lines": [
+    {
+      "id": "dh.stage.low_tide",
+      "text": "A town without a place on any chart. Its lamps are lit. Someone expected you.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.stage.bellhouse",
+      "text": "The Council recorded every stolen cargo. The missing column was people.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.stage.council",
+      "text": "An empty chair is still a chair. Sit carefully. Decide what this light is for.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.stage.high_water",
+      "text": "There goes the road. The sea has remembered where it left this town.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.stage.flood",
+      "text": "Rope, oil, names. Keep what you can carry. Decide who you can bring.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.stage.last_light",
+      "text": "A lighthouse promises a destination. Before you turn the lens, choose who should find it.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.stage.ending",
+      "text": "No more rehearsals. Ring it. Let the Harbor hear what you decided.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.stage.epilogue",
+      "text": "The shore will ask what happened here. You may find yourselves giving different answers.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.stage.complete",
+      "text": "That is where your account ends. The sea, of course, keeps its own.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.search_manifest",
+      "text": "A relief ship. Food. Medicine. Passengers. The wreck was deliberate.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.search_wreck",
+      "text": "A survivor wrote between the cargo lines. Small handwriting can carry a great accusation.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.salvage_oil",
+      "text": "The lantern takes the oil. The patrol takes an interest.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.secure_boat",
+      "text": "An extra knot. Two more places. Sometimes hope is this practical.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.shelter",
+      "text": "For a moment, even the bell has nothing to add.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.aid_resident",
+      "text": "The rope tightens. Someone on the other end remembers being alive.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.follow_names",
+      "text": "Give a stolen name its place again, and listen to what changes.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.follow_light",
+      "text": "The lens is cracked. Its invitation is perfectly clear.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.follow_missing",
+      "text": "One blank line. One open passage. Absence can be a kind of mercy.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.search_archive",
+      "text": "The pages survived. Your breath may not last as long.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.salt_ward",
+      "text": "Salt draws a boundary the water understands.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.harbor_bargain",
+      "text": "An offer can sound like rescue. Read it twice.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.refuse_bargain",
+      "text": "You keep your own name. The Harbor does not thank you for it.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.restless_warn",
+      "text": "A voice from beneath the water. Still yours. Still useful.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.rescue",
+      "text": "Not every name in the ledger has to stay there.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.defeat",
+      "text": "The tide has taken your breath. It has not taken your turn.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    },
+    {
+      "id": "dh.event.director",
+      "text": "The Harbor changes its attention. It has learned which streets you favor.",
+      "speaker": "The Underteller",
+      "delivery": "Quiet, dry warmth; spare coastal storyteller. No imitation of a real performer.",
+      "audience": "public",
+      "audio_path": null,
+      "status": "generation_ready_not_recorded"
+    }
+  ]
+}
