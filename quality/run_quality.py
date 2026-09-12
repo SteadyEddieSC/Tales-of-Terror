@@ -22,12 +22,20 @@ TESTS = [
     "playtest_main_route_test.gd", "portable_build_identity_test.gd",
     "vertical_slice_simulation_test.gd", "automated_playthrough_lab_test.gd",
     "quality_baseline_test.gd",
+    "drowned_harbor_alpha4/demo_session_test.gd",
+    "drowned_harbor_alpha4/demo_frontend_test.gd",
+    "drowned_harbor_alpha4_input_save_test.gd",
 ]
 
 
 def run(command: list[str]) -> None:
     print("+", subprocess.list2cmdline(command), flush=True)
-    subprocess.run(command, cwd=ROOT, check=True)
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True,
+                            encoding="utf-8", errors="replace")
+    print(result.stdout, end="", flush=True)
+    print(result.stderr, end="", file=sys.stderr, flush=True)
+    if result.returncode or "SCRIPT ERROR:" in result.stdout + result.stderr:
+        raise subprocess.CalledProcessError(result.returncode or 1, command)
 
 
 def run_actionlint_when_available() -> None:

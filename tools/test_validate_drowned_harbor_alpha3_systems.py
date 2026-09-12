@@ -4,10 +4,15 @@
 from __future__ import annotations
 
 import copy
+import os
 import struct
+import subprocess
 import tempfile
 from pathlib import Path
 from typing import Callable
+from unittest.mock import patch
+
+import validate_drowned_harbor_alpha3_systems as validator
 
 from validate_drowned_harbor_alpha3_systems import (
     CATALOG_PATH,
@@ -37,6 +42,70 @@ from validate_drowned_harbor_alpha3_systems import (
 ROOT = Path(".")
 Mutation = Callable[[], None]
 SOURCE_SHA = "3" * 40
+
+
+def validate_git_regressions() -> None:
+    """Keep original exact-set checks while permitting later descendant releases."""
+    with tempfile.TemporaryDirectory(prefix="alpha3-git-boundary-") as temporary:
+        root = Path(temporary)
+
+        def git(*args: str) -> str:
+            return subprocess.check_output(
+                ["git", "-c", "user.name=Boundary Regression", "-c",
+                 "user.email=boundary-test@example.invalid", "-c", "commit.gpgsign=false",
+                 "-c", f"core.hooksPath={root / 'no-hooks'}", *args],
+                cwd=root, text=True, stderr=subprocess.PIPE,
+            ).strip()
+
+        git("init", "-q", "-b", "main")
+        git("commit", "-qm", "baseline", "--allow-empty")
+        baseline = git("rev-parse", "HEAD")
+        git("update-ref", "refs/remotes/origin/main", baseline)
+        git("switch", "-qc", validator.BRANCH)
+        for relative in sorted(validator.AUTHORIZED_PATHS):
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("release fixture\n", encoding="utf-8")
+        git("add", ".")
+        git("commit", "-qm", "authorized release")
+        release = git("rev-parse", "HEAD")
+        with patch.object(validator, "BASELINE", baseline), patch.dict(
+            os.environ, {"GITHUB_HEAD_REF": "", "GITHUB_REF_NAME": ""}
+        ):
+            validator.validate_git_boundary(root)
+            missing = sorted(validator.AUTHORIZED_PATHS)[0]
+            git("rm", "-q", missing)
+            expect_failure("original branch retains complete exact path set",
+                           lambda: validator.validate_git_boundary(root))
+            git("restore", "--source=HEAD", "--staged", "--worktree", missing)
+            extra = root / "unrelated_followup.txt"
+            extra.write_text("outside historical release scope\n", encoding="utf-8")
+            expect_failure("original branch still rejects untracked paths",
+                           lambda: validator.validate_git_boundary(root))
+            extra.unlink()
+            git("switch", "-qc", "feature/later-release")
+            extra.write_text("later approved work\n", encoding="utf-8")
+            git("add", ".")
+            git("commit", "-qm", "later release")
+            successor = git("rev-parse", "HEAD")
+            git("update-ref", "refs/remotes/origin/main", successor)
+            validator.validate_git_boundary(root)
+            git("switch", "-q", validator.BRANCH)
+            validator.validate_git_boundary(root)
+            git("switch", "-q", "feature/later-release")
+            with patch.dict(os.environ, {"GITHUB_HEAD_REF": validator.BRANCH,
+                                        "GITHUB_REF_NAME": "main"}):
+                expect_failure("CI head ref retains original release scope",
+                               lambda: validator.validate_git_boundary(root))
+            with patch.object(validator, "BASELINE", release):
+                git("update-ref", "refs/remotes/origin/main", baseline)
+                expect_failure("main must retain baseline ancestry",
+                               lambda: validator.validate_git_boundary(root))
+                git("update-ref", "refs/remotes/origin/main", successor)
+                git("switch", "-q", "--detach", baseline)
+                expect_failure("successor must retain baseline ancestry",
+                               lambda: validator.validate_git_boundary(root))
+    print("Validated Alpha.3 historical Git boundary regressions")
 
 
 def expect_failure(name: str, mutation: Mutation) -> None:
@@ -149,6 +218,7 @@ def export_mutation(resource_path: str, extra: bytes = b"") -> None:
 
 
 def main() -> int:
+    validate_git_regressions()
     package = read_json(ROOT / PACKAGE_PATH)
     scenario = read_json(ROOT / SCENARIO_PATH)
     localization = read_json(ROOT / LOCALIZATION_PATH)

@@ -6,6 +6,12 @@ A controller-first, 1–8 player digital horror board-game adventure about survi
 
 ## Current project status
 
+The owner-authorized **Drowned Harbor Alpha.4 developer demo** now has a separate
+playable launch scene and Windows/Linux export tool. See
+[the demo guide](docs/technical/Drowned_Harbor_Alpha4_Demo.md) for launch, controls,
+save/continue, verification and current limits. Its implementation branch is a
+review candidate; the ordinary default and production catalog remain Lantern House.
+
 This repository contains a functional **internal vertical slice**, a completed isolated future-Tale prototype program, a developer-only Drowned Harbor Alpha.3 runtime, a repository-wide automated quality/security baseline, and completed metadata-only Drowned Harbor visual, presentation, UX, rights/provenance, owner-attestation, and clean-room source-planning authorities. It is not a finished game, public demo, commercial release, deployed online service, or content-complete campaign.
 
 - **Normal playable version:** `v0.1.9`
