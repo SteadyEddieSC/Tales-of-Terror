@@ -1,0 +1,72 @@
+name: SEC-MAINT-002 dependency diagnostic
+
+on:
+  push:
+    branches:
+      - security/sec-maint-002-diagnostic
+    paths:
+      - 'package.json'
+      - '.github/workflows/sec-maint-002-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+      - name: Resolve candidate lock and capture audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --package-lock-only --ignore-scripts 2>&1 | tee dependency-resolve.log
+          sha256sum package-lock.json | tee package-lock.sha256
+          npm audit --json > npm-audit-preinstall.json
+      - name: Prove clean install and exact resolved security tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci 2>&1 | tee npm-ci.log
+          npm audit --json > npm-audit.json
+          npm ls vite vitest @vitest/mocker source-map-js sharp undici wrangler miniflare jsdom --all --json > npm-ls-security.json
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          const report = JSON.parse(await readFile('npm-audit.json', 'utf8'));
+          const counts = report.metadata?.vulnerabilities ?? {};
+          console.log('audit metadata:', JSON.stringify(counts));
+          if ((counts.high ?? 0) !== 0 || (counts.critical ?? 0) !== 0) {
+            throw new Error('Candidate retains HIGH/CRITICAL npm advisories');
+          }
+          NODE
+      - name: Run companion validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run typecheck
+          npm test
+          npm run build
+      - name: Run repository toolchain validator
+        shell: bash
+        run: python tools/validate_toolchain.py
+      - name: Upload synthetic dependency proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sec-maint-002-diagnostic
+          path: |
+            package-lock.json
+            package-lock.sha256
+            dependency-resolve.log
+            npm-ci.log
+            npm-audit-preinstall.json
+            npm-audit.json
+            npm-ls-security.json
+          if-no-files-found: warn
+          retention-days: 14
