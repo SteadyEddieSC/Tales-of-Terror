@@ -200,7 +200,7 @@ describe("Worker and Durable Object elapsed-time integration", () => {
     const reconnect = new WebSocket(`${baseUrl.replace("http://", "ws://")}/v1/rooms/${room.joinCode}/socket`);
     await new Promise<void>((resolve) => reconnect.addEventListener("open", () => resolve(), { once: true }));
     reconnect.send(JSON.stringify({ operation: "resume", clientId: "client_close", seatClaim: 1, resumeCapability: "expired" }));
-    await new Promise<void>((resolve) => expiredResume.addEventListener("message", (event) => {
+    await new Promise<void>((resolve) => reconnect.addEventListener("message", (event) => {
       expect(JSON.parse(String(event.data))).toMatchObject({ accepted: false, code: "expired" });
       resolve();
     }, { once: true }));
