@@ -162,7 +162,7 @@ func _test_camera_policy() -> void:
 
 func _test_adaptive_presentation_policy() -> void:
 	var viewport := Vector2(960, 540)
-	var compact: Array[Dictionary] = _presentation_players(
+	var compact := _presentation_players(
 		[
 			Vector2(380, 400),
 			Vector2(440, 400),
@@ -176,9 +176,9 @@ func _test_adaptive_presentation_policy() -> void:
 	)
 	var policy := AdaptivePresentationPolicy.new()
 	var snapshot: Dictionary = policy.update(compact, viewport, 1.0, true)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SHARED, "keeps eight compact pawns shared")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SHARED, "keeps compact eight shared")
 
-	var two_groups: Array[Dictionary] = _presentation_players(
+	var two_groups := _presentation_players(
 		[
 			Vector2(160, 360),
 			Vector2(220, 360),
@@ -192,15 +192,15 @@ func _test_adaptive_presentation_policy() -> void:
 	)
 	policy.reset()
 	snapshot = policy.update(two_groups, viewport, 0.20)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SHARED, "requires split dwell before changing layout")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SHARED, "requires split dwell")
 	snapshot = policy.update(two_groups, viewport, 0.20)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SPLIT_2, "uses two panes for two distant readable groups")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "uses two panes")
 	_expect(
 		_presentation_cluster_signature(snapshot) == "01-02-03-04|05-06-07-08",
-		"clusters two distant groups by world position",
+		"clusters two distant groups by world position"
 	)
 
-	var four_groups: Array[Dictionary] = _presentation_players(
+	var four_groups := _presentation_players(
 		[
 			Vector2(200, 200),
 			Vector2(260, 200),
@@ -214,12 +214,18 @@ func _test_adaptive_presentation_policy() -> void:
 	)
 	policy.reset()
 	snapshot = policy.update(four_groups, viewport, 0.40)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SPLIT_2, "escalates through the two-pane mode first")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "escalates through two panes")
 	snapshot = policy.update(four_groups, viewport, 0.40)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SPLIT_4, "uses four panes when two clusters remain unreadable")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_4, "uses four panes")
 	var reordered: Array[Dictionary] = [
-		four_groups[7], four_groups[2], four_groups[5], four_groups[0],
-		four_groups[6], four_groups[1], four_groups[4], four_groups[3],
+		four_groups[7],
+		four_groups[2],
+		four_groups[5],
+		four_groups[0],
+		four_groups[6],
+		four_groups[1],
+		four_groups[4],
+		four_groups[3],
 	]
 	var reordered_policy := AdaptivePresentationPolicy.new()
 	reordered_policy.update(reordered, viewport, 0.40)
@@ -227,10 +233,10 @@ func _test_adaptive_presentation_policy() -> void:
 	_expect(
 		_presentation_cluster_signature(snapshot)
 		== _presentation_cluster_signature(reordered_snapshot),
-		"keeps spatial clustering deterministic when input order changes",
+		"keeps clustering deterministic when input order changes"
 	)
 
-	var independent: Array[Dictionary] = _presentation_players(
+	var independent := _presentation_players(
 		[
 			Vector2(0, 100),
 			Vector2(600, 100),
@@ -246,31 +252,25 @@ func _test_adaptive_presentation_policy() -> void:
 	policy.update(independent, viewport, 0.40, true)
 	policy.update(independent, viewport, 0.40, true)
 	snapshot = policy.update(independent, viewport, 0.40, true)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.GRID_3X3, "allows 3x3 only after smaller split modes are unreadable")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.GRID_3X3, "permits earned 3x3")
 	policy.reset()
 	policy.update(independent, viewport, 0.40, false)
 	policy.update(independent, viewport, 0.40, false)
 	snapshot = policy.update(independent, viewport, 0.40, false)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SPLIT_4, "never enters 3x3 when the phase has not allowed it")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_4, "gates 3x3 by phase")
 
 	var hysteresis := AdaptivePresentationPolicy.new()
-	var far_pair: Array[Dictionary] = _presentation_players(
-		[Vector2(200, 500), Vector2(1600, 500)]
-	)
+	var far_pair := _presentation_players([Vector2(200, 500), Vector2(1600, 500)])
 	snapshot = hysteresis.update(far_pair, viewport, 0.40)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SPLIT_2, "splits a persistently unreadable pair")
-	var borderline_pair: Array[Dictionary] = _presentation_players(
-		[Vector2(400, 500), Vector2(1400, 500)]
-	)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "splits unreadable pair")
+	var borderline_pair := _presentation_players([Vector2(400, 500), Vector2(1400, 500)])
 	snapshot = hysteresis.update(borderline_pair, viewport, 1.0)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SPLIT_2, "does not collapse at the weaker split-entry threshold")
-	var regrouped_pair: Array[Dictionary] = _presentation_players(
-		[Vector2(600, 500), Vector2(1200, 500)]
-	)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "holds split at border")
+	var regrouped_pair := _presentation_players([Vector2(600, 500), Vector2(1200, 500)])
 	snapshot = hysteresis.update(regrouped_pair, viewport, 0.40)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SPLIT_2, "requires longer dwell before collapsing panes")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "requires collapse dwell")
 	snapshot = hysteresis.update(regrouped_pair, viewport, 0.40)
-	_expect(snapshot.mode == AdaptivePresentationPolicy.Mode.SHARED, "returns to shared after stronger readable regroup dwell")
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SHARED, "collapses after regroup dwell")
 
 
 func _test_interactions() -> void:
@@ -364,6 +364,10 @@ func _presentation_cluster_signature(snapshot: Dictionary) -> String:
 			value += "|"
 		value += str(clusters[index].key)
 	return value
+
+
+func _expect_mode(snapshot: Dictionary, expected: int, description: String) -> void:
+	_expect(int(snapshot.mode) == expected, description)
 
 
 func _seat(number: int, state: int, device_id: int, identity: String) -> Dictionary:
