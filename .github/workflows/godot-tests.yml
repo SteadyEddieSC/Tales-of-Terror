@@ -58,7 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t gd_files < artifacts/gdscript-quality/first-party-files.txt
-          gdformat --diff "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdformat.txt
+          gdformat --check "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdformat.txt
           printf '\nexit_code=0\n' >> artifacts/gdscript-quality/gdformat.txt
       - name: Upload enforced GDScript quality evidence
         if: always()
