@@ -53,6 +53,12 @@ jobs:
           mapfile -t gd_files < artifacts/gdscript-quality/first-party-files.txt
           gdlint "${gd_files[@]}" 2>&1 | tee artifacts/gdscript-quality/gdlint.txt
           printf '\nexit_code=0\n' >> artifacts/gdscript-quality/gdlint.txt
+      - name: Capture canonical adaptive coordinator formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          gdformat game/src/exploration/shared_camera_coordinator.gd
+          cp game/src/exploration/shared_camera_coordinator.gd artifacts/gdscript-quality/canonical-shared-camera-coordinator.gd
       - name: Enforce canonical GDScript format gate (check only)
         shell: bash
         run: |
