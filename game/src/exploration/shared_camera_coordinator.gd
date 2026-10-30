@@ -70,19 +70,25 @@ static func calculate_pane_rects(
 			if orientation == "horizontal":
 				var pane_height: float = viewport_size.y * 0.5
 				for index: int in count:
-					result.append(
-						Rect2(
-							Vector2(0.0, pane_height * index),
-							Vector2(viewport_size.x, pane_height),
+					(
+						result
+						. append(
+							Rect2(
+								Vector2(0.0, pane_height * index),
+								Vector2(viewport_size.x, pane_height),
+							)
 						)
 					)
 			else:
 				var pane_width: float = viewport_size.x * 0.5
 				for index: int in count:
-					result.append(
-						Rect2(
-							Vector2(pane_width * index, 0.0),
-							Vector2(pane_width, viewport_size.y),
+					(
+						result
+						. append(
+							Rect2(
+								Vector2(pane_width * index, 0.0),
+								Vector2(pane_width, viewport_size.y),
+							)
 						)
 					)
 		AdaptivePresentationPolicy.Mode.SPLIT_4:
@@ -133,9 +139,10 @@ func _update_adaptive_presentation(pawns: Array[PawnState], delta: float) -> voi
 
 
 func _refresh_adaptive_panes(pawns: Array[PawnState], delta: float) -> void:
-	var split_active: bool = presentation_mode in [
-		AdaptivePresentationPolicy.Mode.SPLIT_2, AdaptivePresentationPolicy.Mode.SPLIT_4
-	]
+	var split_active: bool = (
+		presentation_mode
+		in [AdaptivePresentationPolicy.Mode.SPLIT_2, AdaptivePresentationPolicy.Mode.SPLIT_4]
+	)
 	enabled = not split_active
 	_overlay_root.visible = split_active
 	if not split_active:
