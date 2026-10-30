@@ -102,6 +102,13 @@ describe("Worker and Durable Object elapsed-time integration", () => {
     const room = await createRoom();
     const inbox = await SocketInbox.join(baseUrl, room.joinCode, "client_rate");
     await approve(room, inbox, "client_rate");
+
+    // Client rate windows start at join time. Cross one full configured window,
+    // then refresh ordinary room activity so setup/scheduler latency cannot make
+    // the recovery assertion race the unrelated 100 ms idle-expiry fixture.
+    await delay(45);
+    expect((await host(room, { operation: "heartbeat" })).status).toBe(200);
+
     for (let index = 1; index <= 2; index += 1) {
       inbox.socket.send(JSON.stringify(createEnvelope(room.roomId, "private_reveal_ack", `rate_${index}`, {}, { seatClaim: 1 })));
       await inbox.next((value) => isRecord(value) && value.messageType === "acknowledgement" && value.requestId === `rate_${index}`);
@@ -115,14 +122,48 @@ describe("Worker and Durable Object elapsed-time integration", () => {
   });
 
   it("preserves a room with valid host heartbeats", async () => {
-    const room = await createRoom();
-    await delay(70);
-    expect((await host(room, { operation: "heartbeat" })).status).toBe(200);
-    await delay(70);
-    const diagnostics = await host(room, { operation: "diagnostics" });
-    expect(diagnostics.status).toBe(200);
-    await expect(diagnostics.json()).resolves.toMatchObject({ accepted: true, diagnostics: { roomState: "open", hostPresent: true } });
-  });
+    let heartbeatWorker: Unstable_DevWorker | undefined;
+    try {
+      heartbeatWorker = await unstable_dev("services/room-service/src/worker.ts", {
+        config: "services/room-service/wrangler.jsonc",
+        local: true,
+        persist: false,
+        logLevel: "none",
+        vars: {
+          ALLOWED_ORIGINS: "http://127.0.0.1:4173,http://localhost:4173",
+          ROOM_IDLE_EXPIRY_MS: "500",
+          ROOM_HOST_LOSS_GRACE_MS: "160",
+          ROOM_RATE_WINDOW_MS: "40",
+          ROOM_ACKNOWLEDGEMENT_EXPIRY_MS: "80",
+          ROOM_MAX_MESSAGES_PER_WINDOW: "2",
+        },
+        experimental: { disableExperimentalWarning: true, disableDevRegistry: true },
+      });
+      const heartbeatBaseUrl = `http://${heartbeatWorker.address}:${heartbeatWorker.port}`;
+      const createResponse = await fetch(`${heartbeatBaseUrl}/v1/rooms`, { method: "POST" });
+      expect(createResponse.status).toBe(201);
+      const room = await createResponse.json() as CreatedRoom;
+      const heartbeatHost = (body: Readonly<Record<string, unknown>>): Promise<Response> => fetch(`${heartbeatBaseUrl}/v1/rooms/host`, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${room.hostCapability}` },
+        body: JSON.stringify({ joinCode: room.joinCode, ...body }),
+      });
+
+      await delay(70);
+      expect((await heartbeatHost({ operation: "heartbeat" })).status).toBe(200);
+
+      // Total elapsed time now exceeds the original 160 ms host-loss deadline,
+      // while remaining within 160 ms of the valid heartbeat. The room therefore
+      // survives only if the real Worker/Durable Object heartbeat path refreshes
+      // host liveness; idle expiry is intentionally out of this proof's way.
+      await delay(110);
+      const diagnostics = await heartbeatHost({ operation: "diagnostics" });
+      expect(diagnostics.status).toBe(200);
+      await expect(diagnostics.json()).resolves.toMatchObject({ accepted: true, diagnostics: { roomState: "open", hostPresent: true } });
+    } finally {
+      await heartbeatWorker?.stop();
+    }
+  }, 30_000);
 
   it("does not let active client traffic prevent host-loss expiry", async () => {
     const room = await createRoom();
