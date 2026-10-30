@@ -71,13 +71,19 @@ static func calculate_pane_rects(
 				var pane_height: float = viewport_size.y * 0.5
 				for index: int in count:
 					result.append(
-						Rect2(Vector2(0.0, pane_height * index), Vector2(viewport_size.x, pane_height))
+						Rect2(
+							Vector2(0.0, pane_height * index),
+							Vector2(viewport_size.x, pane_height),
+						)
 					)
 			else:
 				var pane_width: float = viewport_size.x * 0.5
 				for index: int in count:
 					result.append(
-						Rect2(Vector2(pane_width * index, 0.0), Vector2(pane_width, viewport_size.y))
+						Rect2(
+							Vector2(pane_width * index, 0.0),
+							Vector2(pane_width, viewport_size.y),
+						)
 					)
 		AdaptivePresentationPolicy.Mode.SPLIT_4:
 			var count: int = mini(pane_count, 4)
