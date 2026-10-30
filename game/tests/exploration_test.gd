@@ -231,8 +231,10 @@ func _test_adaptive_presentation_policy() -> void:
 	reordered_policy.update(reordered, viewport, 0.40)
 	var reordered_snapshot: Dictionary = reordered_policy.update(reordered, viewport, 0.40)
 	_expect(
-		_presentation_cluster_signature(snapshot)
-		== _presentation_cluster_signature(reordered_snapshot),
+		(
+			_presentation_cluster_signature(snapshot)
+			== _presentation_cluster_signature(reordered_snapshot)
+		),
 		"keeps clustering deterministic when input order changes"
 	)
 
