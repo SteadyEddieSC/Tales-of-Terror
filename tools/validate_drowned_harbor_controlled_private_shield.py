@@ -822,7 +822,7 @@ def validate_manifest_and_production_boundary(
     require(lock_packages.get("node_modules/wrangler", {}).get("version") == "4.114.0", "lock Wrangler changed")
     require(lock_packages.get("node_modules/miniflare", {}).get("version") == "4.20260722.0", "lock Miniflare changed")
     # SEC-DEPENDENCY-001 / #159 updates the live security pin, not P0.17 authority.
-    require(lock_packages.get("node_modules/sharp", {}).get("version") == "0.35.4", "lock Sharp changed")
+    require(lock_packages.get("node_modules/sharp", {}).get("version") == "0.35.5", "lock Sharp changed")
     require("sharp" not in package_json.get("dependencies", {}), "direct Sharp dependency prohibited")
     require("sharp" not in dependencies, "direct Sharp dev dependency prohibited")
     require(
@@ -830,12 +830,12 @@ def validate_manifest_and_production_boundary(
         "lock PostCSS remediation changed",
     )
     require(
-        lock_packages.get("node_modules/undici", {}).get("version") == "7.29.0",
+        lock_packages.get("node_modules/undici", {}).get("version") == "7.30.1",
         "lock Undici remediation changed",
     )
     require(
         package_json.get("overrides")
-        == {"postcss": "8.5.23", "undici": "7.29.0", "sharp": "0.35.4"},
+        == {"postcss": "8.5.23", "source-map-js": "1.2.2", "undici": "7.30.1", "sharp": "0.35.5"},
         "approved override set drifted",
     )
     require("resolutions" not in package_json, "resolutions prohibited")
