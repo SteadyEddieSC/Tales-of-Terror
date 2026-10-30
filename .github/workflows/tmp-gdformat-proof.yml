@@ -1,0 +1,38 @@
+name: Temporary gdformat proof
+
+on:
+  push:
+    branches:
+      - proto/screen-001-adaptive-rendering
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: 3.11.9
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install pinned formatter
+        run: python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt
+      - name: Produce canonical coordinator
+        run: |
+          gdformat game/src/exploration/shared_camera_coordinator.gd
+          gdformat --check game/src/exploration/shared_camera_coordinator.gd
+          mkdir -p artifacts/gdformat-proof
+          cp game/src/exploration/shared_camera_coordinator.gd artifacts/gdformat-proof/shared_camera_coordinator.gd
+      - name: Upload canonical coordinator
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0 # v7.0.1
+        with:
+          name: gdformat-proof
+          path: artifacts/gdformat-proof/shared_camera_coordinator.gd
+          if-no-files-found: error
+          retention-days: 1
