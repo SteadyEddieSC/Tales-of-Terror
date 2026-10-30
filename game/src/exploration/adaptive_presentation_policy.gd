@@ -49,7 +49,8 @@ func reset() -> void:
 
 
 static func mode_label(value: int) -> String:
-	return ["SHARED", "SPLIT_2", "SPLIT_4", "GRID_3X3"][clampi(value, 0, Mode.size() - 1)]
+	var labels: Array[String] = ["SHARED", "SPLIT_2", "SPLIT_4", "GRID_3X3"]
+	return labels[clampi(value, Mode.SHARED, Mode.GRID_3X3)]
 
 
 static func required_zoom(positions: Array[Vector2], viewport_size: Vector2) -> float:
@@ -149,20 +150,21 @@ func _stable_clusters(players: Array[Dictionary], requested_count: int) -> Array
 		return []
 	var count: int = mini(requested_count, players.size())
 	var candidate: Array[Dictionary] = _cluster_players(players, count)
-	if _clusters.size() != count:
-		return candidate
-	var previous: Array[Dictionary] = _rebuild_previous_clusters(_clusters, players)
-	if previous.size() != count:
-		return candidate
-	if _partition_key(previous) == _partition_key(candidate):
-		return candidate
-	var previous_score: float = _partition_score(previous)
-	var candidate_score: float = _partition_score(candidate)
-	if previous_score <= 0.0:
-		return candidate
-	if candidate_score < previous_score * (1.0 - CLUSTER_SWITCH_GAIN):
-		return candidate
-	return previous
+	var result: Array[Dictionary] = candidate
+	if _clusters.size() == count:
+		var previous: Array[Dictionary] = _rebuild_previous_clusters(_clusters, players)
+		if (
+			previous.size() == count
+			and _partition_key(previous) != _partition_key(candidate)
+		):
+			var previous_score: float = _partition_score(previous)
+			var candidate_score: float = _partition_score(candidate)
+			if (
+				previous_score > 0.0
+				and candidate_score >= previous_score * (1.0 - CLUSTER_SWITCH_GAIN)
+			):
+				result = previous
+	return result
 
 
 func _cluster_players(players: Array[Dictionary], requested_count: int) -> Array[Dictionary]:
