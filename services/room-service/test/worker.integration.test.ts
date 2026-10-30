@@ -75,14 +75,18 @@ afterAll(async () => {
   await worker?.stop();
 });
 
-async function createRoom(): Promise<CreatedRoom> {
-  const response = await fetch(`${baseUrl}/v1/rooms`, { method: "POST" });
+async function createRoom(targetBaseUrl = baseUrl): Promise<CreatedRoom> {
+  const response = await fetch(`${targetBaseUrl}/v1/rooms`, { method: "POST" });
   expect(response.status).toBe(201);
   return await response.json() as CreatedRoom;
 }
 
-async function host(room: CreatedRoom, body: Readonly<Record<string, unknown>>): Promise<Response> {
-  return fetch(`${baseUrl}/v1/rooms/host`, {
+async function host(
+  room: CreatedRoom,
+  body: Readonly<Record<string, unknown>>,
+  targetBaseUrl = baseUrl,
+): Promise<Response> {
+  return fetch(`${targetBaseUrl}/v1/rooms/host`, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${room.hostCapability}` },
     body: JSON.stringify({ joinCode: room.joinCode, ...body }),
@@ -102,6 +106,11 @@ describe("Worker and Durable Object elapsed-time integration", () => {
     const room = await createRoom();
     const inbox = await SocketInbox.join(baseUrl, room.joinCode, "client_rate");
     await approve(room, inbox, "client_rate");
+
+    // The client's first rate bucket starts at join time. Allow that setup bucket to
+    // elapse so rate_1 deterministically opens the window this assertion exercises.
+    await delay(80);
+
     for (let index = 1; index <= 2; index += 1) {
       inbox.socket.send(JSON.stringify(createEnvelope(room.roomId, "private_reveal_ack", `rate_${index}`, {}, { seatClaim: 1 })));
       await inbox.next((value) => isRecord(value) && value.messageType === "acknowledgement" && value.requestId === `rate_${index}`);
@@ -115,14 +124,38 @@ describe("Worker and Durable Object elapsed-time integration", () => {
   });
 
   it("preserves a room with valid host heartbeats", async () => {
-    const room = await createRoom();
-    await delay(70);
-    expect((await host(room, { operation: "heartbeat" })).status).toBe(200);
-    await delay(70);
-    const diagnostics = await host(room, { operation: "diagnostics" });
-    expect(diagnostics.status).toBe(200);
-    await expect(diagnostics.json()).resolves.toMatchObject({ accepted: true, diagnostics: { roomState: "open", hostPresent: true } });
-  });
+    let heartbeatWorker: Unstable_DevWorker | undefined;
+    try {
+      heartbeatWorker = await unstable_dev("services/room-service/src/worker.ts", {
+        config: "services/room-service/wrangler.jsonc",
+        local: true,
+        persist: false,
+        logLevel: "none",
+        vars: {
+          ALLOWED_ORIGINS: "http://127.0.0.1:4173,http://localhost:4173",
+          ROOM_IDLE_EXPIRY_MS: "1000",
+          ROOM_HOST_LOSS_GRACE_MS: "300",
+          ROOM_RATE_WINDOW_MS: "40",
+          ROOM_ACKNOWLEDGEMENT_EXPIRY_MS: "80",
+          ROOM_MAX_MESSAGES_PER_WINDOW: "2",
+        },
+        experimental: { disableExperimentalWarning: true, disableDevRegistry: true },
+      });
+      const heartbeatBaseUrl = `http://${heartbeatWorker.address}:${heartbeatWorker.port}`;
+      const room = await createRoom(heartbeatBaseUrl);
+
+      // Without the heartbeat, the second observation is beyond the 300 ms host-loss
+      // grace. Each 200 ms leg still leaves a material scheduling margin.
+      await delay(200);
+      expect((await host(room, { operation: "heartbeat" }, heartbeatBaseUrl)).status).toBe(200);
+      await delay(200);
+      const diagnostics = await host(room, { operation: "diagnostics" }, heartbeatBaseUrl);
+      expect(diagnostics.status).toBe(200);
+      await expect(diagnostics.json()).resolves.toMatchObject({ accepted: true, diagnostics: { roomState: "open", hostPresent: true } });
+    } finally {
+      await heartbeatWorker?.stop();
+    }
+  }, 60_000);
 
   it("does not let active client traffic prevent host-loss expiry", async () => {
     const room = await createRoom();
@@ -167,7 +200,7 @@ describe("Worker and Durable Object elapsed-time integration", () => {
     const reconnect = new WebSocket(`${baseUrl.replace("http://", "ws://")}/v1/rooms/${room.joinCode}/socket`);
     await new Promise<void>((resolve) => reconnect.addEventListener("open", () => resolve(), { once: true }));
     reconnect.send(JSON.stringify({ operation: "resume", clientId: "client_close", seatClaim: 1, resumeCapability: "expired" }));
-    await new Promise<void>((resolve) => reconnect.addEventListener("message", (event) => {
+    await new Promise<void>((resolve) => expiredResume.addEventListener("message", (event) => {
       expect(JSON.parse(String(event.data))).toMatchObject({ accepted: false, code: "expired" });
       resolve();
     }, { once: true }));
