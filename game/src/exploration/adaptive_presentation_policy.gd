@@ -1,7 +1,6 @@
 class_name AdaptivePresentationPolicy
 extends RefCounted
 
-
 enum Mode { SHARED, SPLIT_2, SPLIT_4, GRID_3X3 }
 
 const REFERENCE_VIEWPORT: Vector2 = Vector2(960.0, 540.0)
@@ -76,15 +75,11 @@ static func required_zoom(positions: Array[Vector2], viewport_size: Vector2) -> 
 func _next_target_mode(
 	players: Array[Dictionary], viewport_size: Vector2, grid_allowed: bool
 ) -> int:
-	var enter_target: int = _raw_target_mode(
-		players, viewport_size, ENTER_MIN_ZOOM, grid_allowed
-	)
+	var enter_target: int = _raw_target_mode(players, viewport_size, ENTER_MIN_ZOOM, grid_allowed)
 	if enter_target > mode:
 		return mini(mode + 1, enter_target)
 	if enter_target < mode:
-		var exit_target: int = _raw_target_mode(
-			players, viewport_size, EXIT_MIN_ZOOM, grid_allowed
-		)
+		var exit_target: int = _raw_target_mode(players, viewport_size, EXIT_MIN_ZOOM, grid_allowed)
 		if exit_target < mode:
 			return mode - 1
 	return mode
@@ -122,9 +117,7 @@ func _update_mode(target: int, delta: float) -> void:
 		pending_mode = target
 		pending_seconds = 0.0
 	pending_seconds += maxf(delta, 0.0)
-	var dwell: float = (
-		ESCALATE_DWELL_SECONDS if target > mode else COLLAPSE_DWELL_SECONDS
-	)
+	var dwell: float = ESCALATE_DWELL_SECONDS if target > mode else COLLAPSE_DWELL_SECONDS
 	if pending_seconds < dwell:
 		return
 	mode = target
@@ -153,10 +146,7 @@ func _stable_clusters(players: Array[Dictionary], requested_count: int) -> Array
 	var result: Array[Dictionary] = candidate
 	if _clusters.size() == count:
 		var previous: Array[Dictionary] = _rebuild_previous_clusters(_clusters, players)
-		if (
-			previous.size() == count
-			and _partition_key(previous) != _partition_key(candidate)
-		):
+		if previous.size() == count and _partition_key(previous) != _partition_key(candidate):
 			var previous_score: float = _partition_score(previous)
 			var candidate_score: float = _partition_score(candidate)
 			if (
@@ -182,10 +172,8 @@ func _cluster_players(players: Array[Dictionary], requested_count: int) -> Array
 		var best_key: String = ""
 		for first: int in clusters.size():
 			for second: int in range(first + 1, clusters.size()):
-				var distance: float = (
-					(clusters[first].centroid as Vector2).distance_squared_to(
-						clusters[second].centroid as Vector2
-					)
+				var distance: float = (clusters[first].centroid as Vector2).distance_squared_to(
+					clusters[second].centroid as Vector2
 				)
 				var pair_key := "%s|%s" % [clusters[first].key, clusters[second].key]
 				if (
@@ -255,7 +243,11 @@ func _evaluate_mode_layout(
 			var horizontal := _evaluate_layout(
 				clusters, Vector2(viewport_size.x, viewport_size.y * 0.5), "horizontal"
 			)
-			return horizontal if horizontal.worst_required_zoom > vertical.worst_required_zoom else vertical
+			return (
+				horizontal
+				if horizontal.worst_required_zoom > vertical.worst_required_zoom
+				else vertical
+			)
 		Mode.SPLIT_4:
 			return _evaluate_layout(clusters, viewport_size * 0.5, "2x2")
 		Mode.GRID_3X3:
@@ -312,12 +304,15 @@ func _partition_key(clusters: Array[Dictionary]) -> String:
 func _public_clusters(clusters: Array[Dictionary]) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for cluster: Dictionary in clusters:
-		result.append(
-			{
-				"seats": (cluster.seats as Array).duplicate(),
-				"center": cluster.centroid,
-				"key": cluster.key,
-			}
+		(
+			result
+			. append(
+				{
+					"seats": (cluster.seats as Array).duplicate(),
+					"center": cluster.centroid,
+					"key": cluster.key,
+				}
+			)
 		)
 	return result
 
