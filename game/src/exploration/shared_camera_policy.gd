@@ -8,7 +8,6 @@ const MAX_ZOOM: float = 1.35
 const FRAME_PADDING: Vector2 = Vector2(260.0, 190.0)
 const SOFT_SEPARATION: float = 620.0
 const HARD_SEPARATION: float = 820.0
-const OUTWARD_RESISTANCE: float = 0.35
 
 
 static func calculate_frame(
@@ -47,23 +46,15 @@ static func separation_state(positions: Array[Vector2]) -> SeparationState:
 
 
 static func movement_resistance(
-	pawn_position: Vector2, input_vector: Vector2, group_center: Vector2
+	_pawn_position: Vector2, _input_vector: Vector2, _group_center: Vector2
 ) -> float:
-	var from_group: Vector2 = pawn_position - group_center
-	if from_group.is_zero_approx() or input_vector.is_zero_approx():
-		return 1.0
-	var moving_outward: bool = input_vector.normalized().dot(from_group.normalized()) > 0.0
-	if not moving_outward:
-		return 1.0
-	if from_group.length() > HARD_SEPARATION * 0.5:
-		return 0.0
-	if from_group.length() > SOFT_SEPARATION * 0.5:
-		return OUTWARD_RESISTANCE
+	# Compatibility shim for PROTO-SCREEN-001. Separation is presentation state only;
+	# camera composition must never throttle or block otherwise legal pawn movement.
 	return 1.0
 
 
 static func state_label(state: SeparationState) -> String:
-	return ["TOGETHER", "EDGE WARNING", "REGROUP — OUTWARD MOVE BLOCKED"][state]
+	return ["TOGETHER", "EDGE WARNING", "WIDE SEPARATION"][state]
 
 
 static func _maximum_pair_distance(positions: Array[Vector2]) -> float:

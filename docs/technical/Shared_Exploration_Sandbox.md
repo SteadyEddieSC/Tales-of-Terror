@@ -25,10 +25,10 @@ The camera frames all pawn positions with 260×190 logical units of padding and 
 Maximum pair distance controls separation:
 
 - Up to 620 units: normal.
-- 620–820 units: visible edge warning; outward movement beyond the soft radius is reduced to 35%.
-- Beyond 820 units: regroup warning; further outward movement is blocked while inward movement remains unrestricted.
+- 620–820 units: visible edge warning.
+- Beyond 820 units: wide-separation presentation state.
 
-This milestone never splits the screen or silently teleports a pawn.
+These thresholds affect presentation feedback only. They never throttle or block otherwise legal pawn movement. Native pawn movement and authored world bounds remain authoritative. This milestone does not yet split the screen or silently teleport a pawn.
 
 ## Interactions
 

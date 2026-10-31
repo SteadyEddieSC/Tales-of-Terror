@@ -122,25 +122,47 @@ func _test_camera_policy() -> void:
 	var extreme: Array[Vector2] = [Vector2(300, 500), Vector2(1200, 500)]
 	_expect(
 		SharedCameraPolicy.separation_state(extreme) == SharedCameraPolicy.SeparationState.REGROUP,
-		"flags extreme separation before silent loss"
+		"flags extreme separation for presentation without changing gameplay authority"
 	)
 	_expect(
-		(
+		is_equal_approx(
+			SharedCameraPolicy.movement_resistance(
+				Vector2(1080, 500), Vector2.RIGHT, Vector2(750, 500)
+			),
+			1.0
+		),
+		"does not throttle outward movement in the former soft-tether range"
+	)
+	_expect(
+		is_equal_approx(
 			SharedCameraPolicy.movement_resistance(
 				Vector2(1200, 500), Vector2.RIGHT, Vector2(750, 500)
-			)
-			== 0.0
+			),
+			1.0
 		),
-		"blocks further outward movement past the hard tether"
+		"does not block outward movement past the former hard tether"
+	)
+	_expect(
+		is_equal_approx(
+			SharedCameraPolicy.movement_resistance(
+				Vector2(1200, 500), Vector2.LEFT, Vector2(750, 500)
+			),
+			1.0
+		),
+		"keeps regrouping movement at full authority"
 	)
 	_expect(
 		(
-			SharedCameraPolicy.movement_resistance(
-				Vector2(1200, 500), Vector2.LEFT, Vector2(750, 500)
-			)
-			== 1.0
+			SharedCameraPolicy.state_label(SharedCameraPolicy.SeparationState.REGROUP)
+			== "WIDE SEPARATION"
 		),
-		"never resists regrouping movement"
+		"uses compact copy for the fixed-width separation HUD slot"
+	)
+	_expect(
+		not SharedCameraPolicy.state_label(SharedCameraPolicy.SeparationState.REGROUP).contains(
+			"BLOCKED"
+		),
+		"reports wide separation as presentation state rather than a movement block"
 	)
 
 
