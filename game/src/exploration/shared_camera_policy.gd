@@ -54,7 +54,7 @@ static func movement_resistance(
 
 
 static func state_label(state: SeparationState) -> String:
-	return ["TOGETHER", "EDGE WARNING", "WIDE SEPARATION — PRESENTATION ADAPTS"][state]
+	return ["TOGETHER", "EDGE WARNING", "WIDE SEPARATION"][state]
 
 
 static func _maximum_pair_distance(positions: Array[Vector2]) -> float:
