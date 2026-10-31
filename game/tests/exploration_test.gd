@@ -152,6 +152,13 @@ func _test_camera_policy() -> void:
 		"keeps regrouping movement at full authority"
 	)
 	_expect(
+		(
+			SharedCameraPolicy.state_label(SharedCameraPolicy.SeparationState.REGROUP)
+			== "WIDE SEPARATION"
+		),
+		"uses compact copy for the fixed-width separation HUD slot"
+	)
+	_expect(
 		not SharedCameraPolicy.state_label(SharedCameraPolicy.SeparationState.REGROUP).contains(
 			"BLOCKED"
 		),
