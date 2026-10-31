@@ -244,6 +244,10 @@ func _test_adaptive_presentation_policy() -> void:
 		),
 		"keeps clustering deterministic when input order changes"
 	)
+	_expect(
+		_presentation_cluster_signature(snapshot) == "01-02|03-04|05-06|07-08",
+		"publishes the expected deterministic four-group partition"
+	)
 
 	var independent := _presentation_players(
 		[
@@ -280,6 +284,32 @@ func _test_adaptive_presentation_policy() -> void:
 	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "requires collapse dwell")
 	snapshot = hysteresis.update(regrouped_pair, viewport, 0.40)
 	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SHARED, "collapses after regroup dwell")
+
+	var boundary_policy := AdaptivePresentationPolicy.new()
+	var row_positions := _presentation_players(
+		[Vector2(0, 0), Vector2(599, 0), Vector2(0, 600), Vector2(599, 600)]
+	)
+	snapshot = boundary_policy.update(row_positions, viewport, 0.40)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "chooses readable rows")
+	_expect(
+		_presentation_cluster_signature(snapshot) == "01-02|03-04",
+		"starts with the readable row partition at the split boundary"
+	)
+	var shifted_row_positions := _presentation_players(
+		[Vector2(0, 0), Vector2(601, 0), Vector2(0, 600), Vector2(601, 600)]
+	)
+	snapshot = boundary_policy.update(shifted_row_positions, viewport, 0.40)
+	_expect_mode(
+		snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "holds readable rows across the boundary"
+	)
+	_expect(
+		_presentation_cluster_signature(snapshot) == "01-02|03-04",
+		"preserves the held row partition when fresh clustering prefers columns"
+	)
+	_expect(
+		float(snapshot.worst_required_zoom) >= AdaptivePresentationPolicy.EXIT_MIN_ZOOM,
+		"keeps the held partition above the readable zoom threshold"
+	)
 
 
 func _test_interactions() -> void:

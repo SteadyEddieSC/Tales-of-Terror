@@ -20,7 +20,12 @@ func update(
 	players: Array[Dictionary], viewport_size: Vector2, delta: float, grid_allowed: bool = false
 ) -> Dictionary:
 	var normalized: Array[Dictionary] = _sort_players_by_seat(players)
-	var target: int = _next_target_mode(normalized, viewport_size, grid_allowed)
+	var active_clusters: Array[Dictionary] = _stable_clusters(
+		normalized, _cluster_count_for_mode(mode)
+	)
+	var target: int = _next_target_mode(
+		normalized, viewport_size, grid_allowed, active_clusters
+	)
 	_update_mode(target, delta)
 	_clusters = _stable_clusters(normalized, _cluster_count_for_mode(mode))
 	var layout: Dictionary = _evaluate_mode_layout(_clusters, viewport_size, mode)
@@ -73,10 +78,18 @@ static func required_zoom(positions: Array[Vector2], viewport_size: Vector2) -> 
 
 
 func _next_target_mode(
-	players: Array[Dictionary], viewport_size: Vector2, grid_allowed: bool
+	players: Array[Dictionary],
+	viewport_size: Vector2,
+	grid_allowed: bool,
+	active_clusters: Array[Dictionary]
 ) -> int:
 	var enter_target: int = _raw_target_mode(players, viewport_size, ENTER_MIN_ZOOM, grid_allowed)
 	if enter_target > mode:
+		var active_layout: Dictionary = _evaluate_mode_layout(
+			active_clusters, viewport_size, mode
+		)
+		if active_layout.worst_required_zoom >= ENTER_MIN_ZOOM:
+			return mode
 		return mini(mode + 1, enter_target)
 	if enter_target < mode:
 		var exit_target: int = _raw_target_mode(players, viewport_size, EXIT_MIN_ZOOM, grid_allowed)
