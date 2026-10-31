@@ -19,6 +19,7 @@ func _initialize() -> void:
 	_test_pawn_creation_and_ownership()
 	_test_movement_and_bounds()
 	_test_camera_policy()
+	_test_adaptive_presentation_policy()
 	_test_interactions()
 	_test_bottom_hud_layout()
 	if _failures == 0:
@@ -166,6 +167,121 @@ func _test_camera_policy() -> void:
 	)
 
 
+func _test_adaptive_presentation_policy() -> void:
+	var viewport := Vector2(960, 540)
+	var compact := _presentation_players(
+		[
+			Vector2(380, 400),
+			Vector2(440, 400),
+			Vector2(500, 400),
+			Vector2(560, 400),
+			Vector2(380, 460),
+			Vector2(440, 460),
+			Vector2(500, 460),
+			Vector2(560, 460),
+		]
+	)
+	var policy := AdaptivePresentationPolicy.new()
+	var snapshot: Dictionary = policy.update(compact, viewport, 1.0, true)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SHARED, "keeps compact eight shared")
+
+	var two_groups := _presentation_players(
+		[
+			Vector2(160, 360),
+			Vector2(220, 360),
+			Vector2(160, 420),
+			Vector2(220, 420),
+			Vector2(1500, 360),
+			Vector2(1560, 360),
+			Vector2(1500, 420),
+			Vector2(1560, 420),
+		]
+	)
+	policy.reset()
+	snapshot = policy.update(two_groups, viewport, 0.20)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SHARED, "requires split dwell")
+	snapshot = policy.update(two_groups, viewport, 0.20)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "uses two panes")
+	_expect(
+		_presentation_cluster_signature(snapshot) == "01-02-03-04|05-06-07-08",
+		"clusters two distant groups by world position"
+	)
+
+	var four_groups := _presentation_players(
+		[
+			Vector2(200, 200),
+			Vector2(260, 200),
+			Vector2(1500, 200),
+			Vector2(1560, 200),
+			Vector2(200, 800),
+			Vector2(260, 800),
+			Vector2(1500, 800),
+			Vector2(1560, 800),
+		]
+	)
+	policy.reset()
+	snapshot = policy.update(four_groups, viewport, 0.40)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "escalates through two panes")
+	snapshot = policy.update(four_groups, viewport, 0.40)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_4, "uses four panes")
+	var reordered: Array[Dictionary] = [
+		four_groups[7],
+		four_groups[2],
+		four_groups[5],
+		four_groups[0],
+		four_groups[6],
+		four_groups[1],
+		four_groups[4],
+		four_groups[3],
+	]
+	var reordered_policy := AdaptivePresentationPolicy.new()
+	reordered_policy.update(reordered, viewport, 0.40)
+	var reordered_snapshot: Dictionary = reordered_policy.update(reordered, viewport, 0.40)
+	_expect(
+		(
+			_presentation_cluster_signature(snapshot)
+			== _presentation_cluster_signature(reordered_snapshot)
+		),
+		"keeps clustering deterministic when input order changes"
+	)
+
+	var independent := _presentation_players(
+		[
+			Vector2(0, 100),
+			Vector2(600, 100),
+			Vector2(1200, 100),
+			Vector2(1800, 100),
+			Vector2(0, 900),
+			Vector2(600, 900),
+			Vector2(1200, 900),
+			Vector2(1800, 900),
+		]
+	)
+	policy.reset()
+	policy.update(independent, viewport, 0.40, true)
+	policy.update(independent, viewport, 0.40, true)
+	snapshot = policy.update(independent, viewport, 0.40, true)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.GRID_3X3, "permits earned 3x3")
+	policy.reset()
+	policy.update(independent, viewport, 0.40, false)
+	policy.update(independent, viewport, 0.40, false)
+	snapshot = policy.update(independent, viewport, 0.40, false)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_4, "gates 3x3 by phase")
+
+	var hysteresis := AdaptivePresentationPolicy.new()
+	var far_pair := _presentation_players([Vector2(200, 500), Vector2(1600, 500)])
+	snapshot = hysteresis.update(far_pair, viewport, 0.40)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "splits unreadable pair")
+	var borderline_pair := _presentation_players([Vector2(400, 500), Vector2(1400, 500)])
+	snapshot = hysteresis.update(borderline_pair, viewport, 1.0)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "holds split at border")
+	var regrouped_pair := _presentation_players([Vector2(600, 500), Vector2(1200, 500)])
+	snapshot = hysteresis.update(regrouped_pair, viewport, 0.40)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SPLIT_2, "requires collapse dwell")
+	snapshot = hysteresis.update(regrouped_pair, viewport, 0.40)
+	_expect_mode(snapshot, AdaptivePresentationPolicy.Mode.SHARED, "collapses after regroup dwell")
+
+
 func _test_interactions() -> void:
 	var candidates: Array[Dictionary] = [
 		{"id": "door", "position": Vector2(100, 0), "enabled": true},
@@ -240,6 +356,27 @@ func _test_bottom_hud_layout() -> void:
 			),
 			"keeps diagnostics separate from bottom HUD at a %d px safe margin" % safe_margin
 		)
+
+
+func _presentation_players(positions: Array[Vector2]) -> Array[Dictionary]:
+	var players: Array[Dictionary] = []
+	for index: int in positions.size():
+		players.append({"seat_number": index + 1, "position": positions[index]})
+	return players
+
+
+func _presentation_cluster_signature(snapshot: Dictionary) -> String:
+	var value := ""
+	var clusters: Array = snapshot.clusters
+	for index: int in clusters.size():
+		if index > 0:
+			value += "|"
+		value += str(clusters[index].key)
+	return value
+
+
+func _expect_mode(snapshot: Dictionary, expected: int, description: String) -> void:
+	_expect(int(snapshot.mode) == expected, description)
 
 
 func _seat(number: int, state: int, device_id: int, identity: String) -> Dictionary:
