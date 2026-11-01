@@ -97,10 +97,10 @@ def validate_pair(root: Path, resolution_label: str, stage: str) -> None:
             f"{json_path}: expected common pane {expected_common}, "
             f"got {metrics.get('common_pane_state')!r}"
         )
-    if metrics.get("sandbox_hud_visible") is not False:
+    if metrics.get("rules_hud_visible") is not True:
         fail(
-            f"{json_path}: sandbox_hud_visible must be false for screen evidence, "
-            f"got {metrics.get('sandbox_hud_visible')!r}"
+            f"{json_path}: rules_hud_visible must be true for screen evidence, "
+            f"got {metrics.get('rules_hud_visible')!r}"
         )
     for key in NUMERIC_METRICS:
         require_nonnegative_number(metrics, key, json_path)

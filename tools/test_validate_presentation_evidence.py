@@ -33,7 +33,7 @@ def base_metrics(stage: str, width: int, height: int) -> dict[str, object]:
     pane = {"objects": 1, "primitives": 1, "draw_calls": 1, "pane_index": 0}
     return {
         "stage": stage,
-        "sandbox_hud_visible": False,
+        "rules_hud_visible": True,
         "image_width": width,
         "image_height": height,
         "window_width": width,
@@ -54,22 +54,22 @@ def base_metrics(stage: str, width: int, height: int) -> dict[str, object]:
 
 
 class PresentationEvidenceValidatorTests(unittest.TestCase):
-    def test_rejects_visible_sandbox_hud(self) -> None:
+    def test_rejects_hidden_rules_hud(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             stage = "screen_shared"
             width, height = validator.RESOLUTIONS["1080p"]
             write_minimal_png(root / "1080p-screen_shared.png", width, height)
             metrics = base_metrics(stage, width, height)
-            metrics["sandbox_hud_visible"] = True
+            metrics["rules_hud_visible"] = False
             (root / "1080p-screen_shared.json").write_text(
                 json.dumps(metrics), encoding="utf-8"
             )
             with self.assertRaises(AssertionError) as context:
                 validator.validate_pair(root, "1080p", stage)
-            self.assertIn("sandbox_hud_visible", str(context.exception))
+            self.assertIn("rules_hud_visible", str(context.exception))
 
-    def test_accepts_suppressed_sandbox_hud(self) -> None:
+    def test_accepts_visible_rules_hud(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             stage = "screen_grid_terror"

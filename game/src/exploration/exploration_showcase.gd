@@ -115,18 +115,11 @@ func _configure_screen_stage(sandbox: ExplorationSandbox, stage: String) -> void
 	var room := sandbox.get("_room") as ExplorationRoom
 	if room != null:
 		room.set_show_authored_headings(true)
-	_suppress_sandbox_hud_for_screen_evidence(sandbox)
 
 
-func _suppress_sandbox_hud_for_screen_evidence(sandbox: ExplorationSandbox) -> void:
-	var hud_root := sandbox.get("_hud_root") as Control
-	if hud_root != null:
-		hud_root.visible = false
-
-
-func _sandbox_hud_visible(sandbox: ExplorationSandbox) -> bool:
-	var hud_root := sandbox.get("_hud_root") as Control
-	return hud_root != null and hud_root.visible
+func _rules_hud_visible(sandbox: ExplorationSandbox) -> bool:
+	var rules_hud := sandbox.get("_rules_hud") as Control
+	return rules_hud != null and rules_hud.is_visible_in_tree()
 
 
 func _screen_positions(stage: String) -> Array[Vector2]:
@@ -187,7 +180,7 @@ func _capture_metrics(
 		pane_draw_calls_total += int(stats.draw_calls)
 	return {
 		"stage": stage,
-		"sandbox_hud_visible": _sandbox_hud_visible(sandbox),
+		"rules_hud_visible": _rules_hud_visible(sandbox),
 		"image_width": image_size.x,
 		"image_height": image_size.y,
 		"window_width": get_window().size.x,
