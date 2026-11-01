@@ -1,13 +1,16 @@
 class_name SharedCameraCoordinator
 extends Camera2D
 
+enum CommonPaneState { MAP_BOARD, OBJECTIVE_PHASE, TERROR_EVENT }
+
 const POSITION_RESPONSE: float = 5.0
 const ZOOM_RESPONSE: float = 4.0
 const REFERENCE_VIEWPORT: Vector2 = Vector2(960.0, 540.0)
 const POLICY_INTERVAL_SECONDS: float = 0.10
 const PRESENTATION_LAYER: int = 9
-const MAX_ADAPTIVE_PANES: int = 4
-const PANE_LABEL_HEIGHT: float = 28.0
+const MAX_PRESENTATION_PANES: int = 8
+const PANE_LABEL_HEIGHT: float = 44.0
+const COMMON_TITLE_HEIGHT: float = 24.0
 
 var room_bounds: Rect2 = ExplorationRoom.BOUNDS
 var target_position: Vector2
@@ -16,6 +19,9 @@ var separation_state: SharedCameraPolicy.SeparationState = SharedCameraPolicy.Se
 var reduced_motion: bool = false
 var presentation_mode: int = AdaptivePresentationPolicy.Mode.SHARED
 var presentation_snapshot: Dictionary = {}
+var grid_allowed: bool = false
+var common_pane_state: int = CommonPaneState.MAP_BOARD
+var common_pane_payload: Dictionary = {}
 
 var _presentation_policy := AdaptivePresentationPolicy.new()
 var _policy_elapsed: float = 0.0
@@ -26,6 +32,10 @@ var _pane_viewports: Array[SubViewport] = []
 var _pane_cameras: Array[Camera2D] = []
 var _pane_textures: Array[TextureRect] = []
 var _pane_labels: Array[Label] = []
+var _common_panel: Panel
+var _common_title: Label
+var _common_body: Label
+var _common_markers: Array[Label] = []
 
 
 func _ready() -> void:
@@ -48,6 +58,16 @@ func update_group(pawns: Array[PawnState], delta: float) -> void:
 	separation_state = frame.separation
 	_update_shared_camera(delta)
 	_update_adaptive_presentation(pawns, delta)
+
+
+func set_grid_allowed(value: bool) -> void:
+	grid_allowed = value
+
+
+func set_common_pane(state: int, payload: Dictionary = {}) -> void:
+	common_pane_state = clampi(state, CommonPaneState.MAP_BOARD, CommonPaneState.TERROR_EVENT)
+	common_pane_payload = payload.duplicate(true)
+	_refresh_common_pane_content()
 
 
 func active_pane_count() -> int:
@@ -98,9 +118,41 @@ static func calculate_pane_rects(
 				var column: int = index % 2
 				var row: int = index / 2
 				result.append(Rect2(Vector2(column, row) * pane_size, pane_size))
+		AdaptivePresentationPolicy.Mode.GRID_3X3:
+			var count: int = mini(pane_count, 8)
+			var cell_size: Vector2 = viewport_size / 3.0
+			var cells: Array[Vector2i] = _grid_outer_cells()
+			for index: int in count:
+				var cell: Vector2i = cells[index]
+				result.append(Rect2(Vector2(cell.x, cell.y) * cell_size, cell_size))
 		_:
 			result.append(Rect2(Vector2.ZERO, viewport_size))
 	return result
+
+
+static func calculate_common_pane_rect(
+	viewport_size: Vector2 = REFERENCE_VIEWPORT,
+) -> Rect2:
+	var cell_size: Vector2 = viewport_size / 3.0
+	return Rect2(cell_size, cell_size)
+
+
+static func common_pane_state_label(state: int) -> String:
+	var labels: Array[String] = ["MAP / BOARD", "OBJECTIVE / PHASE", "TERROR EVENT"]
+	return labels[clampi(state, CommonPaneState.MAP_BOARD, CommonPaneState.TERROR_EVENT)]
+
+
+static func _grid_outer_cells() -> Array[Vector2i]:
+	return [
+		Vector2i(0, 0),
+		Vector2i(1, 0),
+		Vector2i(2, 0),
+		Vector2i(0, 1),
+		Vector2i(2, 1),
+		Vector2i(0, 2),
+		Vector2i(1, 2),
+		Vector2i(2, 2),
+	]
 
 
 func _update_shared_camera(delta: float) -> void:
@@ -128,7 +180,7 @@ func _update_adaptive_presentation(pawns: Array[PawnState], delta: float) -> voi
 			players.append({"seat_number": pawn.seat_number, "position": pawn.position})
 		var sample_delta: float = 0.0 if presentation_snapshot.is_empty() else _policy_elapsed
 		presentation_snapshot = _presentation_policy.update(
-			players, REFERENCE_VIEWPORT, sample_delta, false
+			players, REFERENCE_VIEWPORT, sample_delta, grid_allowed
 		)
 		presentation_mode = presentation_snapshot.get(
 			"mode", AdaptivePresentationPolicy.Mode.SHARED
@@ -139,14 +191,21 @@ func _update_adaptive_presentation(pawns: Array[PawnState], delta: float) -> voi
 
 
 func _refresh_adaptive_panes(pawns: Array[PawnState], delta: float) -> void:
-	var split_active: bool = (
+	var adaptive_active: bool = (
 		presentation_mode
-		in [AdaptivePresentationPolicy.Mode.SPLIT_2, AdaptivePresentationPolicy.Mode.SPLIT_4]
+		in [
+			AdaptivePresentationPolicy.Mode.SPLIT_2,
+			AdaptivePresentationPolicy.Mode.SPLIT_4,
+			AdaptivePresentationPolicy.Mode.GRID_3X3,
+		]
 	)
-	enabled = not split_active
-	_overlay_root.visible = split_active
-	if not split_active:
+	var grid_active: bool = presentation_mode == AdaptivePresentationPolicy.Mode.GRID_3X3
+	enabled = not adaptive_active
+	_overlay_root.visible = adaptive_active
+	_common_panel.visible = grid_active
+	if not adaptive_active:
 		_disable_all_panes()
+		_hide_common_markers()
 		return
 	var clusters: Array = presentation_snapshot.get("clusters", [])
 	var rects: Array[Rect2] = calculate_pane_rects(
@@ -155,7 +214,7 @@ func _refresh_adaptive_panes(pawns: Array[PawnState], delta: float) -> void:
 		clusters.size(),
 		REFERENCE_VIEWPORT,
 	)
-	for index: int in MAX_ADAPTIVE_PANES:
+	for index: int in MAX_PRESENTATION_PANES:
 		var active: bool = index < clusters.size() and index < rects.size()
 		if not active:
 			_disable_pane(index)
@@ -168,11 +227,21 @@ func _refresh_adaptive_panes(pawns: Array[PawnState], delta: float) -> void:
 			var pawn: PawnState = _pawn_for_seat(pawns, int(seat_value))
 			if pawn != null:
 				positions.append(pawn.position)
-		_configure_pane(index, rect, seats, positions, delta)
+		_configure_pane(index, rect, seats, positions, pawns, delta, grid_active)
+	if grid_active:
+		_configure_common_pane(pawns)
+	else:
+		_hide_common_markers()
 
 
 func _configure_pane(
-	index: int, rect: Rect2, seats: Array, positions: Array[Vector2], delta: float
+	index: int,
+	rect: Rect2,
+	seats: Array,
+	positions: Array[Vector2],
+	pawns: Array[PawnState],
+	delta: float,
+	grid_mode: bool,
 ) -> void:
 	var viewport: SubViewport = _pane_viewports[index]
 	var camera: Camera2D = _pane_cameras[index]
@@ -189,7 +258,7 @@ func _configure_pane(
 	texture.visible = true
 	label.position = rect.position + Vector2(8.0, 6.0)
 	label.size = Vector2(maxf(120.0, rect.size.x - 16.0), PANE_LABEL_HEIGHT)
-	label.text = _format_seats(seats)
+	label.text = _format_pane_label(seats, pawns, grid_mode)
 	label.visible = true
 	var frame: Dictionary = SharedCameraPolicy.calculate_frame(positions, rect.size, room_bounds)
 	var next_position: Vector2 = frame.center
@@ -205,6 +274,69 @@ func _configure_pane(
 	camera.zoom = camera.zoom.lerp(next_zoom, zoom_weight)
 
 
+func _configure_common_pane(pawns: Array[PawnState]) -> void:
+	var rect: Rect2 = calculate_common_pane_rect(REFERENCE_VIEWPORT)
+	_common_panel.position = rect.position
+	_common_panel.size = rect.size
+	_common_title.position = Vector2(8.0, 6.0)
+	_common_title.size = Vector2(rect.size.x - 16.0, COMMON_TITLE_HEIGHT)
+	_common_body.position = Vector2(8.0, 34.0)
+	_common_body.size = Vector2(rect.size.x - 16.0, rect.size.y - 42.0)
+	_refresh_common_pane_content()
+	if common_pane_state == CommonPaneState.MAP_BOARD:
+		_layout_common_markers(pawns, rect.size)
+	else:
+		_hide_common_markers()
+
+
+func _refresh_common_pane_content() -> void:
+	if not is_instance_valid(_common_title) or not is_instance_valid(_common_body):
+		return
+	_common_title.text = common_pane_state_label(common_pane_state)
+	match common_pane_state:
+		CommonPaneState.MAP_BOARD:
+			_common_body.text = str(
+				common_pane_payload.get("summary", "PLAYER PRESENCE · SHARED AREA OVERVIEW")
+			)
+		CommonPaneState.OBJECTIVE_PHASE:
+			_common_body.text = str(
+				common_pane_payload.get(
+					"summary", "SYNTHETIC OBJECTIVE\nPHASE STATE / TIMER SURFACE"
+				)
+			)
+		CommonPaneState.TERROR_EVENT:
+			_common_body.text = str(
+				common_pane_payload.get("summary", "SYNTHETIC HIGH WATER / GLOBAL HAZARD SURFACE")
+			)
+
+
+func _layout_common_markers(pawns: Array[PawnState], panel_size: Vector2) -> void:
+	var map_rect := Rect2(Vector2(10.0, 66.0), panel_size - Vector2(20.0, 78.0))
+	for index: int in _common_markers.size():
+		var marker: Label = _common_markers[index]
+		if index >= pawns.size():
+			marker.visible = false
+			continue
+		var pawn: PawnState = pawns[index]
+		var normalized := Vector2(
+			inverse_lerp(room_bounds.position.x, room_bounds.end.x, pawn.position.x),
+			inverse_lerp(room_bounds.position.y, room_bounds.end.y, pawn.position.y),
+		)
+		normalized.x = clampf(normalized.x, 0.0, 1.0)
+		normalized.y = clampf(normalized.y, 0.0, 1.0)
+		marker.position = Vector2(
+			lerpf(map_rect.position.x, map_rect.end.x - marker.size.x, normalized.x),
+			lerpf(map_rect.position.y, map_rect.end.y - marker.size.y, normalized.y),
+		)
+		marker.text = "%s%d" % ["●" if pawn.connected else "×", pawn.seat_number]
+		marker.visible = true
+
+
+func _hide_common_markers() -> void:
+	for marker: Label in _common_markers:
+		marker.visible = false
+
+
 func _build_adaptive_presentation() -> void:
 	_overlay_layer = CanvasLayer.new()
 	_overlay_layer.layer = PRESENTATION_LAYER
@@ -215,11 +347,11 @@ func _build_adaptive_presentation() -> void:
 	_overlay_root.visible = false
 	_overlay_layer.add_child(_overlay_root)
 	var shared_world: World2D = get_viewport().world_2d
-	for index: int in MAX_ADAPTIVE_PANES:
+	for index: int in MAX_PRESENTATION_PANES:
 		var viewport := SubViewport.new()
 		viewport.name = "AdaptivePaneViewport%d" % (index + 1)
 		viewport.disable_3d = true
-		viewport.size = Vector2i(480, 270)
+		viewport.size = Vector2i(320, 180)
 		viewport.world_2d = shared_world
 		viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		add_child(viewport)
@@ -241,17 +373,56 @@ func _build_adaptive_presentation() -> void:
 		var label := Label.new()
 		label.name = "AdaptivePaneLabel%d" % (index + 1)
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		label.add_theme_font_size_override("font_size", 18)
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.clip_text = true
+		label.add_theme_font_size_override("font_size", 16)
 		label.add_theme_color_override("font_color", Color.WHITE)
 		label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.95))
 		label.add_theme_constant_override("outline_size", 4)
 		label.visible = false
 		_overlay_root.add_child(label)
 		_pane_labels.append(label)
+	_build_common_pane()
+
+
+func _build_common_pane() -> void:
+	_common_panel = Panel.new()
+	_common_panel.name = "AdaptiveCommonPane"
+	_common_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_common_panel.visible = false
+	_overlay_root.add_child(_common_panel)
+	_common_title = Label.new()
+	_common_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_common_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_common_title.add_theme_font_size_override("font_size", 18)
+	_common_title.add_theme_color_override("font_color", Color.WHITE)
+	_common_panel.add_child(_common_title)
+	_common_body = Label.new()
+	_common_body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_common_body.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_common_body.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	_common_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_common_body.add_theme_font_size_override("font_size", 14)
+	_common_body.add_theme_color_override("font_color", Color.WHITE)
+	_common_panel.add_child(_common_body)
+	for index: int in MAX_PRESENTATION_PANES:
+		var marker := Label.new()
+		marker.name = "CommonMapSeat%d" % (index + 1)
+		marker.size = Vector2(34.0, 22.0)
+		marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		marker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		marker.add_theme_font_size_override("font_size", 14)
+		marker.add_theme_color_override("font_color", Color.WHITE)
+		marker.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.95))
+		marker.add_theme_constant_override("outline_size", 3)
+		marker.visible = false
+		_common_panel.add_child(marker)
+		_common_markers.append(marker)
+	_refresh_common_pane_content()
 
 
 func _disable_all_panes() -> void:
-	for index: int in MAX_ADAPTIVE_PANES:
+	for index: int in MAX_PRESENTATION_PANES:
 		_disable_pane(index)
 
 
@@ -280,6 +451,20 @@ func _build_seat_signature(pawns: Array[PawnState]) -> String:
 			result += "-"
 		result += str(seats[index])
 	return result
+
+
+func _format_pane_label(seats: Array, pawns: Array[PawnState], grid_mode: bool) -> String:
+	if not grid_mode or seats.size() != 1:
+		return _format_seats(seats)
+	var seat_number: int = int(seats[0])
+	var pawn: PawnState = _pawn_for_seat(pawns, seat_number)
+	if pawn == null:
+		return "SEAT %d · DISCONNECTED\nFOCUS —" % seat_number
+	var connection: String = "CONNECTED" if pawn.connected else "DISCONNECTED"
+	var focus: String = "—"
+	if pawn.nearby_interactable != "—":
+		focus = pawn.nearby_interactable.to_upper().replace("_", " ")
+	return "SEAT %d · %s\nFOCUS %s" % [seat_number, connection, focus]
 
 
 func _format_seats(seats: Array) -> String:
