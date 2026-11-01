@@ -189,6 +189,7 @@ func set_safe_margin(value: int) -> void:
 	_diagnostics.set_safe_margin(_safe_margin)
 	if is_instance_valid(_rules_hud):
 		_rules_hud.set_safe_margin(_safe_margin)
+		_sync_camera_reserved_region()
 	if is_instance_valid(_director_hud):
 		_director_hud.set_safe_margin(_safe_margin)
 	if is_instance_valid(_director_diagnostics):
@@ -459,6 +460,12 @@ func _ensure_rules_hud() -> void:
 	_rules_hud.setup(_rules_session)
 	_hud_root.add_child(_rules_hud)
 	_rules_hud.set_safe_margin(_safe_margin)
+	_sync_camera_reserved_region()
+
+
+func _sync_camera_reserved_region() -> void:
+	if is_instance_valid(_camera) and is_instance_valid(_rules_hud):
+		_camera.set_reserved_hud_rect(_rules_hud.get_hud_viewport_rect())
 
 
 func _run_rules_showcase(stage: String = "terminal") -> void:

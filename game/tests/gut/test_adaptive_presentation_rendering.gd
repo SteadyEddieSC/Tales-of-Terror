@@ -66,6 +66,68 @@ func test_grid_only_allocates_outer_cells_for_active_clusters() -> void:
 	assert_eq(rects[4], Rect2(Vector2(640, 180), Vector2(320, 180)))
 
 
+func test_reserved_hud_content_rect_tracks_safe_margin_geometry() -> void:
+	for margin: int in [0, 24, 48]:
+		var hud_rect: Rect2 = RulesHud.calculate_panel_rect(Vector2(960, 540), margin)
+		var content: Rect2 = SharedCameraCoordinator.calculate_content_rect(
+			Vector2(960, 540), hud_rect
+		)
+		assert_eq(content.position, Vector2.ZERO)
+		assert_eq(content.end.x, hud_rect.position.x - SharedCameraCoordinator.RESERVED_REGION_GAP)
+		assert_false(content.intersects(hud_rect))
+
+
+func test_all_adaptive_rectangles_fit_left_of_reserved_hud() -> void:
+	var hud_rect: Rect2 = RulesHud.calculate_panel_rect(Vector2(960, 540), 24)
+	var content: Rect2 = SharedCameraCoordinator.calculate_content_rect(Vector2(960, 540), hud_rect)
+	for mode: int in [
+		AdaptivePresentationPolicy.Mode.SHARED,
+		AdaptivePresentationPolicy.Mode.SPLIT_2,
+		AdaptivePresentationPolicy.Mode.SPLIT_4,
+		AdaptivePresentationPolicy.Mode.GRID_3X3,
+	]:
+		var rects: Array[Rect2] = SharedCameraCoordinator.calculate_pane_rects(
+			mode, "vertical", 8, Vector2(960, 540), content
+		)
+		for rect: Rect2 in rects:
+			assert_true(content.encloses(rect), "pane remains within content rectangle")
+			assert_false(rect.intersects(hud_rect), "pane avoids the real RulesHud footprint")
+	var common_rect: Rect2 = SharedCameraCoordinator.calculate_common_pane_rect(content.size)
+	assert_false(common_rect.intersects(hud_rect))
+
+
+func test_shared_camera_shifts_world_center_into_reserved_content_area() -> void:
+	var coordinator := SharedCameraCoordinator.new()
+	add_child_autofree(coordinator)
+	var pawn := PawnState.new(1, 0, "shared-safe-region", Vector2(1200, 700))
+	coordinator.update_group([pawn], 0.016)
+	var centered_target_x: float = coordinator.target_position.x
+	coordinator.set_reserved_hud_rect(RulesHud.calculate_panel_rect(Vector2(960, 540), 24))
+	coordinator.update_group([pawn], 0.016)
+	assert_gt(coordinator.target_position.x, centered_target_x)
+
+
+func test_mode_selection_uses_hud_safe_content_width() -> void:
+	var coordinator := SharedCameraCoordinator.new()
+	add_child_autofree(coordinator)
+	coordinator.set_reserved_hud_rect(RulesHud.calculate_panel_rect(Vector2(960, 540), 24))
+	var pawns: Array[PawnState] = [
+		PawnState.new(1, 0, "safe-width-left", Vector2(100, 400)),
+		PawnState.new(2, 1, "safe-width-right", Vector2(950, 400)),
+	]
+	for _step: int in 2:
+		coordinator.update_group(pawns, 0.40)
+	assert_eq(
+		coordinator.presentation_mode,
+		AdaptivePresentationPolicy.Mode.SPLIT_2,
+		"players that do not fit the HUD-safe shared width must use split presentation"
+	)
+	assert_lt(
+		coordinator.presentation_snapshot.shared_required_zoom,
+		AdaptivePresentationPolicy.ENTER_MIN_ZOOM
+	)
+
+
 func test_common_pane_states_are_explicit_and_distinct() -> void:
 	assert_eq(
 		SharedCameraCoordinator.common_pane_state_label(
