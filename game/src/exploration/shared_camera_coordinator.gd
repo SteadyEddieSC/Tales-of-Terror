@@ -213,8 +213,9 @@ func _update_adaptive_presentation(pawns: Array[PawnState], delta: float) -> voi
 		for pawn: PawnState in pawns:
 			players.append({"seat_number": pawn.seat_number, "position": pawn.position})
 		var sample_delta: float = 0.0 if presentation_snapshot.is_empty() else _policy_elapsed
+		var content_rect: Rect2 = calculate_content_rect(REFERENCE_VIEWPORT, reserved_hud_rect)
 		presentation_snapshot = _presentation_policy.update(
-			players, REFERENCE_VIEWPORT, sample_delta, grid_allowed
+			players, content_rect.size, sample_delta, grid_allowed
 		)
 		presentation_mode = presentation_snapshot.get(
 			"mode", AdaptivePresentationPolicy.Mode.SHARED

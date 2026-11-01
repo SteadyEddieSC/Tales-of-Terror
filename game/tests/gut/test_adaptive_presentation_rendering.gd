@@ -107,6 +107,27 @@ func test_shared_camera_shifts_world_center_into_reserved_content_area() -> void
 	assert_gt(coordinator.target_position.x, centered_target_x)
 
 
+func test_mode_selection_uses_hud_safe_content_width() -> void:
+	var coordinator := SharedCameraCoordinator.new()
+	add_child_autofree(coordinator)
+	coordinator.set_reserved_hud_rect(RulesHud.calculate_panel_rect(Vector2(960, 540), 24))
+	var pawns: Array[PawnState] = [
+		PawnState.new(1, 0, "safe-width-left", Vector2(100, 400)),
+		PawnState.new(2, 1, "safe-width-right", Vector2(950, 400)),
+	]
+	for _step: int in 2:
+		coordinator.update_group(pawns, 0.40)
+	assert_eq(
+		coordinator.presentation_mode,
+		AdaptivePresentationPolicy.Mode.SPLIT_2,
+		"players that do not fit the HUD-safe shared width must use split presentation"
+	)
+	assert_lt(
+		coordinator.presentation_snapshot.shared_required_zoom,
+		AdaptivePresentationPolicy.ENTER_MIN_ZOOM
+	)
+
+
 func test_common_pane_states_are_explicit_and_distinct() -> void:
 	assert_eq(
 		SharedCameraCoordinator.common_pane_state_label(
