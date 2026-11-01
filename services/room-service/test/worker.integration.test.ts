@@ -106,6 +106,7 @@ describe("Worker and Durable Object elapsed-time integration", () => {
     let rateWorker: Unstable_DevWorker | undefined;
     let inbox: SocketInbox | undefined;
     try {
+      const rateWindowMs = 1_000;
       rateWorker = await unstable_dev("services/room-service/src/worker.ts", {
         config: "services/room-service/wrangler.jsonc",
         local: true,
@@ -113,10 +114,10 @@ describe("Worker and Durable Object elapsed-time integration", () => {
         logLevel: "none",
         vars: {
           ALLOWED_ORIGINS: "http://127.0.0.1:4173,http://localhost:4173",
-          ROOM_IDLE_EXPIRY_MS: "1000",
-          ROOM_HOST_LOSS_GRACE_MS: "1000",
-          ROOM_RATE_WINDOW_MS: "40",
-          ROOM_ACKNOWLEDGEMENT_EXPIRY_MS: "80",
+          ROOM_IDLE_EXPIRY_MS: "10000",
+          ROOM_HOST_LOSS_GRACE_MS: "10000",
+          ROOM_RATE_WINDOW_MS: String(rateWindowMs),
+          ROOM_ACKNOWLEDGEMENT_EXPIRY_MS: "2000",
           ROOM_MAX_MESSAGES_PER_WINDOW: "2",
         },
         experimental: { disableExperimentalWarning: true, disableDevRegistry: true },
@@ -132,18 +133,22 @@ describe("Worker and Durable Object elapsed-time integration", () => {
       expect(approvalResponse.status).toBe(200);
       await inbox.next((value) => isRecord(value) && value.messageType === "seat_claim_approved");
 
-      // The client's first rate bucket starts at join time. Allow that setup bucket to
-      // elapse so rate_1 deterministically opens the window this assertion exercises.
-      // The dedicated fixture keeps room expiry materially outside this timing proof.
-      await delay(80);
+      // The client's first rate bucket starts at join time. Let that setup bucket
+      // elapse, then enqueue the measured threshold sequence without waiting on
+      // round-trip acknowledgements between sends. The dedicated fixture uses a
+      // production-like one-second window and keeps lifecycle expiry far outside
+      // this proof so hosted-runner scheduling cannot redefine the rate contract.
+      await delay(rateWindowMs + 100);
 
-      for (let index = 1; index <= 2; index += 1) {
+      for (let index = 1; index <= 3; index += 1) {
         inbox.socket.send(JSON.stringify(createEnvelope(room.roomId, "private_reveal_ack", `rate_${index}`, {}, { seatClaim: 1 })));
+      }
+      for (let index = 1; index <= 2; index += 1) {
         await inbox.next((value) => isRecord(value) && value.messageType === "acknowledgement" && value.requestId === `rate_${index}`);
       }
-      inbox.socket.send(JSON.stringify(createEnvelope(room.roomId, "private_reveal_ack", "rate_3", {}, { seatClaim: 1 })));
       await expect(inbox.next((value) => isRecord(value) && value.code === "rate_limited")).resolves.toBeDefined();
-      await delay(45);
+
+      await delay(rateWindowMs + 100);
       inbox.socket.send(JSON.stringify(createEnvelope(room.roomId, "private_reveal_ack", "rate_4", {}, { seatClaim: 1 })));
       await expect(inbox.next((value) => isRecord(value) && value.messageType === "acknowledgement" && value.requestId === "rate_4")).resolves.toBeDefined();
     } finally {
