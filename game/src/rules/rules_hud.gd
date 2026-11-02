@@ -54,6 +54,10 @@ static func calculate_panel_rect(viewport_size: Vector2, safe_margin: int) -> Re
 	return Rect2(Vector2(viewport_size.x - safe - PANEL_SIZE.x - 10.0, safe + 52.0), PANEL_SIZE)
 
 
+func get_hud_viewport_rect() -> Rect2:
+	return Rect2(position, size)
+
+
 func handle_navigation(seat_number: int, direction: int, confirm: bool, cancel: bool) -> bool:
 	if (
 		_session == null

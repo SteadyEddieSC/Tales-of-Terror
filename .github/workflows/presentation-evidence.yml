@@ -1,0 +1,92 @@
+name: Adaptive presentation evidence
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/presentation-evidence.yml'
+      - 'game/src/exploration/**'
+      - 'game/project.godot'
+      - 'tools/validate_presentation_evidence.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence:
+    name: 1080p and 4K Compatibility evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Download checksum-pinned Godot 4.7.1 stable
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable
+          curl -fsSL -o godot.zip "$base/Godot_v4.7.1-stable_linux.x86_64.zip"
+          echo '4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9  godot.zip' | sha512sum --check -
+          unzip -q godot.zip -d .godot-bin
+          chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
+      - name: Import project scripts and build the global class cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          .godot-bin/Godot_v4.7.1-stable_linux.x86_64 \
+            --headless \
+            --editor \
+            --path game \
+            --import
+      - name: Capture deterministic presentation matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v xvfb-run
+          mkdir -p artifacts/presentation-evidence
+          godot="$PWD/.godot-bin/Godot_v4.7.1-stable_linux.x86_64"
+          stages=(
+            screen_shared
+            screen_split_2
+            screen_split_4
+            screen_grid_map
+            screen_grid_objective
+            screen_grid_terror
+          )
+          for spec in '1080p:1920x1080' '4k:3840x2160'; do
+            label="${spec%%:*}"
+            resolution="${spec#*:}"
+            for stage in "${stages[@]}"; do
+              stem="$PWD/artifacts/presentation-evidence/${label}-${stage}"
+              xvfb-run -a --server-args='-screen 0 4096x2304x24' \
+                "$godot" \
+                --path game \
+                --audio-driver Dummy \
+                --rendering-method gl_compatibility \
+                --resolution "$resolution" \
+                --quit-after 120 \
+                --scene res://src/exploration/ExplorationShowcase.tscn \
+                -- \
+                "--evidence-stage=${stage}" \
+                "--evidence-output=${stem}.png" \
+                "--evidence-metrics=${stem}.json"
+            done
+          done
+      - name: Validate screenshot dimensions, modes, and metrics
+        run: python tools/validate_presentation_evidence.py artifacts/presentation-evidence
+      - name: Generate evidence checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd artifacts/presentation-evidence
+            sha256sum ./*.png ./*.json | sort > SHA256SUMS.txt
+          )
+      - name: Upload adaptive presentation evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: adaptive-presentation-evidence
+          path: artifacts/presentation-evidence
+          if-no-files-found: error
+          retention-days: 14

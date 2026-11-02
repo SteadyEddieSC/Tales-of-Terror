@@ -11,6 +11,7 @@ const PRESENTATION_LAYER: int = 9
 const MAX_PRESENTATION_PANES: int = 8
 const PANE_LABEL_HEIGHT: float = 44.0
 const COMMON_TITLE_HEIGHT: float = 24.0
+const RESERVED_REGION_GAP: float = 12.0
 
 var room_bounds: Rect2 = ExplorationRoom.BOUNDS
 var target_position: Vector2
@@ -22,6 +23,7 @@ var presentation_snapshot: Dictionary = {}
 var grid_allowed: bool = false
 var common_pane_state: int = CommonPaneState.MAP_BOARD
 var common_pane_payload: Dictionary = {}
+var reserved_hud_rect: Rect2 = Rect2()
 
 var _presentation_policy := AdaptivePresentationPolicy.new()
 var _policy_elapsed: float = 0.0
@@ -50,10 +52,13 @@ func update_group(pawns: Array[PawnState], delta: float) -> void:
 	var positions: Array[Vector2] = []
 	for pawn: PawnState in pawns:
 		positions.append(pawn.position)
+	var content_rect: Rect2 = calculate_content_rect(REFERENCE_VIEWPORT, reserved_hud_rect)
 	var frame: Dictionary = SharedCameraPolicy.calculate_frame(
-		positions, REFERENCE_VIEWPORT, room_bounds
+		positions, content_rect.size, room_bounds
 	)
-	target_position = frame.center
+	var frame_center: Vector2 = frame.center
+	frame_center.x += (REFERENCE_VIEWPORT.x * 0.5 - content_rect.get_center().x) / float(frame.zoom)
+	target_position = frame_center
 	target_zoom = frame.zoom
 	separation_state = frame.separation
 	_update_shared_camera(delta)
@@ -62,6 +67,21 @@ func update_group(pawns: Array[PawnState], delta: float) -> void:
 
 func set_grid_allowed(value: bool) -> void:
 	grid_allowed = value
+
+
+func set_reserved_hud_rect(rect: Rect2) -> void:
+	reserved_hud_rect = rect
+	target_position = position
+	_policy_elapsed = POLICY_INTERVAL_SECONDS
+
+
+static func calculate_content_rect(
+	viewport_size: Vector2, reserved_rect: Rect2, gap: float = RESERVED_REGION_GAP
+) -> Rect2:
+	if reserved_rect.size.x <= 0.0 or reserved_rect.size.y <= 0.0:
+		return Rect2(Vector2.ZERO, viewport_size)
+	var content_width: float = clampf(reserved_rect.position.x - gap, 1.0, viewport_size.x)
+	return Rect2(Vector2.ZERO, Vector2(content_width, viewport_size.y))
 
 
 func set_common_pane(state: int, payload: Dictionary = {}) -> void:
@@ -79,54 +99,68 @@ func active_pane_count() -> int:
 
 
 static func calculate_pane_rects(
-	mode: int, orientation: String, pane_count: int, viewport_size: Vector2 = REFERENCE_VIEWPORT
+	mode: int,
+	orientation: String,
+	pane_count: int,
+	viewport_size: Vector2 = REFERENCE_VIEWPORT,
+	content_rect: Rect2 = Rect2()
 ) -> Array[Rect2]:
 	var result: Array[Rect2] = []
 	if pane_count <= 0:
 		return result
+	var layout_rect: Rect2 = (
+		content_rect
+		if content_rect.size.x > 0.0 and content_rect.size.y > 0.0
+		else Rect2(Vector2.ZERO, viewport_size)
+	)
+	var layout_size: Vector2 = layout_rect.size
 	match mode:
 		AdaptivePresentationPolicy.Mode.SPLIT_2:
 			var count: int = mini(pane_count, 2)
 			if orientation == "horizontal":
-				var pane_height: float = viewport_size.y * 0.5
+				var pane_height: float = layout_size.y * 0.5
 				for index: int in count:
 					(
 						result
 						. append(
 							Rect2(
-								Vector2(0.0, pane_height * index),
-								Vector2(viewport_size.x, pane_height),
+								layout_rect.position + Vector2(0.0, pane_height * index),
+								Vector2(layout_size.x, pane_height),
 							)
 						)
 					)
 			else:
-				var pane_width: float = viewport_size.x * 0.5
+				var pane_width: float = layout_size.x * 0.5
 				for index: int in count:
 					(
 						result
 						. append(
 							Rect2(
-								Vector2(pane_width * index, 0.0),
-								Vector2(pane_width, viewport_size.y),
+								layout_rect.position + Vector2(pane_width * index, 0.0),
+								Vector2(pane_width, layout_size.y),
 							)
 						)
 					)
 		AdaptivePresentationPolicy.Mode.SPLIT_4:
 			var count: int = mini(pane_count, 4)
-			var pane_size: Vector2 = viewport_size * 0.5
+			var pane_size: Vector2 = layout_size * 0.5
 			for index: int in count:
 				var column: int = index % 2
 				var row: int = index / 2
-				result.append(Rect2(Vector2(column, row) * pane_size, pane_size))
+				result.append(
+					Rect2(layout_rect.position + Vector2(column, row) * pane_size, pane_size)
+				)
 		AdaptivePresentationPolicy.Mode.GRID_3X3:
 			var count: int = mini(pane_count, 8)
-			var cell_size: Vector2 = viewport_size / 3.0
+			var cell_size: Vector2 = layout_size / 3.0
 			var cells: Array[Vector2i] = _grid_outer_cells()
 			for index: int in count:
 				var cell: Vector2i = cells[index]
-				result.append(Rect2(Vector2(cell.x, cell.y) * cell_size, cell_size))
+				result.append(
+					Rect2(layout_rect.position + Vector2(cell.x, cell.y) * cell_size, cell_size)
+				)
 		_:
-			result.append(Rect2(Vector2.ZERO, viewport_size))
+			result.append(layout_rect)
 	return result
 
 
@@ -179,8 +213,9 @@ func _update_adaptive_presentation(pawns: Array[PawnState], delta: float) -> voi
 		for pawn: PawnState in pawns:
 			players.append({"seat_number": pawn.seat_number, "position": pawn.position})
 		var sample_delta: float = 0.0 if presentation_snapshot.is_empty() else _policy_elapsed
+		var content_rect: Rect2 = calculate_content_rect(REFERENCE_VIEWPORT, reserved_hud_rect)
 		presentation_snapshot = _presentation_policy.update(
-			players, REFERENCE_VIEWPORT, sample_delta, grid_allowed
+			players, content_rect.size, sample_delta, grid_allowed
 		)
 		presentation_mode = presentation_snapshot.get(
 			"mode", AdaptivePresentationPolicy.Mode.SHARED
@@ -213,6 +248,7 @@ func _refresh_adaptive_panes(pawns: Array[PawnState], delta: float) -> void:
 		str(presentation_snapshot.get("orientation", "vertical")),
 		clusters.size(),
 		REFERENCE_VIEWPORT,
+		calculate_content_rect(REFERENCE_VIEWPORT, reserved_hud_rect),
 	)
 	for index: int in MAX_PRESENTATION_PANES:
 		var active: bool = index < clusters.size() and index < rects.size()
@@ -275,7 +311,9 @@ func _configure_pane(
 
 
 func _configure_common_pane(pawns: Array[PawnState]) -> void:
-	var rect: Rect2 = calculate_common_pane_rect(REFERENCE_VIEWPORT)
+	var content_rect: Rect2 = calculate_content_rect(REFERENCE_VIEWPORT, reserved_hud_rect)
+	var rect: Rect2 = calculate_common_pane_rect(content_rect.size)
+	rect.position += content_rect.position
 	_common_panel.position = rect.position
 	_common_panel.size = rect.size
 	_common_title.position = Vector2(8.0, 6.0)
