@@ -36,7 +36,7 @@ Never place either archive, executable, `.godot` cache, or generated report in G
 | `lark` | `1.2.2` | GDScript Toolkit |
 | `pyyaml` | `6.0.3` | GDScript Toolkit |
 | `radon` | `6.0.1` | GDScript Toolkit |
-| `setuptools` | `83.0.0` | GDScript Toolkit; included explicitly with `--allow-unsafe` |
+| `setuptools` | `84.1.0` | GDScript Toolkit; included explicitly with `--allow-unsafe` |
 | `regex` | `2026.7.19` | `lark[regex]` |
 | `mando` | `0.7.1` | `radon` |
 | `colorama` | `0.4.6` | `radon` |

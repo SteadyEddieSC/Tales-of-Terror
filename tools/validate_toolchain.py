@@ -24,7 +24,7 @@ LOCKED_DEVELOPMENT_PACKAGES = {
     "pyyaml": "6.0.3",
     "radon": "6.0.1",
     "regex": "2026.7.19",
-    "setuptools": "83.0.0",
+    "setuptools": "84.1.0",
     "six": "1.17.0",
 }
 
