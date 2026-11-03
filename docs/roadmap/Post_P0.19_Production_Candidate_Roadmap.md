@@ -63,7 +63,7 @@ There is no active successor release after this reconciliation. Any human-author
 
 Alpha.3 governs Cooperative seats 1–8, Hidden Betrayer seats 3–8, and Outbreak seats 2–8; six roles; Living, Bellmarked, and Tidebound objectives; active continuation; 12 items; 12 cards; eight resources; 12 hazards; 19 encounters; rescue; bounded public-input Director variation; seven endings; snapshot v3 migration; and repeated-session replayability.
 
-The Companion audit remediation uses reviewed exact npm overrides for PostCSS `8.5.23` and Undici `7.29.0`, while preserving Wrangler `4.114.0`, Workers Types `5.20260722.1`, Miniflare `4.20260722.0`, and Sharp `0.35.2`.
+The Companion audit remediation uses reviewed exact npm overrides for PostCSS `8.5.23` and Undici `7.29.0`, while preserving Wrangler `4.156.0`, Workers Types `5.20261030.1`, Miniflare `5.20261023.3-beta`, and Sharp `0.35.2`.
 
 ## Quality and security baseline
 

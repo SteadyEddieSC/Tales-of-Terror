@@ -56,7 +56,7 @@ The accepted external v2 planning ZIP remains outside Git and public GitHub Rele
 
 All 25 assets remain `R1_private_internal_reference`, `reference_only_nonproduction`, conversion readiness `not_ready`, and implementation authorization false.
 
-The Companion development graph retains Wrangler `4.114.0`, Workers Types `5.20260722.1`, Miniflare `4.20260722.0`, and Sharp `0.35.2`, with reviewed exact npm overrides PostCSS `8.5.23` and Undici `7.29.0`.
+The Companion development graph retains Wrangler `4.156.0`, Workers Types `5.20261030.1`, Miniflare `5.20261023.3-beta`, and Sharp `0.35.2`, with reviewed exact npm overrides PostCSS `8.5.23` and Undici `7.29.0`.
 
 No successor release is selected or activated. Source creation, source/runtime composition, direct-pixel use, Godot, UX implementation, candidates, and public use remain separately gated and unauthorized.
 

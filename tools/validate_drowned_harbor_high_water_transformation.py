@@ -932,19 +932,19 @@ def validate_manifest_and_production_boundary(
         "P0.18 input or autoload registration entered project.godot",
     )
     dependencies = package_json.get("devDependencies", {})
-    require(dependencies.get("wrangler") == "4.114.0", "Wrangler direct pin changed")
+    require(dependencies.get("wrangler") == "4.156.0", "Wrangler direct pin changed")
     require(
-        dependencies.get("@cloudflare/workers-types") == "5.20260722.1",
+        dependencies.get("@cloudflare/workers-types") == "5.20261030.1",
         "Workers Types direct pin changed",
     )
     lock_packages = package_lock.get("packages", {})
     require(
-        lock_packages.get("node_modules/wrangler", {}).get("version") == "4.114.0",
+        lock_packages.get("node_modules/wrangler", {}).get("version") == "4.156.0",
         "lock Wrangler changed",
     )
     require(
         lock_packages.get("node_modules/miniflare", {}).get("version")
-        == "4.20260722.0",
+        == "5.20261023.3-beta",
         "lock Miniflare changed",
     )
     require(
