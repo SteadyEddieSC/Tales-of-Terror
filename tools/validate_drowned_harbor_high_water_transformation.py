@@ -1014,9 +1014,9 @@ def validate_workflow_text(workflow: str) -> None:
     ):
         require(command in workflow, f"workflow requirement missing: {command}")
     for pin in (
-        "actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0",
+        "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
         "actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1",
-        "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+        "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
     ):
         require(pin in workflow, f"immutable action pin drifted: {pin}")
 

@@ -622,9 +622,9 @@ def validate_workflow(workflow: str) -> None:
         "Prove source tree remains clean",
     ):
         require(phrase in workflow, f"Alpha.3 workflow missing: {phrase}")
-    require("actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0" in workflow, "checkout pin changed")
+    require("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" in workflow, "checkout pin changed")
     require("actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1" in workflow, "Python pin changed")
-    require("actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a" in workflow, "artifact pin changed")
+    require("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9" in workflow, "artifact pin changed")
     for path in AUTHORIZED_PATHS:
         require(path in workflow, f"workflow boundary missing path: {path}")
 
