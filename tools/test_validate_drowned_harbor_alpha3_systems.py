@@ -222,7 +222,7 @@ def main() -> int:
         ("export private marker leak", lambda: export_mutation("res://safe.txt", b"private_objective_assignment_id")),
         ("workflow Alpha.3 validator removed", lambda: workflow_mutation('run_check alpha3-validator python tools/validate_drowned_harbor_alpha3_systems.py "${alpha3_args[@]}"', 'run_check alpha3-validator python tools/validate_removed.py "${alpha3_args[@]}"')),
         ("workflow detached branch support removed", lambda: workflow_mutation('effective_branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"', 'effective_branch="${GITHUB_REF_NAME:-}"')),
-        ("workflow action pin changed", lambda: workflow_mutation("actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0", "actions/checkout@v4")),
+        ("workflow action pin changed", lambda: workflow_mutation("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", "actions/checkout@v4")),
         ("false human claim", lambda: documentation_claim("Human playtesting passed.")),
         ("false certification claim", lambda: documentation_claim("Privacy certified.")),
         ("false readiness claim", lambda: documentation_claim("Production ready.")),
