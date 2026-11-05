@@ -61,7 +61,7 @@ jobs:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       GODOT_TEMPLATE_SHA256: 86409db6200b6f8fd3230989c2d2002851f3dd18acf11d7bdbafddf5a0dd0f72
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ env.SOURCE_SHA }}
@@ -156,22 +156,25 @@ jobs:
           }
           effective_source_branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
           p021_args=(--skip-git-boundary)
-          post_prototype_args=(--skip-git-boundary)
           if [[ "$effective_source_branch" == "feature/v0.2.0-alpha.1-drowned-harbor-scaffold" ]]; then
             run_check scaffold-validator python tools/validate_drowned_harbor_production_scaffold.py
           else
             scaffold_validator_path=tools/validate_drowned_harbor_production_scaffold.py
             run_check scaffold-validator python "$scaffold_validator_path" --skip-git-boundary
             p021_args+=(--later-succession)
-            post_prototype_args+=(--later-succession)
           fi
           run_check scaffold-mutations python tools/test_validate_drowned_harbor_production_scaffold.py
           run_check tale-package python tools/test_tale_package.py
           run_check tale-catalog python tools/test_tale_catalog.py
           run_check p021-validator python tools/validate_p021_production_architecture.py "${p021_args[@]}"
           run_check p021-mutations python tools/test_validate_p021_production_architecture.py
-          run_check post-prototype-validator python tools/validate_post_prototype_reconciliation.py "${post_prototype_args[@]}"
-          run_check post-prototype-mutations python tools/test_validate_post_prototype_reconciliation.py
+          if [[ "$effective_source_branch" == "feature/v0.2.0-alpha.1-drowned-harbor-scaffold" ]]; then
+            run_check post-prototype-validator python tools/validate_post_prototype_reconciliation.py --skip-git-boundary
+            run_check post-prototype-mutations python tools/test_validate_post_prototype_reconciliation.py
+          else
+            run_check current-status python tools/validate_post_dh_ux_final_status.py
+            run_check current-status-mutations python tools/test_validate_post_dh_ux_final_status.py
+          fi
           run_check drowned-harbor-isolation python tools/validate_drowned_harbor_prototype_isolation_p016.py
           run_check drowned-harbor-isolation-mutations python tools/test_validate_drowned_harbor_prototype_isolation_p016.py
           run_check bellhouse-validator python tools/validate_drowned_harbor_bellhouse_recovery.py
@@ -258,7 +261,7 @@ jobs:
 
       - name: Upload bounded alpha.1 machine evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: p020-alpha1-drowned-harbor-scaffold-evidence
           path: artifacts/alpha1
