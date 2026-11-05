@@ -228,8 +228,8 @@ The **Director** is the underlying authored pacing system. It begins local, dete
 - Native Godot authority owns gameplay in the current architecture.
 - The production Tale catalog contains exactly one entry: Lantern House.
 - Test-only synthetic, prototype, and developer-only Drowned Harbor content remains export-excluded.
-- The Companion development graph retains Wrangler `4.156.0`, Workers Types `5.20261030.1`, Miniflare `5.20261023.3-beta`, and Sharp `0.35.2`.
-- Reviewed exact npm overrides pin PostCSS `8.5.23` and Undici `7.29.0`; inherited validators fail closed on any override or lock drift.
+- The Companion development graph retains Wrangler `4.156.0`, Workers Types `5.20261030.1`, Miniflare `5.20261023.3-beta`, and Sharp `0.35.5`.
+- Reviewed exact npm overrides pin PostCSS `8.5.23` and Undici `7.30.1`; inherited validators fail closed on any override or lock drift.
 - Production Cloudflare deployment, accounts, matchmaking, campaign persistence, full remote play, and security certification remain deferred.
 - Issue #39 remains the authority for future human household and remote playtest evidence.
 
