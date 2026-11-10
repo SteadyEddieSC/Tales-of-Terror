@@ -429,7 +429,7 @@ def validate_workflow(root: Path) -> None:
     for needle in (
         "name: v0.2.0-alpha.1 Drowned Harbor production Tale scaffold",
         "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
-        "actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1",
+        "actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
         "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
         "python-version: 3.11.9",
         "--require-hashes --requirement requirements-dev.txt",

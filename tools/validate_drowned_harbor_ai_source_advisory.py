@@ -281,7 +281,7 @@ def validate_docs_and_workflow() -> None:
     workflow = (ROOT / WORKFLOW).read_text(encoding='utf-8')
     for token in [
         'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1',
-        'actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1',
+        'actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0',
         'persist-credentials: false', 'python-version: 3.11.9', '--require-hashes',
         'quality/validate_repository.py all',
     ]:
