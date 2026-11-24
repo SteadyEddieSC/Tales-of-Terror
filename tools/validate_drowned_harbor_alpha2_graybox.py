@@ -454,7 +454,7 @@ def validate_workflow(workflow: str) -> None:
     for phrase in phrases:
         require(phrase in workflow, f"alpha.2 workflow missing: {phrase}")
     require("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" in workflow, "checkout pin changed")
-    require("actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1" in workflow, "Python pin changed")
+    require("actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0" in workflow, "Python pin changed")
     require("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9" in workflow, "artifact pin changed")
 
 

@@ -27,7 +27,7 @@ jobs:
           unzip -q godot.zip -d .godot-bin
           chmod +x .godot-bin/Godot_v4.7.1-stable_linux.x86_64
           echo "$PWD/.godot-bin" >> "$GITHUB_PATH"
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: 3.11.9
           cache: pip

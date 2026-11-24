@@ -138,7 +138,7 @@ def main() -> int:
         "Godot_v4.7.1-stable_linux.x86_64.zip",
         "4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9",
         "python-version: 3.11.9",
-        "actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1",
+        "actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
         "python -m pip install --disable-pip-version-check --require-hashes --requirement requirements-dev.txt",
         "python -m pip check",
         "python -m pip freeze --all",
