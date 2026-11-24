@@ -167,8 +167,8 @@ describe("Worker and Durable Object elapsed-time integration", () => {
         logLevel: "none",
         vars: {
           ALLOWED_ORIGINS: "http://127.0.0.1:4173,http://localhost:4173",
-          ROOM_IDLE_EXPIRY_MS: "1000",
-          ROOM_HOST_LOSS_GRACE_MS: "300",
+          ROOM_IDLE_EXPIRY_MS: "10000",
+          ROOM_HOST_LOSS_GRACE_MS: "2000",
           ROOM_RATE_WINDOW_MS: "40",
           ROOM_ACKNOWLEDGEMENT_EXPIRY_MS: "80",
           ROOM_MAX_MESSAGES_PER_WINDOW: "2",
@@ -178,11 +178,12 @@ describe("Worker and Durable Object elapsed-time integration", () => {
       const heartbeatBaseUrl = `http://${heartbeatWorker.address}:${heartbeatWorker.port}`;
       const room = await createRoom(heartbeatBaseUrl);
 
-      // Without the heartbeat, the second observation is beyond the 300 ms host-loss
-      // grace. Each 200 ms leg still leaves a material scheduling margin.
-      await delay(200);
+      // The second observation is beyond the initial 2,000 ms host-loss grace,
+      // while each 1,100 ms leg is safely within the heartbeat-refreshed window.
+      // A long idle horizon isolates host-heartbeat behavior from idle expiry.
+      await delay(1100);
       expect((await host(room, { operation: "heartbeat" }, heartbeatBaseUrl)).status).toBe(200);
-      await delay(200);
+      await delay(1100);
       const diagnostics = await host(room, { operation: "diagnostics" }, heartbeatBaseUrl);
       expect(diagnostics.status).toBe(200);
       await expect(diagnostics.json()).resolves.toMatchObject({ accepted: true, diagnostics: { roomState: "open", hostPresent: true } });
